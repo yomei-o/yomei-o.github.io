@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nostalgist.js Ultimate Multi-Emulator</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #menu-panel {
+      background-color: #2a2a2a;
+      padding: 15px 25px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    label {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    select, input[type="file"], button {
+      background-color: #3a3a3a;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    select:focus, input:focus {
+      border-color: #007acc;
+      outline: none;
+    }
+    optgroup {
+      background-color: #222;
+      color: #0098ff;
+      font-style: normal;
+      font-weight: bold;
+    }
+    optgroup option {
+      color: #fff;
+      font-weight: normal;
+    }
+    button {
+      background-color: #007acc;
+      border: none;
+      font-weight: bold;
+      transition: background 0.2s;
+      align-self: flex-end;
+      height: 38px;
+    }
+    button:hover {
+      background-color: #0098ff;
+    }
+    #canvas-wrapper {
+      background-color: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden; 
+    }
+    #emulator-canvas {
+      display: block !important; 
+      image-rendering: pixelated; 
+      transform-origin: center center; 
+    }
+  </style>
+
+  <!-- Nostalgist.js 本体（CDN） -->
+  <script src="https://unpkg.com/nostalgist/dist/nostalgist.umd.js"></script>
+</head>
+<body>
+
+  <!-- 設定パネル -->
+  <div id="menu-panel">
+    <!-- 1. コアの選択（大幅拡張＆グループ分け） -->
+    <div class="form-group">
+      <label for="core-select">1. 機種（コア）</label>
+      <select id="core-select">
+        <optgroup label="任天堂 (Nintendo)">
+          <option value="fceumm">ファミコン / NES (fceumm)</option>
+          <option value="nestopia">ファミコン / NES (nestopia)</option>
+          <option value="snes9x" selected>スーパーファミコン / SNES (snes9x)</option>
+          <option value="gambatte">ゲームボーイ / カラー (gambatte)</option>
+          <option value="mgba">ゲームボーイアドバンス (mgba)</option>
+          <option value="mupen64plus_next">NINTENDO 64 (mupen64plus_next)</option>
+          <option value="desmume">ニンテンドーDS (desmume)</option>
+          <option value="melonds">ニンテンドーDS (melonds)</option>
+          <option value="mesen-s">スーファミ高精度 (mesen-s)</option>
+        </optgroup>
+        
+        <optgroup label="SEGA">
+          <option value="genesis_plus_gx">メガドライブ / マークIII (genesis_plus_gx)</option>
+          <option value="picodrive">メガCD / 32X / MD (picodrive)</option>
+          <option value="yabause">セガサターン (yabause)</option>
+          <option value="flycast">ドリームキャスト (flycast)</option>
+        </optgroup>
+
+        <optgroup label="SONY">
+          <option value="pcsx_rearmed">PlayStation (pcsx_rearmed)</option>
+          <option value="mednafen_psx">PlayStation高精度 (mednafen_psx)</option>
+          <option value="ppsspp">PSP (ppsspp)</option>
+        </optgroup>
+
+        <optgroup label="その他 (Others)">
+          <option value="mednafen_pce_fast">PCエンジン (mednafen_pce_fast)</option>
+          <option value="opera">3DO (opera)</option>
+          <option value="prosystem">Atari 7800 (prosystem)</option>
+          <option value="handy">Atari Lynx (handy)</option>
+          <option value="neocd">ネオジオCD (neocd)</option>
+          <option value="fbneo">アーケード / NEOGEO (fbneo)</option>
+          <option value="mame">アーケード汎用 (mame)</option>
+          <option value="virtualjaguar">Atari Jaguar (virtualjaguar)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- 2. ROMの選択 -->
+    <div class="form-group">
+      <label for="rom-file">2. ROMファイル</label>
+      <input type="file" id="rom-file">
+    </div>
+
+    <!-- 3. 画面倍率の選択 -->
+    <div class="form-group">
+      <label for="size-select">3. 画面サイズ（倍率）</label>
+      <select id="size-select">
+        <option value="1">1倍 (256x224 ベース)</option>
+        <option value="2" selected>2倍 (標準: 512x448)</option>
+        <option value="3">3倍 (大: 768x672)</option>
+        <option value="4">4倍 (特大: 1024x896)</option>
+      </select>
+    </div>
+
+    <button id="launch-btn">起動する</button>
+  </div>
+
+  <!-- エミュレータ表示エリア -->
+  <div id="canvas-wrapper">
+    <canvas id="emulator-canvas"></canvas>
+  </div>
+
+  <script>
+    const coreSelect = document.getElementById('core-select');
+    const romFileInput = document.getElementById('rom-file');
+    const sizeSelect = document.getElementById('size-select');
+    const launchBtn = document.getElementById('launch-btn');
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+    const emulatorCanvas = document.getElementById('emulator-canvas');
+
+    let currentSession = null;
+
+    const BASE_WIDTH = 320;
+    const BASE_HEIGHT = 240;
+
+    function resizeContainer() {
+      const multiplier = parseFloat(sizeSelect.value);
+      const targetWidth = BASE_WIDTH * multiplier;
+      const targetHeight = BASE_HEIGHT * multiplier;
+      
+      canvasWrapper.style.width = `${targetWidth}px`;
+      canvasWrapper.style.height = `${targetHeight}px`;
+
+      const currentCanvasWidth = emulatorCanvas.width || BASE_WIDTH;
+      const currentCanvasHeight = emulatorCanvas.height || BASE_HEIGHT;
+
+      const scaleX = targetWidth / currentCanvasWidth;
+      const scaleY = targetHeight / currentCanvasHeight;
+
+      emulatorCanvas.style.transform = `scale(${scaleX}, ${scaleY})`;
+    }
+
+    resizeContainer();
+    sizeSelect.addEventListener('change', resizeContainer);
+
+    launchBtn.addEventListener('click', async () => {
+      const file = romFileInput.files[0];
+      const selectedCore = coreSelect.value;
+
+      if (!file) {
+        alert('ROMファイルを選択してください。');
+        return;
+      }
+
+      if (currentSession) {
+        try {
+          currentSession.exit();
+        } catch (e) {
+          console.log('クリーンアップ', e);
+        }
+      }
+
+      try {
+        launchBtn.textContent = 'コアを取得・起動中...';
+        launchBtn.disabled = true;
+
+        currentSession = await Nostalgist.launch({
+          core: selectedCore,
+          rom: file,
+          element: '#emulator-canvas'
+        });
+
+        // 起動後に少し待ってからサイズ適用
+        setTimeout(() => {
+          resizeContainer();
+        }, 150);
+
+        launchBtn.textContent = '起動中（再起動）';
+        launchBtn.disabled = false;
+        console.log(`${selectedCore} が正常に起動しました。`);
+
+      } catch (error) {
+        console.error('起動エラー:', error);
+        alert('起動に失敗しました。WASMコアのロードに失敗したか、ブラウザのメモリ不足、あるいはROMの形式が異なる可能性があります。');
+        launchBtn.textContent = '起動する';
+        launchBtn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
