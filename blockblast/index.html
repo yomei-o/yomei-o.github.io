@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Block Clear — prototype</title>
+<style>
+  html, body {
+    margin: 0; height: 100%;
+    background: #0b0e1c; color: #c8d0e8;
+    font-family: system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    user-select: none; -webkit-user-select: none;
+  }
+  #wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; }
+  #scorebar { display: flex; gap: 6px; }
+  .chip { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #fff; }
+  .sw { width: 14px; height: 14px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+  #game { image-rendering: pixelated; background: #000; border-radius: 4px; touch-action: none; }
+  #hint { font-size: 12px; color: #6b7494; text-align: center; line-height: 1.5; }
+  #over {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center; flex-direction: column;
+    background: rgba(0,0,0,.6); color: #fff; font-size: 22px; gap: 12px;
+  }
+  #over button { font-size: 16px; padding: 8px 20px; cursor: pointer; }
+  kbd { background:#222a47; border-radius:3px; padding:1px 5px; font-family:inherit; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="scorebar"></div>
+  <canvas id="game"></canvas>
+  <div id="hint">
+    <kbd>←</kbd> <kbd>→</kbd> 移動 &nbsp; <kbd>↑</kbd> 回転 &nbsp; <kbd>↓</kbd> 速く落とす &nbsp; <kbd>Space</kbd> 一気に落とす<br>
+    蛇行する溝にブロックを詰めて横一列をそろえると消える。消すと色が変わるよ
+  </div>
+</div>
+<div id="over">
+  <div>GAME OVER</div>
+  <button id="restart">もう一度</button>
+</div>
+
+<script>
+"use strict";
+/* ============================================================================
+ * BlockCore — ゲームのロジック + フレームバッファ描画
+ *
+ * 設計方針: 将来 C++ / libretro へ移植するため、フロントエンド(DOM/Canvas/入力)
+ * に一切依存しない。状態はすべて配列・整数。1フレーム = tick(inputMask)。
+ *   - tick(input)        : libretro の retro_run() 1回に対応
+ *   - framebuffer (RGBA) : video_refresh で渡す画面バッファに対応
+ *   - input は LEFT/RIGHT/ROT/SOFT/HARD のビットマスク = ゲームパッドのボタン
+ *   - 乱数は自前のシード付き(xorshift32)。C++でも同じ実装で再現可能。
+ *
+ * ルール（動画を1コマずつ確認して再現）:
+ *   - 盤面は「単色」。全ブロック+落下ピースが同じ色 this.color。
+ *   - 下から「ほぼ埋まった行(隙間1マス)」がせり上がる。隙間は±1で蛇行し、
+ *     上から開いた“蛇のような溝”になって壁を左右に分断する。
+ *   - 同色テトロミノを落とす。着地するとピースはバラけて各タイルが
+ *     真下へ落ちて詰まる（重力）。
+ *   - 横一列が全部埋まると消え、上の段が下に詰まる。消すと色が変わる。
+ *   - せり上がりで上端まで詰まると負け。
+ *
+ * grid[i] : 0=空 / 1=ブロックあり（色は盤面共通の this.color）
+ * ========================================================================== */
+
+const IN = { LEFT:1, RIGHT:2, ROT:4, SOFT:8, HARD:16 };
+
+// 7色（動画のスコアバー: 黄/橙/緑/水/紫/赤/青）。消すたびにこの順で循環。
+const COLORS = [
+  [0,0,0],          // 0 = 未使用
+  [245,196,40],     // 1 黄
+  [240,110,35],     // 2 橙
+  [70,195,70],      // 3 緑
+  [70,200,235],     // 4 水
+  [165,75,205],     // 5 紫
+  [225,55,55],      // 6 赤
+  [60,95,225],      // 7 青
+];
+
+// テトロミノ（4x4 内のセル座標）。回転は (x,y)->(3-y,x) で生成。
+const SHAPES = [
+  [[0,1],[1,1],[2,1],[3,1]], // I
+  [[1,0],[2,0],[1,1],[2,1]], // O
+  [[1,0],[0,1],[1,1],[2,1]], // T
+  [[1,0],[2,0],[0,1],[1,1]], // S
+  [[0,0],[1,0],[1,1],[2,1]], // Z
+  [[0,0],[0,1],[1,1],[2,1]], // J
+  [[2,0],[0,1],[1,1],[2,1]], // L
+];
+
+class BlockCore {
+  constructor() {
+    this.HEADER_H = 20;       // 上部スコアバーの高さ(px)
+    this.CELL = 12;           // タイル1枚の表示サイズ(px)
+    this.COLS = 15;           // 横のセル数
+    this.ROWS = 25;           // 縦のセル数（プレイ領域）
+    this.FB_W = this.COLS * this.CELL;                 // 180
+    this.FB_H = this.HEADER_H + this.ROWS * this.CELL;  // 320
+
+    this.framebuffer = new Uint8ClampedArray(this.FB_W * this.FB_H * 4);
+    this.grid = new Uint8Array(this.COLS * this.ROWS); // 0=空, 1=ブロック
+    this.incoming = new Uint8Array(this.COLS);         // 下からせり上がる次の行
+
+    // 調整パラメータ
+    this.FALL_FRAMES = 16;    // 通常落下: 何フレームで1セル落ちるか
+    this.SOFT_FRAMES = 2;     // ソフトドロップ
+    this.DAS = 8;             // 横移動の初動ディレイ(フレーム)
+    this.ARR = 3;             // 横移動のリピート間隔(フレーム)
+    this.RISE_RATE = 0.015;   // せり上がり(セル/フレーム)。1セル≒1.1秒
+    this.SEED_ROWS = 8;       // 開始時に下に積んでおく行数
+    this.CLEAR_FRAMES = 24;       // 消える列のフラッシュ時間(フレーム)
+    this.FALL_SPEED = 0.2;       // クリア時の落下速度(マス/フレーム、連続)
+    this.PIECE_FALL_SPEED = 0.2; // ピースが割れて落ちる速度(クリア時の約2倍)
+
+    this.reset(0x1234);
+  }
+
+  reset(seed) {
+    this.rngState = (seed >>> 0) || 1;
+    this.grid.fill(0);
+    this.scores = [0,0,0,0,0,0,0,0]; // index1..7 が各色の累計消去数
+    this.color = 3;                  // 開始色（緑）。消すたびに循環
+    this.gameOver = false;
+    this.dasTimer = 0;
+    this.fallTimer = 0;
+    this.riseProgress = 0;
+    this.gapCol = (this.COLS / 2) | 0; // 溝(隙間)の列。行ごとに±1で蛇行
+
+    // 消去アニメの状態機械: 'play' / 'clearing'(フラッシュ) / 'falling'(重力で落下)
+    this.phase = 'play';
+    this.animTimer = 0;
+    this.clearRow = -1;       // いま消そうとしている1行
+    this.cascadeCount = 0;    // 1回のカスケードで消した行数
+    this.falling = null;      // 落下中ブロック [{col, src, dst}]
+    this.fallDisp = 0;        // いま何マス落ちたか(連続値。毎フレーム少しずつ増える)
+    this.fallMax = 0;
+    this.fallSpeed = this.FALL_SPEED; // 今の落下フェーズの速度(クリア時/ピース割れで切替)
+
+    // 開始時の地形: 上から下へ SEED_ROWS 行ぶん積む（つながった蛇行の道つき）。
+    // 上→下の順で生成することで、続けて入ってくる incoming 行が一番下の道とつながる。
+    for (let r = this.ROWS - this.SEED_ROWS; r <= this.ROWS - 1; r++) {
+      this.fillRow(r, this.nextGapSpan());
+    }
+    this.makeIncoming();
+    this.spawnPiece();
+  }
+
+  // xorshift32（C++移植用に決定的）
+  rng() {
+    let x = this.rngState;
+    x ^= x << 13; x >>>= 0;
+    x ^= x >> 17;
+    x ^= x << 5;  x >>>= 0;
+    this.rngState = x;
+    return x;
+  }
+
+  // 溝(道)の次の行の空き範囲を返す。前の行の頭(gapCol)から新しい頭までを空けるので、
+  // 列がずれる行は横にも空きが続き、上下左右でつながった「道」になる(斜め切れを防ぐ)。
+  // 戻り値 {lo, hi} = この行で空ける列の範囲。
+  nextGapSpan() {
+    const prev = this.gapCol;
+    const s = this.rng() % 4;                 // 0:左へ / 3:右へ / 1,2:直進(=1/2で真っ直ぐ)
+    let next = prev + (s === 0 ? -1 : s === 3 ? 1 : 0);
+    if (next < 0) next = 0;
+    if (next >= this.COLS) next = this.COLS - 1;
+    this.gapCol = next;
+    return { lo: Math.min(prev, next), hi: Math.max(prev, next) };
+  }
+
+  fillRow(r, span) {
+    const base = r * this.COLS;
+    for (let c = 0; c < this.COLS; c++) this.grid[base + c] = (c >= span.lo && c <= span.hi) ? 0 : 1;
+  }
+
+  makeIncoming() {
+    const span = this.nextGapSpan();
+    for (let c = 0; c < this.COLS; c++) this.incoming[c] = (c >= span.lo && c <= span.hi) ? 0 : 1;
+  }
+
+  spawnPiece() {
+    const id = this.rng() % SHAPES.length;
+    this.piece = {
+      cells: SHAPES[id].map(c => c.slice()),
+      col: ((this.COLS - 4) / 2) | 0,
+      row: -2,
+    };
+    this.fallTimer = 0;
+    if (this.collides(this.piece.col, this.piece.row, this.piece.cells)) this.gameOver = true;
+  }
+
+  // ピースが (col,row) で衝突するか（grid + 壁/床）
+  collides(col, row, cells) {
+    for (const [cx, cy] of cells) {
+      const c = col + cx, r = row + cy;
+      if (c < 0 || c >= this.COLS) return true;   // 左右の壁
+      if (r >= this.ROWS) return true;            // 床
+      if (r >= 0 && this.grid[r * this.COLS + c] !== 0) return true;
+    }
+    return false;
+  }
+
+  rotateCells(cells) { return cells.map(([x, y]) => [3 - y, x]); }
+
+  // ピースをバラして各タイルを真下に落として詰める（重力）。負けなら gameOver
+  // 着地したピースをバラし、各タイルの落下先を計算（重力: 真下の空きを順に下りる）。
+  // {falling:[{col,src,dst}], maxDist} を返す。列が満杯で入れない場合は gameOver。
+  computePieceFall() {
+    const COLS = this.COLS, ROWS = this.ROWS, g = this.grid, p = this.piece;
+    const tiles = [];
+    for (const [cx, cy] of p.cells) {
+      const c = p.col + cx, r = p.row + cy;
+      if (c >= 0 && c < COLS) tiles.push({ c, r });
+    }
+    tiles.sort((a, b) => b.r - a.r); // 下のタイルから着地させる（同じ列で正しく積むため）
+    const falling = []; let maxDist = 0;
+    for (const t of tiles) {
+      let land = t.r; // 真下が空いている間だけ下りる（壁は貫通しない）
+      while (land + 1 < ROWS && (land + 1 < 0 || g[(land + 1) * COLS + t.c] === 0)) land++;
+      if (land < 0) { this.gameOver = true; return null; } // フィールドに入れない=負け
+      falling.push({ col: t.c, src: t.r, dst: land });
+      g[land * COLS + t.c] = 1;               // 後続タイルが上に積めるよう仮置き
+      if (land - t.r > maxDist) maxDist = land - t.r;
+    }
+    for (const f of falling) g[f.dst * COLS + f.col] = 0; // 仮置きを戻す（確定時に置く）
+    return { falling, maxDist };
+  }
+
+  // 全部埋まった横一列の行番号を集める
+  detectFullRows() {
+    const COLS = this.COLS, ROWS = this.ROWS, g = this.grid, rows = [];
+    for (let r = 0; r < ROWS; r++) {
+      let full = true;
+      for (let c = 0; c < COLS; c++) if (g[r * COLS + c] === 0) { full = false; break; }
+      if (full) rows.push(r);
+    }
+    return rows;
+  }
+
+  lockPiece() {
+    const res = this.computePieceFall();
+    if (this.gameOver) return;
+    this.piece = null;
+    this.cascadeCount = 0;       // このカスケードで消した行数（色変え・得点用）
+    if (res.maxDist === 0) {     // バラけても落ちない（その場で確定）→ すぐ消去判定へ
+      const g = this.grid, COLS = this.COLS;
+      for (const f of res.falling) g[f.dst * COLS + f.col] = 1;
+      this.beginClearStep();
+    } else {                     // 割れて下に落ちる動きをアニメ（クリア時と同じステップ落下）
+      this.falling = res.falling;
+      this.fallDisp = 0; this.fallMax = res.maxDist;
+      this.fallSpeed = this.PIECE_FALL_SPEED; // 割れたピースは速めに落とす
+      this.phase = 'falling';
+    }
+  }
+
+  // 満杯の行が残っていれば「一番下の1行」を選んでフラッシュ開始。無ければ確定。
+  beginClearStep() {
+    const full = this.detectFullRows();
+    if (full.length === 0) { this.finishCascade(); return; }
+    this.clearRow = full[full.length - 1]; // 一番下(最大index)の満杯行を1つ
+    this.phase = 'clearing';
+    this.animTimer = 0;
+    this.piece = null;
+  }
+
+  // フラッシュ終了 → その1行を消し、「消えた行より上」のブロックだけ重力で落とす準備。
+  // 消えた行より下の壁(溝も含む)は固定。上のブロックがその上面に積もる。
+  startFalling() {
+    const COLS = this.COLS, ROWS = this.ROWS, g = this.grid, cr = this.clearRow;
+    g.fill(0, cr * COLS, cr * COLS + COLS); // 消す1行を空に
+    this.cascadeCount++;
+
+    const falling = [];
+    let maxDist = 0;
+    for (let c = 0; c < COLS; c++) {
+      // この列の固定壁(cr より下)の一番上 = 着地の土台。無ければ床(ROWS)。
+      let base = ROWS;
+      for (let r = cr + 1; r < ROWS; r++) { if (g[r * COLS + c] !== 0) { base = r; break; } }
+      // cr より上のブロックを、土台の上(base-1)から詰めていく
+      let wp = base - 1;
+      for (let r = cr - 1; r >= 0; r--) {
+        if (g[r * COLS + c] !== 0) {
+          if (wp !== r) {
+            falling.push({ col: c, src: r, dst: wp });
+            g[r * COLS + c] = 0;
+            if (wp - r > maxDist) maxDist = wp - r;
+          }
+          wp--;
+        }
+      }
+    }
+    this.falling = falling;
+    this.fallDisp = 0; this.fallMax = maxDist;
+    this.fallSpeed = this.FALL_SPEED;        // クリア時の落下速度
+    this.phase = 'falling';
+    if (maxDist === 0) this.commitFalling(); // 落ちるものが無ければ即確定→次の行へ
+  }
+
+  // 落下確定 → ブロックを1行下に置き、まだ満杯の行があれば次のステップへ
+  commitFalling() {
+    const COLS = this.COLS, g = this.grid;
+    if (this.falling) for (const f of this.falling) g[f.dst * COLS + f.col] = 1;
+    this.falling = null;
+    this.beginClearStep();       // 再判定: まだ満杯行があれば次の1行を消す（繰り返し）
+  }
+
+  // カスケード完了 → 消した分の得点と色変え、次のピースへ
+  finishCascade() {
+    if (this.cascadeCount > 0) {
+      this.scores[this.color] += this.cascadeCount * this.COLS;
+      this.color = (this.color % 7) + 1;           // 消すと色が変わる
+    }
+    this.phase = 'play';
+    this.spawnPiece();
+  }
+
+  // 下から1行せり上げる（全体を1行上へ、下端に incoming を入れる）
+  riseOneRow() {
+    const COLS = this.COLS, g = this.grid;
+    for (let c = 0; c < COLS; c++) if (g[c] !== 0) { this.gameOver = true; return; } // 上端あふれ=負け
+    g.copyWithin(0, COLS);                       // 各行を1つ上へ
+    const base = (this.ROWS - 1) * COLS;
+    for (let c = 0; c < COLS; c++) g[base + c] = this.incoming[c];
+    this.makeIncoming();
+    // 落下中のピースもせり上がりに合わせて押し上げる
+    if (this.piece) { this.piece.row--; while (this.collides(this.piece.col, this.piece.row, this.piece.cells)) this.piece.row--; }
+  }
+
+  tick(input) {
+    if (this.gameOver) return;
+
+    // --- 消去アニメ中は通常操作・せり上がりを止めてアニメだけ進める ---
+    if (this.phase === 'clearing') {
+      if (++this.animTimer >= this.CLEAR_FRAMES) this.startFalling();
+      return;
+    }
+    if (this.phase === 'falling') {
+      this.fallDisp += this.fallSpeed;             // 毎フレーム少しずつ＝連続でなめらかに落下
+      if (this.fallDisp >= this.fallMax) this.commitFalling();
+      return;
+    }
+
+    const p = this.piece;
+
+    // --- 下からのせり上がり ---
+    this.riseProgress += this.RISE_RATE;
+    while (this.riseProgress >= 1) {
+      this.riseProgress -= 1;
+      this.riseOneRow();
+      if (this.gameOver) return;
+    }
+
+    // --- 横移動 (DAS/ARR) ---
+    const dir = (input & IN.LEFT) ? -1 : (input & IN.RIGHT) ? 1 : 0;
+    if (dir === 0) {
+      this.dasTimer = 0;
+    } else {
+      const step = (this.dasTimer === 0) ||
+                   (this.dasTimer >= this.DAS && (this.dasTimer - this.DAS) % this.ARR === 0);
+      this.dasTimer++;
+      if (step && !this.collides(p.col + dir, p.row, p.cells)) p.col += dir;
+    }
+
+    // --- 回転（押した瞬間。frontend がエッジ化して渡す） ---
+    if (input & IN.ROT) {
+      const rc = this.rotateCells(p.cells);
+      for (const kick of [0, -1, 1, -2, 2]) {
+        if (!this.collides(p.col + kick, p.row, rc)) { p.cells = rc; p.col += kick; break; }
+      }
+    }
+
+    // --- ハードドロップ ---
+    if (input & IN.HARD) {
+      while (!this.collides(p.col, p.row + 1, p.cells)) p.row++;
+      this.lockPiece();
+      return;
+    }
+
+    // --- 重力 / ソフトドロップ ---
+    this.fallTimer++;
+    const interval = (input & IN.SOFT) ? this.SOFT_FRAMES : this.FALL_FRAMES;
+    if (this.fallTimer >= interval) {
+      this.fallTimer = 0;
+      if (this.collides(p.col, p.row + 1, p.cells)) this.lockPiece();
+      else p.row++;
+    }
+  }
+
+  // ---- 描画 ----
+  px(x, y, r, g, b) {
+    if (x < 0 || x >= this.FB_W || y < 0 || y >= this.FB_H) return;
+    const o = (y * this.FB_W + x) * 4;
+    this.framebuffer[o] = r; this.framebuffer[o+1] = g; this.framebuffer[o+2] = b; this.framebuffer[o+3] = 255;
+  }
+
+  // 1タイルを面取り(3D風) + 右下1pxの隙間(グリッド線)で描く。col=[r,g,b]
+  fillCell(sx, sy, col) {
+    const S = this.CELL, HH = this.HEADER_H;
+    for (let dy = 0; dy < S; dy++) {
+      const y = sy + dy;
+      if (y < HH || y >= this.FB_H) continue;       // ヘッダー領域・画面外は描かない
+      if (dy === S - 1) continue;                   // 下端1pxは隙間
+      for (let dx = 0; dx < S; dx++) {
+        if (dx === S - 1) continue;                 // 右端1pxは隙間
+        let r = col[0], g = col[1], b = col[2];
+        if (dy === 0 || dx === 0)              { r += 45; g += 45; b += 45; } // 左上ハイライト
+        else if (dy === S - 2 || dx === S - 2) { r -= 45; g -= 45; b -= 45; } // 右下シャドウ
+        this.px(sx + dx, y, r, g, b);
+      }
+    }
+  }
+
+  render() {
+    const fb = this.framebuffer, W = this.FB_W, H = this.FB_H, HH = this.HEADER_H, S = this.CELL;
+    // 背景
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const o = (y * W + x) * 4; fb[o]=16; fb[o+1]=20; fb[o+2]=44; fb[o+3]=255;
+    }
+    // ヘッダー（青帯 + 7色スウォッチ）。数字は frontend(DOM) で表示。
+    for (let y = 0; y < HH; y++) for (let x = 0; x < W; x++) { const o=(y*W+x)*4; fb[o]=70; fb[o+1]=110; fb[o+2]=210; }
+    const sw = 14, gap = (W - 7 * sw) / 8;
+    for (let ci = 1; ci <= 7; ci++) {
+      const sx = Math.round(gap * ci + sw * (ci - 1)), col = COLORS[ci];
+      for (let y = 3; y < 3 + sw; y++) for (let x = sx; x < sx + sw && x < W; x++) this.px(x, y, col[0], col[1], col[2]);
+    }
+
+    const col = COLORS[this.color];
+    // 消去中フラッシュ用の白（点滅）。今まさに消える1行を白く点滅させる。
+    const flashOn = this.phase === 'clearing' && (Math.floor(this.animTimer / 4) % 2 === 0);
+
+    // 盤面。せり上がり分だけ上にずらして滑らかに。
+    const off = Math.floor(this.riseProgress * S);
+    for (let r = 0; r <= this.ROWS; r++) {
+      const baseY = HH + r * S - off;
+      for (let c = 0; c < this.COLS; c++) {
+        const filled = (r < this.ROWS) ? this.grid[r * this.COLS + c] : this.incoming[c];
+        if (!filled) continue;
+        const isFlash = flashOn && r === this.clearRow;
+        this.fillCell(c * S, baseY, isFlash ? [255, 255, 255] : col);
+      }
+    }
+
+    // 落下アニメ中のブロック（重力で dst まで落ちる途中）
+    if (this.phase === 'falling' && this.falling) {
+      for (const f of this.falling) {
+        const r = Math.min(f.dst, f.src + this.fallDisp);
+        this.fillCell(f.col * S, HH + Math.round(r * S) - off, col); // ピクセルに丸めてなめらかに
+      }
+    }
+
+    // 落下中のピース（同じ色）
+    if (this.phase === 'play' && this.piece && !this.gameOver) {
+      const p = this.piece;
+      for (const [cx, cy] of p.cells) this.fillCell((p.col + cx) * S, HH + (p.row + cy) * S - off, col);
+    }
+  }
+}
+
+/* ============================================================================
+ * フロントエンド（DOM/Canvas/入力）— libretro の「フロントエンド」側
+ * ========================================================================== */
+const core = new BlockCore();
+const canvas = document.getElementById("game");
+canvas.width = core.FB_W; canvas.height = core.FB_H;
+const SCALE = 2;
+canvas.style.width = (core.FB_W * SCALE) + "px";
+canvas.style.height = (core.FB_H * SCALE) + "px";
+const ctx = canvas.getContext("2d");
+const imgData = ctx.createImageData(core.FB_W, core.FB_H);
+
+// スコアバー(DOM)
+const scorebar = document.getElementById("scorebar");
+const chipEls = [];
+for (let c = 1; c <= 7; c++) {
+  const chip = document.createElement("div"); chip.className = "chip";
+  const sw = document.createElement("div"); sw.className = "sw";
+  sw.style.background = `rgb(${COLORS[c][0]},${COLORS[c][1]},${COLORS[c][2]})`;
+  const num = document.createElement("span"); num.textContent = "0";
+  chip.appendChild(sw); chip.appendChild(num);
+  scorebar.appendChild(chip);
+  chipEls.push(num);
+}
+
+// 入力（押しっぱなしの集合 + 押した瞬間のエッジ）
+const held = new Set();
+const KEYMAP = { ArrowLeft:"L", ArrowRight:"R", ArrowUp:"ROT", ArrowDown:"SOFT", " ":"HARD" };
+let edgeRot = false, edgeHard = false;
+addEventListener("keydown", e => {
+  const k = KEYMAP[e.key]; if (!k) return; e.preventDefault();
+  if (!held.has(k)) { if (k === "ROT") edgeRot = true; if (k === "HARD") edgeHard = true; }
+  held.add(k);
+});
+addEventListener("keyup", e => { const k = KEYMAP[e.key]; if (k) held.delete(k); });
+
+function buildInput() {
+  let m = 0;
+  if (held.has("L")) m |= IN.LEFT;
+  if (held.has("R")) m |= IN.RIGHT;
+  if (held.has("SOFT")) m |= IN.SOFT;
+  if (edgeRot) m |= IN.ROT;
+  if (edgeHard) m |= IN.HARD;
+  edgeRot = false; edgeHard = false;
+  return m;
+}
+
+// 60Hz 固定ステップ
+let acc = 0, last = performance.now();
+const STEP_MS = 1000 / 60;
+function frame(now) {
+  acc += now - last; last = now;
+  if (acc > 200) acc = 200;
+  while (acc >= STEP_MS) { core.tick(buildInput()); acc -= STEP_MS; }
+  core.render();
+  imgData.data.set(core.framebuffer);
+  ctx.putImageData(imgData, 0, 0);
+  for (let c = 1; c <= 7; c++) chipEls[c-1].textContent = core.scores[c];
+  document.getElementById("over").style.display = core.gameOver ? "flex" : "none";
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+document.getElementById("restart").addEventListener("click", () => core.reset((core.rngState ^ 0x9e3779b9) >>> 0));
+</script>
+</body>
+</html>
