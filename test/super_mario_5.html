@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Super Mario - Web Emulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <style>
+    /* ========== 共通 ========== */
+    html { box-sizing: border-box; }
+    *, *:before, *:after { box-sizing: inherit; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+
+    /* ========== ゲーム画面 ========== */
+    /* 画面いっぱいに置き、縦でも横でもアスペクト比を保ったまま最大表示する */
+    #stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      aspect-ratio: 256 / 240;
+      box-sizing: content-box;
+      border: 3px solid #d4af37;
+      border-radius: 6px;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      background-color: #000;
+    }
+
+    /* ========== バーチャルコントローラー（オーバーレイ） ========== */
+    /* fixed配置で常に画面の隅に出すので、縦・横どちらの向きでも崩れない。
+       safe-area-inset でiPhoneのノッチ／ホームバーを避ける。 */
+    .ctrl {
+      position: fixed;
+      z-index: 50;
+      display: flex;
+      touch-action: none;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.85);
+      font-weight: bold;
+      background-color: rgba(40,40,40,0.55);
+      border: 2px solid rgba(255,255,255,0.25);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: background-color .05s, transform .05s;
+    }
+    .btn.active { background-color: rgba(214,48,76,0.85); transform: scale(0.94); }
+
+    /* 十字キー（左下） */
+    #dpad {
+      left: max(12px, env(safe-area-inset-left));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      width: clamp(132px, 34vmin, 200px);
+      height: clamp(132px, 34vmin, 200px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+    }
+    #dpad .btn {
+      background-color: rgba(30,30,30,0.6);
+      border-radius: 8px;
+    }
+    .d-up    { grid-area: 1 / 2 / 2 / 3; border-radius: 8px 8px 0 0 !important; }
+    .d-left  { grid-area: 2 / 1 / 3 / 2; border-radius: 8px 0 0 8px !important; }
+    .d-right { grid-area: 2 / 3 / 3 / 4; border-radius: 0 8px 8px 0 !important; }
+    .d-down  { grid-area: 3 / 2 / 4 / 3; border-radius: 0 0 8px 8px !important; }
+    .d-mid   { grid-area: 2 / 2 / 3 / 3; background-color: rgba(30,30,30,0.6); border: 2px solid rgba(255,255,255,0.15); }
+    .d-up:after    { content: "▲"; font-size: 60%; }
+    .d-down:after  { content: "▼"; font-size: 60%; }
+    .d-left:after  { content: "◀"; font-size: 60%; }
+    .d-right:after { content: "▶"; font-size: 60%; }
+
+    /* A / B ボタン（右下） */
+    #ab {
+      right: max(12px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      align-items: flex-end;
+      gap: clamp(14px, 4vmin, 28px);
+    }
+    #ab .btn {
+      width: clamp(58px, 15vmin, 90px);
+      height: clamp(58px, 15vmin, 90px);
+      border-radius: 50%;
+      font-size: clamp(18px, 5vmin, 28px);
+      background-color: rgba(123,16,34,0.6);
+    }
+    #ab .btn-b { margin-bottom: clamp(28px, 8vmin, 52px); } /* Bを少し下げて指を置きやすく */
+
+    /* START / SELECT（上中央） */
+    #se {
+      top: max(10px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      gap: 16px;
+    }
+    #se .btn {
+      height: clamp(26px, 5vmin, 34px);
+      padding: 0 14px;
+      border-radius: 16px;
+      font-size: clamp(10px, 2.4vmin, 13px);
+      letter-spacing: 1px;
+    }
+
+    /* ========== タイトル兼ロード画面 ========== */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.96);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      text-align: center;
+    }
+    #overlay h2 { margin: 0 0 24px; letter-spacing: 2px; }
+    #start-btn {
+      padding: 15px 34px;
+      font-size: 18px;
+      background: #d4af37;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    #status { margin-top: 22px; font-size: 12px; color: #bbb; max-width: 80%; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <div id="stage">
+    <canvas width="256" height="240"></canvas>
+  </div>
+
+  <!-- バーチャルコントローラー。data-input は worker のキー入力インデックス
+       0:UP 1:DOWN 2:LEFT 3:RIGHT 4:B 5:A 6:START 7:SELECT -->
+  <div id="dpad" class="ctrl">
+    <div class="btn d-up"    data-input="0"></div>
+    <div class="btn d-left"  data-input="2"></div>
+    <div class="d-mid"></div>
+    <div class="btn d-right" data-input="3"></div>
+    <div class="btn d-down"  data-input="1"></div>
+  </div>
+
+  <div id="ab" class="ctrl">
+    <div class="btn btn-b" data-input="4">B</div>
+    <div class="btn btn-a" data-input="5">A</div>
+  </div>
+
+  <div id="se" class="ctrl">
+    <div class="btn" data-input="7">SELECT</div>
+    <div class="btn" data-input="6">START</div>
+  </div>
+
+  <div id="overlay">
+    <h2>SUPER MARIO BROS.</h2>
+    <button id="start-btn">GAME START</button>
+    <div id="status">タップして起動します（PCはキーボードでも操作可）</div>
+  </div>
+
+  <!-- 必要なのはエミュレータ本体の worker のみ。
+       worker が binjnes(-simd).js / .wasm を読み込み、audioWorklet.js は下で登録する。
+       Vue / idb / sha1 / demo.js は読み込まない。 -->
+  <script>
+  "use strict";
+  (function () {
+    const SCREEN_WIDTH = 256;
+    const SCREEN_HEIGHT = 240;
+    const AUDIO_FRAMES = 4096;
+    const ROM_URL = "./super_mario.nes";
+
+    const worker = new Worker("./worker.js");
+    const canvasEl = document.querySelector("canvas");
+    const overlay = document.getElementById("overlay");
+    const startBtn = document.getElementById("start-btn");
+    const statusEl = document.getElementById("status");
+
+    let emulator = null;
+    let audioCtx = null;
+    let audioModuleAdded = false;
+
+    const setStatus = (msg) => { statusEl.textContent = msg; };
+
+    /* ---------- 映像（WebGL2、demo.js の WebGLRenderer を流用） ---------- */
+    class WebGLRenderer {
+      constructor(el) {
+        const gl = this.gl = el.getContext("webgl2", { preserveDrawingBuffer: true });
+        if (gl === null) throw new Error("unable to create webgl context");
+
+        const w = SCREEN_WIDTH / 256;
+        const h = SCREEN_HEIGHT / 256;
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+          -1, -1, 0, h,
+          +1, -1, w, h,
+          -1, +1, 0, 0,
+          +1, +1, w, 0,
+        ]), gl.STATIC_DRAW);
+
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16UI, 256, 256, 0, gl.RED_INTEGER, gl.UNSIGNED_SHORT, null);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+        const compileShader = (type, source) => {
+          const shader = gl.createShader(type);
+          gl.shaderSource(shader, source);
+          gl.compileShader(shader);
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+            throw new Error(`compileShader failed: ${gl.getShaderInfoLog(shader)}`);
+          return shader;
+        };
+
+        const vertexShader = compileShader(gl.VERTEX_SHADER,
+          `#version 300 es
+           in vec2 aPos; in vec2 aTexCoord; out vec2 vTexCoord;
+           void main(void) { gl_Position = vec4(aPos, 0.0, 1.0); vTexCoord = aTexCoord; }`);
+        const fragmentShader = compileShader(gl.FRAGMENT_SHADER,
+          `#version 300 es
+           precision highp float;
+           in vec2 vTexCoord; out vec4 outColor;
+           uniform highp usampler2D uSampler;
+           uniform uint uPalette[512];
+           void main(void) {
+             uint color = uPalette[texture(uSampler, vTexCoord).r & 511u];
+             outColor = vec4(
+               float((color >> 0) & 0xffu) / 255.5f,
+               float((color >> 8) & 0xffu) / 255.5f,
+               float((color >> 16) & 0xffu) / 255.5f,
+               1.0f);
+           }`);
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+          throw new Error(`program link failed: ${gl.getProgramInfoLog(program)}`);
+        gl.useProgram(program);
+
+        const aPos = gl.getAttribLocation(program, "aPos");
+        const aTexCoord = gl.getAttribLocation(program, "aTexCoord");
+        const uPalette = gl.getUniformLocation(program, "uPalette");
+        const uSampler = gl.getUniformLocation(program, "uSampler");
+
+        gl.enableVertexAttribArray(aPos);
+        gl.enableVertexAttribArray(aTexCoord);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, gl.FALSE, 16, 0);
+        gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, gl.FALSE, 16, 8);
+        gl.uniform1i(uSampler, 0);
+        gl.uniform1uiv(uPalette, new Uint32Array(512));
+        this.uPalette = uPalette;
+      }
+      setPalette(palette) { this.gl.uniform1uiv(this.uPalette, palette); }
+      renderTexture() {
+        this.gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      }
+      uploadTexture(buffer) {
+        this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
+          this.gl.RED_INTEGER, this.gl.UNSIGNED_SHORT, buffer);
+      }
+    }
+
+    /* ---------- 音声 ---------- */
+    class GameAudio {
+      constructor(ctx) {
+        this.ctx = ctx;
+        this.workletNode = new AudioWorkletNode(ctx, "processor", {
+          numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [1],
+        });
+        this.gainNode = ctx.createGain();
+        this.workletNode.connect(this.gainNode);
+        this.gainNode.connect(ctx.destination);
+        this.gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+      }
+    }
+
+    /* ---------- エミュレータ（メインスレッド側の最小ドライバ） ---------- */
+    class Emulator {
+      constructor(romBuffer, ctx) {
+        this.audio = new GameAudio(ctx);
+        this.renderer = new WebGLRenderer(canvasEl);
+        this.boundMsg = this.onWorkerMessage.bind(this);
+        worker.addEventListener("message", this.boundMsg);
+
+        const transfer = [romBuffer, this.audio.workletNode.port];
+        worker.postMessage({
+          msg: "start",
+          romBuffer,
+          prgRamBuffer: null,
+          AUDIO_FRAMES,
+          sampleRate: ctx.sampleRate,
+          inputTypes: ["joypad", "joypad"],
+          port: this.audio.workletNode.port,
+        }, transfer);
+
+        // worker 内で requestAnimationFrame ループを回す（worker.js の仕様）
+        worker.postMessage({ msg: "requestAnimationFrame" });
+      }
+
+      onWorkerMessage(e) {
+        switch (e.data.msg) {
+          case "setPalette":      this.renderer.setPalette(e.data.buffer); break;
+          case "uploadTexture":   this.renderer.uploadTexture(e.data.buffer); break;
+          case "runUntil:result": this.renderer.renderTexture(); break;
+        }
+      }
+    }
+
+    /* ---------- 入力（worker への送信） ---------- */
+    const sendKey = (index, keyDown) => {
+      if (!emulator) return;
+      worker.postMessage({ msg: "key", index, keyDown });
+    };
+
+    /* キーボード操作（PC用）
+       0:UP 1:DOWN 2:LEFT 3:RIGHT 4:B 5:A 6:START 7:SELECT */
+    const KEYMAP = {
+      ArrowUp: 0, ArrowDown: 1, ArrowLeft: 2, ArrowRight: 3,
+      KeyW: 0, KeyS: 1, KeyA: 2, KeyD: 3,
+      KeyZ: 4, KeyX: 5,           // B / A
+      KeyK: 4, KeyL: 5,           // B / A（予備）
+      Enter: 6, Space: 6,         // START
+      ShiftLeft: 7, ShiftRight: 7, Tab: 7, // SELECT
+    };
+    const heldKeys = Object.create(null);
+
+    window.addEventListener("keydown", (e) => {
+      const index = KEYMAP[e.code];
+      if (index === undefined) return;
+      e.preventDefault();
+      if (heldKeys[e.code]) return; // オートリピート抑止
+      heldKeys[e.code] = true;
+      sendKey(index, true);
+    });
+    window.addEventListener("keyup", (e) => {
+      const index = KEYMAP[e.code];
+      if (index === undefined) return;
+      e.preventDefault();
+      heldKeys[e.code] = false;
+      sendKey(index, false);
+    });
+
+    /* タッチ操作（スマホ用）。各ボタンが個別要素なので複数同時押し可。 */
+    document.querySelectorAll("[data-input]").forEach((btn) => {
+      const index = parseInt(btn.getAttribute("data-input"), 10);
+      const press = (e) => { e.preventDefault(); btn.classList.add("active"); sendKey(index, true); };
+      const release = (e) => { e.preventDefault(); btn.classList.remove("active"); sendKey(index, false); };
+
+      btn.addEventListener("touchstart", press, { passive: false });
+      btn.addEventListener("touchend", release, { passive: false });
+      btn.addEventListener("touchcancel", release, { passive: false });
+      // PCでのマウス確認用
+      btn.addEventListener("mousedown", press);
+      btn.addEventListener("mouseup", release);
+      btn.addEventListener("mouseleave", (e) => {
+        if (btn.classList.contains("active")) release(e);
+      });
+    });
+
+    /* ---------- 起動（ユーザー操作内で AudioContext を有効化） ---------- */
+    startBtn.addEventListener("click", async () => {
+      try {
+        startBtn.disabled = true;
+        setStatus("起動中...");
+
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        await audioCtx.resume();
+        if (!audioModuleAdded) {
+          await audioCtx.audioWorklet.addModule("./audioWorklet.js");
+          audioModuleAdded = true;
+        }
+
+        setStatus("ROMを読み込み中...");
+        const resp = await fetch(ROM_URL);
+        if (!resp.ok) throw new Error(`ROM取得失敗: ${resp.status}`);
+        const romBuffer = await resp.arrayBuffer();
+
+        emulator = new Emulator(romBuffer, audioCtx);
+        overlay.style.display = "none";
+      } catch (err) {
+        startBtn.disabled = false;
+        setStatus("エラー: " + (err && err.message ? err.message : err));
+        console.error(err);
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
