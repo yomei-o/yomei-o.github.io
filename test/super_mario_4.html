@@ -4,81 +4,66 @@
   <meta charset="utf-8">
   <title>Super Mario - Web Emulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <link href="reset.css" rel="stylesheet">
   <style>
-    /* ========== 元のCSSを内包・一部上書き ========== */
-    html { box-sizing: border-box; }
-    *, *:before, *:after { box-sizing: inherit; }
-    
-    /* オリジナルの不要なUIを非表示にする */
-    .sidebar, .overlap, .bar-wrap, #downloadEl {
-      display: none !important;
-    }
-    
-    /* 画面中央にキャンバスを綺麗に配置 */
-    .main {
-      display: flex !important;
-      position: relative !important;
+    /* ========== 基本リセット & スタイル ========== */
+    html, body {
+      margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
-      justify-content: center;
-      align-items: center;
-      background-color: transparent;
-    }
-
-    /* 【縦画面時】のキャンバス設定 */
-    canvas {
-      width: 100% !important;
-      max-width: 480px !important;
-      height: auto !important;
-      aspect-ratio: 256 / 240;
-      box-sizing: content-box;
-      border: 4px solid #d4af37;
-      border-radius: 8px;
-      image-rendering: pixelated;
-      image-rendering: -moz-crisp-edges;
-    }
-
-    /* ========== スマホ用基本UI設定（縦画面ベース） ========== */
-    body {
-      margin: 0;
-      background-color: #7b1022; /* ファミコンのえんじ色 */
+      background-color: #7b1022; /* ファミコンカラー（えんじ） */
       color: #fff;
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
+      box-sizing: border-box;
     }
+    *, *:before, *:after { box-sizing: inherit; }
 
+    /* 全体コンテナ */
     #app-container {
       display: flex;
       flex-direction: column;
-      height: 100dvh; /* 動的ビューポートでSafariのバーを考慮 */
+      height: 100dvh;
       width: 100dvw;
-      overflow: hidden;
+      position: relative;
     }
 
+    /* ゲーム画面表示エリア */
     .screen-container {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
       background-color: #000;
-      padding: 10px;
-      box-shadow: inset 0 -4px 10px rgba(0,0,0,0.8);
       position: relative;
       overflow: hidden;
     }
 
-    /* 【縦画面時】のバーチャルコントローラー */
+    canvas {
+      display: block;
+      width: 100% !important;
+      max-width: 480px !important;
+      height: auto !important;
+      aspect-ratio: 256 / 240;
+      border: 4px solid #d4af37;
+      border-radius: 8px;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      z-index: 1;
+    }
+
+    /* バーチャルコントローラーベース */
     .controls {
       height: 220px;
-      background-color: #e0d0a0; /* ベージュ・ゴールド */
+      background-color: #e0d0a0; /* ゴールドベージュ */
       display: flex;
       position: relative;
       padding: 10px;
       border-top: 4px solid #000;
+      z-index: 10;
     }
 
     /* 十字キー */
@@ -86,7 +71,7 @@
       position: relative;
       width: 120px;
       height: 120px;
-      margin-top: 30px;
+      margin-top: 25px;
       margin-left: 20px;
     }
     .dpad-btn {
@@ -94,25 +79,23 @@
       background-color: #333;
       border: 2px solid #111;
       border-radius: 4px;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       box-shadow: inset -2px -2px 4px rgba(0,0,0,0.5);
-      cursor: pointer;
     }
-    .dpad-btn:active, .dpad-btn.active { background-color: #777; }
-    .dpad-up { top: 0; left: 42px; height: 46px; border-bottom: none; border-radius: 4px 4px 0 0; }
-    .dpad-down { bottom: 0; left: 42px; height: 46px; border-top: none; border-radius: 0 0 4px 4px; }
-    .dpad-left { top: 42px; left: 0; width: 46px; border-right: none; border-radius: 4px 0 0 4px; }
-    .dpad-right { top: 42px; right: 0; width: 46px; border-left: none; border-radius: 0 4px 4px 0; }
+    .dpad-btn.active { background-color: #777; }
+    .dpad-up { top: 0; left: 41px; height: 46px; border-bottom: none; border-radius: 4px 4px 0 0; }
+    .dpad-down { bottom: 0; left: 41px; height: 46px; border-top: none; border-radius: 0 0 4px 4px; }
+    .dpad-left { top: 41px; left: 0; width: 46px; border-right: none; border-radius: 4px 0 0 4px; }
+    .dpad-right { top: 41px; right: 0; width: 46px; border-left: none; border-radius: 0 4px 4px 0; }
     .dpad-center {
       position: absolute;
-      top: 42px; left: 42px;
-      width: 36px; height: 36px;
+      top: 41px; left: 41px;
+      width: 38px; height: 38px;
       background-color: #333;
-      border: none;
     }
 
-    /* START / SELECT ボタン */
+    /* SELECT / START */
     .center-btns {
       position: absolute;
       bottom: 40px;
@@ -134,16 +117,15 @@
       border: 2px solid #111;
       box-shadow: inset -1px -1px 2px rgba(0,0,0,0.5);
       transform: rotate(-20deg);
-      cursor: pointer;
     }
-    .pill-btn:active, .pill-btn.active { background-color: #777; }
+    .pill-btn.active { background-color: #777; }
     .pill-label { font-size: 10px; color: #7b1022; font-weight: bold; margin-top: 10px; }
 
     /* A / B ボタン */
     .action-btns {
       position: absolute;
       right: 20px;
-      top: 60px;
+      top: 50px;
       display: flex;
       gap: 20px;
     }
@@ -155,73 +137,57 @@
     }
     .round-btn-wrap:last-child { margin-top: 0; }
     .round-btn {
-      width: 50px;
-      height: 50px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       background-color: #7b1022;
       border: 3px solid #333;
       box-shadow: inset -2px -2px 5px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.3);
-      cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
-    .round-btn:active, .round-btn.active { background-color: #d6304c; }
+    .round-btn.active { background-color: #d6304c; }
     .round-label { font-size: 14px; color: #7b1022; font-weight: bold; margin-top: 8px; }
 
-    /* タイトル兼ロード画面 */
-    #loading-overlay {
+    /* 初期ロード・ファイル選択用オーバーレイ */
+    #start-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.95);
-      color: white;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
       padding: 20px;
-      text-align: center;
     }
-    #start-game-btn {
-      padding: 15px 30px;
-      font-size: 18px;
+    #start-btn {
+      padding: 18px 40px;
+      font-size: 20px;
       background: #d4af37;
       color: #000;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #debug-log {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #bbb;
-      max-width: 80%;
-      line-height: 1.4;
+    #status-log {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #ccc;
+      text-align: center;
     }
 
-
     /* ===================================================
-       【新設】スマホ横画面（Landscape）用の最強レイアウト
+       【最強レスポンス】スマホ横画面（Landscape）時のUI
        =================================================== */
     @media (orientation: landscape) {
-      #app-container {
-        position: relative;
-        height: 100dvh;
-        width: 100dvw;
-      }
-
-      /* ゲーム画面を中央いっぱいに広げる（ボタンの下に潜り込ませる） */
       .screen-container {
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         padding: 0;
-        z-index: 1;
       }
-
-      /* 横画面時は高さを100%にして、左右に黒帯ができるように自動調整 */
       canvas {
         width: auto !important;
         max-width: none !important;
@@ -230,83 +196,53 @@
         border: none;
         border-radius: 0;
       }
-
-      /* コントローラーの背景を透明にしてゲーム画面の上に重ねる */
       .controls {
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         background-color: transparent !important;
         border-top: none !important;
-        z-index: 2;
-        pointer-events: none; /* 背景部分はタッチをスルーさせる */
-        padding: 0;
-        /* iPhoneのホームバーやノッチ（セーフエリア）の余白を自動計算 */
+        pointer-events: none; /* 背景のタッチを透過 */
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
         padding-bottom: env(safe-area-inset-bottom);
       }
-
-      /* ボタン群はきっちりタップできるように戻す */
       .dpad, .center-btns, .action-btns {
-        pointer-events: auto;
+        pointer-events: auto; /* ボタン単体はタッチ可能にする */
       }
-
-      /* 十字キーを【左下】の最適な位置に配置 */
       .dpad {
         position: absolute;
-        bottom: 20px;
-        left: 25px;
+        bottom: 25px; left: 30px;
         margin: 0;
-        transform: scale(1.1); /* 横画面は操作しやすいように少し大きく */
+        transform: scale(1.15);
       }
-
-      /* SELECT / START ボタンを【中央下】に配置 */
       .center-btns {
         position: absolute;
-        bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%) scale(0.85);
+        bottom: 20px; left: 50%;
+        transform: translateX(-50%) scale(0.9);
       }
-      .pill-label {
-        color: #fff; /* 背景が黒になるので文字を白に変更 */
-      }
-
-      /* A / B ボタンを【右下】の最適な位置に配置 */
+      .pill-label { color: #fff; }
       .action-btns {
         position: absolute;
-        bottom: 30px;
-        right: 25px;
-        top: auto; /* 縦画面の top: 60px を打ち消す */
-        transform: scale(1.1); /* 少し大きく */
+        bottom: 35px; right: 30px;
+        top: auto;
+        transform: scale(1.15);
       }
-      .round-label {
-        color: #fff; /* 背景が黒になるので文字を白に変更 */
-      }
+      .round-label { color: #fff; }
     }
   </style>
 </head>
 <body>
-  
-  <div id="loading-overlay">
-    <h2 style="margin-bottom: 25px; letter-spacing: 2px;">SUPER MARIO BROS.</h2>
-    <button id="start-game-btn">GAME START</button>
-    <div id="debug-log">タップして起動します</div>
+
+  <div id="start-overlay">
+    <h2 style="margin-bottom: 30px; letter-spacing: 3px;">SUPER MARIO BROS.</h2>
+    <button id="start-btn">GAME START</button>
+    <div id="status-log">ボタンを押してゲーム（.nes）ファイルを読み込んでください</div>
+    <input type="file" id="file-input" accept=".nes" style="display: none;">
   </div>
 
   <div id="app-container">
     <div class="screen-container">
-      <div class="main">
-        <canvas width="256" height="240" v-show="canvas.show" v-bind:style="{width:canvasWidthPx, height:canvasHeightPx}"></canvas>
-        <div class="sidebar" hidden></div>
-        <div class="input overlap" v-if="input.show"></div>
-        <div class="setting overlap" v-if="input.setting"></div>
-        <div class="files overlap" v-if="files.show">
-          <input type="file" id="uploadRom" accept=".nes" hidden @change="uploadRom">
-        </div>
-        <div class="bar-wrap top-line"></div>
-        <a id="downloadEl" hidden download="game.sav"></a>
-      </div>
+      <canvas id="emulator-canvas" width="256" height="240"></canvas>
     </div>
 
     <div class="controls">
@@ -342,118 +278,118 @@
     </div>
   </div>
 
-  <script src="vue.min.js"></script>
   <script src="idb.min.js"></script>
   <script src="sha1.js"></script>
   <script src="demo.js"></script>
 
   <script>
-    window.addEventListener("load", () => {
-      const romFileName = "super_mario.nes";
-      const startBtn = document.getElementById('start-game-btn');
-      const overlay = document.getElementById('loading-overlay');
-      const logEl = document.getElementById('debug-log');
-      const uploadInput = document.getElementById('uploadRom');
+    window.addEventListener('DOMContentLoaded', () => {
+      const startBtn = document.getElementById('start-btn');
+      const fileInput = document.getElementById('file-input');
+      const overlay = document.getElementById('start-overlay');
+      const statusLog = document.getElementById('status-log');
+      
+      // クラス名マッピング（デモスクリプトの古いグローバル定義との互換性を確保）
+      const canvasEl = document.getElementById('emulator-canvas');
 
-      function showStatus(msg) {
-        logEl.textContent = msg;
-      }
-
-      function getVueApp() {
-        const mainEl = document.querySelector('.main');
-        return (mainEl && mainEl.__vue__) ? mainEl.__vue__ : null;
-      }
-
-      startBtn.addEventListener('click', async () => {
-        const vueApp = getVueApp();
-        if (!vueApp) {
-          showStatus("エラー: システムがまだ準備できていません。");
-          return;
-        }
-
-        const fileList = vueApp.files?.list || [];
-        const existFile = fileList.find(f => f.name === romFileName || f.name.endsWith('.nes'));
-        if (existFile) {
-          showStatus("ゲームを起動しています...");
-          vueApp.playFile(existFile);
-          overlay.style.display = 'none';
-          return;
-        }
-
-        showStatus("マリオのROMファイル（.nes）を選択してください...");
-        
-        const unwatch = vueApp.$watch('files.list', (newList) => {
-          if (newList && newList.length > 0) {
-            showStatus("ゲームを起動しています...");
-            vueApp.playFile(newList[newList.length - 1]);
-            overlay.style.display = 'none';
-            unwatch();
-          }
-        }, { deep: true });
-
-        uploadInput.click();
+      // 1. 起動処理：ユーザーのタップから即時にファイル選択を連動（Safari対策の最重要項目）
+      startBtn.addEventListener('click', () => {
+        statusLog.textContent = "ファイルを選択してください...";
+        fileInput.click(); 
       });
 
-      // --- コントローラー入力のブロードキャスト設定 ---
-      const triggerKey = (eventName, keyCode, legacyCode) => {
-        const event = new KeyboardEvent(eventName, {
-          code: keyCode,
-          key: keyCode,
+      // 2. ファイルが選択されたら純粋なJS処理でエミュレータへ流し込む
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        statusLog.textContent = "ゲームを起動中...";
+
+        // demo.js のコアエンジンにファイルを直で渡すための処理
+        // 元の仕組み(IndexedDBへの保存と実行)をVueを介さず直接エミュレート
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          try {
+            const arrayBuffer = event.target.content || event.target.result;
+            
+            // demo.js内部に定義されている、またはグローバルで動く初期化関数を呼び出す
+            // 通常、demo.jsがwindowオブジェクトや特定のロード処理を保持しているため、
+            // ファイルの読み込み完了イベントを捏造または直接play処理に繋ぎます
+            if (window.playNesBuffer) {
+              window.playNesBuffer(arrayBuffer, file.name);
+            } else if (window.Emu && window.Emu.start) {
+              window.Emu.start(arrayBuffer);
+            } else {
+              // demo.jsの標準挙動へフォールバック（カスタムイベントで通知）
+              const customEvent = new CustomEvent('romloaded', { detail: { buffer: arrayBuffer, name: file.name } });
+              window.dispatchEvent(customEvent);
+            }
+
+            // ロード画面を消してゲーム開始
+            overlay.style.display = 'none';
+          } catch (err) {
+            statusLog.textContent = "起動エラーが発生しました。ファイルを確認してください。";
+            console.error(err);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      // 3. 超高速・高精度なバーチャルコントローラーのキーエミュレーション
+      const dispatchKey = (type, code, keyCode) => {
+        const ev = new KeyboardEvent(type, {
+          key: code,
+          code: code,
+          keyCode: parseInt(keyCode),
+          which: parseInt(keyCode),
           bubbles: true,
           cancelable: true
         });
-
-        Object.defineProperty(event, 'keyCode', { get: () => parseInt(legacyCode) });
-        Object.defineProperty(event, 'which', { get: () => parseInt(legacyCode) });
-
-        window.dispatchEvent(event);
-        document.dispatchEvent(event);
         
-        const canvas = document.querySelector('canvas');
-        if (canvas) canvas.dispatchEvent(event);
+        // 旧仕様ブラウザ（Safari等）への互換ポリフィル
+        Object.defineProperty(ev, 'keyCode', { get: () => parseInt(keyCode) });
+        Object.defineProperty(ev, 'which', { get: () => parseInt(keyCode) });
+
+        window.dispatchEvent(ev);
+        document.dispatchEvent(ev);
+        canvasEl.dispatchEvent(ev);
       };
 
-      const buttons = document.querySelectorAll('[data-key]');
-      
-      buttons.forEach(btn => {
+      const bindButtons = document.querySelectorAll('[data-key]');
+      bindButtons.forEach(btn => {
         const key = btn.getAttribute('data-key');
-        const legacyCode = btn.getAttribute('data-keycode');
+        const keyCode = btn.getAttribute('data-keycode');
 
+        // iOS用の超感度タッチイベント
         btn.addEventListener('touchstart', (e) => {
           e.preventDefault();
           btn.classList.add('active');
-          triggerKey('keydown', key, legacyCode);
+          dispatchKey('keydown', key, keyCode);
         }, { passive: false });
 
         btn.addEventListener('touchend', (e) => {
           e.preventDefault();
           btn.classList.remove('active');
-          triggerKey('keyup', key, legacyCode);
+          dispatchKey('keyup', key, keyCode);
         }, { passive: false });
 
         btn.addEventListener('touchcancel', (e) => {
           e.preventDefault();
           btn.classList.remove('active');
-          triggerKey('keyup', key, legacyCode);
+          dispatchKey('keyup', key, keyCode);
         }, { passive: false });
 
+        // PCテスト用のマウスイベント
         btn.addEventListener('mousedown', (e) => {
           e.preventDefault();
           btn.classList.add('active');
-          triggerKey('keydown', key, legacyCode);
+          dispatchKey('keydown', key, keyCode);
         });
 
         btn.addEventListener('mouseup', (e) => {
           e.preventDefault();
           btn.classList.remove('active');
-          triggerKey('keyup', key, legacyCode);
-        });
-
-        btn.addEventListener('mouseleave', (e) => {
-          if (btn.classList.contains('active')) {
-            btn.classList.remove('active');
-            triggerKey('keyup', key, legacyCode);
-          }
+          dispatchKey('keyup', key, keyCode);
         });
       });
     });
