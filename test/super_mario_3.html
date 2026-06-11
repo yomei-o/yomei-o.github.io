@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Super Mario - Web Emulator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <link href="reset.css" rel="stylesheet">
   <style>
     /* ========== 元のCSSを内包・一部上書き ========== */
@@ -76,6 +76,7 @@
       position: relative;
       padding: 10px;
       border-top: 4px solid #000;
+      padding-bottom: cubic-bezier(0,0,0,0); /* iPhoneのノッチ対策 */
     }
 
     /* 十字キー */
@@ -159,6 +160,7 @@
       border: 3px solid #333;
       box-shadow: inset -2px -2px 5px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.3);
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
     .round-btn:active, .round-btn.active { background-color: #d6304c; }
     .round-label { font-size: 14px; color: #7b1022; font-weight: bold; margin-top: 8px; }
@@ -187,15 +189,12 @@
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-      transition: transform 0.1s;
-    }
-    #start-game-btn:active {
-      transform: scale(0.95);
+      -webkit-tap-highlight-color: transparent;
     }
     #debug-log {
       margin-top: 20px;
       font-size: 12px;
-      color: #888;
+      color: #bbb;
       max-width: 80%;
       line-height: 1.4;
     }
@@ -206,7 +205,7 @@
   <div id="loading-overlay">
     <h2 style="margin-bottom: 25px; letter-spacing: 2px;">SUPER MARIO BROS.</h2>
     <button id="start-game-btn">GAME START</button>
-    <div id="debug-log">エミュレータ準備完了</div>
+    <div id="debug-log">タップして起動します</div>
   </div>
 
   <div id="app-container">
@@ -217,7 +216,7 @@
         <div class="input overlap" v-if="input.show"></div>
         <div class="setting overlap" v-if="input.setting"></div>
         <div class="files overlap" v-if="files.show">
-          <input type="file" id="uploadRom" hidden @change="uploadRom">
+          <input type="file" id="uploadRom" accept=".nes" hidden @change="uploadRom">
         </div>
         <div class="bar-wrap top-line"></div>
         <a id="downloadEl" hidden download="game.sav"></a>
@@ -263,95 +262,59 @@
   <script src="demo.js"></script>
 
   <script>
-    // ページとエミュレータ（demo.js）の読み込みが完全に終わってから実行
     window.addEventListener("load", () => {
       const romFileName = "super_mario.nes";
       const startBtn = document.getElementById('start-game-btn');
       const overlay = document.getElementById('loading-overlay');
       const logEl = document.getElementById('debug-log');
+      const uploadInput = document.getElementById('uploadRom');
 
       function showStatus(msg) {
-        console.log(msg);
         logEl.textContent = msg;
       }
 
-      // Vue インスタンスを安全に取得
       function getVueApp() {
         const mainEl = document.querySelector('.main');
         return (mainEl && mainEl.__vue__) ? mainEl.__vue__ : null;
       }
 
+      // iOS Safariのセキュリティ制限を回避するため、clickイベント内で直接処理を完結させる
       startBtn.addEventListener('click', async () => {
         const vueApp = getVueApp();
         if (!vueApp) {
-          showStatus("エラー: エミュレータの初期化に失敗しています。再読み込みしてください。");
+          showStatus("エラー: システムがまだ準備できていません。");
           return;
         }
 
-        startBtn.textContent = "Loading...";
-
-        // 【機能1】すでに一度読み込んで内部（IndexedDB）に保存されている場合は即座に起動
+        // 1. すでに一度読み込まれて内部データベース（IndexedDB）にある場合は、即座に起動可能
         const fileList = vueApp.files?.list || [];
-        const existFile = fileList.find(f => f.name === romFileName);
+        const existFile = fileList.find(f => f.name === romFileName || f.name.endsWith('.nes'));
         if (existFile) {
-          showStatus("保存済みのROMを検出しました。起動します...");
+          showStatus("ゲームを起動しています...");
           vueApp.playFile(existFile);
           overlay.style.display = 'none';
           return;
         }
 
-        // 【機能2】自動取得（fetch）を試みる
-        try {
-          showStatus("サーバーからROMファイルを自動取得しています...");
-          const response = await fetch(romFileName);
-          if (!response.ok) throw new Error("Fetch Error");
-          
-          const blob = await response.blob();
-          const file = new File([blob], romFileName, { type: 'application/octet-stream' });
-          
-          showStatus("ROMを解析中...");
-          
-          // タイマー待ちを廃止し、Vueのリアクティブデータ（files.list）に追加された瞬間をフックする
-          const unwatch = vueApp.$watch('files.list', (newList) => {
-            const target = newList.find(f => f.name === romFileName);
-            if (target) {
-              showStatus("起動します...");
-              vueApp.playFile(target);
-              overlay.style.display = 'none';
-              unwatch(); // 監視解除
-            }
-          }, { deep: true });
+        // 2. iOS Safari制限対策のフォールバック (最重要)
+        // 非同期fetchが弾かれる可能性が高いため、ボタンタップのこの瞬間に直接ファイル選択画面をトリガーする
+        showStatus("マリオのROMファイル（.nes）を選択してください...");
+        
+        // Vue側のリスト追加イベントを事前フック
+        const unwatch = vueApp.$watch('files.list', (newList) => {
+          if (newList && newList.length > 0) {
+            showStatus("ゲームを起動しています...");
+            vueApp.playFile(newList[newList.length - 1]);
+            overlay.style.display = 'none';
+            unwatch();
+          }
+        }, { deep: true });
 
-          // Vueのインポートメソッドを直接叩く（確実）
-          vueApp.uploadRom({ target: { files: [file] } });
-
-        } catch (e) {
-          // 【機能3】フォールバック：セキュリティ制限等で自動 fetch が弾かれた場合、手動で選ばせる
-          showStatus("ローカル制限により自動取得できませんでした。お手持ちのマリオのROMファイルを選択してください。");
-          startBtn.textContent = "ROMファイルを選択して起動";
-          
-          const uploadInput = document.getElementById('uploadRom');
-          
-          const onManualUpload = () => {
-            startBtn.textContent = "Loading...";
-            // 手動で選ばれたファイルがリストに入った瞬間を検知
-            const unwatchManual = vueApp.$watch('files.list', (newList) => {
-              if (newList && newList.length > 0) {
-                showStatus("起動します...");
-                vueApp.playFile(newList[newList.length - 1]);
-                overlay.style.display = 'none';
-                unwatchManual();
-              }
-            }, { deep: true });
-            uploadInput.removeEventListener('change', onManualUpload);
-          };
-
-          uploadInput.addEventListener('change', onManualUpload);
-          uploadInput.click(); // PC/スマホのファイル選択ダイアログを強制表示
-        }
+        // この処理がclickイベントの直下にあることで、Safariのセキュリティガードを突破できます
+        uploadInput.click();
       });
 
-      // --- 画面上のコントローラー入力をキーボード信号として全方位にブロードキャスト ---
+      // --- コントローラー入力のブロードキャスト設定 ---
       const triggerKey = (eventName, keyCode, legacyCode) => {
         const event = new KeyboardEvent(eventName, {
           code: keyCode,
@@ -360,7 +323,6 @@
           cancelable: true
         });
 
-        // 古い判別式（keyCode, which）を使うエミュレータのためにプロパティを強制注入
         Object.defineProperty(event, 'keyCode', { get: () => parseInt(legacyCode) });
         Object.defineProperty(event, 'which', { get: () => parseInt(legacyCode) });
 
@@ -377,7 +339,7 @@
         const key = btn.getAttribute('data-key');
         const legacyCode = btn.getAttribute('data-keycode');
 
-        // スマホ用タッチイベント
+        // iOS Safariで最もキビキビ動く touchstart/touchend を採用
         btn.addEventListener('touchstart', (e) => {
           e.preventDefault();
           btn.classList.add('active');
@@ -396,7 +358,7 @@
           triggerKey('keyup', key, legacyCode);
         }, { passive: false });
 
-        // PCテスト用マウスイベント
+        // PCブラウザでのテスト用
         btn.addEventListener('mousedown', (e) => {
           e.preventDefault();
           btn.classList.add('active');
