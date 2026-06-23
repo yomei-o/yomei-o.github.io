@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - クォーク閉じ込めシミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.8);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+            line-height: 1.5;
+            max-width: 450px;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Strong Interaction Kernel]</strong><br>
+    ・L2: F = 1 / (C * n)^D (Base Impedance)<br>
+    ・L3: ω² = ω₀² + gs * |X|² (Non-linear Spring Patch)<br>
+    <br>
+    <span style="color: #ffaa00;">【操作】クォーク（丸）をマウスでドラッグして引き離してください。<br>
+    離すほどばねが硬くなり（閉じ込め）、限界を超えるとエネルギーが物質化して新しいペアが生まれます（粒子生成）。</span>
+</div>
+
+<canvas id="quarkCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('quarkCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 600;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// クォークの構造体（位置、速度、色、ドラッグ状態）
+let quarks = [
+    { x: 350, y: 300, vx: 0, vy: 0, color: '#ff3366', isDragging: false },
+    { x: 450, y: 300, vx: 0, vy: 0, color: '#3366ff', isDragging: false }
+];
+
+// 物理パラメータ
+const OMEGA_0 = 0.05; // 基本振動
+const GS = 0.0002;    // 強い力の結合定数
+const COULOMB = 20;   // レイヤー2ベースの近距離引力
+const BREAK_LIMIT = 220; // ゴム紐（ばね仕様）が耐えられる限界距離
+
+let selectedQuark = null;
+
+// マウスイベント処理
+canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    // クリックした位置に近いクォークを探す
+    quarks.forEach(q => {
+        let d = Math.sqrt((q.x - mx)**2 + (q.y - my)**2);
+        if (d < 25) {
+            q.isDragging = true;
+            selectedQuark = q;
+        }
+    });
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (selectedQuark) {
+        const rect = canvas.getBoundingClientRect();
+        selectedQuark.x = e.clientX - rect.left;
+        selectedQuark.y = e.clientY - rect.top;
+        selectedQuark.vx = 0;
+        selectedQuark.vy = 0;
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    if (selectedQuark) {
+        selectedQuark.isDragging = false;
+        selectedQuark = null;
+    }
+});
+
+// メイン更新ループ
+function updateUniverse() {
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // バックグラウンドの空間グリッド描画（エネルギーに応じて揺らぐ）
+    ctx.strokeStyle = '#002211';
+    ctx.lineWidth = 1;
+    let gridSpace = 25;
+    for (let x = 0; x < WIDTH; x += gridSpace) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, HEIGHT);
+        ctx.stroke();
+    }
+    for (let y = 0; y < HEIGHT; y += gridSpace) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(WIDTH, y);
+        ctx.stroke();
+    }
+
+    // 各ペアごとに相互作用を計算（現在はシンプルに全ペアの組み合わせ）
+    for (let i = 0; i < quarks.length; i += 2) {
+        let q1 = quarks[i];
+        let q2 = quarks[i+1];
+        if (!q1 || !q2) continue;
+
+        // クォーク間の距離 n
+        let dx = q2.x - q1.x;
+        let dy = q2.y - q1.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 1) dist = 1;
+
+        // --- レイヤー3: 強い力のばね硬化パッチ ---
+        // 離れれば離れるほど、ばねの復元係数（omega_sq）が非線形に跳ね上がる
+        let omega_sq = OMEGA_0 + GS * Math.pow(dist, 2);
+        
+        // 力の計算（ばねの引き戻し ＋ 近距離用の基本引力）
+        let forceX = (dx / dist) * (omega_sq * dist + COULOMB / (dist * dist));
+        let forceY = (dy / dist) * (omega_sq * dist + COULOMB / (dist * dist));
+
+        // ドラッグ中でなければ速度（差分）を適用
+        if (!q1.isDragging) {
+            q1.vx += forceX * 0.1;
+            q1.vy += forceY * 0.1;
+        }
+        if (!q2.isDragging) {
+            q2.vx -= forceX * 0.1;
+            q2.vy -= forceY * 0.1;
+        }
+
+        // --- 例外処理: 限界突破による「弦の切断と粒子生成」 ---
+        if (dist > BREAK_LIMIT) {
+            // 中央に新しいペアの座標を計算
+            let midX = (q1.x + q2.x) / 2;
+            let midY = (q1.y + q2.y) / 2;
+
+            // マウスドラッグを強制解除して、新しい4粒子体制へリファクタリング
+            if (selectedQuark) {
+                selectedQuark.isDragging = false;
+                selectedQuark = null;
+            }
+
+            // 新しいクォークと反クォークのペアを生成して挿入
+            // 元のq1は新しく生成されたqBとペアになり、元のq2は新しく生成されたqAとペアになる
+            quarks.push(
+                { x: midX - 10, y: midY, vx: -2, vy: 0, color: '#3366ff', isDragging: false }, // q1用の相方
+                { x: midX + 10, y: midY, vx: 2, vy: 0, color: '#ff3366', isDragging: false }  // q2用の相方
+            );
+            
+            // 配列の並び替え（ペアが隣り合うように調整）
+            // [q1, q2, new1, new2] -> [q1, new1] と [new2, q2]
+            let n2 = quarks.pop();
+            let n1 = quarks.pop();
+            quarks = [q1, n1, n2, q2];
+
+            break; // ループを抜けて次フレームで再計算
+        }
+
+        // クォークを結ぶ「強い力のばね（ゴム紐）」を描画
+        // 距離（負荷）が離れるほど、エネルギー密度が高まり太く赤くなる
+        let heat = Math.min(1, dist / BREAK_LIMIT);
+        ctx.strokeStyle = `rgb(${Math.floor(heat * 255)}, ${Math.floor((1-heat)*255)}, 200)`;
+        ctx.lineWidth = 2 + heat * 8;
+        ctx.beginPath();
+        ctx.moveTo(q1.x, q1.y);
+        ctx.lineTo(q2.x, q2.y);
+        ctx.stroke();
+    }
+
+    // 座標の更新と画面端のバウンド処理
+    quarks.forEach(q => {
+        if (!q.isDragging) {
+            q.x += q.vx;
+            q.y += q.vy;
+            q.vx *= 0.95; // デジタル摩擦（減衰）
+            q.vy *= 0.95;
+
+            // 画面外シールド
+            if (q.x < 20 || q.x > WIDTH - 20) q.vx *= -1;
+            if (q.y < 20 || q.y > HEIGHT - 20) q.vy *= -1;
+        }
+
+        // クォーク本体のレンダリング
+        ctx.beginPath();
+        ctx.arc(q.x, q.y, 12, 0, Math.PI * 2);
+        ctx.fillStyle = q.color;
+        ctx.shadowColor = q.color;
+        ctx.shadowBlur = q.isDragging ? 20 : 5;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// 起動
+updateUniverse();
+</script>
+
+</body>
+</html>

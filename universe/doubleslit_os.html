@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 二重スリット観測シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #control-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 450px;
+            z-index: 10;
+        }
+        .switch-label {
+            display: inline-block;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #ff3366;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div id="control-panel">
+    <strong>[Universe OS v1.37 - Quantum Measurement Kernel]</strong><br>
+    ・L3: X_{n+1} = (2 - ω²)X_n - X_{n-1} (Wave Propagation)<br>
+    ・Observation = Interruption patch on slit memory registers.<br>
+    <br>
+    <label class="switch-label">
+        <input type="checkbox" id="observeSwitch"> 【スリット観測センサーを起動（ON）】
+    </label>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】センサーOFF時は、ばねの式が純粋に波を伝え、両方のスリットを同時に抜けて干渉縞を作ります。センサーをONにすると、観測という名の「メモリサンプリング割り込み」によって波の位相が固定化（粒化）され、干渉縞が消滅します。</span>
+</div>
+
+<canvas id="slitCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('slitCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 900;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// グリッドシミュレーション用の配列サイズ
+const COLS = 120;
+const ROWS = 60;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+// 真空グリッドの2歩前、1歩前、現在バッファ（レイヤー3用）
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// スクリーン（右端）に蓄積される着弾カウンター（干渉縞のグラフ用）
+let screenPatterns = Array(ROWS).fill(0);
+
+// 壁とスリットの配置（列インデックスで指定）
+const WALL_COL = 40;
+const SLIT_1_ROW = 22;
+const SLIT_2_ROW = 38;
+const SLIT_WIDTH = 3;
+
+// 電子銃（左端）の発射タイマー
+let spawnTimer = 0;
+
+// 観測フラグ（HTMLのチェックボックスと連動）
+let isObserving = false;
+document.getElementById('observeSwitch').addEventListener('change', (e) => {
+    isObserving = e.target.checked;
+    // モード切り替え時に蓄積グラフをリセット
+    screenPatterns.fill(0);
+});
+
+// メインループ
+function stepUniverse() {
+    // 1. 電子（ばねパケットの波）を左端から定期的にパルス注入
+    spawnTimer++;
+    if (spawnTimer % 25 === 0) {
+        let centerRow = ROWS / 2;
+        // 左端の特定のセルを激しく単振動のトリガーとして叩く
+        curr_X[2][centerRow] = 15.0;
+        prev_X[2][centerRow] = 15.0;
+    }
+
+    // 2. レイヤー3：ばねの差分更新ループ
+    const OMEGA_SQ = 0.15; // 伝播速度を決定するばねの硬さ定数
+    
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            // スリットのある中間壁の衝突判定（スリット以外の部分は振動を完全ブロック＝固定端）
+            if (i === WALL_COL) {
+                let inSlit1 = (j >= SLIT_1_ROW && j < SLIT_1_ROW + SLIT_WIDTH);
+                let inSlit2 = (j >= SLIT_2_ROW && j < SLIT_2_ROW + SLIT_WIDTH);
+                if (!inSlit1 && !inSlit2) {
+                    next_X[i][j] = 0;
+                    continue;
+                }
+            }
+
+            // 二次元ラプラシアン（隣り合うばねからの復元力）の畳み込み計算
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            
+            // あなたの基本式に二次元の空間伝播を拡張した最下層コード
+            next_X[i][j] = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+
+            // --- 核心：観測センサーによる「メモリサンプリング割り込み処理」 ---
+            if (isObserving && i === WALL_COL) {
+                // センサーがONの時、スリットを通過する瞬間のメモリを強制的に検出し、
+                // 位相を壊して「点（粒）」として振幅を確定（丸め処理）させる
+                if (j >= SLIT_1_ROW && j < SLIT_1_ROW + SLIT_WIDTH) {
+                    if (Math.abs(next_X[i][j]) > 0.1) {
+                        next_X[i][j] = next_X[i][j] > 0 ? 3.0 : -3.0; // 波を波でなくし、粒としてのエネルギーに固定化
+                    }
+                }
+                if (j >= SLIT_2_ROW && j < SLIT_2_ROW + SLIT_WIDTH) {
+                    if (Math.abs(next_X[i][j]) > 0.1) {
+                        next_X[i][j] = next_X[i][j] > 0 ? 3.0 : -3.0;
+                    }
+                }
+            }
+        }
+    }
+
+    // 右端のスクリーン（受光セル）への着弾のサンプリング（エネルギーの蓄積）
+    let SCREEN_COL = COLS - 5;
+    for (let j = 0; j < ROWS; j++) {
+        // 右端セルに波のエネルギー（振幅の2乗）が到達したら、カウントを蓄積
+        let energy = Math.pow(curr_X[SCREEN_COL][j], 2);
+        if (energy > 0.05) {
+            screenPatterns[j] += energy * 0.02; // グラフの蓄積スピード調整
+        }
+    }
+
+    // バッファ（メモリ）のシフト処理
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング（描画）セクション ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 空間のばねの波の強さを光としてレンダリング
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let val = Math.abs(curr_X[i][j]) * 35;
+            if (val > 5) {
+                ctx.fillStyle = `rgba(0, 255, 200, ${Math.min(1, val / 255)})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 中間壁の描画
+    ctx.fillStyle = '#555566';
+    let wallX = WALL_COL * DX;
+    ctx.fillRect(wallX, 0, DX, SLIT_1_ROW * DY);
+    ctx.fillRect(wallX, (SLIT_1_ROW + SLIT_WIDTH) * DY, DX, (SLIT_2_ROW - (SLIT_1_ROW + SLIT_WIDTH)) * DY);
+    ctx.fillRect(wallX, (SLIT_2_ROW + SLIT_WIDTH) * DY, DX, HEIGHT);
+
+    // 観測中（割り込み発生中）のインジケータ（赤いセンサーの目）を表示
+    if (isObserving) {
+        ctx.fillStyle = '#ff3366';
+        ctx.shadowColor = '#ff3366';
+        ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.arc(wallX + DX/2, (SLIT_1_ROW + SLIT_WIDTH/2)*DY, 8, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(wallX + DX/2, (SLIT_2_ROW + SLIT_WIDTH/2)*DY, 8, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    // 電子銃の描画
+    ctx.fillStyle = '#9999aa';
+    ctx.fillRect(0, (ROWS/2 - 2)*DY, 15, 4*DY);
+
+    // 右端スクリーンの受光ラインの描画
+    ctx.strokeStyle = '#005544';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(SCREEN_COL * DX, 0);
+    ctx.lineTo(SCREEN_COL * DX, HEIGHT);
+    ctx.stroke();
+
+    // スクリーンに溜まった着弾統計（干渉縞のグラフ）を重ねてレンダリング
+    ctx.fillStyle = 'rgba(0, 255, 200, 0.3)';
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(SCREEN_COL * DX, 0);
+    
+    for (let j = 0; j < ROWS; j++) {
+        let graphWidth = screenPatterns[j] * 5; // グラフの長さスケール
+        let graphX = SCREEN_COL * DX + graphWidth;
+        let graphY = j * DY + DY/2;
+        if (j === 0) ctx.moveTo(SCREEN_COL * DX, graphY);
+        else ctx.lineTo(graphX, graphY);
+        
+        // 蓄積データを可視化する横棒
+        ctx.fillRect(SCREEN_COL * DX, j * DY + 1, graphWidth, DY - 2);
+    }
+    ctx.stroke();
+
+    requestAnimationFrame(stepUniverse);
+}
+
+// 宇宙OS起動
+stepUniverse();
+</script>
+
+</body>
+</html>

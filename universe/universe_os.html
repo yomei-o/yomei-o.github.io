@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 3レイヤーシミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.8);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+            line-height: 1.5;
+            max-width: 400px;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 Kernel Mainframe]</strong><br>
+    ・L1: c * t = const (Clock Synchronization)<br>
+    ・L2: F = 1 / (C * n)^D (Network Impedance)<br>
+    ・L3: X_{n+1} = (2 - ω^2 * Δτ^2)X_n - X_{n-1}<br>
+    <br>
+    <span style="color: #ff3366;">【操作】画面をクリックすると、その場所に超高負荷セクター（ブラックホール）を配置。計算遅延による「時空の歪み」が自動創発します。</span>
+</div>
+
+<canvas id="universeCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('universeCanvas');
+const ctx = canvas.getContext('2d');
+
+// 画面サイズ設定
+const WIDTH = 800;
+const HEIGHT = 600;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// グリッド（セル構造）の定義
+const COLS = 40;
+const ROWS = 30;
+const SPACING_X = WIDTH / COLS;
+const SPACING_Y = HEIGHT / ROWS;
+
+// 宇宙定数の初期化
+const C_BASE = 137; // あなたの定義したC=137
+let total_time = 1;  // 宇宙の経過クロック t
+
+// 各セルの状態バッファ（2歩前、1歩前、現在位置）
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 基本振動数 ω0 （何もない真空のデフォルトのばねの硬さ）
+const OMEGA_0 = 0.2;
+
+// 高負荷セクター（ブラックホール）の座標情報（初期状態はなし）
+let blackHole = null;
+
+// マウスクリックで高負荷セクターを設置
+canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // 最も近いグリッドのインデックスを特定して配置
+    blackHole = {
+        col: Math.floor(mouseX / SPACING_X),
+        row: Math.floor(mouseY / SPACING_Y),
+        energy: 15.0 // 計算負荷（質量）の大きさ
+    };
+});
+
+// メインループ（プランク時間ステップの更新）
+function stepUniverse() {
+    // --- レイヤー1: c * t = const ---
+    // 時間の経過とともに基本光速（波の伝播の基準歩幅）を減衰調整
+    let current_c = C_BASE / (1.0 + total_time * 0.0001);
+
+    // 全セルの次の状態を計算
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            
+            let omega_sq = OMEGA_0 * OMEGA_0;
+            let delta_tau = 1.0; // デフォルトのサンプリングレート
+
+            // --- レイヤー3（重力遅延）の計算 ---
+            if (blackHole) {
+                // レイヤー2の公式 F = 1/(Cn)^D に基づく距離nの計算（3次元 D=3 としてシミュレート）
+                let dn = Math.sqrt(Math.pow(i - blackHole.col, 2) + Math.pow(j - blackHole.row, 2)) + 0.5; 
+                
+                // 距離に応じた負荷の計算
+                let load = blackHole.energy / Math.pow(current_c * dn, 1.5); // 画面上の演出用に次元数を微調整
+                
+                // サンプリングレートの低下（1 - 負荷）。最大で0（完全なフリーズ）
+                delta_tau = Math.max(0, 1.0 - load);
+            }
+
+            // --- レイヤー3: ばねの差分更新式 ---
+            // 微分は一切なし。1歩前と2歩前のメモリの引き算と掛け算のみ
+            // delta_tauが小さい（遅延が大きい）ほど、位置の変化が引き留められます
+            next_X[i][j] = (2.0 - omega_sq * Math.pow(delta_tau, 2)) * curr_X[i][j] - prev_X[i][j];
+
+            // 外部からの環境の揺らぎ（真空振動のレンダリング用）
+            if (Math.random() < 0.001) {
+                next_X[i][j] += (Math.random() - 0.5) * 5;
+            }
+        }
+    }
+
+    // バッファ（メモリ）のシフト処理
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // 画面のクリア
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 空間グリッド（網の目）の描画
+    ctx.strokeStyle = '#005544';
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < COLS; i++) {
+        ctx.beginPath();
+        for (let j = 0; j < ROWS; j++) {
+            // セルの基本座標
+            let baseX = i * SPACING_X + SPACING_X / 2;
+            let baseY = j * SPACING_Y + SPACING_Y / 2;
+
+            // ばねの振動値（curr_X）を座標の「歪み」として加算
+            // さらにブラックホールがある場合は、その「遅延」によって中心にギュッと吸い寄せられるUI処理を適用
+            let drawX = baseX;
+            let drawY = baseY + curr_X[i][j];
+
+            if (blackHole) {
+                let bhX = blackHole.col * SPACING_X + SPACING_X / 2;
+                let bhY = blackHole.row * SPACING_Y + SPACING_Y / 2;
+                let dist = Math.sqrt(Math.pow(drawX - bhX, 2) + Math.pow(drawY - bhY, 2));
+                
+                // 処理遅延が大きい（計算が遅れている）セクターほど、位置の更新が間に合わず中心に引っ張られる
+                let pull = (blackHole.energy * 50) / (dist + 20);
+                drawX += ((bhX - drawX) / (dist + 1)) * pull;
+                drawY += ((bhY - drawY) / (dist + 1)) * pull;
+            }
+
+            if (j === 0) ctx.moveTo(drawX, drawY);
+            else ctx.lineTo(drawX, drawY);
+        }
+        ctx.stroke();
+    }
+
+    // 横方向の線の描画
+    for (let j = 0; j < ROWS; j++) {
+        ctx.beginPath();
+        for (let i = 0; i < COLS; i++) {
+            let baseX = i * SPACING_X + SPACING_X / 2;
+            let baseY = j * SPACING_Y + SPACING_Y / 2;
+            let drawX = baseX;
+            let drawY = baseY + curr_X[i][j];
+
+            if (blackHole) {
+                let bhX = blackHole.col * SPACING_X + SPACING_X / 2;
+                let bhY = blackHole.row * SPACING_Y + SPACING_Y / 2;
+                let dist = Math.sqrt(Math.pow(drawX - bhX, 2) + Math.pow(drawY - bhY, 2));
+                let pull = (blackHole.energy * 50) / (dist + 20);
+                drawX += ((bhX - drawX) / (dist + 1)) * pull;
+                drawY += ((bhY - drawY) / (dist + 1)) * pull;
+            }
+
+            if (i === 0) ctx.moveTo(drawX, drawY);
+            else ctx.lineTo(drawX, drawY);
+        }
+        ctx.stroke();
+    }
+
+    // ブラックホールのコアを描画
+    if (blackHole) {
+        let bhX = blackHole.col * SPACING_X + SPACING_X / 2;
+        let bhY = blackHole.row * SPACING_Y + SPACING_Y / 2;
+        ctx.beginPath();
+        ctx.arc(bhX, bhY, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff3366';
+        ctx.shadowColor = '#ff3366';
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.shadowBlur = 0; // シャドウのリセット
+    }
+
+    total_time++;
+    requestAnimationFrame(stepUniverse);
+}
+
+// 宇宙OSの起動
+stepUniverse();
+</script>
+
+</body>
+</html>

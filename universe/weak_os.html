@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 弱い相互作用（ベータ崩壊）シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.8);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+            line-height: 1.5;
+            max-width: 450px;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Weak Interaction Kernel]</strong><br>
+    ・L3: ω² = ω₀² * Θ(|X| - V_weak) (Switching Function)<br>
+    ・Process: Neutron (Green) -> Proton (Orange) + Electron (Cyan)<br>
+    <br>
+    <span style="color: #00ffff;">【操作】画面をクリックしてエネルギー衝撃波を発生させてください。<br>
+    緑の粒子（中性子）の計算バッファが閾値を超えると、オーバーフロー（弱い力）が発生し、陽子と電子へリアルタイムに変身（崩壊）します。</span>
+</div>
+
+<canvas id="weakCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('weakCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 600;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// 粒子の配列
+let particles = [];
+
+// 弱い相互作用の基本パラメータ
+const V_WEAK = 3.5; // 崩壊を引き起こすエネルギー（速度）の閾値
+
+// 粒子の初期化（中性子を50個配置）
+function initParticles() {
+    particles = [];
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x: Math.random() * (WIDTH - 100) + 50,
+            y: Math.random() * (HEIGHT - 100) + 50,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            type: 'neutron', // 初期状態：中性子
+            color: '#33cc66',
+            radius: 10,
+            flash: 0 // フラッシュ演出用カウンタ
+        });
+    }
+}
+
+// 画面クリックでエネルギー衝撃波を注入
+canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    // 周囲の粒子に急激な運動エネルギー（振幅）を与える
+    particles.forEach(p => {
+        let dx = p.x - mx;
+        let dy = p.y - my;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 150) {
+            let force = (150 - dist) * 0.08;
+            p.vx += (dx / (dist + 1)) * force;
+            p.vy += (dy / (dist + 1)) * force;
+        }
+    });
+});
+
+// メインシミュレーションループ
+function updateUniverse() {
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // バックグラウンドの空間グリッド
+    ctx.strokeStyle = '#001122';
+    ctx.lineWidth = 1;
+    let gridSpace = 40;
+    for (let x = 0; x < WIDTH; x += gridSpace) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+    for (let y = 0; y < HEIGHT; y += gridSpace) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke();
+    }
+
+    let newParticles = [];
+
+    // 粒子ごとの移動と「弱い力（if文パッチ）」の演算
+    particles.forEach(p => {
+        // 現在のサンプリングステップにおけるエネルギー（振幅の速度成分）
+        let energy = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+
+        // --- レイヤー3: 弱い力のステップ関数（if判定によるレジスタ書き換え） ---
+        if (p.type === 'neutron' && energy > V_WEAK && p.flash === 0) {
+            p.flash = 10; // 10フレームの間、白くフラッシュ
+        }
+
+        // フラッシュ（崩壊プロセス）が終わった瞬間に変身
+        if (p.flash === 1) {
+            p.type = 'proton';
+            p.color = '#ff9900'; // 陽子（重い安定モード）に変身
+            p.radius = 15;
+            p.vx *= 0.1; // 陽子は重いので速度を減衰
+            p.vy *= 0.1;
+
+            // 新しい振動パケット「電子（水色）」を生成して高速で弾き出す
+            let angle = Math.random() * Math.PI * 2;
+            let eVX = Math.cos(angle) * 8;
+            let eVY = Math.sin(angle) * 8;
+            newParticles.push({
+                x: p.x, y: p.y,
+                vx: eVX, vy: eVY,
+                type: 'electron',
+                color: '#00ffff',
+                radius: 4,
+                flash: 0
+            });
+        }
+
+        if (p.flash > 0) p.flash--;
+
+        // 座標の更新（ばねの差分移動の簡易シミュレート）
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // デジタル摩擦と画面端のバウンド
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+        if (p.x < p.radius || p.x > WIDTH - p.radius) p.vx *= -1;
+        if (p.y < p.radius || p.y > HEIGHT - p.radius) p.vy *= -1;
+
+        // 粒子同士の単純な近接衝突（エネルギーの伝播ループ）
+        particles.forEach(other => {
+            if (p === other) return;
+            let dx = other.x - p.x;
+            let dy = other.y - p.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let minDist = p.radius + other.radius;
+
+            if (dist < minDist) {
+                // 跳ね返り処理によるエネルギーの交換
+                let overlap = minDist - dist;
+                p.x -= (dx / (dist + 1)) * overlap * 0.5;
+                p.y -= (dy / (dist + 1)) * overlap * 0.5;
+                
+                let tempVX = p.vx;
+                let tempVY = p.vy;
+                p.vx = other.vx * 0.9;
+                p.vy = other.vy * 0.9;
+                other.vx = tempVX * 0.9;
+                other.vy = tempVY * 0.9;
+            }
+        });
+
+        // 粒子の描画
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        
+        if (p.flash > 0) {
+            ctx.fillStyle = '#ffffff'; // 崩壊の瞬間は純白
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 30;
+        } else {
+            ctx.fillStyle = p.color;
+            ctx.shadowColor = p.color;
+            ctx.shadowBlur = p.type === 'electron' ? 15 : 5;
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+
+    // 新しく生まれた電子を統合
+    particles = particles.concat(newParticles);
+
+    // 陽子と電子ばかりになって画面が埋まったら、一定確率で真空に戻る（宇宙のエントロピー循環）
+    if (particles.filter(p => p.type === 'proton').length > 40) {
+        initParticles();
+    }
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// 宇宙OSのカーネル起動
+initParticles();
+updateUniverse();
+</script>
+
+</body>
+</html>
