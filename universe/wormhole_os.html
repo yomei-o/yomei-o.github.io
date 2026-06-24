@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - ワームホール・シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 520px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #001122;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        }
+        button:hover {
+            background: #00aaff;
+            color: #05050a;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Wormhole Routing Kernel]</strong><br>
+    ・L3: Discontinuous Matrix Index Linking.<br>
+    ・Shortcut: Direct pointer assignment bypasses spatial C latency.<br>
+    <br>
+    <span style="color: #00aaff;">【仕組み】アインシュタインの言う「時空のトンネル」とは、Universe OSの配列における「直接的なポインタ・ルーティング」に過ぎません。ボタンを押すと、離れた独立空間のインデックス同士がメモリ上で直結され、L3のエネルギー波が光速（C）の移動遅延ゼロで瞬時にショートカット転送されます。</span>
+</div>
+
+<canvas id="wormholeCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="gateBtn">【 ワームホールを開通（メモリ直結） 】</button>
+    <button id="pulseBtn">【 波のパケットを発射 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('wormholeCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 460;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 110;
+const ROWS = 50; // 上段（0〜24）：空間A / 下段（25〜49）：空間B
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// ワームホールの座標（ポインタ結合のアドレス）
+const ENTRANCE_X = 75;
+const ENTRANCE_Y = 12; // 上段宇宙の中央右寄り
+const EXIT_X = 25;
+const EXIT_Y = 37;     // 下段宇宙の中央左寄り
+
+let isWormholeOpen = false;
+let logMessage = "SYSTEM STATUS: ISOLATED MATRICES (上下の空間は完全に独立しています)";
+
+document.getElementById('gateBtn').addEventListener('click', () => {
+    isWormholeOpen = !isWormholeOpen;
+    if (isWormholeOpen) {
+        logMessage = "ROUTE LOG: Pointer bridge allocated. Memory routing initialized between (75, 12) <-> (25, 37).";
+    } else {
+        logMessage = "ROUTE LOG: Pointer bridge destroyed. Spaces isolated.";
+    }
+});
+
+document.getElementById('pulseBtn').addEventListener('click', () => {
+    // 上段宇宙の左端に高エネルギーパケットをキック
+    for (let dy = -2; dy <= 2; dy++) {
+        let y = ENTRANCE_Y + dy;
+        curr_X[3][y] = 25.0 * Math.exp(-(dy * dy) / 2);
+        prev_X[3][y] = curr_X[3][y];
+    }
+});
+
+function updateUniverse() {
+    const OMEGA_SQ = 0.23;
+    const MID_Y = Math.floor(ROWS / 2); // 25（境界線）
+
+    // 1. レイヤー3：真空ばねグリッド演算（上下それぞれの空間で波が伝播）
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            // 空間Aと空間Bの間の境界（j = 25）をまたぐ通常の物理伝播はカット（断絶）
+            if (j === MID_Y) {
+                curr_X[i][j] = 0;
+                continue;
+            }
+
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+
+            next_val *= 0.985; // 空間の波動減衰
+            next_X[i][j] = next_val;
+        }
+    }
+
+    // 2. 核心：ワームホールのポインタ・ルーティング処理
+    if (isWormholeOpen) {
+        // 入口のエネルギー状態（振幅）を、1クロックで出口のセルへ直接複写（等価交換）
+        // 双方向のポインタ結合をシミュレート
+        let tempAmp = curr_X[ENTRANCE_X][ENTRANCE_Y];
+        
+        // 入口に入ってきた波を出口へバイパス
+        curr_X[EXIT_X][EXIT_Y] += tempAmp * 0.95; 
+        
+        // 出口の余剰振動を入口にフィードバック（トポロジーの等価保持）
+        curr_X[ENTRANCE_X][ENTRANCE_Y] *= 0.1; // 入口側はいったん抜ける
+    }
+
+    // バッファシフト
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 宇宙Aと宇宙Bを分ける不透過なカーネル境界線
+    ctx.strokeStyle = '#222233';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(0, MID_Y * DY); ctx.lineTo(WIDTH, MID_Y * DY); ctx.stroke();
+
+    // 空間グリッドの背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 35) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 波動（L3パケット）の10倍適正ゲインレンダリング
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let amp = Math.abs(curr_X[i][j]);
+            let energy = amp * 250; // 視覚的な適正ゲイン（10倍スケール）
+
+            if (energy > 5) {
+                let alpha = Math.min(1, energy / 255);
+                ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 空間名テキスト
+    ctx.fillStyle = '#555577';
+    ctx.font = '12px Courier New';
+    ctx.fillText("SPACE LAYER A (上段宇宙)", 15, 25);
+    ctx.fillText("SPACE LAYER B (下段宇宙)", 15, MID_Y * DY + 25);
+
+    // ワームホール・ゲートのUI表示
+    if (isWormholeOpen) {
+        // 開通時のエフェクト（インデックス直結リンク）
+        ctx.strokeStyle = 'rgba(0, 170, 255, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ENTRANCE_X * DX + DX/2, ENTRANCE_Y * DY);
+        ctx.lineTo(EXIT_X * DX + DX/2, EXIT_Y * DY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = 'rgba(0, 170, 255, 0.2)';
+        ctx.shadowColor = '#00aaff';
+        ctx.shadowBlur = 15;
+    } else {
+        ctx.fillStyle = 'rgba(100, 100, 100, 0.1)';
+    }
+
+    // 入口（A側）
+    ctx.beginPath(); ctx.arc(ENTRANCE_X * DX + DX/2, ENTRANCE_Y * DY + DY/2, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = isWormholeOpen ? '#00aaff' : '#555566';
+    ctx.stroke();
+
+    // 出口（B側）
+    ctx.beginPath(); ctx.arc(EXIT_X * DX + DX/2, EXIT_Y * DY + DY/2, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // ゲートのラベル
+    ctx.fillStyle = isWormholeOpen ? '#00aaff' : '#555566';
+    ctx.font = '10px Courier New';
+    ctx.fillText("GATE: ENTRANCE", ENTRANCE_X * DX - 35, ENTRANCE_Y * DY - 20);
+    ctx.fillText("GATE: EXIT", EXIT_X * DX - 25, EXIT_Y * DY - 20);
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

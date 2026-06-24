@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - トンネル効果シミュレーター V4.1 (10倍適正ブースト)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 480px;
+            pointer-events: none;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Quantum Tunneling Kernel V4.1]</strong><br>
+    ・L3: X_{n+1} = (2 - ω²)X_n - X_{n-1} + Jitter<br>
+    <br>
+    <span style="color: #00ffcc;">【V4.1調整内容】ユーザーフィードバックに基づき、すり抜け後の輝度ブーストを100倍から「10倍」に最適化。飽和を抑え、壁（BARRIER）の向こう側へフワリと漏れ出すリアルな量子波面を視覚的に再現しました。</span>
+</div>
+
+<canvas id="tunnelCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('tunnelCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 400;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 100;
+const ROWS = 40;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+const BARRIER_COL = 45;
+
+let tunnelCount = 0;
+let totalShot = 0;
+let pulseTimer = 0;
+
+function updateUniverse() {
+    pulseTimer++;
+    
+    // 定期的に左端からパケットを発射
+    if (pulseTimer % 45 === 1) {
+        totalShot++;
+        let midY = Math.floor(ROWS / 2);
+        for (let dy = -2; dy <= 2; dy++) {
+            let j = midY + dy;
+            let amp = 25.0 * Math.exp(-(dy * dy) / 2);
+            curr_X[3][j] = amp;
+            prev_X[3][j] = amp;
+        }
+    }
+
+    const OMEGA_SQ = 0.25; 
+    
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+
+            if (i === BARRIER_COL) {
+                next_val *= 0.15;
+                next_val += (Math.random() - 0.5) * 0.12; 
+            }
+
+            next_X[i][j] = next_val;
+        }
+    }
+
+    let DETECT_COL = COLS - 15;
+    let midY = Math.floor(ROWS / 2);
+    
+    if (pulseTimer % 45 === 24) {
+        let maxEnergy = 0;
+        for (let dy = -5; dy <= 5; dy++) {
+            maxEnergy = Math.max(maxEnergy, Math.abs(curr_X[DETECT_COL][midY + dy]));
+        }
+        if (maxEnergy > 0.08) {
+            tunnelCount++;
+        }
+    }
+
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- 描画 ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 輝度レンダリング（10倍ゲイン調整）
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let amp = Math.abs(curr_X[i][j]);
+            let energy = amp * 35;
+
+            // 【ここを調整】右側は100倍ではなく10倍程度の適正ブーストに設定
+            if (i > BARRIER_COL) {
+                energy = amp * 250; 
+            }
+
+            if (energy > 5) {
+                let alpha = Math.min(1, energy / 255);
+                ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 壁の描画
+    ctx.fillStyle = 'rgba(255, 30, 80, 0.4)';
+    ctx.strokeStyle = '#ff1e50';
+    ctx.lineWidth = 2;
+    ctx.fillRect(BARRIER_COL * DX, 0, DX, HEIGHT);
+    ctx.strokeRect(BARRIER_COL * DX, 0, DX, HEIGHT);
+
+    // UI
+    ctx.fillStyle = '#888899';
+    ctx.fillRect(0, (midY - 2) * DY, 15, 4 * DY); 
+    
+    ctx.strokeStyle = '#00aaff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(DETECT_COL * DX, (midY - 5) * DY, 15, 10 * DY); 
+
+    // ログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(`TOTAL SHOTS   : ${totalShot}`, 20, HEIGHT - 50);
+    ctx.fillText(`TUNNELED (★) : ${tunnelCount}`, 20, HEIGHT - 30);
+    if (totalShot > 0) {
+        let rate = ((tunnelCount / totalShot) * 100).toFixed(1);
+        ctx.fillText(`TUNNEL RATE   : ${rate} %`, 20, HEIGHT - 10);
+    }
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

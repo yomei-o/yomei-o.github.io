@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 時間遅延＆双子のパラドックスシミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 500px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #002211;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+        }
+        button:hover {
+            background: #00ffcc;
+            color: #05050a;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Time Dilation Kernel]</strong><br>
+    ・L1 Policy: Total CPU allocation limit.<br>
+    ・Dilation: High velocity updates trigger Δτ frame skipping.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】オブジェクトが高速移動すると、空間グリッドへの座標書き込み負荷（Task Load）が増大します。Universe OSはシステム過負荷を防ぐため、そのオブジェクトの内部時計の更新ステップ（固有時間 Δτ）を自動で「コマ落ち（間引き）」させます。これがアインシュタインの言う「時間の遅れ」の真実です。</span>
+</div>
+
+<canvas id="timeCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="launchBtn">【 宇宙船を発射（高速往復ミッション） 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('timeCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 450;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// 地球（兄）と宇宙船（弟）の内部レジスタ時計
+let earthTime = 0.0;
+let shipTime = 0.0;
+
+// 宇宙船のステータス
+let shipX = 150;
+let shipY = 280;
+let shipVelocity = 0.0;
+let isMoving = false;
+let moveDirection = 1; // 1: 往路(右), -1: 復路(左)
+let missionStep = 0;
+
+let logMessage = "SYSTEM STATUS: SYSTEM IDLE (双方のクロックは等速で同調中)";
+
+document.getElementById('launchBtn').addEventListener('click', () => {
+    if (!isMoving) {
+        isMoving = true;
+        shipVelocity = 0.0;
+        moveDirection = 1;
+        missionStep = 0;
+        logMessage = "MISSION LOG: Space ship launched. High velocity coordinate rewrite active.";
+    }
+});
+
+function updateUniverse() {
+    // 1. 静止している地球（兄）は、毎フレーム100%のCPU割り当てを受け、等速で時間が進む
+    earthTime += 1.0;
+
+    // 2. 宇宙船（弟）の移動処理と負荷計算
+    let taskLoad = 0.0; // 座標更新によるCPU負荷
+    let deltaTau = 1.0; // 宇宙船の固有時間ステップ（デフォルトは1フレームあたり1）
+
+    if (isMoving) {
+        missionStep++;
+        
+        // 往路・復路のシミュレーション（加速・巡航・減速・Uターン）
+        if (missionStep < 120) {
+            // 加速・巡航
+            shipVelocity = Math.min(6.5, shipVelocity + 0.1);
+        } else if (missionStep >= 120 && missionStep < 180) {
+            // 中間地点での方向転換（Uターン）
+            shipVelocity = Math.max(0.2, shipVelocity - 0.2);
+            if (shipVelocity <= 0.2) moveDirection = -1;
+        } else if (missionStep >= 180 && missionStep < 300) {
+            // 復路の加速・巡航
+            shipVelocity = Math.min(6.5, shipVelocity + 0.1);
+        } else {
+            // 地球へ接近・減速着陸
+            shipVelocity = Math.max(0, shipVelocity - 0.15);
+            if (shipVelocity === 0) {
+                isMoving = false;
+                logMessage = `MISSION COMPLETE: Ship returned. Earth: ${Math.floor(earthTime)} steps | Ship: ${Math.floor(shipTime)} steps. Paradox solved.`;
+            }
+        }
+
+        shipX += shipVelocity * moveDirection;
+
+        // 【ここがUniverse OSの核心】
+        // 速度（移動量）に比例して、空間配列のインデックス書き換え負荷（taskLoad）が増大。
+        // 総リソース上限を超えないよう、固有更新クロック（deltaTau）を反比例させて間引く。
+        taskLoad = (shipVelocity / 7.0) * 0.85; // 最大85%の処理負荷
+        deltaTau = 1.0 - taskLoad; // 負荷が高いほど、時間の進み（フレーム更新）が遅くなる
+        
+        if (isMoving) {
+            logMessage = `UPDATE LOG: Ship Velocity = ${(shipVelocity * 40000).toFixed(0)} km/s | Task Load = ${(taskLoad * 100).toFixed(0)}% | Clock Rate (Δτ) = ${deltaTau.toFixed(2)}`;
+        }
+    }
+
+    // 宇宙船の内部時計は、間引かれた deltaTau の分だけ加算される（コマ落ちの蓄積）
+    shipTime += deltaTau;
+
+    // --- レンダリングセクション ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 宇宙のグリッド（移動の背景）
+    ctx.strokeStyle = '#00150a';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    let midY = HEIGHT / 2;
+
+    // --- 時計1: 地球（兄）のクロックUI ---
+    let ex = 150;
+    let ey = 140;
+    ctx.strokeStyle = '#00aaff';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(ex, ey, 45, 0, Math.PI * 2); ctx.stroke();
+    // 地球の時計の針
+    let earthAngle = (earthTime * 0.05) % (Math.PI * 2);
+    ctx.strokeStyle = '#00aaff';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(ex, ey);
+    ctx.lineTo(ex + Math.cos(earthAngle) * 35, ey + Math.sin(earthAngle) * 35);
+    ctx.stroke();
+    
+    ctx.fillStyle = '#00aaff';
+    ctx.font = '14px Courier New';
+    ctx.fillText(`EARTH CLOCK (兄) : ${Math.floor(earthTime)}`, ex + 60, ey - 5);
+    ctx.font = '11px Courier New';
+    ctx.fillText("Status: Stationary (Load 0%)", ex + 60, ey + 15);
+
+    // 地球（青い円）
+    ctx.fillStyle = '#0055ff';
+    ctx.beginPath(); ctx.arc(150, 280, 15, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px Courier New';
+    ctx.fillText("EARTH", 135, 310);
+
+    // --- 時計2: 宇宙船（弟）のクロックUI ---
+    // 宇宙船の現在位置に連動して時計が移動する
+    let sx = shipX;
+    let sy = shipY - 80;
+    
+    ctx.strokeStyle = isMoving ? '#00ff66' : '#888888';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(sx, sy, 45, 0, Math.PI * 2); ctx.stroke();
+    // 宇宙船の時計の針（間引かれたshipTimeで回る）
+    let shipAngle = (shipTime * 0.05) % (Math.PI * 2);
+    ctx.strokeStyle = isMoving ? '#00ff66' : '#888888';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + Math.cos(shipAngle) * 35, sy + Math.sin(shipAngle) * 35);
+    ctx.stroke();
+
+    if (isMoving) {
+        ctx.fillStyle = '#00ff66';
+        ctx.font = '12px Courier New';
+        ctx.fillText(`SHIP CLOCK (弟): ${Math.floor(shipTime)}`, sx - 60, sy - 55);
+    } else {
+        ctx.fillStyle = '#888888';
+        ctx.font = '12px Courier New';
+        ctx.fillText(`SHIP CLOCK (弟): ${Math.floor(shipTime)}`, sx - 60, sy - 55);
+    }
+
+    // 宇宙船本体（緑の三角）
+    ctx.fillStyle = isMoving ? '#00ff66' : '#666666';
+    ctx.beginPath();
+    if (moveDirection === 1) {
+        ctx.moveTo(shipX + 15, shipY); ctx.lineTo(shipX - 15, shipY - 8); ctx.lineTo(shipX - 15, shipY + 8);
+    } else {
+        ctx.moveTo(shipX - 15, shipY); ctx.lineTo(shipX + 15, shipY - 8); ctx.lineTo(shipX + 15, shipY + 8);
+    }
+    ctx.fill();
+
+    // 往復航路のガイドライン
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(150, 280); ctx.lineTo(750, 280); ctx.stroke();
+    ctx.setLineDash([]); // 点線リセット
+
+    // ターンポイントのUI
+    ctx.strokeStyle = '#ff3333';
+    ctx.strokeRect(750, 270, 5, 20);
+    ctx.fillStyle = '#ff3333';
+    ctx.font = '10px Courier New';
+    ctx.fillText("TURN POINT", 725, 305);
+
+    // 下部システムログ描画
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 30, HEIGHT - 20);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

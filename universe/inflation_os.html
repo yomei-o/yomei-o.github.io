@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 宇宙のインフレーションシミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #020205;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 520px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #110022;
+            color: #d400ff;
+            border: 1px solid #d400ff;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(212, 0, 255, 0.3);
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #d400ff;
+            color: #020205;
+            box-shadow: 0 0 25px rgba(212, 0, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Cosmic Inflation Kernel]</strong><br>
+    ・L1 Boot: Super-exponential matrix reallocation.<br>
+    ・Freeze: High-frequency jitter expanded beyond processing velocity (C).<br>
+    <br>
+    <span style="color: #ff00d4;">【仕組み】初期宇宙のミクロ領域にあった激しい量子ノイズが、OSの超高速なメモリ領域拡張（インフレーション）によって一瞬でマクロサイズへ引き伸ばされます。拡張速度がL3伝播速度（C）を越えるため、ノイズは身動きを失い「凍結」され、現代宇宙の銀河の種（CMBのゆらぎ）へと実体化します。</span>
+</div>
+
+<canvas id="inflationCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="bootBtn">【 UNIVERSE BOOT SEQUENCE (インフレーション実行) 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('inflationCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 120;
+const ROWS = 75;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// インフレーション管理フラグ
+let bootPhase = "PRE_INFLATION"; // PRE_INFLATION, INFLATING, POST_CMB
+let inflationScale = 1.0;
+let logMessage = "SYSTEM STATUS: PRE-BOOT (原始プランク領域で高周波量子ノイズが明滅中)";
+let elapsedFrames = 0;
+
+document.getElementById('bootBtn').addEventListener('click', () => {
+    if (bootPhase === "PRE_INFLATION") {
+        bootPhase = "INFLATING";
+        elapsedFrames = 0;
+        logMessage = "BOOT LOG: Inflation triggered. Reallocating cosmic matrix grid...";
+    }
+});
+
+function updateUniverse() {
+    elapsedFrames++;
+
+    const OMEGA_SQ = 0.24;
+    const midX = Math.floor(COLS / 2);
+    const midY = Math.floor(ROWS / 2);
+
+    // 1. 各フェーズにおける空間マトリクスの演算
+    if (bootPhase === "PRE_INFLATION") {
+        // インフレーション前：中央の狭いプランク領域（半径5セル以内）だけで超高周波ノイズが激しく振動
+        for (let i = 1; i < COLS - 1; i++) {
+            for (let j = 1; j < ROWS - 1; j++) {
+                let dist = Math.sqrt((i - midX) * (i - midX) + (j - midY) * (j - midY));
+                if (dist < 5) {
+                    curr_X[i][j] = (Math.random() - 0.5) * 35.0;
+                    prev_X[i][j] = curr_X[i][j];
+                } else {
+                    curr_X[i][j] = 0;
+                    prev_X[i][j] = 0;
+                }
+            }
+        }
+    } 
+    else if (bootPhase === "INFLATING") {
+        // インフレーション中：中央の極小ノイズを爆発的に全画面へ「写像（配列引き延ばし）」する
+        // わずか30フレームで宇宙を10^26倍にする動的アロケーションをシミュレート
+        inflationScale += 0.8; 
+        
+        // 一時バッファに現在の引き伸ばし状態をサンプリング
+        let temp_curr = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+        
+        for (let i = 1; i < COLS - 1; i++) {
+            for (let j = 1; j < ROWS - 1; j++) {
+                // 中心からの逆算写像
+                let origI = midX + (i - midX) / inflationScale;
+                let origJ = midY + (j - midY) / inflationScale;
+                
+                let srcI = Math.floor(origI);
+                let srcJ = Math.floor(origJ);
+                
+                if (srcI >= 0 && srcI < COLS && srcJ >= 0 && srcJ < ROWS) {
+                    // 高周波の小さな波がマクロな大波に引き伸ばされる
+                    temp_curr[i][j] = (Math.random() - 0.5) * 4.0; // インフレーション中の場の揺らぎ
+                    // 過去の中央ノイズをベースに引き延ばす
+                    if (inflationScale < 15) {
+                        let distFromCenter = Math.sqrt((srcI - midX)**2 + (srcJ - midY)**2);
+                        if (distFromCenter < 5) {
+                            temp_curr[i][j] += (Math.random() - 0.5) * 20.0;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // グリッドへ適用（インフレーションが速すぎて通常のL3伝播Cが追いつかず、波形が固定される）
+        for (let i = 0; i < COLS; i++) {
+            for (let j = 0; j < ROWS; j++) {
+                curr_X[i][j] = temp_curr[i][j];
+                prev_X[i][j] = temp_curr[i][j] * 0.95; 
+            }
+        }
+
+        logMessage = `INFLATION ACTIVE: Scale Factor = x${(Math.pow(10, inflationScale)).getExponentialHeading(2) || (inflationScale*10).toFixed(0)}プランクスケール | 伝播速度を超越中`;
+
+        if (elapsedFrames > 45) {
+            bootPhase = "POST_CMB";
+            logMessage = "SYSTEM LOG: Inflation halted. Reheating completed. CMB fluctuation frozen.";
+        }
+    } 
+    else if (bootPhase === "POST_CMB") {
+        // インフレーション終了後：引き伸ばされた大マクロな「ムラ」を維持したまま、通常のL3標準宇宙の伝播演算に移行
+        // これが現代の宇宙マイクロ波背景放射（CMB）および銀河の網目構造になる
+        for (let i = 1; i < COLS - 1; i++) {
+            for (let j = 1; j < ROWS - 1; j++) {
+                let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+                let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+                
+                // 宇宙が広がり密度の薄くなった標準空間の緩やかな減衰とダンピング
+                next_val *= 0.992; 
+                next_X[i][j] = next_val;
+            }
+        }
+
+        // メモリシフト
+        for (let i = 0; i < COLS; i++) {
+            for (let j = 0; j < ROWS; j++) {
+                prev_X[i][j] = curr_X[i][j];
+                curr_X[i][j] = next_X[i][j];
+            }
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#020205';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 宇宙網目構造（CMB揺らぎ）の可視化ゲインレンダリング
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let amp = curr_X[i][j];
+            let energy = Math.abs(amp) * 12;
+
+            if (energy > 1.5) {
+                let alpha = Math.min(1, energy / 255);
+                if (bootPhase === "PRE_INFLATION") {
+                    // 初期ノイズは鋭い緑青
+                    ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`;
+                } else if (bootPhase === "INFLATING") {
+                    // インフレーション中は引き裂かれる紫・ピンク
+                    ctx.fillStyle = `rgba(212, 0, 255, ${alpha * 0.7})`;
+                } else {
+                    // 凍結後は宇宙背景放射の熱的な残骸（オレンジ〜赤紫の網目構造）
+                    if (amp > 0) ctx.fillStyle = `rgba(255, 100, 0, ${alpha * 0.85})`;
+                    else ctx.fillStyle = `rgba(130, 0, 255, ${alpha * 0.6})`;
+                }
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // プランク領域の初期境界枠（視覚用ガイド）
+    if (bootPhase === "PRE_INFLATION") {
+        ctx.strokeStyle = 'rgba(0, 255, 200, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(midX * DX, midY * DY, 6 * DX, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(0, 255, 200, 0.5)';
+        ctx.font = '10px Courier New';
+        ctx.fillText("Planck Seed", midX * DX - 30, midY * DY - 40);
+    }
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+    
+    let stateStr = bootPhase === "PRE_INFLATION" ? "QUANTUM JITTER" : (bootPhase === "INFLATING" ? "EXPONENTIAL ALLOCATION" : "FROZEN CMB MATRIX");
+    ctx.fillText(`OS KERNEL PHASE : ${stateStr}`, 20, HEIGHT - 40);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// 指数表示用の補助プロトタイプ
+Number.prototype.getExponentialHeading = function(fractionDigits) {
+    return "10^" + Math.floor(this);
+};
+
+updateUniverse();
+</script>
+
+</body>
+</html>

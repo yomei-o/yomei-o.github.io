@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 超伝導＆マイスナー効果シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 500px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #002211;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+        }
+        button:hover {
+            background: #00ffcc;
+            color: #05050a;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Superconductivity Kernel]</strong><br>
+    ・L3: X_{n+1} = (2 - ω²)X_n - X_{n-1} + ThermalJitter<br>
+    ・Meissner: Phase locked loop rejects external matrix modification.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】温度を下げて熱ジッター（ノイズ）を排除すると、電子パケットが位相反転の同期状態（クーパー対）へ自動リファクタリングされます。これにより電気抵抗（インピーダンス）がゼロになり、同時に上からの磁気ラインをグリッド境界で弾き返す「マイスナー効果」が創発します。</span>
+</div>
+
+<canvas id="superCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="coolBtn">【 システムを冷却する (T → 0) 】</button>
+    <button id="injectBtn">【 電子パケットを注入 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('superCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 450;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 100;
+const ROWS = 56;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 磁界グリッド（外部からの書き込み行列）
+let magneticField = [];
+
+// システムパラメータ
+let temperature = 1.0; // 1.0: 高温ノイズ, 0.0: 絶対零度
+let isSuperconducting = false;
+let logMessage = "SYSTEM STATUS: HIGH TEMPERATURE (熱ジッターによるインピーダンス大)";
+
+// 磁気ラインの初期化（上から垂れ下がるベクトル線）
+function initMagnetic() {
+    magneticField = [];
+    for (let i = 0; i < COLS; i += 4) {
+        magneticField.push({
+            x: i,
+            baseY: 0,
+            currentY: Array(ROWS).fill(0)
+        });
+    }
+}
+initMagnetic();
+
+document.getElementById('coolBtn').addEventListener('click', () => {
+    temperature = 0.0;
+    isSuperconducting = true;
+    logMessage = "LOG: Thermal Jitter zero. Phase-Lock established. Resistance: 0.00000000 Ω";
+});
+
+document.getElementById('injectBtn').addEventListener('click', () => {
+    // 中央の導体層に電子パケット（コヒーレントな固有振動）をキックイン
+    let midY = Math.floor(ROWS / 2) + 4;
+    for (let i = 10; i < 20; i++) {
+        curr_X[i][midY] = 20 * Math.sin((i - 10) * 0.3);
+        prev_X[i][midY] = 20 * Math.sin((i - 10) * 0.3);
+    }
+});
+
+let clock = 0;
+
+function updateUniverse() {
+    clock++;
+    
+    // 超伝導体が配置されている中央レジスタ領域（行インデックス）
+    const SC_Y_START = Math.floor(ROWS / 2) - 2;
+    const SC_Y_END = Math.floor(ROWS / 2) + 8;
+
+    const OMEGA_SQ = 0.25;
+
+    // 1. レイヤー3：真空ばねグリッド演算
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+
+            // 環境に応じた熱ジッター（ノイズ）の混入
+            if (temperature > 0) {
+                next_val += (Math.random() - 0.5) * temperature * 2.5;
+                next_val *= 0.95; // 通常状態ではインピーダンス（抵抗）により波が減衰
+            } else {
+                // 絶対零度（超伝導層）では、減衰を一切かけない（永久電流のループ保持仕様）
+                if (j >= SC_Y_START && j <= SC_Y_END) {
+                    next_val *= 1.0; // 抵抗ゼロの完全メモリ保持
+                } else {
+                    next_val *= 0.92; // 導体の外は減衰
+                }
+            }
+
+            next_X[i][j] = next_val;
+        }
+    }
+
+    // メモリシフト
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // 2. 磁界（マイスナー効果）の変形計算
+    // 超伝導層のエネルギー（curr_Xの振幅）が高まると、磁界の侵入を上方に押し戻す
+    magneticField.forEach(line => {
+        let pushTop = 0;
+        for (let j = 0; j < ROWS; j++) {
+            if (j >= SC_Y_START && j <= SC_Y_END) {
+                if (isSuperconducting) {
+                    // 超伝導状態の時は、層の内部のサンプリング圧（波のエネルギー）によって、磁気ポインタを外へ排除
+                    pushTop += 1.8;
+                }
+            }
+        }
+        
+        // 各行の磁気ラインの描画用Y座標を計算
+        for (let j = 0; j < ROWS; j++) {
+            if (isSuperconducting && j >= SC_Y_START - 8 && j <= SC_Y_END) {
+                line.currentY[j] = j * DY - pushTop * (1 - (j - SC_Y_START + 8) / 10);
+            } else {
+                line.currentY[j] = j * DY;
+            }
+        }
+    });
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 超伝導物質（導体プレート）のベースライン表示
+    ctx.fillStyle = isSuperconducting ? 'rgba(0, 255, 200, 0.08)' : 'rgba(100, 100, 120, 0.1)';
+    ctx.strokeStyle = isSuperconducting ? '#00ffcc' : '#555566';
+    ctx.lineWidth = 1;
+    ctx.fillRect(0, SC_Y_START * DY, WIDTH, (SC_Y_END - SC_Y_START) * DY);
+    ctx.strokeRect(0, SC_Y_START * DY, WIDTH, (SC_Y_END - SC_Y_START) * DY);
+    
+    ctx.font = '11px Courier New';
+    ctx.fillStyle = isSuperconducting ? '#00ffcc' : '#555566';
+    ctx.fillText("SUPERCONDUCTING LAYER REGISTER (導体層)", 15, SC_Y_START * DY + 20);
+
+    // 電子の波（永久電流）の輝度描画
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let energy = Math.abs(curr_X[i][j]) * 15;
+            if (energy > 5) {
+                ctx.fillStyle = isSuperconducting ? `rgba(0, 255, 200, ${Math.min(1, energy/255)})` : `rgba(150, 160, 180, ${Math.min(1, energy/255)})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 磁気ライン（外部磁場）の描画
+    ctx.strokeStyle = 'rgba(0, 150, 255, 0.7)';
+    ctx.lineWidth = 2;
+    magneticField.forEach(line => {
+        ctx.beginPath();
+        ctx.moveTo(line.x * DX, 0);
+        for (let j = 0; j < Math.floor(ROWS * 0.7); j++) {
+            ctx.lineTo(line.x * DX, line.currentY[j]);
+        }
+        ctx.stroke();
+    });
+
+    // マグネットUIの描写
+    ctx.fillStyle = '#ff3333';
+    ctx.fillRect(WIDTH / 2 - 60, 0, 120, 15);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px Courier New';
+    ctx.fillText("EXTERNAL MAGNET (N)", WIDTH / 2 - 50, 12);
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+    ctx.fillText(`SYSTEM TEMP (T)  : ${temperature.toFixed(2)} ${temperature === 0 ? '(CRITICAL ZERO)' : 'JITTER_LOAD'}`, 20, HEIGHT - 40);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

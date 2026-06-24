@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 量子もつれシミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 500px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #002211;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+        }
+        button:hover {
+            background: #00ffcc;
+            color: #05050a;
+        }
+        canvas {
+            border: 1px solid #005544;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Quantum Entanglement Kernel]</strong><br>
+    ・L3: Core Memory Shifting Grid<br>
+    ・Non-locality: Shared memory pointer assignment.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】左右に離れていく2つの粒子は、宇宙OSの裏庭（メモリ）では「共通のポインタ（共有オブジェクト）」を参照しています。そのため、距離に関係なく片方に観測の割り込み（状態確定）が入ると、もう片方も1クロックで即座に同期反転します。</span>
+</div>
+
+<canvas id="entangleCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="measureBtn">【 粒子A（右）を観測して状態を確定する 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('entangleCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 900;
+const HEIGHT = 400;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 120;
+const ROWS = 40;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 粒子の構造体（OS内のオブジェクトレジスタ）
+// AとBは別々の座標を持つが、sharedStateという共通の参照（ポインタ）を共有している
+let sharedState = {
+    isMeasured: false,
+    spinValue: 0, // 0: 未確定の重ね合わせ, 1: UP(↑), -1: DOWN(↓)
+    phaseSeed: 0
+};
+
+let particleA = { col: 60, row: 20, vCol: 0.6, color: '#3399ff' }; // 右へ進む
+let particleB = { col: 60, row: 20, vCol: -0.6, color: '#ff3366' }; // 左へ進む
+
+let logMessage = "STATUS: WAVE SUPERPOSITION (重ね合わせ状態)";
+
+document.getElementById('measureBtn').addEventListener('click', () => {
+    if (!sharedState.isMeasured) {
+        // --- 核心：メモリの割り込み処理 ---
+        sharedState.isMeasured = true;
+        // 50%の確率でUPかDOWNかを「サンプリングの瞬間」に決定
+        sharedState.spinValue = Math.random() > 0.5 ? 1 : -1;
+        logMessage = `INTERRUPT LOG: A measured -> ${sharedState.spinValue === 1 ? 'UP(↑)' : 'DOWN(↓)'}. B synchronized instantly!`;
+    }
+});
+
+let systemClock = 0;
+
+function updateUniverse() {
+    systemClock++;
+    
+    // 1. 重ね合わせ状態の時は、共通のオブジェクト内の位相の種を毎クロック高速回転（明滅）させる
+    if (!sharedState.isMeasured) {
+        sharedState.phaseSeed = Math.sin(systemClock * 0.4);
+    }
+
+    // 2. 粒子の座標移動（L3グリッド上のポインタインデックス更新）
+    if (particleA.col < COLS - 5) particleA.col += particleA.vCol;
+    if (particleB.col > 5) particleB.col += particleB.vCol;
+
+    // 3. レイヤー3：真空ばねグリッドの演算（パケットの周囲への波の広がりをシミュレート）
+    const OMEGA_SQ = 0.2;
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            next_X[i][j] = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+            
+            // 空間の減衰
+            next_X[i][j] *= 0.96;
+        }
+    }
+
+    // 粒子の現在位置のグリッドセルに、共有状態に応じた振幅（エネルギー）を動的に注入
+    let idxA = Math.floor(particleA.col);
+    let idxB = Math.floor(particleB.col);
+    let midY = Math.floor(ROWS / 2);
+
+    if (!sharedState.isMeasured) {
+        // 未観測のときは、共通のphaseSeedによって2つの離れたセルが「完全に同期して明滅」する（ポインタの共有効果）
+        curr_X[idxA][midY] = sharedState.phaseSeed * 15;
+        curr_X[idxB][midY] = -sharedState.phaseSeed * 15; // 逆位相で連動
+    } else {
+        // 観測確定後は、固定されたスピンレジスタの値に応じた固有振動モードに固定
+        curr_X[idxA][midY] = sharedState.spinValue * 12;
+        curr_X[idxB][midY] = -sharedState.spinValue * 12; // Aと完全に逆の状態を維持
+    }
+
+    // バッファのローテーション
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 30) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // L3波面の輝度描画
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let amp = curr_X[i][j];
+            let energy = Math.abs(amp) * 20;
+            if (energy > 2) {
+                // 位相（正負）によって色をわずかに変えて可視化
+                if (amp > 0) ctx.fillStyle = `rgba(0, 255, 200, ${Math.min(1, energy / 255)})`;
+                else ctx.fillStyle = `rgba(0, 150, 255, ${Math.min(1, energy / 255)})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 粒子本体のドットおよび状態（スピン）のUI描画
+    let ax = particleA.col * DX;
+    let bx = particleB.col * DX;
+    let y = midY * DY + DY/2;
+
+    // 粒子A（右側・青）
+    ctx.fillStyle = particleA.color;
+    ctx.shadowColor = particleA.color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(ax, y, 8, 0, Math.PI * 2); ctx.fill();
+
+    // 粒子B（左側・赤）
+    ctx.fillStyle = particleB.color;
+    ctx.shadowColor = particleB.color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(bx, y, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // スピン状態のテキスト描画
+    ctx.font = '16px Courier New';
+    if (!sharedState.isMeasured) {
+        ctx.fillStyle = '#3399ff'; ctx.fillText("Spin: 🔗?", ax - 30, y - 20);
+        ctx.fillStyle = '#ff3366'; ctx.fillText("Spin: 🔗?", bx - 30, y - 20);
+    } else {
+        ctx.fillStyle = '#3399ff'; 
+        ctx.fillText(`Spin: ${sharedState.spinValue === 1 ? '↑ (UP)' : '↓ (DOWN)'}`, ax - 45, y - 20);
+        ctx.fillStyle = '#ff3366'; 
+        ctx.fillText(`Spin: ${sharedState.spinValue === 1 ? '↓ (DOWN)' : '↑ (UP)'}`, bx - 45, y - 20);
+    }
+
+    // 中央の発生源（Source）マーク
+    ctx.strokeStyle = '#555566';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60 * DX - 10, midY * DY - 10, 20, 20);
+    ctx.fillStyle = '#555566';
+    ctx.font = '10px Courier New';
+    ctx.fillText("SOURCE", 60 * DX - 18, midY * DY - 15);
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 30, HEIGHT - 20);
+    ctx.fillText(`DISTANCE (n) : ${Math.floor(particleA.col - particleB.col)} nodes`, 30, HEIGHT - 40);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - プランク星（特異点セーフティ）シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #030307;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 5, 20, 0.85);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 520px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #1a0000;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+        button:hover {
+            background: #ff3333;
+            color: #030307;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Planck Star Safety Kernel]</strong><br>
+    ・L1 Limit: Max amplitude constraint (Planck Density).<br>
+    ・Singularity Bypass: Overflow prevention triggers phase inversion.<br>
+    <br>
+    <span style="color: #ff3333;">【仕組み】重力崩壊によってブラックホールの中心にデータが集中した際、無限大への発散（特異点）によるシステムクラッシュを防ぐため、Universe OSは「最大書き込み制限（プランク限界）」を発動します。中心セルはそれ以上の圧縮を拒絶し、高密度の反発コア（プランク星）を形成してエネルギーを外側へバウンドさせます。</span>
+</div>
+
+<canvas id="planckCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="collapseBtn">【 重力崩壊（COLLAPSE SEQUENCE）を実行 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('planckCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 800;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 100;
+const ROWS = 62;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+const midX = Math.floor(COLS / 2);
+const midY = Math.floor(ROWS / 2);
+
+let isCollapsing = false;
+let systemStatus = "SYSTEM IDLE (真空レジスタ安定)";
+let planckCritical = false;
+let collapseTimer = 0;
+
+document.getElementById('collapseBtn').addEventListener('click', () => {
+    if (!isCollapsing) {
+        isCollapsing = true;
+        collapseTimer = 0;
+        planckCritical = false;
+        systemStatus = "CRITICAL LOG: Gravity collapse initiated. Concentrating packet density...";
+        
+        // 周囲に崩壊前の巨大な星の質量（波動パケットの外殻）をインジェクション
+        for (let i = 1; i < COLS - 1; i++) {
+            for (let j = 1; j < ROWS - 1; j++) {
+                let dist = Math.sqrt((i - midX)**2 + (j - midY)**2);
+                if (dist > 15 && dist < 25) {
+                    curr_X[i][j] = 12.0 * Math.sin(dist * 0.5);
+                    prev_X[i][j] = curr_X[i][j];
+                }
+            }
+        }
+    }
+});
+
+function updateUniverse() {
+    const OMEGA_SQ = 0.25;
+    const PLANCK_LIMIT = 45.0; // レジスタの最大飽和容量（プランク密度）
+
+    if (isCollapsing) {
+        collapseTimer++;
+        // 疑似的な重力ベクトルを中心へ向けて印加（パケットを中心インデックスへ引き寄せる）
+        if (collapseTimer < 150) {
+            for (let i = 1; i < COLS - 1; i++) {
+                for (let j = 1; j < ROWS - 1; j++) {
+                    let dist = Math.sqrt((i - midX)**2 + (j - midY)**2);
+                    if (dist > 1) {
+                        let push = 0.18 / dist;
+                        curr_X[i][j] += (midX - i) * push * 0.05;
+                        curr_X[i][j] += (midY - j) * push * 0.05;
+                    }
+                }
+            }
+        }
+    }
+
+    planckCritical = false;
+
+    // L3：差分方程式演算
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+
+            // 空間の基本減衰
+            next_val *= 0.985;
+
+            // 【核心：ハードウェア・セーフティ・パッチ】
+            // 中心のプランク領域で数値が上限（PLANCK_LIMIT）を超えそうになった場合、
+            // 桁あふれを防止するためにクリップし、位相を反転させて外へ押し出す（バウンドの創発）
+            let distFromCenter = Math.sqrt((i - midX)**2 + (j - midY)**2);
+            if (distFromCenter <= 3) {
+                if (Math.abs(next_val) >= PLANCK_LIMIT) {
+                    planckCritical = true;
+                    // セーフティ発動：最大値で固定（特異点化を拒絶）し、エネルギーを反転
+                    next_val = (next_val > 0 ? PLANCK_LIMIT : -PLANCK_LIMIT) * -0.8; 
+                }
+            }
+
+            next_X[i][j] = next_val;
+        }
+    }
+
+    if (planckCritical) {
+        systemStatus = "HARDWARE PATCH: PLANCK CRITICAL! Overflow prevented. Energy bounced.";
+    } else if (isCollapsing && collapseTimer >= 150) {
+        systemStatus = "SYSTEM LOG: Core collapse halted. Super-dense Planck Star core stabilized.";
+    }
+
+    // バッファのローテーション
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#030307';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#110505';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 10倍適正ゲインによる空間密度の描画
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let amp = Math.abs(curr_X[i][j]);
+            let energy = amp * 280; // 10倍スケール調整
+
+            if (energy > 4) {
+                let alpha = Math.min(1, energy / 255);
+                let dist = Math.sqrt((i - midX)**2 + (j - midY)**2);
+                
+                if (dist <= 3 && planckCritical) {
+                    // プランク限界に達しているコアは限界突破の「ホワイト」
+                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                } else if (dist <= 3) {
+                    // 通常の中心超高密度領域（プランク星の表面）は警告の「赤」
+                    ctx.fillStyle = `rgba(255, 50, 50, ${alpha})`;
+                } else {
+                    // 周囲に広がる重力波・跳ね返りのパケットは「琥珀色〜オレンジ」
+                    ctx.fillStyle = `rgba(255, 140, 0, ${alpha * 0.8})`;
+                }
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 事象の地平線（Event Horizon）の疑似予測ライン
+    if (isCollapsing) {
+        ctx.strokeStyle = planckCritical ? 'rgba(255, 50, 50, 0.4)' : 'rgba(150, 50, 50, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.arc(midX * DX + DX/2, midY * DY + DY/2, 12 * DX, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+        ctx.font = '10px Courier New';
+        ctx.fillText("EVENT HORIZON", midX * DX - 35, midY * DY - 12 * DY - 5);
+    }
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(systemStatus, 20, HEIGHT - 20);
+
+    ctx.fillStyle = planckCritical ? '#ff3333' : '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(`CORE DENSITY : ${planckCritical ? '1.00 PLANCK LIMIT (MAX)' : 'SUB-CRITICAL STATE'}`, 20, HEIGHT - 40);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>
