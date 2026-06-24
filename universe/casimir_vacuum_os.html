@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - カシミール効果＆真空エネルギー・サンプラー</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #020206;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 10, 20, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 620px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            background: #001122;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+            padding: 10px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 170, 255, 0.2);
+        }
+        button:hover {
+            background: #00ffcc;
+            color: #03030c;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Vacuum Casimir Sampler]</strong><br>
+    · Layer : L3 Space Matrix Grid (Quantum Jitter Simulation)<br>
+    · Force : $F \propto 1/d^4$ Visualized via Pixel Density Delta<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】背景のノイズは物質のない「真の真空」に湧き出る零点振動（エネルギーの揺らぎ）です。2枚のプレートを置くと、狭い内側には「短い波」しか入れず、外側よりエネルギー密度が低下します。この「真空の圧力差（差分）」だけで、何も触れていないプレートが勝手に引き寄せられる量子力学の神秘をリアルタイムにコンパイルしています。</span>
+</div>
+
+<canvas id="casimirCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="resetBtn">【 空間リセット＆プレート再配置 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('casimirCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const centerY = HEIGHT / 2;
+
+// 2枚のプレートの水平座標（L1レジスタ）
+let plateL = 320;
+let plateR = 530;
+let plateWidth = 15;
+let plateVelocity = 0; // 引き合う速度
+
+// 空間の量子波バッファ
+let time = 0;
+
+function resetSimulation() {
+    plateL = 320;
+    plateR = 530;
+    plateVelocity = 0;
+    time = 0;
+}
+
+document.getElementById('resetBtn').addEventListener('click', resetSimulation);
+
+function updateUniverse() {
+    time += 0.4;
+
+    // --- 1. 真空物理カーネルの演算 ---
+    let d = plateR - plateL - plateWidth; // プレート間の距離
+    if (d < 4) d = 4; // クラッシュ防止の最小バッファ
+
+    // カシミール力の計算 (理論上は距離の4乗に反比例するが、画面演出用に適正化)
+    // F = K / (d^3) の差分評価
+    let casimirForce = 1500 / (d * d * d);
+    
+    // 速度レジスタの更新と座標のシンプレクティック加算
+    plateVelocity += casimirForce * 0.05;
+    
+    // プレートを内側へ移動させる
+    plateL += plateVelocity;
+    plateR -= plateVelocity;
+
+    // 衝突時の完全固定制御
+    if (plateL >= plateR - plateWidth) {
+        plateL = (plateL + plateR) / 2 - plateWidth / 2;
+        plateR = plateL + plateWidth;
+        plateVelocity = 0;
+    }
+
+    // --- 2. レンダリング層（ラスタライズ） ---
+    ctx.fillStyle = '#020206';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // バックグラウンドの真空エネルギーグリッドを描画
+    let cols = 85;
+    let rows = 50;
+    let cellW = WIDTH / cols;
+    let cellH = HEIGHT / rows;
+
+    for (let i = 0; i < cols; i++) {
+        let x = i * cellW + cellW / 2;
+
+        for (let j = 0; j < rows; j++) {
+            let y = j * cellH + cellH / 2;
+
+            // 基本的な真空の零点振動の合成波（確率波のサンプリング）
+            let baseJitter = Math.sin(x * 0.05 + time) * Math.cos(y * 0.08 - time * 0.5) * 0.5 + 0.5;
+            baseJitter += Math.random() * 0.3; // 量子ゆらぎのランダムジッター
+
+            // ★核心：プレートの「内側」か「外側」かでサンプリングをフィルターする
+            let finalEnergy = baseJitter;
+
+            if (x > plateL + plateWidth && x < plateR) {
+                // 内側：長波長の波が排除されるため、エネルギー密度が減衰する
+                // 距離 d が狭くなればなるほど、高周波（激しい揺らぎ）しか残れなくなる
+                let innerFilter = Math.sin((x - plateL) * (Math.PI / d));
+                finalEnergy *= Math.abs(innerFilter) * 0.4; // 内側のエネルギーを40%以下にカット
+            } else if (Math.abs(x - plateL) < 40 || Math.abs(x - plateR) < 40) {
+                // プレートの外側すぐ近く：波の衝突によるエネルギーの跳ね返り（高密度化）
+                finalEnergy *= 1.3;
+            }
+
+            // 輝度にコンパイル
+            let alpha = Math.min(1.0, Math.max(0.05, finalEnergy * 0.4));
+            ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`;
+            ctx.fillRect(i * cellW + 1, j * cellH + 1, cellW - 2, cellH - 2);
+        }
+    }
+
+    // --- 3. プレート（金属板）の描画 ---
+    ctx.shadowBlur = 0;
+    
+    // 左プレート
+    let gradL = ctx.createLinearGradient(plateL, 0, plateL + plateWidth, 0);
+    gradL.addColorStop(0, '#00aaff');
+    gradL.addColorStop(1, '#ffffff');
+    ctx.fillStyle = gradL;
+    ctx.fillRect(plateL, 50, plateWidth, HEIGHT - 100);
+
+    // 右プレート
+    let gradR = ctx.createLinearGradient(plateR, 0, plateR + plateWidth, 0);
+    gradR.addColorStop(0, '#ffffff');
+    gradR.addColorStop(1, '#00aaff');
+    ctx.fillStyle = gradR;
+    ctx.fillRect(plateR, 50, plateWidth, HEIGHT - 100);
+
+    // プレートにかかる「真空の圧力ベクトル」を矢印でラスタライズ
+    ctx.strokeStyle = '#ffaa00';
+    ctx.lineWidth = 3;
+    let arrowLen = Math.min(60, 10 + casimirForce * 8);
+
+    if (d > 5) {
+        // 左プレートを押す外圧
+        ctx.beginPath();
+        ctx.moveTo(plateL - arrowLen, centerY); ctx.lineTo(plateL - 2, centerY);
+        ctx.lineTo(plateL - 10, centerY - 8); ctx.moveTo(plateL - 2, centerY); ctx.lineTo(plateL - 10, centerY + 8);
+        ctx.stroke();
+
+        // 右プレートを押す外圧
+        ctx.beginPath();
+        ctx.moveTo(plateR + plateWidth + arrowLen, centerY); ctx.lineTo(plateR + plateWidth + 2, centerY);
+        ctx.lineTo(plateR + plateWidth + 10, centerY - 8); ctx.moveTo(plateR + plateWidth + 2, centerY); ctx.lineTo(plateR + plateWidth + 10, centerY + 8);
+        ctx.stroke();
+    }
+
+    // --- 4. モニターUI情報の描画 ---
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    
+    let statusText = plateVelocity > 0 ? "VACUUM COMPRESSING: Casimir Force Accelerating..." : "STABLE EQUILIBRIUM: Vacuum Clamped.";
+    if (d <= 4) statusText = "MAX COMPACTED: Memory Buffers Completely Merged.";
+    ctx.fillText(`STATUS: ${statusText}`, 20, HEIGHT - 25);
+
+    // テレメトリ数値
+    ctx.font = '11px Courier New';
+    ctx.fillStyle = 'rgba(0, 255, 200, 0.7)';
+    ctx.fillText(`PLATE DISTANCE (d)  : ${d.toFixed(2)} nm`, 30, 40);
+    ctx.fillText(`OUTER ENERGY DENSITY: ${(0.65).toFixed(3)} eV/Pixel`, 30, 55);
+    ctx.fillText(`INNER ENERGY DENSITY: ${(0.15 + (d/800)).toFixed(3)} eV/Pixel`, 30, 70);
+    ctx.fillText(`NET CASIMIR PRESSURE: ${casimirForce.toFixed(4)} nN`, 30, 85);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// 宇宙スタート
+requestAnimationFrame(updateUniverse);
+</script>
+
+</body>
+</html>

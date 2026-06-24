@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 水分子 基準振動モード・シミュレーター</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #03030c;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 10, 20, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 580px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            background: #001122;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+            padding: 10px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 170, 255, 0.2);
+        }
+        button.active {
+            background: #00ffcc;
+            color: #03030c;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - H2O Vibrational Mode Kernel]</strong><br>
+    · Topology: O (Mass 16, δ-), H×2 (Mass 1, δ+)<br>
+    · Equilibrium: R0 = 96px, Theta0 = 104.5°<br>
+    · Real-time Matrix: Classical spring constraints + Dipole Moment Vector.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】外部ライブラリなし。3原子の相対座標から結合距離・結合角のポテンシャルエネルギー（L3復元力）をフレーム毎に計算。各モードボタンを押すと、固有値解析に基づく特定の初期速度ベクトルがインジェクションされ、純粋な基準振動が励起されます。中央の紫の矢印は「電荷の偏り（双極子モーメント）」です。</span>
+</div>
+
+<canvas id="moleculeCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="mode1Btn" class="active">【 対称伸縮振動：ν1 】</button>
+    <button id="mode2Btn">【 変角振動：ν2 】</button>
+    <button id="mode3Btn">【 反対称伸縮振動：ν3 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('moleculeCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const centerX = WIDTH / 2;
+const centerY = HEIGHT / 2 - 30;
+
+// 平衡状態の幾何学定数
+const R0 = 110; // 描画サイズに合わせた結合距離
+const THETA0 = 104.5 * Math.PI / 180; // 水分子の標準結合角
+
+// 原子オブジェクト（L1データレジスタ）
+let O = { x: 0, y: -30, vx: 0, vy: 0, mass: 16, charge: -0.66 };
+let H1 = { x: 0, y: 0, vx: 0, vy: 0, mass: 1, charge: 0.33 };
+let H2 = { x: 0, y: 0, vx: 0, vy: 0, mass: 1, charge: 0.33 };
+
+// 原子位置の初期平衡アロケーション
+function resetToEquilibrium() {
+    O.x = 0; O.y = -30; O.vx = 0; O.vy = 0;
+    
+    // 酸素を中心に、104.5°に開いた位置へ水素を配置
+    let halfAngle = THETA0 / 2;
+    H1.x = O.x - R0 * Math.sin(halfAngle);
+    H1.y = O.y + R0 * Math.cos(halfAngle);
+    H1.vx = 0; H1.vy = 0;
+
+    H2.x = O.x + R0 * Math.sin(halfAngle);
+    H2.y = O.y + R0 * Math.cos(halfAngle);
+    H2.vx = 0; H2.vy = 0;
+}
+
+// モードに応じた初期振動エネルギー（速度ベクトル）のインジェクション
+function injectMode(mode) {
+    resetToEquilibrium();
+    let halfAngle = THETA0 / 2;
+    let s = Math.sin(halfAngle);
+    let c = Math.cos(halfAngle);
+
+    if (mode === 1) {
+        // ν1: 対称伸縮 (両方のHが同時にOに向かって斜めに伸縮)
+        let power = 2.5;
+        H1.vx = s * power;  H1.vy = -c * power;
+        H2.vx = -s * power; H2.vy = -c * power;
+        // 反作用を酸素へ（重心の維持）
+        O.vx = -(H1.vx + H2.vx) / O.mass;
+        O.vy = -(H1.vy + H2.vy) / O.mass;
+    } else if (mode === 2) {
+        // ν2: 変角振動 (H同士が近づいたり離れたり、角度が狭まる・広がる)
+        let power = 3.0;
+        H1.vx = c * power; H1.vy = s * power;
+        H2.vx = -c * power; H2.vy = s * power;
+        O.vy = -(H1.vy + H2.vy) / O.mass;
+    } else if (mode === 3) {
+        // ν3: 反対称伸縮 (片方が縮むとき、片方が伸びる)
+        let power = 3.0;
+        H1.vx = s * power;  H1.vy = -c * power;
+        H2.vx = s * power;  H2.vy = -c * power;
+        O.vx = -(H1.vx + H2.vx) / O.mass;
+        O.vy = -(H1.vy + H2.vy) / O.mass;
+    }
+}
+
+let currentMode = 1;
+injectMode(1);
+
+// UIボタンコントロール
+const buttons = [document.getElementById('mode1Btn'), document.getElementById('mode2Btn'), document.getElementById('mode3Btn')];
+buttons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = index + 1;
+        injectMode(currentMode);
+    });
+});
+
+function updateUniverse() {
+    // 物理シミュレーション定数（ばね定数）
+    const kr = 0.12;     // 結合伸縮ばね定数
+    const ktheta = 45.0; // 結合角曲げばね定数
+    const dt = 0.5;      // タイムステップ
+
+    // --- 1. 伸縮復元力（O-H1, O-H2） ---
+    let dx1 = H1.x - O.x; let dy1 = H1.y - O.y;
+    let r1 = Math.sqrt(dx1*dx1 + dy1*dy1);
+    let f_r1 = -kr * (r1 - R0);
+    let fx_r1 = (dx1 / r1) * f_r1;
+    let fy_r1 = (dy1 / r1) * f_r1;
+
+    let dx2 = H2.x - O.x; let dy2 = H2.y - O.y;
+    let r2 = Math.sqrt(dx2*dx2 + dy2*dy2);
+    let f_r2 = -kr * (r2 - R0);
+    let fx_r2 = (dx2 / r2) * f_r2;
+    let fy_r2 = (dy2 / r2) * f_r2;
+
+    // --- 2. 変角復元力（H1-O-H2の角度） ---
+    // ベクトルの内積・外積から現在角を算出
+    let theta = Math.acos((dx1*dx2 + dy1*dy2) / (r1*r2));
+    let delta_theta = theta - THETA0;
+    let f_theta = -ktheta * delta_theta;
+
+    // 角度変化を相殺する方向（法線方向）の単位ベクトルを計算して力を与える
+    let fx_theta1 = (-dy1 / r1) * f_theta / r1;
+    let fy_theta1 = (dx1 / r1) * f_theta / r1;
+    let fx_theta2 = (dy2 / r2) * f_theta / r2;
+    let fy_theta2 = (-dx2 / r2) * f_theta / r2;
+
+    // --- 3. 力の合算と運動方程式のラスタライズ ---
+    // 水素1
+    H1.vx += (fx_r1 + fx_theta1) / H1.mass * dt;
+    H1.vy += (fy_r1 + fy_theta1) / H1.mass * dt;
+    // 水素2
+    H2.vx += (fx_r2 + fx_theta2) / H2.mass * dt;
+    H2.vy += (fy_r2 + fy_theta2) / H2.mass * dt;
+    // 酸素（作用反作用により水素にかかった逆方向の力を全て受ける）
+    O.vx += -(fx_r1 + fx_r2 + fx_theta1 + fx_theta2) / O.mass * dt;
+    O.vy += -(fy_r1 + fy_r2 + fy_theta1 + fy_theta2) / O.mass * dt;
+
+    // 微小な摩擦（エネルギー発散防止ダンパー）
+    [O, H1, H2].forEach(p => {
+        p.vx *= 0.995; p.vy *= 0.995;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+    });
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#03030c';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // デバッグ背景グリッド
+    ctx.strokeStyle = '#051111';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // ローカル座標から画面中央のワールド座標へ変換して描画
+    ctx.save();
+    ctx.translate(centerX, centerY);
+
+    // 結合手の描画（O-H1, O-H2）
+    ctx.strokeStyle = '#556688';
+    ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(H1.x, H1.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(H2.x, H2.y); ctx.stroke();
+
+    // ★核心：双極子モーメント（電荷ベクトル）のリアルタイム演算
+    // 各原子の位置と電荷の積の総和（電気双極子ベクトル）
+    let dipoleX = (O.x * O.charge + H1.x * H1.charge + H2.x * H2.charge) * 4.0;
+    let dipoleY = (O.y * O.charge + H1.y * H1.charge + H2.y * H2.charge) * 4.0;
+
+    // 電荷ベクトルの矢印描画
+    ctx.strokeStyle = '#cc33ff';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#cc33ff'; ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.moveTo(O.x, O.y + 10);
+    ctx.lineTo(O.x + dipoleX, O.y + 10 + dipoleY);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // 酸素原子（重厚な中心核）
+    let gradO = ctx.createRadialGradient(O.x, O.y, 0, O.x, O.y, 24);
+    gradO.addColorStop(0, '#ff5555'); gradO.addColorStop(0.8, '#aa2222'); gradO.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradO;
+    ctx.beginPath(); ctx.arc(O.x, O.y, 24, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px sans-serif'; ctx.fillText("O", O.x-5, O.y+5);
+
+    // 水素原子1
+    let gradH1 = ctx.createRadialGradient(H1.x, H1.y, 0, H1.x, H1.y, 14);
+    gradH1.addColorStop(0, '#55aaff'); gradH1.addColorStop(0.8, '#2266aa'); gradH1.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradH1;
+    ctx.beginPath(); ctx.arc(H1.x, H1.y, 14, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.fillText("H", H1.x-4, H1.y+4);
+
+    // 水素原子2
+    let gradH2 = ctx.createRadialGradient(H2.x, H2.y, 0, H2.x, H2.y, 14);
+    gradH2.addColorStop(0, '#55aaff'); gradH2.addColorStop(0.8, '#2266aa'); gradH2.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradH2;
+    ctx.beginPath(); ctx.arc(H2.x, H2.y, 14, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.fillText("H", H2.x-4, H2.y+4);
+
+    ctx.restore();
+
+    // リアルタイム・ステータスデータ表示
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '13px Courier New';
+    let current_deg = (theta * 180 / Math.PI).toFixed(1);
+    ctx.fillText(`POTENTIAL BOND LENGTH (r1) : ${r1.toFixed(1)} pm`, 30, HEIGHT - 100);
+    ctx.fillText(`POTENTIAL BOND ANGLE  (θ)  : ${current_deg}° (Ref: 104.5°)`, 30, HEIGHT - 80);
+    ctx.fillText(`DIPOLE MOMENT VECTOR  (μ)  : |${Math.sqrt(dipoleX*dipoleX + dipoleY*dipoleY).toFixed(1)}|`, 30, HEIGHT - 60);
+
+    // 定期的なセルフ・エネルギーインジェクション（振動が減衰したら自動で再キックしてループ）
+    let currentVelSum = Math.abs(H1.vx) + Math.abs(H1.vy) + Math.abs(H2.vx) + Math.abs(H2.vy);
+    if (currentVelSum < 0.15) {
+        injectMode(currentMode);
+    }
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

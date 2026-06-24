@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 三体問題「周期軌道」 (カオス機能修正版)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #020206;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 10, 20, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 580px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            background: #001122;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+            padding: 10px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 170, 255, 0.2);
+        }
+        button.active {
+            background: #00ffcc;
+            color: #03030c;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+        }
+        button.bug {
+            border: 1px solid #ff3366;
+            color: #ff3366;
+        }
+        button.bug.active {
+            background: #ff3366;
+            color: #020206;
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Three-Body Chaos Working]</strong><br>
+    · Constants : G = 1.0 (Strictly fixed)<br>
+    · Solvers   : Symplectic Euler (dt = 0.001, 20x steps per frame, eps = 0.0)<br>
+    <br>
+    <span style="color: #00ffcc;">【バグ機能修正】物理エンジンが優秀すぎてノイズを吸収してしまっていたため、バッファを撤廃しノイズ量を最適化。「バグを注入」を押すと、最初は綺麗な8の字に見えますが、中央ですれ違うたびに誤差が倍々ゲームで膨れ上がり、数周後に突然カオスへ完全崩壊します。</span>
+</div>
+
+<canvas id="threeBodyCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="resetBtn" class="active">【 奇跡の調和：Figure-8軌道 】</button>
+    <button id="bugBtn" class="bug">【 初期値にバグを注入（カオス崩壊） 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('threeBodyCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const centerX = WIDTH / 2;
+const centerY = HEIGHT / 2;
+
+let bodies = [];
+let logMessage = "";
+
+// 厳密な初期値レジスタ
+const x1 = -0.97000436, y1 = 0.24308753;
+const vx1 = 0.46620531, vy1 = 0.43236573;
+
+function initSimulation(injectBug = false) {
+    bodies = [
+        { x: x1, y: y1, vx: vx1, vy: vy1, mass: 1.0, color: '#00ffcc', path: [] },
+        { x: -x1, y: -y1, vx: vx1, vy: vy1, mass: 1.0, color: '#ff3366', path: [] },
+        { x: 0, y: 0, vx: -2 * vx1, vy: -2 * vy1, mass: 1.0, color: '#ffaa00', path: [] }
+    ];
+
+    if (injectBug) {
+        // 速度ベクトルに約10%の致命的なズレを注入。これで復元力の限界を超えさせる
+        bodies[0].vx += 0.045; 
+        bodies[1].vy -= 0.020;
+        logMessage = "SYSTEM STATUS: ERROR INJECTED. Butterfly effect growing exponentially...";
+    } else {
+        logMessage = "SYSTEM STATUS: PERFECT COHERENCE. Running infinite stable choreography.";
+    }
+}
+
+initSimulation(false);
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('resetBtn').classList.add('active');
+    document.getElementById('bugBtn').classList.remove('active');
+    initSimulation(false);
+});
+
+document.getElementById('bugBtn').addEventListener('click', () => {
+    document.getElementById('bugBtn').classList.add('active');
+    document.getElementById('resetBtn').classList.remove('active');
+    initSimulation(true);
+});
+
+function updateUniverse() {
+    const G = 1.0; 
+    const substeps = 20;        // 精密な時間評価
+    const dt = 0.02 / substeps; 
+    const scale = 180;          
+
+    // 物理演算（サブステップ・ループ）
+    for (let step = 0; step < substeps; step++) {
+        let ax = [0, 0, 0];
+        let ay = [0, 0, 0];
+
+        // 1. 万有引力計算（epsを0にしてカオスへの過敏性を100%解放）
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (i === j) continue;
+                let dx = bodies[j].x - bodies[i].x;
+                let dy = bodies[j].y - bodies[i].y;
+                let distSq = dx * dx + dy * dy;
+                let dist = Math.sqrt(distSq);
+                
+                // 完全な純粋ニュートン重力
+                let force = (G * bodies[j].mass) / (distSq * dist);
+                ax[i] += force * dx;
+                ay[i] += force * dy;
+            }
+        }
+
+        // 2. シンプレクティック・オイラー更新
+        for (let i = 0; i < 3; i++) {
+            let b = bodies[i];
+            b.vx += ax[i] * dt;
+            b.vy += ay[i] * dt;
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+        }
+    }
+
+    // トレイル履歴の記録（カオスの激しい動きを捉えるため履歴を少し長めに設定）
+    for (let i = 0; i < 3; i++) {
+        let b = bodies[i];
+        b.path.push({ x: b.x, y: b.y });
+        if (b.path.length > 500) b.path.shift();
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#020206';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#051115';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); stroke = ctx.stroke();
+    }
+
+    // 軌跡のラスタライズ
+    for (let i = 0; i < 3; i++) {
+        let b = bodies[i];
+        if (b.path.length < 2) continue;
+        ctx.strokeStyle = b.color;
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath();
+        ctx.moveTo(centerX + b.path[0].x * scale, centerY + b.path[0].y * scale);
+        for (let p = 1; p < b.path.length; p++) {
+            ctx.lineTo(centerX + b.path[p].x * scale, centerY + b.path[p].y * scale);
+        }
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+    }
+
+    // 天体コアの描画
+    for (let i = 0; i < 3; i++) {
+        let b = bodies[i];
+        let sx = centerX + b.x * scale;
+        let sy = centerY + b.y * scale;
+
+        let grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 10);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.6, b.color);
+        grad.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 10, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 画面ステータス表示
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    ctx.font = '11px Courier New';
+    ctx.fillStyle = 'rgba(0, 255, 200, 0.6)';
+    ctx.fillText(`GRAVITATIONAL CONSTANT (G) : ${G.toFixed(1)}`, 30, 30);
+    ctx.fillText(`SYSTEM STABILITY REGULATOR  : UNLOCKED (カオス過敏性最大)`, 30, 45);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+requestAnimationFrame(updateUniverse);
+</script>
+
+</body>
+</html>
