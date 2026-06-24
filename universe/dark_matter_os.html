@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - ダークマターの正体（銀河回転バグ修正）</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #020205;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 5, 15, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 560px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #001100;
+            color: #33ff33;
+            border: 1px solid #33ff33;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.3);
+        }
+        button.bugged {
+            background: #220000;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Patch 10: Galactic Strain Kernel]</strong><br>
+    · Classical Error: Galaxy outer bounds fly apart due to lack of gravity data.<br>
+    · Universe OS Fix: Pre-allocated vacuum strain buffer sustains rotation curve.<br>
+    <br>
+    <span style="color: #33ff33;">【仕組み】未知の暗黒物質など存在しません。銀河のような超巨大質量をアロケートした際、宇宙OSは周辺の真空マトリクス（L3）に構造維持用の「歪みバッファ（ストレイン）」を自動で事前確保します。この目に見えない空間の「張り」が外縁部の星を繋ぎ止めるため、銀河の回転速度は外側でも落ちずに一定に保たれます。</span>
+</div>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="patchBtn" class="bugged">【 現在の状態：従来物理（バグ：外縁崩壊） 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('galaxyCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 500;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const centerX = WIDTH / 2;
+const centerY = HEIGHT / 2;
+
+// 星々（バリオン物質データパケット）の初期化
+const stars = [];
+const numStars = 160;
+
+for (let i = 0; i < numStars; i++) {
+    // 銀河の中心からの距離（半径）を分散配置
+    let r = Math.random() * 180 + 20;
+    let angle = Math.random() * Math.PI * 2;
+    stars.push({
+        r: r,
+        angle: angle,
+        size: Math.random() * 2 + 1,
+        // バリオン質量に応じた本来のケプラー回転速度（外側ほど遅くなるはずの計算）
+        baseSpeed: 0.8 / Math.sqrt(r)
+    });
+}
+
+let isPatched = false;
+let logMessage = "CRITICAL WARNING: Galactic outer register disruption. Tension lost.";
+
+document.getElementById('patchBtn').addEventListener('click', (e) => {
+    isPatched = !isPatched;
+    if (isPatched) {
+        e.target.innerText = "【 現在の状態：Universe OS適用（パッチ修正済） 】";
+        e.target.classList.remove('bugged');
+        logMessage = "PATCH 10 APPLIED: Strain register pre-allocated. Interaction coherence = 1.00";
+    } else {
+        e.target.innerText = "【 現在の状態：従来物理（バグ：外縁崩壊） 】";
+        e.target.classList.add('bugged');
+        logMessage = "CRITICAL WARNING: Galactic outer register disruption. Tension lost.";
+    }
+});
+
+function drawUniverse() {
+    ctx.fillStyle = '#020205';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // 1. 背景の時空マトリクス（L3レイヤー）の描画
+    ctx.strokeStyle = isPatched ? 'rgba(0, 255, 150, 0.15)' : 'rgba(0, 150, 255, 0.05)';
+    ctx.lineWidth = 1;
+    
+    // 同心円状の空間メッシュ（歪みバッファの可視化）
+    for (let r = 40; r < 240; r += 40) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    // パッチ適用時：見えない「歪みバッファ（ダークマターの正体）」のグリッド線を強調
+    if (isPatched) {
+        ctx.strokeStyle = 'rgba(0, 255, 150, 0.2)';
+        ctx.setLineDash([4, 12]);
+        ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + Math.cos(a) * 240, centerY + Math.sin(a) * 240);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // 2. 銀河の中心核（コアレジスタ）
+    let gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 25);
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(0.4, '#00ffff');
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 25, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. 星々のシミュレーション演算とレンダリング
+    for (let i = 0; i < stars.length; i++) {
+        let star = stars[i];
+
+        // 回転速度の決定
+        let currentSpeed = star.baseSpeed;
+        
+        if (isPatched) {
+            // 【パッチ適用：Universe OS仕様】
+            // 外縁部（rが大きい領域）でも、プレアロケートされた真空の張りによって速度が落ちない（平坦化）
+            if (star.r > 60) {
+                currentSpeed = 0.045 + (Math.random() * 0.005); // 外側でも一定の高速回転を維持
+            }
+        } else {
+            // 【従来物理：バグ状態】
+            // 外側に行くほど重力が足りなくなり、遠心力で軌道が外側へブレて吹き飛んでいく挙動をシミュレート
+            if (star.r > 100) {
+                star.r += 0.2; // 外側へフェードアウト
+            }
+        }
+
+        // クロック前進による角度の更新
+        star.angle += currentSpeed;
+
+        // 座標ラスタライズ
+        let sx = centerX + Math.cos(star.angle) * star.r;
+        let sy = centerY + Math.sin(star.angle) * star.r;
+
+        // 星のレンダリング
+        if (isPatched) {
+            // パッチ適用時は「プレアロケーション空間」にロックされて綺麗な緑〜白の調和運動
+            ctx.fillStyle = star.r > 100 ? `rgba(100, 255, 200, 0.9)` : '#ffffff';
+        } else {
+            // バグ状態のときは外側がバラバラになり、警告の赤みがかった色に変色
+            ctx.fillStyle = star.r > 120 ? `rgba(255, 100, 100, 0.7)` : 'rgba(100, 200, 255, 0.9)';
+        }
+
+        ctx.fillRect(sx, sy, star.size, star.size);
+        
+        // 外縁に吹き飛んだ星が画面外に行ったら内側へリサイクル
+        if (!isPatched && star.r > 300) {
+            star.r = Math.random() * 80 + 30;
+        }
+    }
+
+    // 4. 回転曲線グラフのリアルタイム描画（画面左下）
+    ctx.fillStyle = 'rgba(0, 10, 20, 0.8)';
+    ctx.fillRect(30, HEIGHT - 160, 220, 110);
+    ctx.strokeStyle = '#00ffcc';
+    ctx.strokeRect(30, HEIGHT - 160, 220, 110);
+    
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '10px Courier New';
+    ctx.fillText("ROTATION CURVE (V vs R)", 40, HEIGHT - 145);
+    
+    // グラフの軸
+    ctx.strokeStyle = '#555';
+    ctx.beginPath();
+    ctx.moveTo(50, HEIGHT - 70); ctx.lineTo(230, HEIGHT - 70); // R軸
+    ctx.moveTo(50, HEIGHT - 70); ctx.lineTo(50, HEIGHT - 140); // V軸
+    ctx.stroke();
+
+    // 曲線プロット
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (isPatched) {
+        // Universe OS：平坦な回転曲線
+        ctx.strokeStyle = '#33ff33';
+        ctx.moveTo(50, HEIGHT - 120);
+        ctx.quadraticCurveTo(100, HEIGHT - 115, 230, HEIGHT - 115);
+    } else {
+        // 従来物理：外側でガクッと落ちる（あるいは崩壊する）曲線
+        ctx.strokeStyle = '#ff3333';
+        ctx.moveTo(50, HEIGHT - 120);
+        ctx.quadraticCurveTo(90, HEIGHT - 110, 230, HEIGHT - 75);
+    }
+    ctx.stroke();
+    ctx.lineWidth = 1;
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    requestAnimationFrame(drawUniverse);
+}
+
+drawUniverse();
+</script>
+
+</body>
+</html>

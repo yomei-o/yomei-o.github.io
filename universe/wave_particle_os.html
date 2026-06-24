@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 波と粒の同時存在 (エネルギー伝播パッチ版)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 20, 10, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 540px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #001122;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+        }
+        button.active {
+            background: #ffaa00;
+            color: #05050a;
+            border: 1px solid #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Wave-Particle Duality Kernel]</strong><br>
+    ・L3 Engine: Lazy evaluation and real-time register rasterization.<br>
+    ・Coherence: Float values represent propagation; Int values represent sampling.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】宇宙OSは、普段は計算負荷を抑えるため空間データを「浮動小数点の波（確率）」として処理しています。しかし、人間（UI）がデータを要求（観測）した瞬間、その確率分布に基づき特定のインデックスへ「整数データ（1つの粒）」を一括レンダリング（収縮）させます。粒が蓄積されると、元の波の干渉パターンが創発します。</span>
+</div>
+
+<canvas id="dualityCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="observeBtn">【 観測：OFF（波として描画） 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('dualityCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 450;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 110;
+const ROWS = 56;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 右側スクリーンに蓄積される粒
+let screenBuffer = Array(ROWS).fill(0);
+
+// 衝突した粒の超高輝度ハイライト用レジスタ
+let lastHitRow = -1;
+let lastHitTimer = 0;
+
+// スリット壁の設定
+const SLIT_COL = 35;
+const SLIT_OPEN1 = Math.floor(ROWS / 2) - 5;
+const SLIT_OPEN2 = Math.floor(ROWS / 2) + 5;
+
+let isObserving = false;
+let pulseTimer = 0;
+let logMessage = "SYSTEM STATUS: COHERENT WAVE (未観測・空間内を連続的な確率波が伝播中)";
+
+document.getElementById('observeBtn').addEventListener('click', (e) => {
+    isObserving = !isObserving;
+    if (isObserving) {
+        e.target.innerText = "【 観測：ON（粒に収縮・ドット蓄積モード） 】";
+        e.target.classList.add('active');
+        logMessage = "INTERRUPT LOG: Detector Active. Sampling float to integer instantly.";
+        screenBuffer.fill(0);
+        lastHitRow = -1;
+        lastHitTimer = 0;
+    } else {
+        e.target.innerText = "【 観測：OFF（波として描画） 】";
+        e.target.classList.remove('active');
+        logMessage = "SYSTEM STATUS: COHERENT WAVE (観測解除・遅延評価の連続波に戻りました)";
+    }
+});
+
+function updateUniverse() {
+    pulseTimer++;
+    
+    // ★パッチ1：インジェクションゲインを 35.0 -> 70.0 へ引き上げて波パワーを2倍に強化
+    if (pulseTimer % 60 === 1) {
+        let midY = Math.floor(ROWS / 2);
+        for (let dy = -3; dy <= 3; dy++) {
+            curr_X[2][midY + dy] = 70.0 * Math.exp(-(dy * dy) / 4);
+            prev_X[2][midY + dy] = curr_X[2][midY + dy];
+        }
+    }
+
+    const OMEGA_SQ = 0.25;
+
+    // L3：真空ばねマトリクス演算
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            if (i === SLIT_COL) {
+                if (j !== SLIT_OPEN1 && j !== SLIT_OPEN1+1 && j !== SLIT_OPEN2 && j !== SLIT_OPEN2+1) {
+                    curr_X[i][j] = 0;
+                    continue;
+                }
+            }
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+            
+            // ★パッチ2：スリット後の消失を防ぐため、空間維持率（ダンピング）を 0.985 -> 0.993 へ向上
+            next_val *= 0.993; 
+            next_X[i][j] = next_val;
+        }
+    }
+
+    // 伝播速度(C)から、ちょうどスクリーン(COLS-10)に衝突するジャストのフレーム（46フレーム目）で判定
+    let SCREEN_COL = COLS - 10;
+    if (pulseTimer % 60 === 46) {
+        if (isObserving) {
+            let totalEnergy = 0;
+            let probabilities = [];
+            
+            // スクリーン位置の波の振幅エネルギーをスキャン
+            for (let j = 2; j < ROWS - 2; j++) {
+                let energy = Math.pow(curr_X[SCREEN_COL][j], 2);
+                totalEnergy += energy;
+                probabilities.push({row: j, weight: energy});
+            }
+
+            // 確率分布に基づいて1点を選択（波の収縮マクロ）
+            if (totalEnergy > 0.01) {
+                let rand = Math.random() * totalEnergy;
+                let sum = 0;
+                for (let p of probabilities) {
+                    sum += p.weight;
+                    if (rand <= sum) {
+                        screenBuffer[p.row] += 1;
+                        lastHitRow = p.row;
+                        lastHitTimer = 20; // 20フレーム間フラッシュ
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (lastHitTimer > 0) lastHitTimer--;
+
+    // バッファローテーション
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); stroke = ctx.stroke();
+    }
+
+    // 波動のリアルタイムレンダリング
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            if (isObserving && i >= SCREEN_COL) continue; // 観測中はスクリーンより右の波をカリング
+
+            let amp = Math.abs(curr_X[i][j]);
+            let energy = amp * 250;
+
+            if (energy > 5) {
+                let alpha = Math.min(1, energy / 255);
+                ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`;
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 二重スリット壁
+    ctx.fillStyle = '#334455';
+    ctx.fillRect(SLIT_COL * DX, 0, DX, HEIGHT);
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(SLIT_COL * DX, SLIT_OPEN1 * DY, DX, DY * 2);
+    ctx.fillRect(SLIT_COL * DX, SLIT_OPEN2 * DY, DX, DY * 2);
+    ctx.strokeStyle = '#556677';
+    ctx.strokeRect(SLIT_COL * DX, 0, DX, HEIGHT);
+
+    // 右側スクリーン（検出器）のライン
+    ctx.strokeStyle = isObserving ? '#ffaa00' : '#00aaff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(SCREEN_COL * DX, 0, 10, HEIGHT);
+
+    // スクリーンのデータおよびフラッシュの描画
+    for (let j = 0; j < ROWS; j++) {
+        if (!isObserving) {
+            // 【観測OFF】通常の波のグラデーション表示
+            let amp = Math.abs(curr_X[SCREEN_COL][j]);
+            let energy = amp * 200; // 適正調整
+            if (energy > 2) {
+                ctx.fillStyle = `rgba(0, 255, 170, ${Math.min(1, energy/255)})`;
+                ctx.fillRect(SCREEN_COL * DX + 14, j * DY, 40, DY - 1);
+            }
+        } else {
+            // 【観測ON】蓄積メーター
+            let hits = screenBuffer[j];
+            if (hits > 0) {
+                let brightness = Math.min(255, hits * 12);
+                ctx.fillStyle = `rgba(255, 180, 0, ${brightness / 255})`;
+                ctx.fillRect(SCREEN_COL * DX + 14, j * DY, Math.min(150, hits * 6), DY - 1);
+                
+                // 過去の粒インジケータ
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.fillRect(SCREEN_COL * DX + 3, j * DY + DY/2 - 1, 4, 2);
+            }
+        }
+    }
+
+    // ★衝突瞬間の極大フラッシュ（視認性保証）
+    if (isObserving && lastHitRow !== -1 && lastHitTimer > 0) {
+        let flashAlpha = lastHitTimer / 20;
+        
+        // 1. 直撃セルの完全ホワイト爆発
+        ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 25;
+        ctx.fillRect(SCREEN_COL * DX - 4, lastHitRow * DY - 2, 18, DY + 4);
+        ctx.shadowBlur = 0;
+
+        // 2. 蓄積グラフ側のキックイン・フラッシュエフェクト
+        ctx.fillStyle = `rgba(255, 215, 0, ${flashAlpha})`;
+        ctx.fillRect(SCREEN_COL * DX + 14, lastHitRow * DY, 40, DY - 1);
+    }
+
+    // テキストUI
+    ctx.fillStyle = isObserving ? '#ffaa00' : '#00aaff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(isObserving ? "SCREEN: PARTICLE DOT ACCUMULATION (QUANTIZED)" : "SCREEN: WAVE INTERFERENCE PATTERN (CONTINUOUS)", SCREEN_COL * DX - 160, 20);
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+updateUniverse();
+</script>
+
+</body>
+</html>

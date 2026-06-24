@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - 反物質消滅（エネルギー・リファクタリング）</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #030308;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 5, 20, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 540px;
+            pointer-events: none;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #110022;
+            color: #cc66ff;
+            border: 1px solid #cc66ff;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(204, 102, 255, 0.3);
+        }
+        button:hover {
+            background: #cc66ff;
+            color: #030308;
+            box-shadow: 0 0 20px rgba(204, 102, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Anti-Matter Annihilation Kernel]</strong><br>
+    · L1 Matter Code: (+A) Register allocation.<br>
+    · L1 Anti-Matter Code: (-A) Sign-inverted register allocation.<br>
+    · Refactoring: +A + (-A) = 0. Static mass code recycles into L3 high-frequency wave.<br>
+    <br>
+    <span style="color: #cc66ff;">【仕組み】物質と反物質の対消滅とは、宇宙OSにおける「変数の相殺クリーンアップ」です。正負の符号を持つデータ構造が衝突すると、マトリクスの値は0に初期化（ガベージコレクション）されます。その際、失われた質量データは消滅するのではなく、L3レイヤーの強烈な高周波の波（光子）へと瞬時にリファクタリングされて四方へ爆発伝播します。</span>
+</div>
+
+<canvas id="annihilationCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="collisionBtn">【 対消滅（ANNIHILATION CRASH）を実行 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('annihilationCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 850;
+const HEIGHT = 460;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 110;
+const ROWS = 56;
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 物質（青）と反物質（赤）の座標レジスタ
+let matterPos = { x: 20, y: Math.floor(ROWS / 2) };
+let antiMatterPos = { x: 90, y: Math.floor(ROWS / 2) };
+
+let isRunning = false;
+let isAnnihilated = false;
+let flashTimer = 0;
+let systemStatus = "SYSTEM IDLE: REGISTERS READY (正・反物質コードアロケート完了)";
+
+document.getElementById('collisionBtn').addEventListener('click', () => {
+    // レジスタとバッファの初期化
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            curr_X[i][j] = 0; prev_X[i][j] = 0; next_X[i][j] = 0;
+        }
+    }
+    matterPos = { x: 18, y: Math.floor(ROWS / 2) };
+    antiMatterPos = { x: 92, y: Math.floor(ROWS / 2) };
+    isRunning = true;
+    isAnnihilated = false;
+    flashTimer = 0;
+    systemStatus = "KERNEL LOG: Injecting signed particles. Moving toward merge index...";
+});
+
+function updateUniverse() {
+    const OMEGA_SQ = 0.26;
+
+    // 1. 移動フェーズ（対消滅前）
+    if (isRunning && !isAnnihilated) {
+        // お互いに中心（インデックス55）に向かって1クロックずつ前進
+        if (pulseTimer % 2 === 0) {
+            matterPos.x += 1;
+            antiMatterPos.x -= 1;
+        }
+
+        // 衝突前、それぞれの座標の真空レジスタに「符号反転データ」を常時インジェクション
+        // 正物質はプラス（+40）、反物質はマイナス（-40）
+        curr_X[matterPos.x][matterPos.y] = 40.0;
+        prev_X[matterPos.x][matterPos.y] = 40.0;
+        
+        curr_X[antiMatterPos.x][antiMatterPos.y] = -40.0;
+        prev_X[antiMatterPos.x][antiMatterPos.y] = -40.0;
+
+        // 核心：インデックスが衝突した瞬間
+        if (matterPos.x >= antiMatterPos.x) {
+            isAnnihilated = true;
+            flashTimer = 25; // 25フレームの極大閃光
+            systemStatus = "CRITICAL: INVERTED REGISTERS COLLIDED! +A + (-A) = 0. Refactoring to L3 Wave...";
+
+            let cx = matterPos.x;
+            let cy = matterPos.y;
+            
+            // ★核心：質量マトリクスを「0」に相殺クリーンアップし、その全負荷を強力な高周波L3波動に変換
+            curr_X[cx][cy] = 0;
+            prev_X[cx][cy] = 0;
+            
+            // 周囲のばねネットワークを強烈にキック（爆発的な高周波パケットの生成）
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    curr_X[cx + dx][cy + dy] = 95.0 * (dx === 0 && dy === 0 ? 1.0 : -0.5);
+                    prev_X[cx + dx][cy + dy] = 0;
+                }
+            }
+        }
+    }
+
+    // 2. L3：真空ばねマトリクス演算（エネルギー解放後の波の伝播）
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+            
+            next_val *= 0.992; // 爆発波動が綺麗に広がるよう減衰を調整
+            next_X[i][j] = next_val;
+        }
+    }
+
+    // バッファシフト
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#030308';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#051100';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 10倍ゲイン波動（解放された純粋エネルギー波）のレンダリング
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            // 移動中の物質そのものの座標は別色でハイライトするためスキップ
+            if (!isAnnihilated && ((i === matterPos.x && j === matterPos.y) || (i === antiMatterPos.x && j === antiMatterPos.y))) continue;
+
+            let amp = Math.abs(curr_X[i][j]);
+            let energy = amp * 250;
+
+            if (energy > 4) {
+                let alpha = Math.min(1, energy / 255);
+                ctx.fillStyle = `rgba(0, 255, 150, ${alpha})`; // 純粋光子エネルギーのグリーン
+                ctx.fillRect(i * DX, j * DY, DX - 1, DY - 1);
+            }
+        }
+    }
+
+    // 対消滅前の正物質（青）と反物質（赤）のパッファ視覚化
+    if (!isAnnihilated && isRunning) {
+        // 正物質：コバルトブルー
+        ctx.fillStyle = '#00aaff';
+        ctx.shadowColor = '#00aaff'; ctx.shadowBlur = 15;
+        ctx.beginPath(); ctx.arc(matterPos.x * DX + DX/2, matterPos.y * DY + DY/2, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.font = '10px sans-serif'; ctx.fillText("+", matterPos.x * DX + 2, matterPos.y * DY - 4);
+
+        // 反物質：クリムゾンレッド（符号反転）
+        ctx.fillStyle = '#ff3366';
+        ctx.shadowColor = '#ff3366'; ctx.shadowBlur = 15;
+        ctx.beginPath(); ctx.arc(antiMatterPos.x * DX + DX/2, antiMatterPos.y * DY + DY/2, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillText("-", antiMatterPos.x * DX + 4, antiMatterPos.y * DY - 4);
+        ctx.shadowBlur = 0;
+    }
+
+    // 衝突瞬間の極大リファクタリング・フラッシュ
+    if (isAnnihilated && flashTimer > 0) {
+        let alpha = flashTimer / 25;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.shadowColor = '#cc66ff'; ctx.shadowBlur = 30;
+        ctx.beginPath();
+        ctx.arc(matterPos.x * DX + DX/2, matterPos.y * DY + DY/2, (25 - flashTimer) * 4, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        flashTimer--;
+    }
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    ctx.fillText(systemStatus, 20, HEIGHT - 20);
+
+    // 質量・エネルギー状態レジスタモニター
+    ctx.fillStyle = isAnnihilated ? '#cc66ff' : '#00aaff';
+    ctx.fillText(`L1 MASS REGISTER  : ${isAnnihilated ? '0.00 (MEMORY CLEANED)' : 'ALLOCATED (+A / -A)'}`, 20, HEIGHT - 40);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// 内部タイマー用
+let pulseTimer = 0;
+setInterval(() => { pulseTimer++; }, 16);
+
+updateUniverse();
+</script>
+
+</body>
+</html>
