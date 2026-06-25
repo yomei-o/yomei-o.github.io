@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - Gravity Wave Kernel (Final Patch)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 20, 10, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 540px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Gravity Wave Kernel]</strong><br>
+    ・L3 Engine: Lazy evaluation and real-time register rasterization.<br>
+    ・Coherence: Float values represent propagation.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】宇宙OSの時空マトリクス演算デモ。中心で超高速回転する二体質量（四重極モーメント）によって生じた時空の歪みが、情報の伝播遅延（c * t = const）を伴って周囲のグリッドへ差分として波及していきます。外周に到達した波は透過境界パッチによって吸い込まれ、反射ノイズのない美しい螺旋が創発します。</span>
+</div>
+
+<canvas id="gravityCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gravityCanvas');
+const ctx = canvas.getContext('2d');
+
+// 画面全体にフィットするグリッドアロケーション
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 160;
+const ROWS = Math.floor(COLS * (HEIGHT / WIDTH));
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+let pulseTimer = 0;
+
+function updateUniverse() {
+    pulseTimer++;
+    
+    // 1. 中心の連星による重力波インジェクション（回転する二体質量）
+    const cx = Math.floor(COLS / 2);
+    const cy = Math.floor(ROWS / 2);
+    const r = 4;            // 回転半径
+    const speed = 0.18;     // クロック速度
+    const mass = 10.0;      // 質量強度
+
+    const x1 = Math.floor(cx + r * Math.cos(pulseTimer * speed));
+    const y1 = Math.floor(cy + r * Math.sin(pulseTimer * speed));
+    const x2 = Math.floor(cx - r * Math.cos(pulseTimer * speed));
+    const y2 = Math.floor(cy - r * Math.sin(pulseTimer * speed));
+
+    if(x1 > 0 && x1 < COLS && y1 > 0 && y1 < ROWS) curr_X[x1][y1] = mass;
+    if(x2 > 0 && x2 < COLS && y2 > 0 && y2 < ROWS) curr_X[x2][y2] = -mass; // 位相反転
+
+    const OMEGA_SQ = 0.25;
+
+    // 2. L3：時空マトリクス差分演算
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            let next_val = 2 * curr_X[i][j] - prev_X[i][j] + OMEGA_SQ * laplacian;
+            
+            next_val *= 0.996; // 空間維持率（ダンピング）
+
+            // ★完全透過境界パッチ：上下左右すべての壁で波を綺麗に吸い込む
+            const distFromEdgeX = Math.min(i, COLS - 1 - i);
+            const distFromEdgeY = Math.min(j, ROWS - 1 - j);
+            const minDist = Math.min(distFromEdgeX, distFromEdgeY);
+            
+            if (minDist < 8) {
+                next_val *= (minDist / 8);
+            }
+
+            next_X[i][j] = next_val;
+        }
+    }
+
+    // バッファローテーション
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 3. 波動（重力波）のリアルタイムレンダリング（緑とピンクのピュア仕様）
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let val = curr_X[i][j];
+            let amp = Math.abs(val);
+
+            if (amp > 0.01) {
+                let alpha = Math.min(1, amp * 6);
+                if (val > 0) {
+                    ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`; // 正の歪み：緑
+                } else {
+                    ctx.fillStyle = `rgba(255, 0, 150, ${alpha})`; // 負の歪み：ピンク
+                }
+                ctx.fillRect(i * DX, j * DY, DX - 0.5, DY - 0.5);
+            }
+        }
+    }
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// フルスクリーン追従リサイズ
+window.addEventListener('resize', () => {
+    window.location.reload(); 
+});
+
+updateUniverse();
+</script>
+
+</body>
+</html>

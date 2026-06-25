@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - Graviton Emission Kernel (Spacetime Quantization)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 20, 10, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 540px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Graviton Emission Kernel]</strong><br>
+    ・L3 Engine: Lazy evaluation and real-time register rasterization.<br>
+    ・Quantization: Continuous metric variance rendered as discrete graviton tokens.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】重力波の量子化（グラビトン）シミュレーション。中心で相互回転する巨大質量（四重極モーメント）が周囲の時空を歪め、その歪みの限界値を超えたエネルギーが「If文」によって確率的に重力子（緑とピンクのドット）へ即座に収縮（アロケート）されます。放出された重力子は固有の速度ベクトルを維持し、美しい螺旋の火の粉となって無限の彼方へと滑らかにスルー（透過消去）されます。</span>
+</div>
+
+<canvas id="gravitonCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gravitonCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+// グリッド解像度設定
+const COLS = 140;
+const ROWS = Math.floor(COLS * (HEIGHT / WIDTH));
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+const PARTICLE_RADIUS = Math.min(DX, DY) * 0.4;
+
+// 射出された重力子（グラビトン）をストアする動的レジスタ
+let gravitonStack = [];
+
+// 中心の連星のパラメータ
+const cx = WIDTH / 2;
+const cy = HEIGHT / 2;
+const orbitRadius = 35; // 回転半径
+const orbitSpeed = 0.08; // クロック回転速度
+
+let pulseTimer = 0;
+let totalGravitons = 0;
+
+function updateUniverse() {
+    pulseTimer++;
+    
+    // 1. 重い連星の座標更新（二体質量のマッピング）
+    const x1 = cx + orbitRadius * Math.cos(pulseTimer * orbitSpeed);
+    const y1 = cy + orbitRadius * Math.sin(pulseTimer * orbitSpeed);
+    const x2 = cx - orbitRadius * Math.cos(pulseTimer * orbitSpeed);
+    const y2 = cy - orbitRadius * Math.sin(pulseTimer * orbitSpeed);
+
+    // 2. グラビトン・インジェクション（四重極バーストのIf文）
+    // 連星が回転する接線方向（運動量保存のトポロジー）に向けて、毎フレーム一定確率で重力子を生成
+    if (Math.random() < 0.65) {
+        // 連星1（正の歪み：緑のグラビトンを射出）
+        let angle1 = pulseTimer * orbitSpeed + Math.PI / 2; // 接線方向
+        let speed = 4.5 + Math.random() * 1.0;              // 光速cに近似した伝播速度
+        gravitonStack.push({
+            x: x1, y: y1,
+            vx: Math.cos(angle1) * speed,
+            vy: Math.sin(angle1) * speed,
+            type: 'positive',
+            life: 180
+        });
+
+        // 連星2（負の歪み：ピンクのグラビトンを射出）
+        let angle2 = pulseTimer * orbitSpeed - Math.PI / 2;
+        gravitonStack.push({
+            x: x2, y: y2,
+            vx: Math.cos(angle2) * speed,
+            vy: Math.sin(angle2) * speed,
+            type: 'negative',
+            life: 180
+        });
+        
+        totalGravitons += 2;
+    }
+
+    // 3. レジスタ内の重力子データの座標更新（時空のスルー処理）
+    for (let p of gravitonStack) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+    }
+
+    // 完全透過境界パッチ：画面外に出た、または寿命が尽きた重力子データの引き算（ガベージコレクション）
+    gravitonStack = gravitonStack.filter(p => p.life > 0 && p.x > 0 && p.x < WIDTH && p.y > 0 && p.y < HEIGHT);
+
+    // --- レンダリング層 ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 4. 放出されたグラビトン（重力子のドット）のリアルタイム描画
+    for (let p of gravitonStack) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, PARTICLE_RADIUS * 0.6, 0, Math.PI * 2);
+        
+        let alpha = Math.min(1, p.life / 40); // 画面端付近（寿命の終わり）で淡くフェードアウト
+        if (p.type === 'positive') {
+            ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`; // 正の重力子：ネオングリーン
+        } else {
+            ctx.fillStyle = `rgba(255, 0, 150, ${alpha})`; // 負の重力子：ビビッドピンク
+        }
+        ctx.fill();
+    }
+
+    // 5. 中心の重たい連星（巨大質量データ）の上書き描画
+    ctx.beginPath();
+    ctx.arc(x1, y1, PARTICLE_RADIUS * 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff'; // 質量1：白く輝くブラックホール
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 255, 200, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(x2, y2, PARTICLE_RADIUS * 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff'; // 質量2
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 0, 150, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    let logMessage = `SYSTEM LOG // GRAVITON_ACTIVE_REGISTERS: ${gravitonStack.length} // TOTAL_EMITTED_TOKENS: ${totalGravitons} // CLOCK_t: ${pulseTimer}`;
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+// フルスクリーン追従リサイズ
+window.addEventListener('resize', () => {
+    window.location.reload(); 
+});
+
+updateUniverse();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - Neutron Decay Kernel (Wave-Particle Patch)</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #05050a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 20, 10, 0.9);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 540px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #control-panel {
+            position: absolute;
+            bottom: 25px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+        button {
+            background: #001122;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.2);
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #002244;
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.4);
+        }
+        button.active {
+            background: #ffaa00;
+            color: #05050a;
+            border: 1px solid #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.37 - Neutron Wave-Particle Duality]</strong><br>
+    ・L3 Engine: Lazy evaluation and real-time register rasterization.<br>
+    ・Render Engine Toggle: Switch between continuous wave and quantized particle tokens.<br>
+    <br>
+    <span style="color: #00ffcc;">【仕組み】中性子のベータ崩壊を、二つの異なる表現（レンダリング）で可視化します。波モードでは、崩壊のポテンシャル差分を c * t = const の遅延波として処理します。粒子モードに切り替えると、崩壊したアドレスから、独立した速度ベクトルを持つ電子（ピンク）とニュートリノ（緑）の量子化されたドットが四方へ弾け飛びます。</span>
+</div>
+
+<canvas id="decayCanvas"></canvas>
+
+<div id="control-panel">
+    <button id="toggleModeBtn">【 レンダリング：波モード（時空のさざ波） 】</button>
+</div>
+
+<script>
+const canvas = document.getElementById('decayCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+const COLS = 140;
+const ROWS = Math.floor(COLS * (HEIGHT / WIDTH));
+const DX = WIDTH / COLS;
+const DY = HEIGHT / ROWS;
+
+const RADIUS = Math.min(DX, DY) * 0.4;
+
+// 1. 空間マトリクス（L3配列）アロケーション
+let prev_Wave = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let curr_Wave = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_Wave = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 粒子状態マトリクス（0: 真空, 1: 中性子[白], 2: 陽子[青]）
+let particleGrid = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+// 射出された自由粒子（電子・ニュートリノ）を格納する動的レジスタ（スタック）
+let activeParticles = [];
+
+// モードフラグ (false: 波モード, true: 粒子モード)
+let isParticleMode = false;
+
+// 中性子の初期配置
+const cx = Math.floor(COLS / 2);
+const cy = Math.floor(ROWS / 2);
+let neutronCount = 0;
+
+for (let i = 20; i < COLS - 20; i++) {
+    for (let j = 10; j < ROWS - 10; j++) {
+        let dist = Math.sqrt(Math.pow(i - cx, 2) + Math.pow(j - cy, 2));
+        if (dist < 25 && Math.random() < 0.25) {
+            particleGrid[i][j] = 1; 
+            neutronCount++;
+        }
+    }
+}
+
+let pulseTimer = 0;
+let decayCount = 0;
+const DECAY_PROBABILITY = 0.0003; 
+
+// UIイベントリスナー
+const toggleBtn = document.getElementById('toggleModeBtn');
+toggleBtn.addEventListener('click', () => {
+    isParticleMode = !isParticleMode;
+    if (isParticleMode) {
+        toggleBtn.innerText = "【 レンダリング：粒子モード（弾け飛ぶ火の粉） 】";
+        toggleBtn.classList.add('active');
+        // 波のバッファをクリーンアップ
+        for (let i = 0; i < COLS; i++) {
+            curr_Wave[i].fill(0);
+            prev_Wave[i].fill(0);
+        }
+    } else {
+        toggleBtn.innerText = "【 レンダリング：波モード（時空のさざ波） 】";
+        toggleBtn.classList.remove('active');
+        // 粒子リストをクリーンアップ
+        activeParticles = [];
+    }
+});
+
+function updateUniverse() {
+    pulseTimer++;
+    
+    const OMEGA_SQ = 0.25;
+
+    // 2. L3：粒子状態の確率判定＆空間演算ループ
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            
+            // 中性子の崩壊判定（If文）
+            if (particleGrid[i][j] === 1) {
+                if (Math.random() < DECAY_PROBABILITY) {
+                    particleGrid[i][j] = 2; // 陽子へ上書き
+                    decayCount++;
+                    neutronCount--;
+                    
+                    if (!isParticleMode) {
+                        // 【波モード】波動レジスタへインジェクション
+                        curr_Wave[i][j] = 20.0; 
+                    } else {
+                        // 【粒子モード】電子とニュートリノのデータをアロケート
+                        let pX = i * DX + DX / 2;
+                        let pY = j * DY + DY / 2;
+                        
+                        // ランダムな方向に弾け飛ぶ（運動量保存のトポロジー）
+                        let angle = Math.random() * Math.PI * 2;
+                        let speedE = 3.5 + Math.random() * 1.5; // 電子の速度
+                        let speedN = 5.0 + Math.random() * 1.5; // ニュートリノの速度（少し速い）
+
+                        // 電子（ピンク）
+                        activeParticles.push({
+                            x: pX, y: pY,
+                            vx: Math.cos(angle) * speedE,
+                            vy: Math.sin(angle) * speedE,
+                            type: 'electron',
+                            life: 120
+                        });
+                        // 反電子ニュートリノ（緑） - 逆方向へ
+                        activeParticles.push({
+                            x: pX, y: pY,
+                            vx: -Math.cos(angle) * speedN,
+                            vy: -Math.sin(angle) * speedN,
+                            type: 'neutrino',
+                            life: 120
+                        });
+                    }
+                }
+            }
+
+            // 波動演算（波モードのときのみ実行して負荷軽減）
+            if (!isParticleMode) {
+                let laplacian = curr_Wave[i+1][j] + curr_Wave[i-1][j] + curr_Wave[i][j+1] + curr_Wave[i][j-1] - 4 * curr_Wave[i][j];
+                let next_val = 2 * curr_Wave[i][j] - prev_Wave[i][j] + OMEGA_SQ * laplacian;
+                
+                next_val *= 0.992; // 空間維持率
+
+                // 完全透過境界パッチ
+                const distFromEdgeX = Math.min(i, COLS - 1 - i);
+                const distFromEdgeY = Math.min(j, ROWS - 1 - j);
+                const minDist = Math.min(distFromEdgeX, distFromEdgeY);
+                if (minDist < 6) {
+                    next_val *= (minDist / 6);
+                }
+
+                next_Wave[i][j] = next_val;
+            }
+        }
+    }
+
+    // 粒子モードの場合の動的ドットのフレーム更新
+    if (isParticleMode) {
+        for (let p of activeParticles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life--;
+        }
+        // 寿命が尽きる、または画面外に出た粒子データの引き算（ガベージコレクション）
+        activeParticles = activeParticles.filter(p => p.life > 0 && p.x > 0 && p.x < WIDTH && p.y > 0 && p.y < HEIGHT);
+    } else {
+        // 波モードのバッファローテーション
+        for (let i = 0; i < COLS; i++) {
+            for (let j = 0; j < ROWS; j++) {
+                prev_Wave[i][j] = curr_Wave[i][j];
+                curr_Wave[i][j] = next_Wave[i][j];
+            }
+        }
+    }
+
+    // --- レンダリング ---
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // グリッド背景
+    ctx.strokeStyle = '#001105';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < WIDTH; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+    }
+
+    // 3. 波モード時の波動描画
+    if (!isParticleMode) {
+        for (let i = 0; i < COLS; i++) {
+            for (let j = 0; j < ROWS; j++) {
+                let val = curr_Wave[i][j];
+                let amp = Math.abs(val);
+
+                if (amp > 0.01) {
+                    let alpha = Math.min(0.25, amp * 1.5); 
+                    if (val > 0) {
+                        ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`; 
+                    } else {
+                        ctx.fillStyle = `rgba(255, 0, 150, ${alpha})`; 
+                    }
+                    ctx.fillRect(i * DX, j * DY, DX - 0.5, DY - 0.5);
+                }
+            }
+        }
+    }
+
+    // 4. 粒子（中性子・陽子）データの円描画
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            let pType = particleGrid[i][j];
+            if (pType === 0) continue;
+
+            let pX = i * DX + DX / 2;
+            let pY = j * DY + DY / 2;
+
+            ctx.beginPath();
+            ctx.arc(pX, pY, RADIUS, 0, Math.PI * 2);
+
+            if (pType === 1) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.fill();
+            } else if (pType === 2) {
+                ctx.fillStyle = 'rgba(0, 150, 255, 1.0)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0, 200, 255, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+    }
+
+    // 5. 粒子モード時の飛び散る火の粉（電子・ニュートリノ）の描画
+    if (isParticleMode) {
+        for (let p of activeParticles) {
+            ctx.beginPath();
+            // 自由粒子は小さな正円（ドット）としてレンダリング
+            ctx.arc(p.x, p.y, RADIUS * 0.5, 0, Math.PI * 2);
+            
+            let alpha = Math.min(1, p.life / 30); // 消えかけるときにフェードアウト
+            if (p.type === 'electron') {
+                ctx.fillStyle = `rgba(255, 0, 150, ${alpha})`; // 電子：ピンクの火の粉
+            } else {
+                ctx.fillStyle = `rgba(0, 255, 200, ${alpha})`; // ニュートリノ：緑の火の粉
+            }
+            ctx.fill();
+        }
+    }
+
+    // 下部システムログ
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '14px Courier New';
+    let currentEngine = isParticleMode ? "QUANTIZED_PARTICLE_ENGINE" : "CONTINUOUS_WAVE_ENGINE";
+    let logMessage = `SYSTEM LOG // ACTIVE_NEUTRON: ${neutronCount} // DECAYED_PROTON: ${decayCount} // ENGINE: ${currentEngine} // CLOCK_t: ${pulseTimer}`;
+    ctx.fillText(logMessage, 20, HEIGHT - 20);
+
+    requestAnimationFrame(updateUniverse);
+}
+
+window.addEventListener('resize', () => {
+    window.location.reload(); 
+});
+
+updateUniverse();
+</script>
+
+</body>
+</html>
