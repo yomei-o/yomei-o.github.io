@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1/137 は動く数だった ── わかる宇宙論 第6回（前編）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f3; --paper-edge:#ece6d8;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a5a1e; --calc-bg:#f4ecdf;   /* 第6回の計算色＝琥珀（エネルギー・炉の色） */
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --acc:#b06a12;    /* 第6回アクセント＝琥珀オレンジ（高エネルギー） */
+    --grid:#e0d8c6;
+    --true:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e0c4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2d3ba;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:8px 12px;border-radius:3px;background:#f4ecdf;color:#8a5a1e;font-weight:600;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7f0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3413;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ecdf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3413;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 6 回・前編 ／ ここから「まだ誰も知らない」領域へ</span></div>
+  <p class="eyebrow">第2回で置いた伏線を回収する ── その 1/137 すら、実は固定値じゃなかった</p>
+  <h1>1/137 は、動く数だった
+    <span class="sub">「なぜ 1/137 なのか」に挑む前に、まず知るべきこと ──<br>1/137 は“見る細かさ”で変わる。だから問いは、少し違う形をしている。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第2回の α、割り算、グラフを読む</span>
+    <span>α(見る細かさ) は一定ではない</span>
+  </div>
+
+  <p class="lead">第2回で、微細構造定数 \(\alpha\approx 1/137\) は「宇宙のどこの誰が測っても同じ、変わらない数」だと言いました ── そのとき、末尾の但し書きに小さな爆弾を仕込んでおきました。「実は \(\alpha\) は、見る細かさ(エネルギー)によって少しだけ値が変わる」。今回はその伏線を回収します。<em>1/137 は、いちばん粗く見たときの値にすぎない</em>。この事実は、「なぜ 1/137 なのか」という究極の問いの<strong>立て方そのもの</strong>を変えてしまいます。ここから先、シリーズは初めて「まだ誰も答えを知らない領域」に足を踏み入れます。</p>
+
+  <h2><span class="n">01</span>電子のまわりは、実は「かすんで」いる</h2>
+
+  <p>電子はマイナスの電気を帯びています。ところが、電子の“すぐそば”を見ると、話はそう単純ではありません。量子の世界では、何もない真空にも、ごく短い時間だけ「電子と反電子(陽電子)のペア」がふっと現れては消える、というゆらぎが絶えず起きています。この現れたペアが、元の電子のまわりで<em>向きをそろえて並び</em>、まるで薄い衣のように電子の電気を<strong>少しだけ隠して(遮蔽して)</strong>しまう。</p>
+
+  <p>だから遠くから(＝粗く)見ると、電子の電気はこの衣で少し弱められて見える。ところが、うんと近づいて(＝細かく)見ると、衣の内側に入り込むので、隠されていない<strong>本当の、より強い電気</strong>が見えてくる。近づくほど電気が強く見える ── これが「電子はかすんでいる」の意味です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第3回の“解像度”）</span>
+    第3回で「\(c\) は世界を見る細かさのツマミ」と言いました。今回の主役も“細かさ”です。粗く見る=遠くから=低エネルギー、細かく見る=近くまで=高エネルギー。粒子を細かく見るには高いエネルギーをぶつける必要があるので、「細かさ」と「エネルギー」は同じことの裏表です。
+  </div>
+
+  <h2><span class="n">02</span>だから α は「見る細かさ」で変わる</h2>
+
+  <p>\(\alpha\) は電子の電気の強さを表す数(第2回の \(\alpha=e^2/4\pi\varepsilon_0\hbar c\)、\(e\) は電気の量)。電気が強く見えれば \(\alpha\) も大きくなる。前節の通り、細かく(高エネルギーで)見るほど電気は強く見えるので ──</p>
+
+  <div class="keybox">
+    <div class="lbl">α は「見る細かさ（エネルギー）」の関数</div>
+    <p style="margin:6px 0 0;">粗く見る（低エネルギー、ふだんの世界）→ \(\alpha \approx \dfrac{1}{137}\)<br>細かく見る（高エネルギー、\(Z\)粒子の重さ 約91 GeV あたり）→ \(\alpha \approx \dfrac{1}{128}\)</p>
+  </div>
+
+  <p>\(1/137\) と \(1/128\)。小さな差に見えますが、これは<strong>測定で確かめられた事実</strong>です。粒子加速器で電子を高エネルギーでぶつけると、確かに \(\alpha\) は \(1/128\) 側の、より大きな値になる。物理では、こういう「見る細かさで値が変わる量」を<em>走る(running)結合定数</em>と呼びます。定数なのに走る、という第4回・番外編でも見た“名前と実態のずれ”が、 here にもあります。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── どれくらい変わった?</span>
+    <p class="lbl">二つの値を小数で</p>
+    $$\frac{1}{137}\approx 0.00730,\qquad \frac{1}{128}\approx 0.00781$$
+    <p class="lbl">増えた割合</p>
+    $$\frac{0.00781-0.00730}{0.00730}\approx 0.07 = 7\%$$
+    <p style="margin-bottom:14px;">粗く見たときから細かく見たときへ、\(\alpha\) は<strong>およそ7%大きく</strong>なった。「変わらない定数」どころか、見る細かさを変えるだけで1割近く動く。下の図で、エネルギーを上げていくと \(\alpha\) が育っていく様子を、実際に動かしてみましょう。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：α は「見る細かさ（エネルギー）」とともに育つ。左端＝ふだんの世界(1/137)、右へ行くほど高エネルギー</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>見る細かさ（エネルギー、右ほど細かい）<span class="val" id="ve">1</span>
+        <input type="range" id="se" min="0" max="100" step="1" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rd">このエネルギーでの α ≈ 1/137.0</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--acc);"></i>その細かさで見た α の値（1/α で表示）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第2回の回収）</span>
+    第2回で「\(\alpha\) は誰が測っても \(1/137\)」と言ったのは、正確には「<strong>いちばん粗く見たとき</strong>の \(\alpha\) は誰が測っても \(1/137\)」でした。物差し(単位)を変えても \(1/137\) は動かない ── これは今も正しい。でも“見る細かさ”を変えると動く。単位で動かないことと、細かさで動くことは、別の話だったのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>だから「なぜ 1/137 か」は、問いの形が変わる</h2>
+
+  <p>ここが前編の結論です。\(\alpha\) が見る細かさで動くのなら、「なぜ \(\alpha\) は \(1/137\) なのか?」という問いは、少し素朴すぎたことになります。\(1/137\) は「ふだんの粗い世界での値」という、たくさんある値のうちの一つにすぎないから。正しく問い直すと、こうなります。</p>
+
+  <div class="keybox">
+    <div class="lbl">問いの立て直し</div>
+    <p style="margin:6px 0 0;">× 「なぜ \(\alpha\) は \(1/137\) なのか」<br>○ 「\(\alpha\) が細かさとともに<strong>どう走るか（走り方のルール）</strong>と、それを<strong>ある一点で固定する値</strong>は、どこから来るのか」</p>
+  </div>
+
+  <p>つまり本当に問うべきは、たった一つの数字ではなく、<em>「走り方」そのもの</em>。値は細かさで変わるけれど、「どういうルールで変わるか」は、その細かさによらない、もっと深いもの ── そここそが「変わらない本質」の候補です。第1回からこのシリーズが繰り返してきた「単位や見方で動く表面の値ではなく、その裏にある不変な構造こそが物理」という考えが、\(\alpha\) の謎の入口でも、そのまま効いてくる。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここから先は、誰も答えを持っていない</span>
+    <p style="margin-top:0;">\(\alpha\) の「走り方のルール」は、理論(場の量子論)から計算できます。そこは分かっている。でも、その走り方を<strong>ある一点で固定する値そのもの</strong>が「なぜその値か」は ── <em>まだ誰も答えを知りません</em>。かつて偉大な物理学者エディントンが \(137\) を理論だけから導こうとして失敗して以来、100年近く未解決のままです。</p>
+    <p style="margin-bottom:0;">このシリーズはここで初めて、「わかる」の外側に出ます。でも収穫はありました ── 問いを「なぜ 1/137 か」から「走り方と、その固定点はどこから来るか」へと、<strong>正しい形に立て直せた</strong>。良い問いは、答えの半分です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の値だけで解けます）</div>
+    <ol>
+      <li>高エネルギーでの \(\alpha\approx 1/128\) を小数(有効数字3桁)で表せ。
+        <details><summary>答えを見る</summary><div class="ans">\(1\div 128 \approx 0.00781\)。第2回の \(1/137\approx0.00730\) より大きい ── 細かく見るほど電気が強く見えるから。</div></details>
+      </li>
+      <li>「走る結合定数」を、第4回・番外編に出た“名前と実態のずれ”の言葉で一言説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">「定数」と呼ばれているのに実際は見る細かさ(エネルギー)で値が変わる量。ハッブル“定数”が時間で変わったのと同じで、名前より定義・中身を見るべき例です。</div></details>
+      </li>
+      <li>「なぜ 1/137 か」という問いが素朴すぎる理由を、今回の内容から1文で述べよ。
+        <details><summary>答えを見る</summary><div class="ans">\(1/137\) は「粗く見たときの値」にすぎず、細かさを変えれば値も変わるから。問うべきは単一の数字ではなく、値の“走り方”とそれを固定する仕組みのほう。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">前編まとめ</span>不動の数ではなく、走る量だった</h2>
+    <p>真空のゆらぎが電子の電気を薄く隠すため、細かく(高エネルギーで)見るほど電気は強く見え、\(\alpha\) は \(1/137\) から \(1/128\) へと約7%育つ。\(\alpha\) は「見る細かさで変わる、走る量」だった ── 第2回の但し書きに仕込んだ伏線の、正体です。</p>
+    <p>だから「なぜ \(1/137\) か」は問いとして素朴すぎた。正しくは「走り方のルールと、それを固定する値はどこから来るか」。<em>値は動くが、走り方は深い</em> ── このシリーズが一貫して探してきた「表面ではなく、その裏の不変な構造」が、\(\alpha\) の最大の謎の入口にも、ちゃんと顔を出していました。良い問いに立て直せたところで、前編を閉じます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第6回・後編</span>
+    「三つの力は、一点で出会うか」。今回“走る”のは電磁気の力(\(\alpha\))だけでした。でも自然には他にも力があり、それぞれ違う走り方をする。もし、うんと細かく(高エネルギーで)見たときに、<strong>複数の力の強さが一点にそろう</strong>なら ── あなたの「一つの数から全部が出る」という夢は、そこで具体的な物理(大統一理論)になります。後編は、その出会いを追います。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第6回・前編、物理好きの高校生向け読み物です。真空偏極による電荷の遮蔽と、それに伴う微細構造定数の「走り(running)」は確立した物理で、\(\alpha^{-1}\approx137.0\)(低エネルギー極限)から \(\alpha^{-1}\approx128\)(\(Z\)ボソン質量スケール ~91 GeV)への変化は測定されています。図は走りの概念を示す模式的なもので、実際の走りは対数的かつ荷電粒子の種類に依存します。「なぜ \(\alpha\) がその値をとるか」は現代物理の未解決問題です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーでエネルギーを上げると α が育ちます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), se=document.getElementById('se'), ve=document.getElementById('ve'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 模式的な走り：1/alpha が 137 から 128 へ、対数的に下がる（＝alphaは育つ）
+  // s: 0..100 のスライダー → 見る細かさ。invAlpha を返す
+  function invAlpha(s){
+    // s=0 → 137.0（粗い）、s=100 → 128.0（細かい）を、なめらかに（log的に）
+    var frac = Math.log(1+s*0.5)/Math.log(1+100*0.5); // 0..1、log的に立ち上がる
+    return 137.0 - (137.0-128.0)*frac;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52;
+    var s=parseInt(se.value,10); ve.textContent=s;
+    ctx.clearRect(0,0,w,h);
+    var yTop=127.5, yBot=137.8; // 1/alpha 表示範囲（上が細かい＝小さいinvAlpha）
+    function X(ss){return pad+ss/100*(w-pad-14);}
+    function Y(inv){return 12 + (inv-yTop)/(yBot-yTop)*(h-pad-12);}
+    // grid + y labels（1/alpha）
+    ctx.strokeStyle='#eee7d8'; ctx.lineWidth=1; ctx.fillStyle='#8a8570'; ctx.font='11px sans-serif';
+    [128,130,132,134,136].forEach(function(v){
+      var y=Y(v); ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillText('1/'+v, 8, y+4);
+    });
+    // axes
+    ctx.strokeStyle='#c9c2b2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('見る細かさ（エネルギー）→', w-210, h-pad+18);
+    ctx.fillText('粗い', pad-2, h-pad+18);
+    ctx.fillText('細かい', w-54, h-pad+30);
+    // curve
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var ss=0;ss<=100;ss+=0.5){var x=X(ss),y=Y(invAlpha(ss));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // marker
+    var inv=invAlpha(s), mx=X(s), my=Y(inv);
+    ctx.strokeStyle='#8a5a1e';ctx.lineWidth=1.3;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // endpoints labels
+    ctx.fillStyle='#7a5010';ctx.font='12px sans-serif';
+    ctx.fillText('ふだんの世界 1/137', X(0)+6, Y(137.0)-8);
+    ctx.fillText('高エネルギー 1/128', X(100)-120, Y(128.0)+16);
+    rd.textContent='このエネルギーでの α ≈ 1/'+inv.toFixed(1)+'　（右へ動かすほど 1/α が小さく＝α が大きく育つ）';
+  }
+  se.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
