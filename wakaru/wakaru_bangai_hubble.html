@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ハッブル定数は、定数じゃない ── わかる宇宙論 番外編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f4f9; --paper-edge:#e6dfe9;   /* 番外編は少し紫がかった紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#4a3b6b; --calc-bg:#efeaf4;
+    --rule:#d5cdda; --hair:#c4bcce;
+    --acc:#6a4a9c;    /* 番外編アクセント＝紫 */
+    --grid:#d8d0e0;
+    --true:#6a4a9c;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:720px;margin:32px auto;background:var(--paper);
+    padding:60px 66px 84px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:48px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e3d8ef 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #d6cee2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbf9fc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:180px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:8px 12px;border-radius:3px;background:#efeaf4;color:#4a3b6b;font-weight:600;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbfe,#f2ecf6);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:720px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ／ ちょっと寄り道コラム</span></div>
+  <p class="eyebrow">本編のあいだの、短い寄り道。名前にだまされない話。</p>
+  <h1>ハッブル定数は、<br>定数じゃない
+    <span class="sub">宇宙の膨張の速さを表す「ハッブル定数」。でもこれ、時間とともに変わります。<br>なぜ「定数」と呼ばれているのか ── 微分ひとつで、名前の嘘を暴く小話。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：微分ひとつ（第1回の式だけ）</span>
+    <span>\(H = 1/t\)</span>
+  </div>
+
+  <p class="lead">宇宙論には「ハッブル定数」\(H_0\) という有名な数があります。宇宙がどれくらいの勢いで膨らんでいるかを表す量で、ニュースにもよく登場する。名前に「定数」とついているので、変わらない値だと思ってしまう ── でも実は、<em>ハッブル定数は時間とともに変わります</em>。名前が、ちょっとした嘘なのです。第1回の式を使って、微分ひとつでそれを確かめましょう。短い寄り道です。</p>
+
+  <h2><span class="n">01</span>ハッブル「定数」とは何か</h2>
+
+  <p>ハッブル定数 \(H\) は、宇宙の大きさ \(a\) が「1あたりどれくらいの速さで増えているか」、つまり増加の<strong>割合</strong>です。式で書くと、\(a\) の変化の速さ \(\dot a\)(\(a\) を時間で微分したもの)を、\(a\) 自身で割ったもの。</p>
+
+  <div class="keybox">
+    <div class="lbl">ハッブル定数の定義</div>
+    $$H = \frac{\dot a}{a}\quad(\text{＝宇宙の大きさが、1年で何割ふくらむか})$$
+  </div>
+
+  <p>「速さ」ではなく「割合」なのがポイント。たとえば毎年2%ずつ増えるなら \(H\) は 0.02/年、という具合です。この \(H\) の“今の値”が、あの有名な \(H_0\)。では、この割合は本当に一定でしょうか?</p>
+
+  <h2><span class="n">02</span>第1回の宇宙で、H を微分で出してみる</h2>
+
+  <p>第1回・第4回の宇宙(\(c\cdot t=\text{一定}\))では、宇宙が時間に比例してまっすぐ大きくなります。つまり大きさは \(a(t)=k\,t\)(\(k\) はある定数)。これを定義に入れてみます。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── H を計算する</span>
+    <p class="lbl">大きさ a とその変化の速さ</p>
+    $$a(t) = k\,t \qquad\Rightarrow\qquad \dot a = k\quad(\text{一定})$$
+    <p class="lbl">割合 H を作る</p>
+    $$H = \frac{\dot a}{a} = \frac{k}{k\,t} = \frac{1}{t}$$
+    <p style="margin-bottom:14px;">きれいに \(k\) が消えて、<strong>\(H = 1/t\)</strong>。宇宙の年齢 \(t\) が大きくなるほど、\(H\) は小さくなる ── <em>反比例</em>です。宇宙が若いころは \(H\) が大きく(激しく膨らみ)、歳をとるとゆるやかになる。つまりハッブル「定数」は、まったく定数ではなく、時間とともに減っていく量なのです。</p>
+  </div>
+
+  <p>下の図で、実際に \(H=1/t\) が時間とともに減っていく様子を見てください。スライダーで「今が宇宙の何歳か」を動かすと、その時代のハッブル“定数”の値が読み取れます。</p>
+
+  <div class="fig">
+    <div class="cap">図：ハッブル“定数” H = 1/t の時間変化。若い宇宙ほど大きく、歳をとるほど小さくなる</div>
+    <canvas id="cv" width="660" height="280"></canvas>
+    <div class="controls">
+      <label>「今」は宇宙の年齢 t のどこか <span class="val" id="vt">1.00</span>
+        <input type="range" id="st" min="0.15" max="2.0" step="0.01" value="1.0">
+      </label>
+    </div>
+    <div class="readout" id="rd">この時代のハッブル“定数” H = 1/t = 1.00</div>
+  </div>
+
+  <h2><span class="n">03</span>じゃあ、なぜ「定数」と呼ぶのか</h2>
+
+  <p>理由は、名前がついた経緯にあります。ハッブル定数は「<em>いま観測すると、どの銀河も、遠いほど速く遠ざかる。その比例の定数</em>」として登場しました。空を見渡した“ある一瞬”では、遠さと後退速度がきれいに比例していて、その比例定数が \(H_0\)。<strong>空間についての定数(どの方向を見ても同じ)ではあるが、時間についての定数ではない</strong> ── ここがまぎらわしい。</p>
+
+  <div class="keybox">
+    <div class="lbl">「定数」の正しい意味</div>
+    <p style="margin:6px 0 0;">ハッブル定数は「<strong>その瞬間には、空間のどこでも同じ値</strong>」という意味の定数。「<strong>時間がたっても変わらない</strong>」という意味の定数ではない。だから今の値には \(H_0\) と、わざわざ“今”の添え字がついています。</p>
+  </div>
+
+  <p>だから正確には「ハッブル<em>パラメータ</em> \(H(t)\)」と呼ぶのが正しく、専門家はそう呼び分けます。「定数」は、歴史的な呼び名の名残なのです。名前にだまされず、定義(\(\dot a/a\))に立ち返れば、\(H=1/t\) で減っていくことは微分ひとつで分かる ── これが今回の小話でした。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（第1回とつながる）</span>
+    第1回で「光速の減少する割合 = ハッブル定数 \(H\)」と言いました。今回の \(H=1/t\) は、まさに第1回で光速の減少率として出した \(1/t\) と同じもの。\(c\cdot t=\text{一定}\) を微分すると \(\dot c/c = -1/t\)、その大きさが \(H=1/t\)。<strong>光が遅くなる割合と、宇宙が膨らむ割合は、同じ一つの数</strong>だったのです。名前が「定数」でも中身は動く、という今回の話は、そのまま第1回の裏返しになっています。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（軽く一枚）</span>
+    <p style="margin:0;">\(H=1/t\) ちょうどになるのは、まっすぐ膨張する宇宙(第1回のモデル)での話です。実際の宇宙は膨張のしかたが少し複雑なので、\(H\) と \(1/t\) はぴったり等しくはなく、近い値(\(H_0 t_0\) はおよそ1)になります。それでも「ハッブル定数は時間とともに変わる」という結論は、どの標準的なモデルでも同じ ── 名前が“定数”でも、中身は動きます。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>名前より、定義を信じる</h2>
+    <p>ハッブル定数 \(H=\dot a/a\) を、まっすぐ膨張する宇宙で計算すると \(H=1/t\)。宇宙の年齢に反比例して、時間とともに減っていく ── まったく“定数”ではありませんでした。「定数」とは「その瞬間、空間のどこでも同じ」という意味で、「時間で変わらない」という意味ではなかった。</p>
+    <p>物理では、名前が実態とずれていることがときどきあります。そういうとき頼りになるのは、名前ではなく<em>定義の式</em>。\(H=\dot a/a\) に立ち返れば、微分ひとつで真実が見える。<strong>名前にだまされず、定義を信じる</strong> ── 短い寄り道でしたが、これはずっと役に立つ習慣です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編、物理好きの高校生向けの短いコラムです。\(H=\dot a/a\) の定義、および線形膨張 \(a\propto t\) での \(H=1/t\) は正しい関係です。実際の宇宙(ΛCDM)では \(H(t)\) の時間依存はより複雑で、\(H_0 t_0\approx 1\) となります。「ハッブル定数」は歴史的呼称で、時間変化する量としては「ハッブルパラメータ」と呼ぶのが正確です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで H の値が読み取れます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var tNow=parseFloat(st.value); vt.textContent=tNow.toFixed(2);
+    var tMin=0.15, tMax=2.0, Hmax=1/tMin;
+    function X(t){return pad+(t-tMin)/(tMax-tMin)*(w-pad-14);}
+    function Y(H){return (h-pad)-(H/Hmax)*(h-pad-14);}
+    ctx.clearRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='#ece5f0'; ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=8+g*(h-pad-8)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#c4bcce';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('宇宙の年齢 t', w-96, h-pad+16);
+    ctx.save();ctx.translate(14,26);ctx.fillText('H = 1/t',0,0);ctx.restore();
+    // curve H=1/t
+    ctx.strokeStyle='#6a4a9c';ctx.lineWidth=2.4;ctx.beginPath();var f=true;
+    for(var t=tMin;t<=tMax+1e-9;t+=0.004){var x=X(t),y=Y(1/t);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // marker at "now"
+    var Hn=1/tNow, mx=X(tNow), my=Y(Hn);
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=1.4;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,h-pad);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,my);ctx.lineTo(mx,my);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(mx,my,5,0,7);ctx.fill();
+    ctx.fillStyle='#7a2f4f';ctx.font='13px sans-serif';
+    ctx.fillText('今 (t='+tNow.toFixed(2)+')', mx+8, my-8);
+    rd.textContent='この時代のハッブル“定数” H = 1/t = '+Hn.toFixed(2)+'　（t が大きいほど H は小さい＝定数じゃない）';
+  }
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

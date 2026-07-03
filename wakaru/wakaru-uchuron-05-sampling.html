@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レコードとCDは区別できるか ── わかる宇宙論 第5回</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --ink-soft:#4a4e5a;
+    --paper:#faf8f3;
+    --paper-edge:#ece6d8;
+    --side:#2f5d62;
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a2f4f;      /* 第5回の計算色＝レコード盤の赤紫 */
+    --calc-bg:#f4ebef;
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+    --acc:#a03a5f;       /* 第5回アクセント＝マゼンタ寄りの赤（音・盤） */
+    --grid:#d7d0c1;
+    --true:#2166a0;      /* 元の波＝青 */
+    --alias:#c0392b;     /* エイリアス＝赤 */
+    --samp:#c46b1c;      /* サンプル点＝橙 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;
+  }
+  .sheet{
+    max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+  .series{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;
+  }
+  .series .ep{color:var(--ink-soft);letter-spacing:.16em;font-weight:600;font-size:11.5px;}
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.2em;color:var(--side);margin:0 0 22px;font-weight:600;
+  }
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.08em;margin-top:26px;
+    padding-top:18px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17.5px;font-weight:600;margin:30px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #eddce3 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e0ccd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:170px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .status{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;margin-top:10px;padding:8px 12px;border-radius:3px;}
+  .status.ok{background:#e6f0ea;color:#1f6b45;}
+  .status.bad{background:#f7e7e4;color:#a5311f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;}
+  .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;}
+  .ans{color:#4a2233;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ecf0;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a2233;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;}
+    details{display:none;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){
+    .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;}
+  }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 5 回 ／ 物理好き高校生のための、数式でたどる版</span></div>
+  <p class="eyebrow">第4回で「点で刻む」を体験 → 今回：その点と、なめらかな波は見分けられるのか?</p>
+  <h1>レコードとCDは<br>区別できるか
+    <span class="sub">シリーズをつらぬく喩え「レコード＝連続、CD＝離散」を、今回は数学で回収する。<br>下の図は本物 ── サンプリングを粗くすると、偽の波が生まれる瞬間が見えます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：sin波、周波数、割り算</span>
+    <span>サンプリング定理：\(f_s > 2 f_{\max}\)</span>
+  </div>
+
+  <p class="lead">このシリーズでは、連続の宇宙(\(c=\text{一定}\))と離散の宇宙(\(c\cdot t=\text{一定}\)の計算機的な見方)は「同じ音楽を、レコードとCDで持っているようなもの」だと繰り返してきました。第4回では、なめらかな曲線を点で刻む体験をしました。では、いよいよ核心 ── <em>点で刻んだCDと、なめらかなレコードは、どこまで見分けられるのか?</em> 答えには、音楽のCD化を支えるのとまったく同じ数学、<strong>サンプリング定理</strong>があります。そしてその定理は、離散と連続が「区別できる場所」と「絶対に区別できない場所」を、はっきり線引きしてくれます。</p>
+
+  <h2><span class="n">STEP 01</span>まず、なめらかな波を「点」で記録する</h2>
+
+  <p>音は空気の振動、つまり波です。CDはこの波を、1秒間に何万回も「今の高さは?」と測って、数値の列として記録します。この「1秒あたり何回測るか」を<strong>サンプリング周波数 \(f_s\)</strong> と呼びます。CDは \(f_s = 44100\)(毎秒44100回)。</p>
+
+  <p>ここで素朴な疑問。とびとびの点しか記録していないのに、なぜ元のなめらかな音が復元できるのか? 点と点の間は、記録していないのに。下の図で、まず「元の波(青)」を「点(橙)」で記録する様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：なめらかな波（青）を、一定間隔の点（橙）で記録する。点の間隔＝サンプリングの粗さ</div>
+    <canvas id="cv1" width="680" height="260"></canvas>
+    <div class="controls">
+      <label>サンプリング周波数 f_s（毎秒の点の数）<span class="val" id="v1">20</span>
+        <input type="range" id="s1" min="4" max="40" step="1" value="20">
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--true);"></i>元のなめらかな波</span>
+      <span><i class="dot" style="background:var(--samp);"></i>記録した点</span>
+    </div>
+  </div>
+
+  <p>点が十分に多ければ、点をなめらかにつなぐだけで元の波が見えてきます。問題は「どれだけあれば十分か」。ここに、美しい定理が答えを出します。</p>
+
+  <h2><span class="n">STEP 02</span>サンプリング定理 ── 「2倍より速く測れば、完全に復元できる」</h2>
+
+  <div class="keybox">
+    <div class="lbl">サンプリング定理（ナイキスト・シャノン）</div>
+    <p style="margin:6px 0 0;">波に含まれる<strong>いちばん高い周波数を \(f_{\max}\)</strong> とする。サンプリング周波数が</p>
+    $$f_s > 2\, f_{\max}$$
+    <p style="margin:6px 0 0;">を満たせば、とびとびの点から<strong>元のなめらかな波を、誤差ゼロで完全に復元できる</strong>。</p>
+  </div>
+
+  <p>これは驚くべき主張です。「点の間は記録していない」のに、条件さえ満たせば<em>間の情報も含めて100%元通り</em>。CDが \(f_s=44100\) なのは、人間の可聴上限がおよそ20000ヘルツ(20kHz)で、その2倍(40000)を超えるように少し余裕をもたせた値です。つまり ──</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── なぜCDは44100なのか</span>
+    <p class="lbl">人間が聞ける上限</p>
+    <p style="margin-top:8px;">\(f_{\max}\approx 20{,}000\ \mathrm{Hz}\)（20kHz）。定理より、必要なサンプリングは</p>
+    $$f_s > 2\times 20{,}000 = 40{,}000\ \mathrm{Hz}.$$
+    <p class="lbl">CDの実際の値</p>
+    <p style="margin-bottom:14px;">\(f_s = 44{,}100\ \mathrm{Hz}\)。40000をわずかに超えている。だから<strong>CDは、人間が聞ける範囲の音を、原理的に完全に記録できている</strong>。レコード(連続)とCD(離散)を耳で聞き分けられないのは、気のせいでも思い込みでもなく、この定理が保証している事実なのです。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（シリーズの核心）</span>
+    ここが、このシリーズがずっと言ってきたことの数学的な裏づけです。<strong>帯域(含まれる周波数)に上限がある信号なら、離散(点)と連続(なめらか)は情報として完全に等価</strong>。どちらが「本物」かを内側から決める方法は、原理的に存在しない。第1回で「\(c=\text{一定}\)の宇宙と \(c\cdot t=\text{一定}\)の宇宙は区別できない」と言った、その根拠がこれです。
+  </div>
+
+  <h2><span class="n">STEP 03</span>動かしてみる ── 定理を破ると「偽の波」が生まれる</h2>
+
+  <p>では、定理を<em>破る</em>とどうなるか。\(f_s\) が \(2f_{\max}\) より小さい ── つまり測るのが遅すぎると、何が起きるか。ここが今回いちばん面白い図です。下で、元の波の周波数はそのまま、サンプリング(点の数)だけを減らしてみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：測るのが遅すぎると…？ 元の波（青・速い）を粗く測ると、点は「別の遅い波（赤）」に見えてしまう</div>
+    <canvas id="cv2" width="680" height="260"></canvas>
+    <div class="controls">
+      <label>サンプリング周波数 f_s <span class="val" id="v2">30</span>
+        <input type="range" id="s2" min="5" max="40" step="1" value="30">
+      </label>
+    </div>
+    <div id="st2" class="status ok">条件を満たしています（f_s &gt; 2·f_max）</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--true);"></i>元の波（本物・速い）</span>
+      <span><i class="dot" style="background:var(--samp);"></i>記録した点</span>
+      <span><i class="swatch" style="background:var(--alias);"></i>点から見える偽の波（エイリアス）</span>
+    </div>
+  </div>
+
+  <p>\(f_s\) を下げていくと、ある境目(\(f_s = 2f_{\max}\))を割った瞬間、点の並びが<strong>元の速い波(青)ではなく、まったく別の遅い波(赤)</strong>に見え始めます。これが<em>エイリアシング</em> ── 記録が遅すぎて拾いきれなかった速い波が、偽の遅い波に「化けて」しまう現象。CDでこれが起きると、実在しない低い音が聞こえてしまう。だからCDを作るときは、録音前に20kHzより上をカットして、この化けを防いでいます。</p>
+
+  <div class="calc">
+    <span class="tag">偽の波の周波数は計算できる</span>
+    <p class="lbl">エイリアスの周波数</p>
+    <p style="margin-top:8px;">元の波の周波数 \(f\)、サンプリング \(f_s\) のとき、見えてしまう偽の波の周波数は</p>
+    $$f_{\text{alias}} = |\,f - f_s\,|\quad(\text{最も近い場合})$$
+    <p style="margin-bottom:14px;">たとえば \(f=30\)、\(f_s=40\) なら偽の波は \(|30-40|=10\)。速い波(30)が、遅い波(10)に化ける ── 図2で数字を合わせると、この関係が見えます。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">STEP 04</span>だから ── 離散と連続は「端っこ」でだけ分かれる</h2>
+
+  <p>サンプリング定理が教えてくれる線引きは、こうまとめられます。</p>
+
+  <div class="keybox">
+    <div class="lbl">離散 vs 連続 ── どこで区別できるか</div>
+    <p style="margin:6px 0 0;"><strong>帯域の内側</strong>（\(f_{\max}\) 以下の音）→ 離散と連続は<strong>完全に等価・区別できない</strong>。<br><strong>帯域の端・その外側</strong>（速すぎる成分）→ エイリアシングという形で<strong>ちがいが現れる</strong>。</p>
+  </div>
+
+  <p>レコードとCDは、部屋で聞くぶん(帯域の内側)には区別できない ── 定理の保証。区別が問題になるのは、人にはほとんど聞こえない高い音の端っこ(帯域の端)だけ。オーディオ好きが「ハイレゾ」で議論するのは、まさにこの端の領域です。</p>
+
+  <p>そして、これがこのシリーズ全体のメッセージそのものです。第1回の「\(c=\text{一定}\)の連続宇宙」と「\(c\cdot t=\text{一定}\)の離散的な見方」も、まったく同じ構造 ── <em>私たちが触れられる範囲(帯域の内側)では、完全に等価で区別できない</em>。区別が原理的に問題になりうるのは、宇宙のいちばん細かい端っこ(プランクスケールと呼ばれる、想像を絶するミクロの世界)だけ。そこは、まだ誰も実験で確かめられていません。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（宇宙へ橋渡し）</span>
+    音の「いちばん高い周波数 \(f_{\max}\)」にあたるものが、宇宙では「いちばん短い長さ」= プランク長(約 \(10^{-35}\) メートル)だと考えられています。もし宇宙にこの“帯域上限”が本当にあるなら、宇宙は「帯域制限された信号」で、連続として書いても離散として書いても完全に同じ ── レコードとCDの関係が、そのまま宇宙にも当てはまることになります。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（今回は軽く一枚）</span>
+    <p style="margin:0;">「区別できない」は、あくまで<strong>帯域の内側の話</strong>です。宇宙に本当に帯域上限(最短の長さ)があるのか、端っこで離散と連続がどう分かれるのかは、まだ未解決の物理の最前線。だから「連続でも離散でも書ける」は正しくても、「宇宙が本当はどちらか」は、この定理だけでは決められません ── そこは、あなたたちの世代が実験で開ける扉です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>ある音の最高周波数が \(f_{\max}=15{,}000\ \mathrm{Hz}\)。完全に記録するのに必要な最低サンプリング周波数は?
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(f_s > 2\times 15{,}000 = 30{,}000\ \mathrm{Hz}\)。毎秒3万回より多く測れば、誤差ゼロで復元できます。</div>
+        </details>
+      </li>
+      <li>\(f=35\)、\(f_s=40\) のとき、見えてしまう偽の波(エイリアス)の周波数は?
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(f_{\text{alias}}=|35-40|=5\)。速い波(35)が、遅い波(5)に化けて見えます。図2で確かめてみてください。</div>
+        </details>
+      </li>
+      <li>「レコードとCDは区別できない」を、このシリーズの宇宙の話に置き換えて、1文で説明せよ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">例：「帯域(＝見られる細かさ)の内側では、連続の宇宙と離散的な見方は完全に同じ情報を持ち、区別できない。分かれるのはプランクスケールという端っこだけ」。第1回の結論を、サンプリング定理の言葉で言い直したものです。</div>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>同じ音楽、二つの盤 ── それを保証する定理</h2>
+    <p>サンプリング定理は言います ── 帯域に上限がある信号なら、\(f_s>2f_{\max}\) で測るだけで、とびとびの点から元のなめらかな波を完全に復元できる。だからレコード(連続)とCD(離散)は、耳の届く範囲では区別できない。同じ音楽を、二つの媒体で持っているだけ。</p>
+    <p>この定理が、シリーズをつらぬく喩えの<em>数学的な正体</em>でした。\(c=\text{一定}\)の宇宙も、\(c\cdot t=\text{一定}\)の離散的な見方も、私たちが触れられる帯域の内側では完全に等価。<strong>どちらの盤で聴いても、鳴っている音楽はひとつ</strong> ── それが、第1回からずっと言いたかったことです。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">シリーズはまだ続きます</span>
+    ここまでで「連続と離散は同じ音楽の二つの盤」という背骨が通りました。この先は、その音楽をもっと深く ── 「なぜ 1/137 なのか」「重力もこの絵に入るのか」といった、まだ誰も完全には開けていない扉へ。あなたが将来こじ開けるのかもしれない扉を、これからも一緒に覗いていきます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第5回、物理好きの高校生向け読み物です。図はすべてブラウザ上でその場に計算した実データで、サンプリング定理(ナイキスト・シャノン)とエイリアシング(\(f_{\text{alias}}=|f-f_s|\) の最近接ケース)を可視化しています。CDのサンプリング周波数44.1kHz、可聴域約20kHzは実際の値です。宇宙に最短長(帯域上限)が存在するかは未解決の物理課題であり、離散・連続の等価性は帯域内に限られます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで図が再計算され、エイリアシングの発生が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+
+  function setupHiDPI(cv){
+    var ratio=window.devicePixelRatio||1;
+    var cssW=cv.clientWidth||cv.width;
+    var cssH=cv.height*(cssW/cv.width);
+    cv.width=Math.round(cssW*ratio);
+    cv.height=Math.round(cssH*ratio);
+    var ctx=cv.getContext('2d');
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  // 元の波の周波数（サイクル数、横軸0..1の範囲での山の数）
+  var FMAX=8;   // 図1の元波の周波数
+  var FTRUE=15; // 図2の元波（本物）の周波数
+
+  // ---- 図1：波を点で記録 ----
+  var cv1=document.getElementById('cv1'), s1=document.getElementById('s1'), v1=document.getElementById('v1');
+  function draw1(){
+    var d=setupHiDPI(cv1),ctx=d.ctx,w=d.w,h=d.h,pad=16,mid=h/2,amp=h*0.34;
+    var fs=parseInt(s1.value,10); v1.textContent=fs;
+    ctx.clearRect(0,0,w,h);
+    // baseline
+    ctx.strokeStyle='#e7e0d1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,mid);ctx.lineTo(w-pad,mid);ctx.stroke();
+    // true wave
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2.2;ctx.beginPath();
+    for(var i=0;i<=600;i++){var x=i/600;var px=pad+x*(w-2*pad);var py=mid-amp*Math.sin(2*Math.PI*FMAX*x);
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    // sample points
+    ctx.fillStyle='#c46b1c';
+    for(var k=0;k<=fs;k++){var x=k/fs;var px=pad+x*(w-2*pad);var py=mid-amp*Math.sin(2*Math.PI*FMAX*x);
+      ctx.beginPath();ctx.arc(px,py,3.6,0,7);ctx.fill();}
+  }
+
+  // ---- 図2：エイリアシング ----
+  var cv2=document.getElementById('cv2'), s2=document.getElementById('s2'), v2=document.getElementById('v2'), st2=document.getElementById('st2');
+  function draw2(){
+    var d=setupHiDPI(cv2),ctx=d.ctx,w=d.w,h=d.h,pad=16,mid=h/2,amp=h*0.34;
+    var fs=parseInt(s2.value,10); v2.textContent=fs;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#e7e0d1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,mid);ctx.lineTo(w-pad,mid);ctx.stroke();
+    // true (fast) wave
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2;ctx.globalAlpha=0.9;ctx.beginPath();
+    for(var i=0;i<=800;i++){var x=i/800;var px=pad+x*(w-2*pad);var py=mid-amp*Math.sin(2*Math.PI*FTRUE*x);
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();ctx.globalAlpha=1;
+    // sample points on the true wave
+    var pts=[];
+    for(var k=0;k<=fs;k++){var x=k/fs;var val=Math.sin(2*Math.PI*FTRUE*x);pts.push([x,val]);}
+    // determine alias frequency (nearest multiple of fs)
+    var m=Math.round(FTRUE/fs);
+    var falias=Math.abs(FTRUE-m*fs);
+    var satisfied = (fs>2*FTRUE);
+    // draw alias wave (only meaningful when undersampled)
+    if(!satisfied){
+      ctx.strokeStyle='#c0392b';ctx.lineWidth=2.4;ctx.setLineDash([]);ctx.beginPath();
+      // alias wave passes through the same sample points; reconstruct sign via cos of aliased phase
+      for(var j=0;j<=800;j++){var x=j/800;
+        // the reconstructed low-freq component that fits the samples
+        var py=mid-amp*Math.sin(2*Math.PI*falias*x* (0) + 2*Math.PI*(FTRUE - m*fs)*x);
+        if(j===0)ctx.moveTo(pad+x*(w-2*pad),py);else ctx.lineTo(pad+x*(w-2*pad),py);}
+      ctx.stroke();
+    }
+    // sample points
+    ctx.fillStyle='#c46b1c';
+    for(var p=0;p<pts.length;p++){var x=pts[p][0];var px=pad+x*(w-2*pad);var py=mid-amp*pts[p][1];
+      ctx.beginPath();ctx.arc(px,py,3.8,0,7);ctx.fill();}
+    // status
+    if(satisfied){st2.className='status ok';st2.textContent='✓ 条件を満たす（f_s > 2·f_max = '+(2*FTRUE)+'）：点は本物の波を正しく捉えている';}
+    else{st2.className='status bad';st2.textContent='✗ 条件を破る（f_s ≤ '+(2*FTRUE)+'）：点は偽の遅い波（赤）に化けている  f_alias ≈ '+falias;}
+  }
+
+  function drawAll(){draw1();draw2();}
+  s1.addEventListener('input',draw1);
+  s2.addEventListener('input',draw2);
+  window.addEventListener('resize',drawAll);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(drawAll);}
+  setTimeout(drawAll,60);
+  window.addEventListener('load',drawAll);
+})();
+</script>
+</body>
+</html>
