@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光は昔、もっと速かった ── 数式でたどる宇宙膨張</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --ink-soft:#4a4e5a;
+    --paper:#faf8f3;
+    --paper-edge:#ece6d8;
+    --side:#2f5d62;      /* 連続系＝青緑 */
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;      /* 但し書き＝土 */
+    --calc:#39456b;      /* 計算ボックス＝藍 */
+    --calc-bg:#eef0f6;
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;
+  }
+  .sheet{
+    max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.32em;color:var(--side);margin:0 0 22px;font-weight:600;
+  }
+  h1{font-size:39px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.08em;margin-top:26px;
+    padding-top:18px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--side);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17.5px;font-weight:600;margin:30px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f4e2c8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ccd2e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .num{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .foot{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:25pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.eq{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){
+    .sheet{padding:40px 22px 60px;margin:0;} h1{font-size:29px;} body{font-size:16px;}
+    .sheet{padding-left:20px;padding-right:20px;}
+  }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <p class="eyebrow">わかる宇宙論 ／ 物理好き高校生のための、数式でたどる版</p>
+  <h1>光は昔、もっと速かった
+    <span class="sub">宇宙膨張を「光速がゆっくり遅くなる」と読み替える。<br>光速は毎年 2.2&nbsp;cm/s ずつ遅くなっている ── その数字を、自分で出してみよう。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：分数の割り算、簡単な微分、単位換算</span>
+    <span>\(c\cdot t=\text{一定}\)</span>
+  </div>
+
+  <p class="lead">遠くの銀河ほど、光が赤みを帯びて見える。教科書はこれを「空間そのものが伸びているから」と説明します。正しいのですが、初めて聞くと必ずどこかで詰まる。そこでこの読み物では、<em>空間は固定したまま、光の速さのほうが時間とともにゆっくり遅くなっている</em>、という別の言い方で最後まで走り切ってみます。数式もちゃんと出します。そして最後に、この言い方が標準的な説明と<strong>まったく同じ観測</strong>を指していることを、種明かしします。</p>
+
+  <h2><span class="n">STEP 01</span>まず、いちばん大事な一本の式</h2>
+
+  <p>今日の光速を \(c_0\)、宇宙の年齢を \(t\)、今の宇宙の年齢を \(t_0\) とします。この読み物のルールはたった一つ、「光速 × 年齢」がいつの時代も一定、というもの。</p>
+
+  <div class="keybox">
+    <div class="lbl">この読み物の唯一のルール</div>
+    $$c(t)\,\cdot\, t = c_0\, t_0 = \text{一定}\qquad\Longrightarrow\qquad c(t)=\frac{c_0\,t_0}{t}$$
+  </div>
+
+  <p>右の式は「年齢 \(t\) が大きいほど、光速 \(c(t)\) は小さい」と言っています。宇宙が若い(\(t\) が小さい)ほど光は速く、歳をとるほど遅くなる。式の形は、中学で習う反比例そのものです。</p>
+
+  <h2><span class="n">STEP 02</span>いま、光速はどれくらいの速さで遅くなっている?</h2>
+
+  <p>「毎年どれだけ遅くなるか」は、\(c(t)\) を時間で微分すれば出ます。\(c(t)=c_0 t_0 \, t^{-1}\) を微分して、</p>
+
+  $$\frac{dc}{dt} = c_0 t_0 \cdot(-1)\,t^{-2} = -\frac{c_0 t_0}{t^2} = -\frac{c(t)}{t}$$
+
+  <p>今の値(\(t=t_0,\ c=c_0\))を入れると、減り方は \(\left|\dfrac{dc}{dt}\right| = \dfrac{c_0}{t_0}\)。あとは数字を入れるだけです。手を動かしてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 光速は毎年何 cm/s 遅くなる?</span>
+    <p class="lbl">使う値</p>
+    <p style="margin-top:8px;">光速 \(c_0 = 3.0\times10^{8}\ \mathrm{m/s}\)、宇宙の年齢 \(t_0 = 138\)億年。まず年齢を「秒」ではなく「年」のまま使います(答えを「1年あたり」で出したいので)。</p>
+    <p class="lbl">計算</p>
+    $$\left|\frac{dc}{dt}\right| = \frac{c_0}{t_0} = \frac{3.0\times10^{8}\ \mathrm{m/s}}{1.38\times10^{10}\ \text{年}} \approx 2.17\times10^{-2}\ \frac{\mathrm{m/s}}{\text{年}}$$
+    <p class="lbl">単位を cm に直す</p>
+    $$2.17\times10^{-2}\ \mathrm{m/s} = 2.2\ \mathrm{cm/s}$$
+    <p style="margin-bottom:14px;">つまりこの読み物の宇宙では、<strong>光速は毎年およそ 2.2&nbsp;cm/s ずつ遅くなっている</strong>。秒速30万キロメートルという巨大な速さに対して、たった数センチ。だからふだんの実験ではまず気づけません。「変化なんて観測されていないぞ」と言われても、この小ささなら当然だ、と胸を張れます。</p>
+  </div>
+
+  <p>ついでに「割合」でも見ておきましょう。1年で何割変わるか、は</p>
+
+  $$\frac{1}{c}\left|\frac{dc}{dt}\right| = \frac{1}{t_0} = \frac{1}{1.38\times10^{10}\ \text{年}} \approx 7.2\times10^{-11}\ /\text{年}.$$
+
+  <p>1年でおよそ 1000億分の1。この「割合」のほうが、実は物理的に大事な数字です(理由は STEP 05 で)。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（連続系）</span>
+    この「毎年 \(1/t_0\) の割合で減る」は、標準宇宙論の<strong>ハッブル定数 \(H_0\)</strong> とほぼ同じ量です。\(H_0\) は「宇宙が1年でどれだけの割合で膨らむか」を表す数で、\(c\cdot t=\text{一定}\) の宇宙ではちょうど \(H_0 = 1/t_0\)。光速が遅くなる割合＝空間が膨らむ割合、というわけです。
+  </div>
+
+  <h2><span class="n">STEP 03</span>赤方偏移を式で ── 「どれだけ遅くなったか」がそのまま赤み</h2>
+
+  <p>遠くの銀河から届いた光を考えます。その光が放たれた時刻を \(t_e\)(emit=放出)、受け取る今を \(t_0\) とすると、この読み物の言い方では「放出時に速かった光が、遅くなった今に届く」。速さの比は式のルールから、</p>
+
+  $$\frac{c(t_e)}{c(t_0)} = \frac{c_0 t_0 / t_e}{c_0 t_0 / t_0} = \frac{t_0}{t_e}.$$
+
+  <p>この比が、そのまま「光の間延び具合」＝赤方偏移 \(z\) を決めます。天文でおなじみの関係を使うと、</p>
+
+  $$1+z = \frac{c(t_e)}{c(t_0)} = \frac{t_0}{t_e}.$$
+
+  <p>たとえば \(z=1\) の銀河なら \(1+z=2\)、つまり \(t_0/t_e=2\)。光が放たれたのは宇宙が今の半分の年齢だったころで、そのとき光速は今の2倍だった、と読めます。<em>赤方偏移とは、光を放ったときから今までに光速が落ちた割合そのもの</em> ── ひとつの式で言い切れました。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（連続系）</span>
+    標準宇宙論では \(1+z = a(t_0)/a(t_e)\)(\(a\) は宇宙の大きさ)。この読み物の \(t_0/t_e\) と見比べると、\(a(t)\propto t\)、つまり<strong>宇宙が時間に比例してまっすぐ大きくなる</strong>場合に両者が一致します。「\(c\cdot t=\text{一定}\)」は、正体を明かせば「まっすぐ膨張する宇宙」のことでした。
+  </div>
+
+  <h2><span class="n">STEP 04</span>宇宙の地平線 ── 昔の速い光が、遠くまで手を伸ばす</h2>
+
+  <p>「宇宙が始まってから今まで、光が届けられた最大の距離」を粒子的地平線といいます。速さ×時間を、光速が変化するぶん積み上げる(積分する)と、</p>
+
+  $$D = \int_{0}^{t_0} c(t)\,dt = \int_{0}^{t_0} \frac{c_0 t_0}{t}\,dt = c_0 t_0\big[\ln t\big]_{0}^{t_0}.$$
+
+  <p>ここがこの読み物のクライマックスです。\(t\to 0\)(宇宙の始まりの瞬間)で \(\ln t \to -\infty\) なので、この積分は<strong>いくらでも大きくなります</strong>。昔にさかのぼるほど光速 \(c(t)=c_0t_0/t\) が跳ね上がるので、生まれたての宇宙では光がとてつもない距離を一気に稼げた、ということ。</p>
+
+  <p>だから宇宙のどんなに離れた二点も、生まれてすぐには光で連絡を取り合えていた。これは「宇宙のどこを見てもほぼ同じ温度(宇宙マイクロ波背景放射)」であることの、素直な説明になります。標準宇宙論だと「なぜ連絡できないはずの遠い領域が同じ温度なの?」という<strong>地平線問題</strong>という難物ですが、この読み物では「昔は光が速かったんだから当然」で片づいてしまう。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここは本当は物理が効いている</span>
+    <p style="margin-top:0;">地平線問題が本当に消えるのは、\(c\) を変えたからではなく、\(a\propto t\)(まっすぐ膨張)という<strong>膨張のしかたそのもの</strong>のおかげです。ただの言い換えでは物理は変わりません。まっすぐ膨張を初期の宇宙にまで課すこと ── これは実在する少数派モデル(\(R_h=ct\) 宇宙)で、地平線問題を自然に解く一方、初期の元素合成(ビッグバン元素合成)との整合など未解決の宿題も抱えています。標準はインフレーションを含む \(\Lambda\mathrm{CDM}\) です。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">STEP 05</span>いちばん大事な種明かし ── 「遅くなる」は測れるのか?</h2>
+
+  <p>ここまで気持ちよく計算してきましたが、最大の問いが残っています。<em>光速が遅くなっているなら、実験で測れるはずでは?</em></p>
+
+  <p>答えは「原理的に測れない」。理由はこうです。長さ1メートルは、いまや「光が \(1/299792458\) 秒で進む距離」と<strong>定義</strong>されています。物差し自身が光速で決まっているので、光速が遅くなれば物差しも一緒に縮む。割り算すると効果は打ち消し合い、「光速が変わった」という測定は決してできません。</p>
+
+  <p>では何なら測れるのか。<strong>単位のつかない、比だけの量</strong>です。その代表が微細構造定数 \(\alpha\):</p>
+
+  $$\alpha = \frac{e^2}{4\pi\varepsilon_0 \hbar c} \approx \frac{1}{137}.$$
+
+  <p>この \(\alpha\) は物差しに依らない純粋な数なので、本当に変わったかどうかを測れます。そして原子時計を使った最新の実験では、\(\alpha\) の変化は1年あたり \(10^{-19}\) 以下 ── ほとんど微動だにしていない。ここが決定的です。STEP 02 で出した「光速は1年で \(7.2\times10^{-11}\) の割合で変わる」を思い出してください。もし \(c\) が本当にそれだけ変わって、\(e,\hbar,\varepsilon_0\) が変わらなければ、\(\alpha\) も \(7.2\times10^{-11}\)/年で動いてしまい、実験に即座に反する。</p>
+
+  <div class="keybox">
+    <div class="lbl">つじつまが合う条件</div>
+    <p style="margin:6px 0 0;">\(c\) が遅くなるなら、\(e,\hbar,\varepsilon_0\) も連動して動き、比である \(\alpha\) は<strong>びくとも動かない</strong> ── そういう「単位の付け替え」でなければならない。このとき、\(c\) が変わる宇宙と変わらない宇宙を区別する実験は、原理的に存在しません。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（これだけは外さない）</span>
+    <p style="margin-top:0;">だから「光が遅くなる」は、<strong>その場で測る光速はいつでも \(c_0\) で一定</strong>という事実と両立します。遅くなって見えるのは、遠くの座標から眺めた「座標上の速さ」だけ。原子の世界を決める \(\alpha\) は不変で、原子時計もあなたの物差しも、何ひとつ壊れません。</p>
+    <p style="margin-bottom:0;">つまり「光速が遅くなる」は、宇宙が本当にそうなっているという主張ではなく、<strong>同じ物理を人間がいちばん安く飲み込むための投影</strong>。優秀な補助線であって、真実の看板ではない ── これだけは、絶対にセットで覚えておいてください。</p>
+  </div>
+
+  <h2><span class="n">STEP 06</span>なぜ、この言い方は「わかる」のか</h2>
+
+  <p>理由は宇宙の側ではなく、私たちの頭の側にあります。人間は「舞台(空間)は動かない、その上で物が動く」という前提を、途方もない時間をかけて脳に刻んできました。だから「入れ物がふくらむ」より「動くものの速さが変わる」ほうを、ずっと安く想像できる。速い・遅い・遅れて届く・昔は速かった、はどれも日常の言葉です。</p>
+
+  <p>おまけに、計算する人にとってもこの見方は便利です。空間を固定して膨張を時間側に押し込む座標(共形時間と呼びます)を使うと、光の進み方がまっすぐな直線になり、宇宙のレンズ計算などが実際に速くなる。数値宇宙論の現場でも使われる、れっきとした技です。わかりやすさは、気のせいではありません ── ただし、わかりやすさと正しさは別、という一線だけは守って。</p>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">結び</span>レコードと、CD</h2>
+    <p>同じ一つの演奏を、レコード(連続)でもCD(離散)でも持てます。音楽そのものは一つで、媒体が二つ。「空間が伸びる」と「光が遅くなる」も、同じ宇宙を二通りに記録した盤にすぎません。\(c_B \cdot a = \text{一定}\) という一本の式が、二つの盤が同じ演奏だと保証しています。</p>
+    <p>部屋で聴くぶんには、どちらが本物かは言い当てられない。区別が問題になるのは、人には聞こえない高い音の端っこ(宇宙で言えばプランクスケール)だけ。だから安心して、好きな盤で聴けばいい。<em>わかりやすいほうで宇宙を理解することは、片方しか知らないより、ずっと豊かなこと</em>です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は、宇宙膨張を「光速の減少」という等価な言い換えで語る、物理好きの高校生向け読み物です。赤方偏移・地平線・線形膨張の骨子は物理的に正しい一方、「光速が変わる」という表現は座標の取り方に依存する投影であり、局所的な光速および無次元定数 \(\alpha\) は不変です。数値は概算で、宇宙年齢は約138億年、\(H_0 t_0\approx 1\) を用いました。学術的な標準はインフレーションを含む \(\Lambda\mathrm{CDM}\) モデルであり、本文で触れた線形膨張モデル(\(R_h=ct\))は検証途上の少数派モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。数式・計算ボックスは改ページで切れないよう調整済みです。</p>
+</body>
+</html>

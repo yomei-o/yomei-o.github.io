@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光は昔、もっと速かった ── わかる宇宙膨張</title>
+<style>
+  :root{
+    --ink:#1a1c22;         /* 本文の墨 */
+    --ink-soft:#4a4e5a;    /* やや薄い墨 */
+    --paper:#faf8f3;       /* 紙 */
+    --paper-edge:#efe9dc;  /* 版面の縁 */
+    --side:#2f5d62;        /* 傍注・種明かしの色（青緑：連続系の色） */
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;        /* 但し書きの色（土：離散系の色） */
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper-edge);
+    color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;
+    font-size:17px;
+    letter-spacing:.01em;
+  }
+
+  .sheet{
+    max-width:760px;
+    margin:32px auto;
+    background:var(--paper);
+    padding:64px 68px 88px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+
+  /* --- 表題 --- */
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;
+    letter-spacing:.34em;
+    color:var(--side);
+    text-transform:none;
+    margin:0 0 22px;
+    font-weight:600;
+  }
+  h1{
+    font-size:40px;
+    line-height:1.28;
+    margin:0 0 8px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  h1 .sub{
+    display:block;
+    font-size:19px;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-top:14px;
+    letter-spacing:.06em;
+  }
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    letter-spacing:.08em;
+    margin-top:26px;
+    padding-top:18px;
+    border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  h2{
+    font-size:23px;
+    font-weight:600;
+    margin:52px 0 4px;
+    letter-spacing:.03em;
+    line-height:1.4;
+  }
+  h2 .n{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--side);
+    font-size:14px;
+    letter-spacing:.1em;
+    display:block;
+    margin-bottom:2px;
+    font-weight:600;
+  }
+  p{margin:16px 0;}
+  .lead{font-size:19px;line-height:1.85;color:var(--ink);}
+
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f4e2c8 62%);padding:0 .05em;}
+
+  /* --- 傍注（種明かし＝連続系の声）--- */
+  .aside{
+    margin:26px 0;
+    background:var(--side-bg);
+    border-left:3px solid var(--side);
+    padding:18px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;
+    line-height:1.8;
+    color:#22343a;
+  }
+  .aside .tag{
+    display:block;
+    font-size:11px;
+    letter-spacing:.2em;
+    color:var(--side);
+    font-weight:700;
+    margin-bottom:7px;
+  }
+
+  /* --- 但し書き（土＝正直な線）--- */
+  .caveat{
+    margin:26px 0;
+    background:#f6ede4;
+    border-left:3px solid var(--warn);
+    padding:18px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;
+    line-height:1.8;
+    color:#3f2a1c;
+  }
+  .caveat .tag{
+    display:block;
+    font-size:11px;
+    letter-spacing:.2em;
+    color:var(--warn);
+    font-weight:700;
+    margin-bottom:7px;
+  }
+
+  .eq{
+    text-align:center;
+    font-family:"Latin Modern Math","Cambria Math",Georgia,serif;
+    font-style:italic;
+    font-size:20px;
+    margin:22px 0;
+    color:var(--ink);
+    letter-spacing:.02em;
+  }
+  .eq .frac{display:inline-block;text-align:center;vertical-align:middle;}
+  .eq .frac .num{display:block;border-bottom:1.4px solid var(--ink);padding:0 6px;}
+  .eq .frac .den{display:block;padding:0 6px;}
+
+  .divider{
+    text-align:center;
+    color:var(--hair);
+    letter-spacing:1em;
+    margin:44px 0;
+    font-size:12px;
+  }
+
+  .record{
+    margin:48px 0 8px;
+    padding:30px 34px;
+    border:1.5px solid var(--rule);
+    border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);
+  }
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .foot{
+    margin-top:64px;
+    padding-top:20px;
+    border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.7;
+    letter-spacing:.03em;
+  }
+
+  strong{font-weight:600;}
+
+  /* --- 印刷 --- */
+  @media print{
+    @page{size:A4;margin:20mm 18mm;}
+    body{background:#fff;font-size:11.5pt;line-height:1.75;}
+    .sheet{
+      box-shadow:none;border:none;margin:0;max-width:none;
+      padding:0;
+    }
+    h1{font-size:26pt;}
+    h1 .sub{font-size:13pt;}
+    h2{font-size:15pt;margin-top:26pt;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat{font-size:10pt;break-inside:avoid;}
+    .record{break-inside:avoid;}
+    .eq{font-size:14pt;break-inside:avoid;}
+    h2{break-after:avoid;}
+    .no-print{display:none;}
+  }
+
+  @media (max-width:640px){
+    .sheet{padding:40px 24px 60px;margin:0;}
+    h1{font-size:30px;}
+    body{font-size:16px;}
+  }
+
+  .hint{
+    max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <p class="eyebrow">わかる宇宙論 ── 同じ音楽を、二つの媒体で</p>
+  <h1>光は昔、もっと速かった
+    <span class="sub">宇宙の膨張を、いちばん飲み込みやすい言い方で。<br>そして最後に、ちゃんと種明かしを。</span>
+  </h1>
+  <div class="byline">
+    <span>連続の宇宙 ⇄ 離散の宇宙</span>
+    <span>c · t = 一定</span>
+  </div>
+
+  <p class="lead">夜空の遠くの銀河ほど、色が赤みを帯びて見える。遠いものほど赤い。これは観測された事実です。ふつうの教科書は、これを「空間そのものが伸びているから」と説明します。ただ、その説明はいつも但し書きだらけになる ── 銀河が動いているのではなく間の空間が増える、遠方では後退が光速を超えるが相対論には反しない……。<em>入れ物である空間が伸びる</em>という絵は、私たちの日常の感覚と正面からぶつかるからです。</p>
+
+  <p>そこで、もっと安い言い方を試します。舞台(空間)は動かさない。代わりに、<em>光の足の速さのほうを変える</em>。</p>
+
+  <h2><span class="n">01</span>昔は、光が速かった</h2>
+
+  <p>こう考えてみてください。宇宙が若かったころ、光は今よりずっと速く進んでいた。歳をとるにつれて、光はだんだん遅くなってきた。今日の光速を基準にすると、宇宙の年齢を <em>t</em> として、いつの時代も「光速 × 年齢」がほぼ一定に保たれている ── そんなイメージです。</p>
+
+  <div class="eq">c · t = 一定</div>
+
+  <p>遠くの銀河の光は、はるか昔、光がまだ速かった時代に放たれました。その光が、光速の遅くなった今の私たちに届く。速かったころの波が、遅い今に合わせて<em>間延びして</em>受け取られる ── これが「赤くなる(赤方偏移)」の、いちばん素朴な絵です。遠いほど昔、昔ほど光が速かった、だから遠いほど赤い。話が一本の線でつながります。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（連続系）</span>
+    「昔は光が速かった」というのは、標準的な宇宙論で言う「空間が伸びた」と<strong>まったく同じ観測</strong>を指しています。空間が a 倍にふくらむことと、光の(座標)速度が 1/a 倍に落ちることは、数式の上でぴったり裏返しの関係 ── c<sub>B</sub> × a = 一定。同じ一つの出来事を、別の帳簿につけているだけです。
+  </div>
+
+  <h2><span class="n">02</span>宇宙の地平線も、素直に読める</h2>
+
+  <p>「宇宙が始まってから今まで、光はどれだけ遠くまで届けたか?」── これを見渡せる範囲、宇宙の地平線と呼びます。光が速かった昔ほど、1年あたりに稼げる距離は大きい。だから初期の宇宙では、光はごく短い時間で途方もなく遠くまで手を伸ばせた。宇宙のあちこちが、生まれてすぐにお互い「連絡を取り合えていた」ことになる。</p>
+
+  <p>これは、宇宙のどこを見てもほぼ同じ温度(宇宙マイクロ波背景放射)であることの、素直な説明になります。連絡を取り合えたのだから、温度がそろっていて不思議はない。空間膨張の言葉だと「地平線問題」という難物として語られる話が、光速の言葉だと「昔は光が速かったんだから当然」で済んでしまう。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（連続系）</span>
+    この「c · t = 一定」は、宇宙が時間に比例してまっすぐ膨らむ場合(線形膨張、a ∝ t)にあたります。これは実在する少数派の宇宙モデル(R<sub>h</sub> = ct 宇宙 / eternal coasting)そのもので、地平線問題を自然に解くことが知られています ── ただし初期の元素合成(ビッグバン元素合成)との折り合いなど、まだ決着していない宿題も抱えています。標準はあくまで、インフレーションを含む ΛCDM です。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>なぜ、この言い方は腑に落ちるのか</h2>
+
+  <p>理由は宇宙の側ではなく、<em>私たちの頭の側</em>にあります。人間は「舞台は動かない、その上で物が動く」という前提を、気の遠くなる時間をかけて脳に刻んできました。だから「入れ物がふくらむ」より「動くものの速さが変わる」ほうを、はるかに安く想像できる。速い・遅い・遅れて届く・昔は速かった ── どれも子どもでも持っている言葉です。</p>
+
+  <p>「c · t = 一定」で膨張を語ると気持ちがいいのは、それが<strong>人間の認知のデフォルトに合わせた座標</strong>だから。計算する人にとっても、この見方(空間を固定して時間側に膨張を押し込む「共形時間」)は、光の伝播をまっすぐな線として扱えるので実際に便利で、数値宇宙論の現場でも使われています。わかりやすさは、気のせいではありません。</p>
+
+  <h2><span class="n">04</span>ここで、正直な種明かし</h2>
+
+  <p>ただし ── ここがいちばん大事なところです。「わかりやすい」と「本当にそうである」は、別のことです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線（これだけは外さない）</span>
+    <p style="margin-top:0;">光速のような「単位のついた定数」は、何を基準に測るかを決めない限り、「変わった」と言っても物理的な意味を持ちません。物差し自身が一緒に伸び縮みして、変化は打ち消し合ってしまうからです。</p>
+    <p>実際、<strong>その場で測る光速はいつでも c で一定</strong>。変わって見えるのは、遠くの座標から眺めた「座標上の速さ」だけ。そして原子の世界を支配する無次元の比(微細構造定数 α ≈ 1/137)は、この描像でも<strong>びくとも動きません</strong>。だから原子時計も、あなたの物差しも、何も壊れない。</p>
+    <p style="margin-bottom:0;">つまり「光が遅くなる」は、宇宙が本当にそうなっているという主張ではなく、<strong>同じ物理を人間が一番安く飲み込むための投影</strong>です。優秀な補助線であって、真実の看板ではない。</p>
+  </div>
+
+  <p>この但し書きを外して「宇宙では光速が本当に遅くなっている」と広めてしまうと、聞いた人は誤解を持ち帰ります。わかりやすさで真実を買おうとした瞬間に、話は間違いに変わる。だからこの読み物は、わかりやすい語りと、この一枚の但し書きを、いつも一緒に持ち歩きます。</p>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">結び</span>レコードと、CD</h2>
+    <p>同じ一つの演奏を、レコード(連続)でも、CD(離散)でも持つことができます。音楽そのものは一つ。媒体が二つあるだけです。「空間が伸びる」と「光が遅くなる」も、これと同じ ── 同じ宇宙を、二通りに記録した盤にすぎません。</p>
+    <p>部屋で聴くぶんには、どちらが本物かを言い当てることはできない。区別が問題になるのは、人間には聞こえない高い音の、そのまた端っこだけ。だから安心して、好きな盤で聴けばいい。<em>わかりやすいほうで宇宙を理解することは、片方しか知らないより、ずっと豊かなこと</em>です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は、宇宙膨張を「光速の減少」という等価な言い換えで語る入門用の読み物です。記述の骨子(赤方偏移・地平線・線形膨張)は物理的に正しい一方、「光速が変わる」という表現は座標の取り方に依存する投影であり、局所的な光速および無次元定数 α は不変です。学術的な標準はインフレーションを含む ΛCDM モデルであり、本文で触れた線形膨張モデル(R<sub>h</sub> = ct)は検証途上の少数派モデルです。 ── 印刷する場合は、ブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。傍注や数式は改ページで切れないように調整済みです。</p>
+
+</body>
+</html>

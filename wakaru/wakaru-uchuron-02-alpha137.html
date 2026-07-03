@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>原子の中に隠れた 1/137 ── わかる宇宙論 第2回</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --ink-soft:#4a4e5a;
+    --paper:#faf8f3;
+    --paper-edge:#ece6d8;
+    --side:#2f5d62;      /* 連続系＝青緑（シリーズ共通：種明かし） */
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;      /* 但し書き＝土（シリーズ共通） */
+    --calc:#5a3d78;      /* 第2回の計算色＝原子の紫 */
+    --calc-bg:#f1ecf5;
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+    --atom:#7a4fa3;      /* 第2回アクセント＝紫 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;
+  }
+  .sheet{
+    max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+  .series{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--atom);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;
+  }
+  .series .ep{color:var(--ink-soft);letter-spacing:.16em;font-weight:600;font-size:11.5px;}
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.2em;color:var(--side);margin:0 0 22px;font-weight:600;
+  }
+  h1{font-size:39px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.08em;margin-top:26px;
+    padding-top:18px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--atom);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17.5px;font-weight:600;margin:30px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d7cce2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--atom);border-radius:2px;background:#fbf9fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--atom);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;}
+  .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--atom);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;}
+  .ans{color:#3a2b48;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3eef8;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3a2b48;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--atom);font-weight:700;margin-bottom:6px;display:block;}
+
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:25pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;}  /* 印刷では解答を隠して問題集らしく */
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){
+    .sheet{padding:40px 20px 60px;margin:0;} h1{font-size:29px;} body{font-size:16px;}
+  }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 2 回 ／ 物理好き高校生のための、数式でたどる版</span></div>
+  <p class="eyebrow">前回：光は昔もっと速かった → 今回：その但し書きの主役、1/137 を主役に</p>
+  <h1>原子の中に隠れた 1/137
+    <span class="sub">水素原子の電子は、光速の「137分の1」で回っている。<br>絶対の速さは測る人によって変わるのに、この比だけは誰が見ても同じ ── なぜ?</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：分数、割り算、指数の計算、単位の約分</span>
+    <span>\(\alpha = v/c \approx 1/137\)</span>
+  </div>
+
+  <p class="lead">前回、宇宙膨張を「光速がゆっくり遅くなる」と読み替えました。そのとき最後の但し書きで、ひとつだけ<em>絶対に動かない数</em>が登場しました ── 微細構造定数 \(\alpha\approx 1/137\)。光速も、長さも、エネルギーも、測り方しだいで値が変わってしまうのに、この \(\alpha\) だけは誰がどんな単位で測っても \(1/137\)。今回は、この不思議な数が<strong>原子の中の「速さの比」</strong>として顔を出すところを、自分で計算して確かめます。</p>
+
+  <h2><span class="n">STEP 01</span>まず衝撃の事実 ── 電子は光速の 1/137 で回っている</h2>
+
+  <p>水素原子は、真ん中の陽子のまわりを電子が1個回っている、いちばん簡単な原子です。ボーアという物理学者が作った素朴なモデルでは、いちばん内側を回る電子の速さ \(v\) は、光速 \(c\) を使ってこう書けます。</p>
+
+  <div class="keybox">
+    <div class="lbl">水素原子・基底状態の電子の速さ</div>
+    $$v = \alpha\, c,\qquad \alpha \approx \frac{1}{137}$$
+  </div>
+
+  <p>つまり電子は、<em>光速のちょうど 137分の1</em> の速さで回っている。秒速にすると約 2200 km/s ── ものすごく速いけれど、光の速さ(秒速30万km)に比べれば 137分の1。この「137分の1」という比の名前が、微細構造定数 \(\alpha\) です。数式で書くと、いろいろな基本定数の組み合わせでできています。</p>
+
+  $$\alpha = \frac{e^2}{4\pi\varepsilon_0\,\hbar\, c}$$
+
+  <p>\(e\) は電子の電荷、\(\varepsilon_0\) は真空の性質を表す定数、\(\hbar\) はプランク定数(量子の世界の基本単位)、\(c\) は光速。ぱっと見こわいですが、大事なのは<strong>これ全部を掛け割りすると、単位が消えてただの数になる</strong>こと。次のSTEPでそれを確かめます。</p>
+
+  <h2><span class="n">STEP 02</span>やってみよう ── 本当に「ただの数」になるか</h2>
+
+  <p>物理では「単位のつく量」と「単位の消えた数」は、格が違います。単位が消えた数(無次元量)は、メートルを使おうがインチを使おうが値が変わらない ── 宇宙のどこの誰が測っても同じ。\(\alpha\) がその仲間だと、自分の手で確かめましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── α を計算して 1/137 を出す</span>
+    <p class="lbl">使う値（SI単位）</p>
+    <p style="margin-top:8px;">
+      \(e = 1.602\times10^{-19}\ \mathrm{C}\)、
+      \(\varepsilon_0 = 8.854\times10^{-12}\ \mathrm{F/m}\)、
+      \(\hbar = 1.055\times10^{-34}\ \mathrm{J\cdot s}\)、
+      \(c = 2.998\times10^{8}\ \mathrm{m/s}\)。
+    </p>
+    <p class="lbl">分子と分母を別々に</p>
+    $$\text{分子}=e^2=(1.602\times10^{-19})^2 \approx 2.566\times10^{-38}$$
+    $$\text{分母}=4\pi\varepsilon_0\hbar c \approx 4\pi(8.854\times10^{-12})(1.055\times10^{-34})(2.998\times10^{8})$$
+    <p style="margin:6px 0 0;">分母を順に計算すると \(\approx 3.517\times10^{-36}\)。よって</p>
+    $$\alpha = \frac{2.566\times10^{-38}}{3.517\times10^{-36}} \approx 7.30\times10^{-3} = \frac{1}{137}.$$
+    <p class="lbl">単位はどうなった?</p>
+    <p style="margin-bottom:14px;">分子は \(\mathrm{C^2}\)、分母は \(\mathrm{(F/m)(J\cdot s)(m/s)}\)。\(\mathrm{F=C^2/J}\) を思い出して約分していくと、<strong>すべての単位がきれいに消えます</strong>。残るのは純粋な数 \(1/137\) だけ。メートルをフィートに変えても、この値は1ミリも動きません。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ「単位が消える」がそんなに大事?</span>
+    前回の但し書きを思い出してください。「光速が遅くなった」は測る人の物差ししだいで意味が変わる ── 単位がつくから。でも \(\alpha\) は単位が消えるので、<strong>物差しに一切依存しない</strong>。だからこそ「本当に変わったか」を実験で問える、唯一の種類の量なのです。
+  </div>
+
+  <h2><span class="n">STEP 03</span>1/137 は「原子をどこまで細かく見ると相対論が顔を出すか」の比</h2>
+
+  <p>\(\alpha=v/c\) には、もうひとつの読み方があります。物が光速に近づくと、アインシュタインの相対論の効果(時間の遅れなど)が効いてきます。逆に光速よりずっと遅ければ、相対論は無視できる。その「相対論がどれくらい効くか」の目安が、まさに \(v/c\) です。</p>
+
+  <p>水素原子の電子は \(v/c=\alpha=1/137\)。つまり<em>ほんの少しだけ相対論的</em>。この「ほんの少し」が、原子から出る光の色を、ごくわずかに分裂させます(微細構造)。分裂の大きさは、だいたい \(\alpha^2\) で効きます。手を動かしてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 相対論のズレはどれくらい小さい?</span>
+    <p class="lbl">相対論補正の目安</p>
+    $$\left(\frac{v}{c}\right)^2 = \alpha^2 = \left(\frac{1}{137}\right)^2 = \frac{1}{18769} \approx 5.3\times10^{-5}$$
+    <p style="margin-bottom:14px;">およそ<strong>2万分の1</strong>。原子のエネルギーのうち、相対論のせいで生じる細かなズレは、この程度の割合しかない、という見積もりです。小さいけれど、精密な分光器ならちゃんと見える ── これが「微細構造」と呼ばれる、スペクトル線の細かい分裂の正体です。1/137 という比が、そのまま光の色の細部に刻まれています。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（前回とつながる）</span>
+    「粗く見る(相対論を無視)と単純な原子、細かく見ると相対論のズレが顔を出す」── この“解像度で物理が変わる”感覚は、次回のテーマ「シュレディンガー方程式は光速を無限大にした世界」にそのまま続きます。\(c\to\infty\) にすると \(v/c\to 0\)、つまり相対論のズレがゼロになって、いちばん素朴な量子力学が残るのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">STEP 04</span>絶対スケールは動く、比だけが動かない</h2>
+
+  <p>ここが今回のいちばん大事なところ、そして前回の但し書きの本丸です。原子の「大きさ」や「電子の速さ」そのものは、実は<em>測り方(単位の取り方)しだいで動きうる量</em>です。ところが、それらの<strong>比</strong>を取ると、動く部分がきれいに打ち消し合って、\(\alpha\) という不動の数だけが残る。</p>
+
+  <p>たとえば、原子の大きさの目安「ボーア半径 \(a_0\)」と、電子のもうひとつの基本的な長さ「コンプトン波長 \(\lambda_C\)」。この二つの比を取ると、</p>
+
+  $$\frac{\lambda_C}{a_0} = \alpha \approx \frac{1}{137}.$$
+
+  <p>それぞれの長さは、光速や単位の取り方に依存して動きます。でも<em>比</em>にした瞬間、単位も、動く部分も消えて、\(1/137\) だけが顔を出す。前回「光速が遅くなっても \(\alpha\) は不変」と言ったのは、まさにこれ ── \(c\) が動いても、それに連れて他の定数も動き、比である \(\alpha\) は動かないのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">前回と今回をつなぐ一行</div>
+    <p style="margin:6px 0 0;">単位のついた量(光速・長さ・エネルギー)は「測る人の帳簿」しだいで動く。単位の消えた比 \(\alpha\) は「宇宙そのものの性質」で、誰が測っても \(1/137\)。<strong>物理が本当に問えるのは、後者だけ</strong>。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 1/137 は「導けた」数ではない</span>
+    <p style="margin-top:0;">\(\alpha\) がなぜ<strong>ちょうど 1/137 なのか</strong>は、実はまだ誰も分かっていません。物理学の最大級の謎のひとつです。過去に偉大な物理学者(エディントン)がこの数を理論だけから導こうとして、華々しく失敗しました。今のところ \(\alpha\) は「測って決める入力値」であって、より基本的な何かから計算で出せてはいません。</p>
+    <p style="margin-bottom:0;">さらに正直に言うと、\(\alpha\) は「見る細かさ(エネルギー)」によって少しだけ値が変わります(高エネルギーでは \(1/137\) ではなく約 \(1/128\))。だから厳密には「\(1/137\) は、いちばん粗く見たときの \(\alpha\) の値」。この“走る”話は、シリーズの後の回で扱います。</p>
+  </div>
+
+  <h2><span class="n">STEP 05</span>本当に動かないか ── 原子時計という証拠</h2>
+
+  <p>「\(\alpha\) は動かない」と言うからには、確かめた実験があるはずです。あります。種類のちがう原子時計をならべて、長い時間その進み方の比を比べる、という精密実験です。もし \(\alpha\) が少しでも動けば、時計どうしのリズムがずれていくはず。</p>
+
+  <p>最新の実験が出した答えは、\(\alpha\) の変化は<strong>1年あたり \(10^{-19}\) より小さい</strong>。これは「1年で1兆分の1の、さらに1億分の1」より小さい、という途方もない精密さです。前回の宇宙(光速が1年で \(7.2\times10^{-11}\) の割合で変わる)を思い出すと ── もし \(c\) だけが変わって他が動かなければ \(\alpha\) も同じ割合で動くはずで、この実験に一瞬で反する。だから前回の宇宙は「\(c\) が動くなら、他の定数も連れて動いて \(\alpha\) は不変」でなければならない。今回の話が、前回の但し書きの根拠そのものになっています。</p>
+
+  <div class="prob">
+    <div class="lbl">練習問題（前回・今回の式だけで解けます）</div>
+    <ol>
+      <li>水素原子の電子の速さを、\(v=\alpha c\) と \(c=3.0\times10^{5}\ \mathrm{km/s}\) から km/s で求めよ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(v=\dfrac{1}{137}\times 3.0\times10^{5} \approx 2.2\times10^{3}\ \mathrm{km/s}\)。およそ秒速2200 km。光速のたった137分の1です。</div>
+        </details>
+      </li>
+      <li>相対論補正の目安 \((v/c)^2=\alpha^2\) を分数と小数で表せ。原子のエネルギーのおよそ何分の1か。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(\alpha^2=(1/137)^2=1/18769\approx 5.3\times10^{-5}\)。およそ2万分の1です。</div>
+        </details>
+      </li>
+      <li>もし \(\alpha\) が第1回の宇宙のように1年で \(7.2\times10^{-11}\) の割合で変わったとする。原子時計の上限 \(10^{-19}\)/年より、何桁大きいか。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(7.2\times10^{-11}\div 10^{-19}=7.2\times10^{8}\)。約8〜9桁も大きい ── だから「\(c\) だけが動く」宇宙は即座に実験と矛盾し、他の定数も連れて動いて \(\alpha\) を不変に保つ必要がある、と分かります。</div>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>1/137 は、宇宙の「変わらない一点」</h2>
+    <p>光速も、長さも、エネルギーも、測り方しだいで動く「帳簿の数」。けれど \(\alpha=v/c\approx 1/137\) は、それらの比として、誰が測っても、いつ測っても、同じ ── 原子の中に刻まれた、宇宙そのものの数です。第1回で「光が遅くなっても \(\alpha\) だけは動かない」と言ったその主役を、今回は原子の中に見つけました。</p>
+    <p>そして最大の謎は残ります。<em>なぜ、ちょうど 137分の1 なのか。</em> 誰もまだ答えを知りません。あなたが将来それを解くのかもしれない ── 物理は、そういう開いた扉を、ちゃんといくつも残してくれています。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第3回</span>
+    「シュレディンガーは、光速を無限大にした世界」。今回チラ見せした \(c\to\infty\) で相対論が消える、を数式で。光速を無限大にすると、なぜ量子力学のいちばん有名な方程式が出てくるのか。解像度を粗くすると世界が単純になる、という視点を掘ります。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第2回、物理好きの高校生向け読み物です。ボーアモデルによる \(v=\alpha c\)、\(\alpha=e^2/4\pi\varepsilon_0\hbar c\)、\(\lambda_C/a_0=\alpha\) は正しい関係で、数値は概算です。\(\alpha\) がエネルギースケールで変化する(いわゆる「走る結合定数」)ため、\(1/137\) は低エネルギー極限での値です。「なぜ \(\alpha\approx1/137\) なのか」は現代物理の未解決問題です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください（印刷版では練習問題の解答は自動的に隠れます）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。印刷すると解答が隠れて問題集として使えます。画面では「答えを見る」で開けます。</p>
+</body>
+</html>
