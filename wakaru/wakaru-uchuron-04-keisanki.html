@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>昔は光が速かった、を計算機で追う ── わかる宇宙論 第4回</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --ink-soft:#4a4e5a;
+    --paper:#faf8f3;
+    --paper-edge:#ece6d8;
+    --side:#2f5d62;
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d4e6b;      /* 第4回の計算色＝計算機の青 */
+    --calc-bg:#e8eef4;
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+    --acc:#2166a0;       /* 第4回アクセント＝青（数値・計算機） */
+    --grid:#d7d0c1;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;
+  }
+  .sheet{
+    max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+  .series{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;
+  }
+  .series .ep{color:var(--ink-soft);letter-spacing:.16em;font-weight:600;font-size:11.5px;}
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.2em;color:var(--side);margin:0 0 22px;font-weight:600;
+  }
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.08em;margin-top:26px;
+    padding-top:18px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17.5px;font-weight:600;margin:30px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3e2f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6d2e0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  /* コード風ブロック */
+  .code{margin:22px 0;background:#12222e;color:#d6e6ef;border-radius:4px;
+    font-family:"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+    font-size:13.5px;line-height:1.7;padding:18px 20px;overflow-x:auto;letter-spacing:0;}
+  .code .cm{color:#7fa7b8;}    /* コメント */
+  .code .kw{color:#8fd6a0;}    /* キーワード */
+  .code .nm{color:#f0c674;}    /* 数値 */
+  .code .fn{color:#9ec9ff;}    /* 関数 */
+
+  /* インタラクティブ図 */
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f9fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;}
+  .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;}
+  .ans{color:#1f3547;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .next{margin:24px 0 0;padding:16px 22px;background:#e9f0f6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f3547;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.code{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .code{background:#f0f0f0;color:#111;border:1px solid #ccc;}
+    .code .cm,.code .kw,.code .nm,.code .fn{color:#111;}
+    .controls{display:none;}
+    details{display:none;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){
+    .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;}
+    .code{font-size:12px;}
+  }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 4 回 ／ 物理好き高校生のための、数式でたどる版</span></div>
+  <p class="eyebrow">第1回で描いた「光が遅くなる宇宙」を、今回は自分の手で動かす</p>
+  <h1>昔は光が速かった、を<br>計算機で追う
+    <span class="sub">式を眺めるだけじゃなく、実際に一歩ずつ計算して、グラフを動かしてみる。<br>下の図は本物 ── スライダーを動かすと、その場で再計算されます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：足し算のくり返し（漸化式）、簡単なプログラム</span>
+    <span>\(c(t)=c_0 t_0/t\)</span>
+  </div>
+
+  <p class="lead">第1回で、宇宙膨張を「光速がゆっくり遅くなる」と読み替えました。式はきれいでしたが、式を「眺める」のと「動かす」のは別の理解です。今回は、その宇宙を<em>計算機で一歩ずつ進めて</em>みます。難しい数学は要りません。必要なのは「前の値に少し足して、次の値を作る」という足し算のくり返しだけ。しかもこのページの図は飾りではなく、あなたのブラウザがその場で計算した本物です。スライダーを動かして、宇宙を回してみてください。</p>
+
+  <h2><span class="n">STEP 01</span>連続の式を、計算機の言葉「漸化式」に直す</h2>
+
+  <p>第1回の宇宙のルールは \(c(t)=\dfrac{c_0 t_0}{t}\)。光がどこまで進んだかは、速さ×時間を積み上げた \(D=\displaystyle\int c(t)\,dt\) でした。積分と聞くと身構えますが、計算機にとっては<strong>「小さな時間 \(\Delta t\) ずつ、進んだ距離を足していく」だけ</strong>です。これを漸化式(前の値から次の値を作る式)で書くと ──</p>
+
+  <div class="keybox">
+    <div class="lbl">計算機が理解できる形（漸化式）</div>
+    $$t_{n+1} = t_n + \Delta t,\qquad D_{n+1} = D_n + c(t_n)\,\Delta t = D_n + \frac{c_0 t_0}{t_n}\,\Delta t$$
+  </div>
+
+  <p>「時刻を \(\Delta t\) だけ進める。その間に光は \(c(t_n)\times\Delta t\) だけ進むから、距離に足す」。これを何千回もくり返すのは人間には退屈ですが、計算機の得意技です。プログラムにするとたった数行。</p>
+
+  <div class="code"><span class="cm"># 第1回の宇宙で、光が進んだ距離を一歩ずつ足していく</span>
+c0, t0 = <span class="nm">1.0</span>, <span class="nm">1.0</span>          <span class="cm"># 今の光速・今の年齢を1に規格化</span>
+dt = <span class="nm">0.001</span>                <span class="cm"># 小さな時間きざみ</span>
+t, D = <span class="nm">0.001</span>, <span class="nm">0.0</span>       <span class="cm"># t=0 ちょうどは割り算できないので少し後から</span>
+
+<span class="kw">while</span> t &lt; t0:
+    c = c0 * t0 / t          <span class="cm"># その時刻の光速（昔ほど速い！）</span>
+    D = D + c * dt           <span class="cm"># 進んだ距離を足す</span>
+    t = t + dt
+
+<span class="fn">print</span>(D)   <span class="cm"># → どんどん大きくなる（対数的に発散）</span></div>
+
+  <p>このプログラムの心臓は \(c = c_0 t_0 / t\) の一行。\(t\) が小さい(＝宇宙が若い)ほど \(c\) が大きくなり、序盤で距離をぐんぐん稼ぐ。それが「昔の光は遠くまで届いた」の正体でした。次の図で、実際にそうなるか見てみましょう。</p>
+
+  <h2><span class="n">STEP 02</span>動かしてみる ── 昔ほど光速が跳ね上がる</h2>
+
+  <p>まず光速そのもの \(c(t)=c_0t_0/t\) を、宇宙の年齢に対してプロットします。下のスライダーは時間きざみ \(\Delta t\)。動かすと、なめらかな曲線をどれくらい細かく追えるかが変わります。</p>
+
+  <div class="fig">
+    <div class="cap">図1：光速 c(t) の時間変化（青＝真の曲線、点＝計算機が刻んだ値）</div>
+    <canvas id="cv1" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>時間きざみ Δt <span class="val" id="v1">0.05</span>
+        <input type="range" id="s1" min="0.005" max="0.2" step="0.005" value="0.05">
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2166a0;"></i>真の曲線 c(t)=c₀t₀/t</span>
+      <span><i class="swatch" style="background:#c46b1c;border-radius:50%;width:8px;height:8px;"></i>計算機の刻み</span>
+    </div>
+  </div>
+
+  <p>左側(昔)で曲線が急に跳ね上がっているのが、「若い宇宙では光が速かった」。きざみを粗くすると、この急な部分を点が追いきれずに、曲線から外れていくのが見えるはずです ── これが数値計算の宿命で、STEP 04 の話につながります。</p>
+
+  <h2><span class="n">STEP 03</span>光が届いた距離 ── 地平線は本当に「伸び続ける」</h2>
+
+  <p>次に、STEP 01 のプログラムが足し上げた距離 \(D\)(＝光が届いた地平線)を、時間に対してプロットします。第1回で「\(\int c_0t_0/t\,dt\) は対数的に発散する＝いくらでも大きくなる」と言いました。それを計算機の足し算で確かめます。</p>
+
+  <div class="fig">
+    <div class="cap">図2：光が届いた距離 D(t) の積み上がり（対数的に伸び続ける）</div>
+    <canvas id="cv2" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>計算の開始時刻 t_start <span class="val" id="v2">0.010</span>
+        <input type="range" id="s2" min="0.002" max="0.1" step="0.002" value="0.01">
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2166a0;"></i>足し上げた距離 D(t)</span>
+    </div>
+  </div>
+
+  <p>スライダーは「いつから計算を始めるか」。もっと早い時刻(＝宇宙のより若いころ)から足し始めると、序盤で光速が巨大なので、<strong>総距離がぐんと増える</strong>のが分かります。始まりに近づくほど無限に増えていく ── これが「対数発散」で、宇宙のどんなに離れた点も昔は連絡を取り合えた、という第1回の結論の数値版です。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声（第1回とつながる）</span>
+    この \(D\) が「いくらでも大きくなる」ことこそ、標準宇宙論でいう地平線問題が \(c\cdot t=\text{一定}\) の宇宙では起きない理由でした。ただし前回までと同じ注意 ── 効いているのは \(c\) を変えたことではなく、\(a\propto t\)(まっすぐ膨張)という膨張のしかた。数値で見ても、両者はぴったり同じ曲線を描きます。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">STEP 04</span>実利のコア ── なぜ「変数を変える」と計算が速くなるのか</h2>
+
+  <p>ここが今回のいちばん面白いところです。図1で見たように、序盤(昔)は光速が急に変化するので、そこを追うにはきざみ \(\Delta t\) を細かくしないといけない。でも後半はゆるやかなので、細かいきざみは無駄。<em>全体を同じ細かさで計算すると、序盤に合わせて全区間を細かくする羽目になり、とても遅くなります</em>。</p>
+
+  <p>そこで、時間の「ものさし」を貼り替えます。ふつうの時間 \(t\) の代わりに \(u=\ln t\)(\(t\) の対数)を新しい時間として使う。すると \(t=e^u\) で、光速は</p>
+
+  $$c = \frac{c_0 t_0}{t} = c_0 t_0\, e^{-u}$$
+
+  <p>となり、\(u\) に対しては<strong>なめらかな指数関数</strong>。急な跳ね上がりが消えて、全区間をほぼ同じ細かさで追えるようになる。同じ精度が、ずっと少ないステップ数で出せる ── これが「変数変換で計算が速くなる」の正体です。下の図で、同じ物理を \(t\) 軸と \(u=\ln t\) 軸の両方で見比べてください。</p>
+
+  <div class="fig">
+    <div class="cap">図3：同じ c(t) を、ふつうの時間軸（左）と対数時間軸 u=ln t（右）で。右はなめらか＝少ない点で追える</div>
+    <canvas id="cv3" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>点の数（少ないほど「速い計算」）<span class="val" id="v3">14</span>
+        <input type="range" id="s3" min="6" max="40" step="1" value="14">
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2166a0;"></i>真の曲線</span>
+      <span><i class="swatch" style="background:#c46b1c;border-radius:50%;width:8px;height:8px;"></i>等間隔に置いた点</span>
+    </div>
+  </div>
+
+  <p>点の数を減らしてみてください。左(ふつうの時間)では、少ない点だと序盤の急カーブを取りこぼして曲線から大きくずれる。でも右(対数時間)では、同じ少なさでも曲線をきれいに追えている。<strong>情報を1ビットも捨てずに、ただ“ものさし”を貼り替えただけで、計算が楽になった</strong> ── これが第1回で触れた「近似じゃない高速化」の、目で見える実物です。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声 ── これは宇宙論の現場の技</span>
+    宇宙論の数値計算では、まさにこの \(u=\ln a\)(スケール因子の対数)を時間変数に使うのが定番です。急に変化する初期宇宙を等間隔で追えるようになり、計算が桁で速くなる。第1回で「\(c\cdot t=\text{一定}\) は計算が楽」と言ったのは、この“ものさしの貼り替え”のこと。新しい物理ではなく、賢い座標選びが本体でした。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（今回は軽く一枚）</span>
+    <p style="margin:0;">「変数を変えると速くなる」は、問題が<strong>その変数で素直になるとき</strong>だけ効きます。もともと全区間で一様な問題は、貼り替えても速くなりません(すでに素直だから)。今回うまくいったのは、\(c\cdot t=\text{一定}\) の宇宙が「序盤だけ急」という偏りを持っていたから。魔法ではなく、問題の偏りに合わせて“ものさし”を選ぶ、という技です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（プログラムを書ける人は実際に動かしてみよう）</div>
+    <ol>
+      <li>STEP 01 のプログラムで \(\Delta t\) を \(0.01\) と \(0.0001\) にして \(D\) を比べると、値はどう変わると予想できるか。
+        <details><summary>答えを見る</summary>
+        <div class="ans">細かくするほど、序盤の急な部分を正確に拾えるので \(D\) は大きくなり、真の値(発散に向かう)に近づきます。粗いきざみは序盤を取りこぼして \(D\) を小さく見積もってしまう。</div>
+        </details>
+      </li>
+      <li>変数を \(u=\ln t\) に変えたとき、光速 \(c=c_0t_0 e^{-u}\) が「なめらか」と言えるのはなぜか。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(e^{-u}\) は \(u\) が変わっても変化率が穏やかで、\(t\) 軸のような無限に急な跳ね上がりがないから。急変がないので、等間隔の点でも曲線を追いこぼしません。</div>
+        </details>
+      </li>
+      <li>「変数変換による高速化」が効かない問題の例を、今回の考え方から1つ挙げよ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">最初から最後まで一定の速さで進むような、変化が一様な問題。偏りがないので、どんな“ものさし”に貼り替えても点の置き方は変わらず、速くなりません。（＝すでに最適な符号になっている。）</div>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>式を「動かす」と、実利が見える</h2>
+    <p>連続の式 \(\int c\,dt\) を、計算機の言葉(漸化式 \(D_{n+1}=D_n+c(t_n)\Delta t\))に直して、一歩ずつ足し上げた。若い宇宙で光速が跳ね上がり、光の届いた距離が対数的に伸び続ける ── 第1回の結論が、目の前のグラフで再現されました。</p>
+    <p>そして今回の芯は、\(u=\ln t\) への<em>ものさしの貼り替え</em>。情報を捨てずに、ただ座標を変えるだけで、急変の計算が桁で楽になる。第1回で「\(c\cdot t=\text{一定}\) は計算が楽」と言ったのは、この賢い座標選びのことでした。<strong>わかりやすい記法は、しばしばそのまま速い記法でもある</strong> ── それが今回、手を動かして見えたことです。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第5回</span>
+    「レコードとCDは区別できるか ── サンプリング定理」。今回“点で刻む”を体験しました。では、点で刻んだ世界と、なめらかな世界は、どこまで見分けられるのか? 音楽のCD化とまったく同じ数学(ナイキスト定理)で、離散と連続の境目に迫ります。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第4回、物理好きの高校生向け読み物です。図はすべてブラウザ上でその場に計算した実データで、\(c(t)=c_0t_0/t\)、オイラー法による \(D=\int c\,dt\) の数値積分、\(u=\ln t\) への変数変換を可視化しています。数値は規格化した無次元の例です。変数変換による高速化(時間再パラメータ化)は数値計算・数値宇宙論で実際に用いられる手法です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では対話図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで図が再計算され、「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var C0=1, T0=1;
+
+  function setupHiDPI(cv){
+    var ratio = window.devicePixelRatio || 1;
+    var cssW = cv.clientWidth || cv.width;
+    var cssH = cv.height * (cssW / cv.width);
+    cv.width = Math.round(cssW*ratio);
+    cv.height = Math.round(cssH*ratio);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+    return {ctx:ctx, w:cssW, h:cssH};
+  }
+
+  function axes(ctx,w,h,pad,xlab,ylab){
+    ctx.strokeStyle='#c9c2b2'; ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(pad,8); ctx.lineTo(pad,h-pad); ctx.lineTo(w-8,h-pad);
+    ctx.stroke();
+    ctx.fillStyle='#6b6f60';
+    ctx.font='12px sans-serif';
+    ctx.fillText(xlab, w-70, h-pad+16);
+    ctx.save(); ctx.translate(14,20); ctx.fillText(ylab,0,0); ctx.restore();
+  }
+
+  // ---- 図1：c(t) 真の曲線 + 刻み点 ----
+  var cv1=document.getElementById('cv1'), s1=document.getElementById('s1'), v1=document.getElementById('v1');
+  function draw1(){
+    var d=setupHiDPI(cv1), ctx=d.ctx, w=d.w, h=d.h, pad=42;
+    var dt=parseFloat(s1.value); v1.textContent=dt.toFixed(3);
+    ctx.clearRect(0,0,w,h);
+    var tMin=0.08, tMax=1.0, cMax=C0*T0/tMin;
+    function X(t){return pad+(t-tMin)/(tMax-tMin)*(w-pad-12);}
+    function Y(c){return (h-pad)-(c/cMax)*(h-pad-12);}
+    // grid
+    ctx.strokeStyle='#eee7d8'; ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=8+g*(h-pad-8)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    axes(ctx,w,h,pad,'宇宙の年齢 t','光速 c');
+    // true curve
+    ctx.strokeStyle='#2166a0'; ctx.lineWidth=2.2; ctx.beginPath();
+    var first=true;
+    for(var t=tMin;t<=tMax+1e-9;t+=0.005){var x=X(t),y=Y(C0*T0/t); if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // sampled points
+    ctx.fillStyle='#c46b1c';
+    for(var ts=tMin; ts<=tMax+1e-9; ts+=dt){
+      var x=X(ts), y=Y(C0*T0/ts);
+      ctx.beginPath(); ctx.arc(x,y,3.4,0,7); ctx.fill();
+    }
+  }
+
+  // ---- 図2：D(t) 積み上げ ----
+  var cv2=document.getElementById('cv2'), s2=document.getElementById('s2'), v2=document.getElementById('v2');
+  function draw2(){
+    var d=setupHiDPI(cv2), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var tstart=parseFloat(s2.value); v2.textContent=tstart.toFixed(3);
+    ctx.clearRect(0,0,w,h);
+    var dt=0.002, tMax=1.0;
+    // integrate
+    var ts=[], Ds=[], D=0;
+    for(var t=tstart;t<=tMax+1e-9;t+=dt){ D+=C0*T0/t*dt; ts.push(t); Ds.push(D); }
+    var Dmax=Ds[Ds.length-1]*1.05;
+    function X(t){return pad+(t-0)/(tMax-0)*(w-pad-12);}
+    function Y(v){return (h-pad)-(v/Dmax)*(h-pad-12);}
+    ctx.strokeStyle='#eee7d8'; ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=8+g*(h-pad-8)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    axes(ctx,w,h,pad,'宇宙の年齢 t','届いた距離 D');
+    ctx.strokeStyle='#2166a0'; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var i=0;i<ts.length;i++){var x=X(ts[i]),y=Y(Ds[i]); if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // fill under
+    ctx.lineTo(X(ts[ts.length-1]),h-pad); ctx.lineTo(X(ts[0]),h-pad); ctx.closePath();
+    ctx.fillStyle='rgba(33,102,160,0.10)'; ctx.fill();
+    // annotate total
+    ctx.fillStyle='#1d4e6b'; ctx.font='13px sans-serif';
+    ctx.fillText('総距離 D ≈ '+Ds[Ds.length-1].toFixed(2), w-190, 26);
+  }
+
+  // ---- 図3：t軸 vs u=ln t 軸 ----
+  var cv3=document.getElementById('cv3'), s3=document.getElementById('s3'), v3=document.getElementById('v3');
+  function draw3(){
+    var d=setupHiDPI(cv3), ctx=d.ctx, w=d.w, h=d.h;
+    var N=parseInt(s3.value,10); v3.textContent=N;
+    ctx.clearRect(0,0,w,h);
+    var midx=w/2, pad=38, panelW=midx-pad-14;
+    var tMin=0.08, tMax=1.0, cMax=C0*T0/tMin;
+
+    // left panel : t axis
+    (function(){
+      var ox=pad;
+      function X(t){return ox+(t-tMin)/(tMax-tMin)*panelW;}
+      function Y(c){return (h-pad)-(c/cMax)*(h-pad-14);}
+      ctx.strokeStyle='#c9c2b2';ctx.lineWidth=1;ctx.beginPath();
+      ctx.moveTo(ox,8);ctx.lineTo(ox,h-pad);ctx.lineTo(ox+panelW,h-pad);ctx.stroke();
+      ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';ctx.fillText('ふつうの時間 t',ox,h-pad+16);
+      ctx.strokeStyle='#2166a0';ctx.lineWidth=2;ctx.beginPath();var f=true;
+      for(var t=tMin;t<=tMax+1e-9;t+=0.004){var x=X(t),y=Y(C0*T0/t);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+      ctx.stroke();
+      ctx.fillStyle='#c46b1c';
+      for(var i=0;i<N;i++){var tt=tMin+(tMax-tMin)*i/(N-1);var x=X(tt),y=Y(C0*T0/tt);ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.fill();}
+    })();
+
+    // right panel : u = ln t axis
+    (function(){
+      var ox=midx+14;
+      var uMin=Math.log(tMin), uMax=Math.log(tMax);
+      function X(u){return ox+(u-uMin)/(uMax-uMin)*panelW;}
+      function Y(c){return (h-pad)-(c/cMax)*(h-pad-14);}
+      ctx.strokeStyle='#c9c2b2';ctx.lineWidth=1;ctx.beginPath();
+      ctx.moveTo(ox,8);ctx.lineTo(ox,h-pad);ctx.lineTo(ox+panelW,h-pad);ctx.stroke();
+      ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';ctx.fillText('対数時間 u = ln t',ox,h-pad+16);
+      ctx.strokeStyle='#2166a0';ctx.lineWidth=2;ctx.beginPath();var f=true;
+      for(var u=uMin;u<=uMax+1e-9;u+=(uMax-uMin)/120){var t=Math.exp(u);var x=X(u),y=Y(C0*T0/t);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+      ctx.stroke();
+      ctx.fillStyle='#c46b1c';
+      for(var i=0;i<N;i++){var uu=uMin+(uMax-uMin)*i/(N-1);var t=Math.exp(uu);var x=X(uu),y=Y(C0*T0/t);ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.fill();}
+    })();
+
+    // divider
+    ctx.strokeStyle='#e2dccd';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(midx,8);ctx.lineTo(midx,h-8);ctx.stroke();
+  }
+
+  function drawAll(){ draw1(); draw2(); draw3(); }
+  s1.addEventListener('input',draw1);
+  s2.addEventListener('input',draw2);
+  s3.addEventListener('input',draw3);
+  window.addEventListener('resize',drawAll);
+  if(window.MathJax && MathJax.startup && MathJax.startup.promise){
+    MathJax.startup.promise.then(drawAll);
+  }
+  setTimeout(drawAll,60);
+  window.addEventListener('load',drawAll);
+})();
+</script>
+</body>
+</html>

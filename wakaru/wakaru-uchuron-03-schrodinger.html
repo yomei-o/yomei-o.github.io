@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シュレディンガーは、光速を無限大にした世界 ── わかる宇宙論 第3回</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --ink-soft:#4a4e5a;
+    --paper:#faf8f3;
+    --paper-edge:#ece6d8;
+    --side:#2f5d62;      /* 種明かし＝青緑（シリーズ共通） */
+    --side-bg:#eef3f2;
+    --warn:#8a4b2f;      /* 但し書き＝土（シリーズ共通） */
+    --calc:#1f5c46;      /* 第3回の計算色＝波の緑 */
+    --calc-bg:#e9f2ec;
+    --rule:#d8d2c4;
+    --hair:#c9c2b2;
+    --acc:#2f7d5a;       /* 第3回アクセント＝緑（波・極限） */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;
+  }
+  .sheet{
+    max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);
+  }
+  .series{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;
+  }
+  .series .ep{color:var(--ink-soft);letter-spacing:.16em;font-weight:600;font-size:11.5px;}
+  .eyebrow{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.2em;color:var(--side);margin:0 0 22px;font-weight:600;
+  }
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.08em;margin-top:26px;
+    padding-top:18px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17.5px;font-weight:600;margin:30px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d5ecdd 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);
+    padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c9ddd0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7fbf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;}
+  .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;}
+  .ans{color:#22402f;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;}
+  .record p:last-child{margin-bottom:0;}
+
+  .next{margin:24px 0 0;padding:16px 22px;background:#eaf3ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#22402f;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){
+    .sheet{padding:40px 20px 60px;margin:0;} h1{font-size:28px;} body{font-size:16px;}
+  }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 3 回 ／ 物理好き高校生のための、数式でたどる版</span></div>
+  <p class="eyebrow">前回：原子の中の 1/137（＝v/c）→ 今回：その v/c をゼロにしたら何が起きる?</p>
+  <h1>シュレディンガーは、<br>光速を無限大にした世界
+    <span class="sub">量子力学でいちばん有名な方程式は、実は「相対論を消した」姿。<br>光速 c を無限大にすると、なぜあの式が現れるのか ── 比 v/c で追ってみる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：分数、極限（大きくすると消える感覚）、エネルギーの式</span>
+    <span>\(c\to\infty\ \Rightarrow\ v/c\to 0\)</span>
+  </div>
+
+  <p class="lead">前回、水素原子の電子は光速の \(1/137\)、つまり \(v/c=\alpha\) で回っていると分かりました。この \(v/c\) は「相対論がどれくらい効くか」の目盛りでもあった。今回はそこから一歩進めて、こう問います ── <em>もし光速 \(c\) が無限大だったら?</em> そのとき \(v/c\) はゼロになり、相対論の効果が全部消える。すると残るのが、高校でも名前を聞く<strong>シュレディンガー方程式</strong>、量子力学のいちばん基本の式なのです。「シュレディンガー方程式は、光速を無限大にした世界のルール」── これを、なるべく式で確かめます。</p>
+
+  <h2><span class="n">STEP 01</span>そもそも相対論は「v/c」でやってくる</h2>
+
+  <p>アインシュタインの相対論では、速く動く物のエネルギーはこう書けます(有名な \(E=mc^2\) を、動いている場合に広げた式)。</p>
+
+  <div class="keybox">
+    <div class="lbl">相対論での、運動する物のエネルギー</div>
+    $$E = mc^2\sqrt{1+\left(\frac{p}{mc}\right)^2}$$
+  </div>
+
+  <p>\(m\) は質量、\(p\) は運動量(ざっくり「勢い」、\(p\approx mv\))、\(c\) は光速。ここで注目してほしいのは、\(c\) が入っているのが \(\dfrac{p}{mc}\approx\dfrac{v}{c}\) の形だということ。つまり相対論の効果は、いつも<strong>「速さ \(v\) と光速 \(c\) の比」</strong>を通じて入ってくる。前回の \(v/c\) が、ここでも主役です。</p>
+
+  <p>もし \(c\) がとても大きければ \(v/c\) はとても小さい。小さい数の2乗はもっと小さい。だから \(\left(\dfrac{p}{mc}\right)^2\) は、\(c\) が大きいほどゼロに近づく ── この「小さいものを無視する」操作が、相対論を消す鍵になります。</p>
+
+  <h2><span class="n">STEP 02</span>やってみよう ── ルートを開いて、c→∞ で項を落とす</h2>
+
+  <p>上のエネルギーの式を、\(v/c\) が小さいときの近い形に開きます。数学で \(\sqrt{1+x}\) は、\(x\) が小さいとき \(1+\dfrac{x}{2}\) にとても近い、という便利な近似があります(テイラー展開の一歩目)。これを使います。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── エネルギーを「見える形」にほどく</span>
+    <p class="lbl">近似 √(1+x) ≈ 1 + x/2 を、x = (p/mc)² に使う</p>
+    $$E = mc^2\sqrt{1+\left(\frac{p}{mc}\right)^2} \approx mc^2\left(1+\frac{1}{2}\left(\frac{p}{mc}\right)^2\right)$$
+    <p class="lbl">中を展開する</p>
+    $$E \approx mc^2 + \frac{1}{2}mc^2\cdot\frac{p^2}{m^2c^2} = \underbrace{mc^2}_{\text{静止エネルギー}} + \underbrace{\frac{p^2}{2m}}_{\text{おなじみの運動エネルギー}}$$
+    <p style="margin-bottom:14px;">きれいに2つに分かれました。前half の \(mc^2\) は、止まっていても持っているエネルギー(あの \(E=mc^2\))。後half の \(\dfrac{p^2}{2m}\) は ── \(p\approx mv\) を入れると \(\dfrac{1}{2}mv^2\)、<strong>中学・高校でおなじみの運動エネルギー</strong>そのものです。相対論のエネルギーの式から、見慣れた運動エネルギーが顔を出しました。</p>
+  </div>
+
+  <p>ここで \(c\to\infty\) の意味がはっきりします。もっと細かい相対論の効果は \(\dfrac{1}{c^2},\dfrac{1}{c^4},\dots\) という「\(c\) の大きなべきで割った項」として続いていく。\(c\) を無限大にすると、それらは<em>全部ゼロに落ちて</em>、残るのは静止エネルギー \(mc^2\) と運動エネルギー \(\dfrac{p^2}{2m}\) だけ。この \(\dfrac{p^2}{2m}\) こそ、シュレディンガー方程式の心臓部です。</p>
+
+  <h2><span class="n">STEP 03</span>残った p²/2m が、シュレディンガー方程式になる</h2>
+
+  <p>量子力学では「エネルギーの式」を、波の言葉に書き換えると方程式になります。細かい書き換えのルールはここでは踏み込みませんが、要点はこれだけ ── <em>エネルギーの中身が何であるかで、出てくる方程式が決まる</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">エネルギーの中身 → 方程式</div>
+    <p style="margin:6px 0 0;">エネルギーが \(mc^2 + \dfrac{p^2}{2m}\)(＝相対論を消した形)なら → <strong>シュレディンガー方程式</strong>。<br>エネルギーが元の \(mc^2\sqrt{1+(p/mc)^2}\)(＝相対論そのまま)なら → <strong>相対論的な方程式</strong>(ディラック方程式など)。</p>
+  </div>
+
+  <p>つまりシュレディンガー方程式は、<strong>「\(c\to\infty\)、相対論を消した」量子力学</strong>。世界を「光がいくらでも速い、のっぺりした近似」で見たときのルール。逆に、光速が有限だと認めて細かく見ると、相対論的な方程式に格上げされる。前回チラ見せした通り、\(c\) は「どれくらい細かく世界を見るか」のツマミなのです。</p>
+
+  <div class="aside">
+    <span class="tag">種明かしの声 ── 消した項こそ「微細構造」</span>
+    STEP 02 で捨てた次の項 \(\left(\dfrac{p}{mc}\right)^4\) 級の効果は、前回の \(\alpha^2\approx 1/18800\) の大きさで効いてきます。これが原子から出る光の色を細かく分裂させる「微細構造」。<strong>シュレディンガーで消したものが、精密に見ると戻ってくる</strong> ── だから \(\alpha\) は「どの細かさで相対論が顔を出すか」の目盛りなのでした。第2回と、ここでつながります。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">STEP 04</span>「粗く見ると単純」は、物理のいたるところにある</h2>
+
+  <p>今回の主役は「\(c\to\infty\) で相対論が消える」でしたが、この<em>「あるものを極端にすると、細かい効果が消えて単純な世界が残る」</em>という考え方は、物理の至る所に出てきます。いくつか同じ顔ぶれを挙げておくと ──</p>
+
+  <p>光速を無限大にすると相対論が消えてニュートン力学が残る。プランク定数 \(\hbar\) をゼロにすると量子のゆらぎが消えて、やはり古典力学が残る。速さが遅ければ空気抵抗が消えて、放物線の運動が残る。どれも「あるツマミを端まで回すと、細かい項が落ちて、見慣れた単純な法則が姿を現す」という同じ構造です。<strong>複雑な理論のほうが本物で、単純な理論はその“粗く見た姿”</strong> ── この順番を知っていると、物理がぐっと見通しよくなります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線（今回は軽く一枚だけ）</span>
+    <p style="margin:0;">「\(c\to\infty\)」は<strong>頭の中で行う極限</strong>で、現実に光速が無限大になるわけではありません。現実の \(c\) は有限なので、シュレディンガー方程式はいつでも近似 ── 遅い電子にはとてもよく効き、光速に近い電子(重い原子の内側など)ではズレが無視できなくなり、相対論的な式が必要になります。「単純な式は、正確な式を粗く見た姿」だと覚えておけば十分です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回・前回の式だけで解けます）</div>
+    <ol>
+      <li>\(\sqrt{1+x}\approx 1+\dfrac{x}{2}\) を使って、\(x=0.01\) のときの \(\sqrt{1.01}\) を小数で見積もれ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(1+0.01/2=1.005\)。電卓の \(\sqrt{1.01}=1.00499\ldots\) とほぼ一致。小さい \(x\) では、この一歩目の近似で十分な精度が出ます。</div>
+        </details>
+      </li>
+      <li>相対論エネルギーを展開した \(E\approx mc^2+\dfrac{p^2}{2m}\) の後半に \(p=mv\) を代入し、見慣れた形にせよ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\(\dfrac{p^2}{2m}=\dfrac{(mv)^2}{2m}=\dfrac{1}{2}mv^2\)。おなじみの運動エネルギーです。</div>
+        </details>
+      </li>
+      <li>水素原子の電子(前回 \(v/c=1/137\))で、捨てた最初の相対論項の目安 \((v/c)^2\) を求め、シュレディンガーの近似がどれくらい良いか一言で述べよ。
+        <details><summary>答えを見る</summary>
+        <div class="ans">\((1/137)^2\approx 5.3\times10^{-5}\)。およそ2万分の1のズレしかないので、水素原子ではシュレディンガー方程式が非常によく効く、と言えます。（重い原子で内側の電子が光速に近づくと、この近似は悪くなります。）</div>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>単純な式は、正確な式の「粗く見た姿」</h2>
+    <p>相対論のエネルギー \(mc^2\sqrt{1+(p/mc)^2}\) を、\(v/c\) が小さいとして開くと、静止エネルギー \(mc^2\) と、見慣れた運動エネルギー \(\dfrac{p^2}{2m}\) に分かれた。この \(\dfrac{p^2}{2m}\) がシュレディンガー方程式の心臓部で、\(c\to\infty\) で細かい項を全部落とした姿こそ、量子力学のいちばん基本の式でした。</p>
+    <p>そして捨てた項は消えてなくなったわけではなく、\(\alpha^2\) の大きさで「微細構造」として戻ってくる。<em>\(c\) は世界を見る細かさのツマミ、\(\alpha\) はどの細かさで相対論が顔を出すかの目盛り</em> ── 第1回・第2回・第3回が、この一本の考えでつながりました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第4回</span>
+    「昔は光が速かった、を計算機で追う」。第1回の \(c\cdot t=\text{一定}\) の宇宙を、実際に数値とグラフで動かします。光の進んだ距離 \(\int c\,dt\) がどう伸びるか、更新をステップで刻むとどう見えるか ── プログラミングをやる人向けに、手を動かして“わかる”を体感する回です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第3回、物理好きの高校生向け読み物です。相対論的エネルギーの展開 \(mc^2\sqrt{1+(p/mc)^2}\approx mc^2+p^2/2m\)、および \(c\to\infty\) 極限でシュレディンガー方程式が得られることは正しい関係で、数値は概算です。厳密には運動量演算子への置き換えを経て方程式が導かれますが、本稿では「エネルギーの中身が方程式を決める」という要点に絞りました。シュレディンガー方程式は非相対論的近似であり、精密な場合は相対論的方程式（ディラック方程式など）が必要です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では練習問題の解答は自動的に隠れます）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。印刷すると解答が隠れて問題集として使えます。</p>
+</body>
+</html>
