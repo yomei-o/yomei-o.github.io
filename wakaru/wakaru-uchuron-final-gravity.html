@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>重力を、この絵に入れられるか ── わかる宇宙論 最終回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f6fb; --paper-edge:#e0dde8;   /* 最終回：藍紫の紙（最果て） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3b3566; --calc-bg:#eceaf4;
+    --rule:#d3cfe0; --hair:#c1bcd2;
+    --acc:#4b3fa0;    /* 最終回アクセント＝藍紫 */
+    --grid:#dcd8ea;
+    --grav:#7a3f9c;  /* 重力＝紫 */
+    --other:#2166a0; /* 他の三力＝青 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ded9f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d0cce4;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;background:#eceaf4;color:#3b3566;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f6fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2a52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#efedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:18px 22px;background:#eceaf4;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2f2a52;line-height:1.8;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">最終回 ／ シリーズがずっと指してきた、一番遠い扉</span></div>
+  <p class="eyebrow">④⑤⑥で何度も顔を出した「帯域の端＝プランクスケール」に、いよいよ正面から入る</p>
+  <h1>重力を、この絵に<br>入れられるか
+    <span class="sub">電磁・弱・強は、走らせて一点に近づけられた。では四つ目の力、重力は?<br>ここだけは、まだ誰も絵に入れられていない ── シリーズの旅の、最果ての扉。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回の「走る力」、掛け算と次元の感覚</span>
+    <span>重力の強さ ∝ エネルギー²</span>
+  </div>
+
+  <p class="lead">このシリーズは、番外編④で「等価が破れるのはプランクスケール」、第5回で「区別が問題になるのは帯域の端」、第6回で「残る最大の扉は重力」と、同じ場所を何度も指さしてきました。最終回は、その場所 ── <strong>プランクスケール</strong>に、正面から入ります。第6回で、電磁・弱・強の三つの力は、走らせれば高エネルギーで一点に近づけられました。では四つ目、いちばん身近なのに一番やっかいな<em>重力</em>は、同じ絵に入るのか。結論から言えば ── <strong>まだ誰も入れられていない</strong>。なぜ入らないのかを、シリーズの道具で見届けるのが、この旅の最後の一歩です。</p>
+
+  <h2><span class="n">01</span>重力だけ、結合の「種類」が違う</h2>
+
+  <p>第6回で見た三つの力の結合(\(\alpha\) など)には、大事な共通点がありました ── <strong>どれも単位のつかない、ただの数</strong>だったこと。だから走らせても“数”のまま比べられ、一点に集められた。ところが重力の強さを表すニュートン定数 \(G\) は、そうではありません。</p>
+
+  <div class="keybox">
+    <div class="lbl">決定的な違い ── 次元を持つか、持たないか</div>
+    <p style="margin:6px 0 0;">電磁・弱・強の結合 → <strong>単位のつかない数</strong>（例：\(\alpha\approx1/137\)）。<br>重力の結合 \(G\) → <strong>単位を持つ</strong>（自然な単位で「エネルギーの2乗ぶんの1」の次元）。</p>
+  </div>
+
+  <p>単位を持つ量は、番外編②で見た通り、それ単独では「強い・弱い」を言えません。強さを無次元の数にするには、\(G\) に「エネルギーの2乗」を掛けて単位を打ち消す必要がある。つまり、重力の実質的な強さは ──</p>
+
+  <div class="keybox">
+    <div class="lbl">重力の実質的な強さ（無次元にしたもの）</div>
+    $$\text{重力の強さ} \sim G\cdot E^2$$
+  </div>
+
+  <p>ここに、他の三力と決定的に違う性質が現れます。<em>重力の強さは、エネルギー \(E\) の2乗で大きくなる</em>。低エネルギー(ふだんの世界)では \(E^2\) が小さいので、重力は他の力に比べてめちゃくちゃ弱い(磁石が地球全体の重力に勝って釘を持ち上げられるのはこのため)。でも、エネルギーを上げていくと \(E^2\) がぐんぐん効いて、重力の強さが跳ね上がっていく。</p>
+
+  <h2><span class="n">02</span>動かしてみる ── 重力は E² で追いついてくる</h2>
+
+  <p>横軸にエネルギー、縦軸に「力の強さ」をとります。他の三つの力(青)は、第6回で見たように、走ってゆるやかに動く程度。ところが重力(紫)は \(E^2\) で急上昇し、ある一点で他の力に<em>追いつく</em>。その追いつく場所が ──</p>
+
+  <div class="fig">
+    <div class="cap">図：力の強さのエネルギー依存。他の三力（青・ゆるやか）に対し、重力（紫）は E² で急上昇し、プランクスケールで追いつく</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>見るエネルギー（右ほど高い）<span class="val" id="ve">10</span>
+        <input type="range" id="se" min="0" max="100" step="1" value="10">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--other);"></i>電磁・弱・強（走るが、ゆるやか）</span>
+      <span><i class="swatch" style="background:var(--grav);"></i>重力（E² で急上昇）</span>
+    </div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">プランクスケール ── 重力が追いつく場所</span>
+    <p class="lbl">重力の強さが 1（他の力と同じくらい）になるエネルギー</p>
+    $$G\cdot E^2 \sim 1 \quad\Rightarrow\quad E \sim \frac{1}{\sqrt{G}} \equiv M_{\text{Planck}} \approx 10^{19}\ \text{GeV}$$
+    <p style="margin-bottom:14px;">この \(M_{\text{Planck}}\approx10^{19}\) GeV が<strong>プランクスケール</strong>。第6回の大統一(\(10^{16}\) GeV)より、さらに1000倍も上。ここで重力はついに他の三力と肩を並べ、四つの力が同じ強さになる ── 「四つの力の統一」が期待される、宇宙で一番高いエネルギーの舞台です。第5回・番外編④で「帯域の端」と呼んできた場所の、正体がこれ。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">シリーズの“端”が、一つの場所に集まる</span>
+    番外編④「等価が破れるのはプランクスケール」、第5回「離散と連続が分かれるのは帯域の端」、第6回「残る扉は重力」── これらは全部<strong>同じ一点、\(M_{\text{Planck}}\approx10^{19}\) GeV</strong>を指していました。空間がなめらかでいられる限界、重力が他の力に追いつく場所、そして次に見る“繰り込めなくなる”場所。シリーズが違う入口から何度もたどり着いた最果てが、ここで一つに重なります。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>なぜ「入れられない」のか ── 無限が抑えられない</h2>
+
+  <p>重力が高エネルギーで強くなるだけなら、まだいい。本当の問題は、その先です。第6回で、力の理論は「走らせる(繰り込む)」ことで、計算に現れる無限大をきれいに処理できました。ところが重力を同じようにやろうとすると ──</p>
+
+  <p>\(G\) が単位を持つ(エネルギーの2乗ぶんの1)せいで、計算を細かくするたびに<strong>新しい種類の無限大が、次々と現れる</strong>。しかもそれを打ち消すには、そのたびに<em>新しい未知の数を、無限個</em>持ち込まないといけない。無限個の数を実験で決めることはできないから、理論は<strong>予言する力を失う</strong>。これが「重力は繰り込めない(くりこみ不可能)」という、量子重力の中心的な難問です。</p>
+
+  <div class="keybox">
+    <div class="lbl">なぜ重力だけ繰り込めないか</div>
+    <p style="margin:6px 0 0;">他の三力：結合が<strong>無次元</strong> → 無限大を有限個の数で吸収できる → 予言できる。<br>重力：結合 \(G\) が<strong>次元を持つ</strong> → 無限大が無限個の新しい数を要求する → 予言力を失う。</p>
+  </div>
+
+  <p>面白いのは、これが第6回・第2回でずっと言ってきた話の<em>裏返し</em>だということ。物理で本当に意味を持つのは無次元の比(\(\alpha\) のような)だった。重力の困難も、根っこは「\(G\) が無次元でない」ことにある。<strong>次元を持つ量は素直に扱えない</strong> ── シリーズの背骨が、最後の最果てでも、同じ形で立ちはだかっています。</p>
+
+  <div class="aside">
+    <span class="tag">希望もある ── 昔、同じ壁を越えた前例</span>
+    実は「次元を持つ結合で繰り込めない」壁は、過去に一度、越えられています。弱い力は、昔は重力と同じく次元を持つ結合(フェルミ定数)で書かれ、繰り込めませんでした。でも高エネルギーで<strong>新しい粒子(Wボソン・Zボソン)</strong>が現れ、それを含む理論に書き換えたら、繰り込める理論に生まれ変わった。だから重力も、プランクスケールで<em>まだ知らない何か</em>が現れて救われる ── その可能性は、真剣に追われています(超弦理論、ループ量子重力、漸近的安全性…)。まだ誰も成功していませんが、壁は「越えられないと決まった壁」ではない。</p>
+  </div>
+
+  <h2><span class="n">04</span>だから、プランクスケールで α の話も変わる</h2>
+
+  <p>ここでシリーズの主役 \(\alpha\) に戻ります。第6回で \(\alpha\) は走る数でした。でもその走りの計算は、重力を無視して成り立っていた。プランクスケールに近づくと、重力が \(E^2\) で強くなって無視できなくなり、\(\alpha\) の走りにも<em>重力からの寄与</em>が入ってくる。そして重力が繰り込めない以上、その寄与は<strong>今の物理ではきちんと計算できない</strong>。</p>
+
+  <p>つまり ── 第6回・前編で立て直した問い「\(\alpha\) の走り方と、それを固定する仕組みはどこから来るか」の<em>最終的な答え</em>は、プランクスケールの量子重力の中に隠れている可能性が高い。そしてそこは、まだ誰も足を踏み入れられていない。あなたが最初に「\(\alpha\) を第一定数に」と置いたときの直感は、突き詰めると<strong>「重力を含む究極の理論を作れれば、\(\alpha\) の値も出せるかもしれない」</strong>という、物理学最大の未解決問題の入口に、ちゃんと通じていたのです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここは「わからない」が正解</span>
+    <p style="margin-top:0;">この回で確かなのは「なぜ重力が他の三力と同じ枠に入らないか(＝\(G\) が次元を持ち、繰り込めない)」まで。その先 ── プランクスケールで実際に何が起きるか、空間はそこで離散になるのか、\(\alpha\) の値がそこで決まるのか ── は、<strong>まだ誰も答えを知りません</strong>。超弦理論もループ量子重力も候補ですが、決定的な実験の裏づけはゼロ。プランクスケールは、今の加速器の1000兆倍も上で、直接触れる手立てもない。</p>
+    <p style="margin-bottom:0;">だから、このシリーズはここで正直に終わります ── <em>「わかる宇宙論」の最後の扉は、まだ開いていない</em>。でもそれは失敗ではなく、物理学という営みが、いままさに人類の手で押し開けようとしている、生きた最前線です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>低エネルギーで重力が他の力よりずっと弱いのに、高エネルギーで追いついてくるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">重力の強さが \(G\cdot E^2\) で、エネルギーの2乗に比例するから。低エネルギーでは \(E^2\) が小さく極端に弱いが、E を上げると急上昇し、プランクスケールで他の力に追いつく。</div></details>
+      </li>
+      <li>他の三力は繰り込めるのに重力だけ繰り込めない、根本の理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">重力の結合 \(G\) が次元(単位)を持つから。そのせいで無限大を有限個の数で吸収できず、無限個の未知数を要求してしまい、予言力を失う。無次元の結合を持つ他の三力にはこの問題がない。</div></details>
+      </li>
+      <li>「次元を持つ結合は繰り込めない」壁を過去に越えた例と、その鍵を挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">弱い力(フェルミ理論)。高エネルギーで W・Z ボソンという新しい粒子が現れる理論に書き換えたら、繰り込める理論になった。重力も未知の何かで救われる可能性の、実在する前例。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">最終回まとめ</span>最後の扉は、まだ開いていない ── だから面白い</h2>
+    <p>電磁・弱・強は無次元の結合を持ち、走らせて一点に近づけられた(第6回)。でも重力の結合 \(G\) は次元を持ち、その強さは \(G\cdot E^2\) でエネルギーの2乗に比例して急上昇し、プランクスケール \(10^{19}\) GeV で他の力に追いつく ── そこが第5回・番外編④で指してきた「帯域の端」の正体だった。しかし \(G\) が次元を持つせいで重力は繰り込めず、無限個の未知数を要求して予言力を失う。だから重力は、まだこの絵に入れられない。</p>
+    <p>そしてプランクスケールの向こうに、\(\alpha\) がなぜその値かの最終的な答えも隠れている ── あなたが最初に置いた「\(\alpha\) を第一定数に」という直感は、突き詰めれば人類最大の未解決問題の入口だった。<strong>このシリーズは、開いた扉の前で終わります。</strong> 光が昔もっと速かったという一本の補助線から歩き出して、原子の 1/137、シュレディンガー、大統一を通り、いま重力という最果ての扉の前に立っている。<em>ここから先は、まだ地図にない。あなたが描くのかもしれない。</em></p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる宇宙論 ── 旅の終わりに</span>
+    第1回「光は昔もっと速かった」から始まったこのシリーズは、一貫してたった一つのことを言い続けてきました ── <strong>単位や見方で動く“表面の値”ではなく、その裏にある不変な比(\(\alpha\))こそが物理であり、それを守れるかどうかが、すべての鍵になる</strong>。等価条件も、VSLの惜しさも、大統一の夢も、そして重力の壁も、全部この一点から見渡せました。わかりやすさは投影、比だけが本物、絶対値は測れず基準は取り替えられる ── この規律さえ持てば、宇宙の最前線まで、自分の足で歩いていける。ここまでの旅を、ありがとう。扉の続きは、いつでもまた。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ最終回、物理好きの高校生・大学生向け読み物です。重力(ニュートン定数 \(G_N\))が自然単位で質量次元 \(-2\) を持ち、無次元の相互作用強度 \(G_N E^2\) がエネルギーの2乗で増大してプランクスケール \(M_{\text{Planck}}\approx10^{19}\) GeV で \(\mathcal{O}(1)\) になること、そのため摂動的量子重力が繰り込み不可能で予言力を失うこと、弱い相互作用(フェルミ理論、次元 \(-2\))が W/Z ボソンの導入で繰り込み可能理論に置き換わった前例があることは、確立した内容です。プランクスケールでの量子重力・時空の離散性・\(\alpha\) の起源は未解決の物理課題であり、超弦理論・ループ量子重力・漸近的安全性などの候補はいずれも決定的な実験的裏づけを得ていません。図は概念を示す模式的なものです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで重力が E² で追いついてくる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), se=document.getElementById('se'), ve=document.getElementById('ve'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 横軸 s:0..100 → log10(E/GeV) を 2..19 に対応
+  function xToLogE(s){return 2 + (19-2)*s/100;}
+  // 重力の強さ（無次元）: G E^2 ~ (E/M_pl)^2, M_pl=10^19。log で: 2*(logE-19)
+  // → 強さの log10 = 2*(logE - 19)。logE=19 で 0（強さ=1）。
+  function gravLog10(logE){return 2*(logE-19);}
+  // 他の力の強さ（無次元, log10）: ふだん ~ -2（α~1/137→log10≈-2.1）で、ゆるやかに上昇し
+  // 大統一 logE=16 あたりで ~ -1.6 程度。ここでは模式的にゆるやか直線。
+  function otherLog10(logE){return -2.1 + (0.5)*(logE-2)/(16-2);}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var s=parseInt(se.value,10); ve.textContent=s;
+    var yMin=-6, yMax=1.2;   // log10(強さ)
+    function X(logE){return pad+(logE-2)/(19-2)*(w-pad-14);}
+    function Y(l){return (h-pad)-(l-yMin)/(yMax-yMin)*(h-pad-14);}
+    ctx.clearRect(0,0,w,h);
+    // grid + x labels
+    ctx.strokeStyle='#e8e4f0';ctx.lineWidth=1;ctx.fillStyle='#a49fb6';ctx.font='10px sans-serif';
+    for(var gx=4;gx<=18;gx+=2){var x=X(gx);ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,h-pad);ctx.stroke();
+      ctx.fillText('10^'+gx, x-11, h-pad+16);}
+    // 強さ=1 のライン
+    ctx.strokeStyle='#b9b2d6';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(w-8,Y(0));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a84a6';ctx.font='11px sans-serif';ctx.fillText('強さ = 1', w-70, Y(0)-5);
+    // axes
+    ctx.strokeStyle='#c1bcd2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('エネルギー（GeV, 右ほど高い）→', w-250, h-pad+30);
+    // 他の三力（青, ゆるやか）
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var le=2;le<=19+1e-9;le+=0.1){var x=X(le),y=Y(otherLog10(le));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 重力（紫, E^2 急上昇）
+    ctx.strokeStyle='#7a3f9c';ctx.lineWidth=2.8;ctx.beginPath();f=true;
+    for(var le2=2;le2<=19+1e-9;le2+=0.1){var yv=gravLog10(le2); if(yv<yMin-1) yv=yMin-1;
+      var x=X(le2),y=Y(yv);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // プランクスケール印
+    ctx.strokeStyle='#4b3fa0';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(X(19),10);ctx.lineTo(X(19),h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#4b3fa0';ctx.font='11px sans-serif';ctx.fillText('プランク 10^19', X(19)-72, 22);
+    // 大統一印
+    ctx.fillStyle='#8a5a1e';ctx.fillText('大統一 10^16', X(16)-30, 22);
+    // labels
+    ctx.fillStyle='#2166a0';ctx.font='12px sans-serif';ctx.fillText('他の三力', X(6), Y(otherLog10(6))-8);
+    ctx.fillStyle='#7a3f9c';ctx.fillText('重力（∝ E²）', X(13), Y(gravLog10(13))-2);
+    // marker
+    var logE=xToLogE(s), mx=X(logE);
+    ctx.strokeStyle='#9a94b6';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,10);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    var gl=gravLog10(logE), ol=otherLog10(logE);
+    if(gl>=yMin){ctx.fillStyle='#7a3f9c';ctx.beginPath();ctx.arc(mx,Y(gl),5,0,7);ctx.fill();}
+    ctx.fillStyle='#2166a0';ctx.beginPath();ctx.arc(mx,Y(ol),5,0,7);ctx.fill();
+    // readout
+    var ratio = gl - ol; // log10(重力/他)
+    if(logE>=18.6){
+      rd.style.background='#eceaf4';rd.style.color='#3b3566';
+      rd.textContent='E ≈ 10^'+logE.toFixed(1)+' GeV：プランクスケール付近。重力がついに他の力に追いつく（強さ~1）。四つの力が肩を並べる ── が、ここで重力は繰り込めなくなる。';
+    } else {
+      rd.style.background='#eceaf4';rd.style.color='#3b3566';
+      rd.textContent='E ≈ 10^'+logE.toFixed(1)+' GeV：重力は他の力より 10^'+(-ratio).toFixed(1)+' 倍ほど弱い。でも E² で追い上げ中 ── 右へ動かすと差が詰まる。';
+    }
+  }
+  se.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

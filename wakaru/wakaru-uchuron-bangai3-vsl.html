@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSLは、なぜ惜しかったか ── わかる宇宙論 番外編③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f4; --paper-edge:#e6ddd5;   /* 番外編③：赤錆の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a3b2e; --calc-bg:#f3e8e3;
+    --rule:#d9cec5; --hair:#c8bcb2;
+    --acc:#9a4230;    /* 番外編③アクセント＝赤錆 */
+    --grid:#e0d5cc;
+    --good:#2f7d5a; --bad:#b03a2e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:740px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 86px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd9d2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #e0d0c8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 二択の対比ボックス */
+  .twocol{display:flex;gap:16px;flex-wrap:wrap;margin:26px 0;}
+  .opt{flex:1;min-width:240px;border-radius:5px;padding:18px 20px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.72;}
+  .optA{background:#eaf1ec;border:1px solid #bcd6c6;}
+  .optB{background:#f6e9e6;border:1px solid #e0c0b8;}
+  .opt .h{font-weight:700;font-size:15px;margin-bottom:6px;letter-spacing:.03em;}
+  .optA .h{color:#1f6b45;} .optB .h{color:#a5311f;}
+  .opt .verdict{margin-top:10px;font-weight:700;font-size:13px;}
+  .optA .verdict{color:#1f6b45;} .optB .verdict{color:#a5311f;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbf9,#f3ebe6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e8e3;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5a2a1e;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.next,.fig,.twocol{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:740px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ③ ／ 惜しかった理論の話</span></div>
+  <p class="eyebrow">「光速を変える」を本気でやった理論があった。動機は立派、でも実装で足を踏み外した。</p>
+  <h1>VSLは、なぜ惜しかったか
+    <span class="sub">光速可変理論（VSL）── 光速を変えて宇宙の謎を解こうとした、本物の学説。<br>問題意識は正しかった。つまずいたのは「何を固定するか」の選び方だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第2回の α、第6回の「無次元だけが物理」</span>
+    <span>固定すべきは c ではなく α だった</span>
+  </div>
+
+  <p class="lead">このシリーズでは「光速が遅くなる」を、あくまで<em>ものの見方(補助線)</em>として使ってきました。でも歴史には、これを<strong>本物の物理理論</strong>として真剣に追った人たちがいます ── 光速可変理論(VSL: Varying Speed of Light)。アルブレヒトとマゲイジョ、そしてバローらが1990年代末に提案しました。その狙いは立派で、いまも参照される。なのに主流にはなれなかった。今回は「なぜ惜しかったのか」を、犯人捜しではなく、<strong>このシリーズで積んだ道具で正確に診断</strong>します。そしてその診断が、次回のテーマ(空間の歪みと光速減少はどういう条件で等価か)への、ちょうど裏返しの鍵になります。</p>
+
+  <h2><span class="n">01</span>動機は、まったく正しかった</h2>
+
+  <p>VSLが解こうとしたのは、標準宇宙論の難問「地平線問題」── 宇宙のどこを見てもほぼ同じ温度なのに、遠く離れた領域どうしは光で連絡を取り合えたはずがない、という謎です(第4回で計算しました)。主流の答えは「インフレーション」という、初期宇宙の急激な膨張。VSLはそれとは別の道を提案しました ── <em>初期宇宙では光速が今よりずっと速かった</em>とすれば、光は遠くまで届き、連絡が取れて、謎が消える。</p>
+
+  <p>この発想は、第1回・第4回であなたが見たものと<strong>まったく同じ</strong>です。「昔は光が速かった → 地平線が広がる」。だからVSLの問題意識は、このシリーズの読者にとって、直感的に正しく響く。ここは全面的に評価すべきところ。惜しさは、動機ではなく実装にありました。</p>
+
+  <h2><span class="n">02</span>つまずき ── 「c だけ動かして、他を固定した」</h2>
+
+  <p>本家VSLは、光速 \(c\) を時間とともに変える一方で、電気の量 \(e\) やプランク定数 \(\hbar\) といった<strong>他の定数を固定</strong>しました。ここで、第2回の式を思い出してください。</p>
+
+  <div class="keybox">
+    <div class="lbl">第2回の微細構造定数</div>
+    $$\alpha = \frac{e^2}{4\pi\varepsilon_0\,\hbar\, c}\approx\frac{1}{137}$$
+  </div>
+
+  <p>\(c\) が分母にいます。\(e,\hbar,\varepsilon_0\) を固定したまま \(c\) だけを動かせば ── <strong>\(\alpha\) が動いてしまう</strong>。第6回で見た通り、\(\alpha\) は原子の世界を支配する、単位の消えた「宇宙そのものの数」。それが時間変化するということは、原子の出す光の色や、原子時計のリズムが、時代とともにずれることを意味します。</p>
+
+  <p>そして第2回・第6回で強調した通り、原子時計は \(\alpha\) の変化を<strong>1年あたり \(10^{-19}\) より小さい</strong>という途方もない精度で「動いていない」と確認している。\(c\) だけを動かすVSLは、この観測にたちまち衝突してしまう。<em>惜しいのはここ</em> ── 固定する対象を、取り違えていた。</p>
+
+  <div class="aside">
+    <span class="tag">正確に言うと ── 「固定しすぎた」のではない</span>
+    よくある誤解は「VSLは定数を固定しすぎて窮屈だった」。でも正確には逆で、<strong>固定の“組み合わせ”がチグハグ</strong>だった。\(c\) を動かすなら、\(\alpha\) を守るために \(e\) や \(\hbar\) も連動させるべきだった。個々をバラバラに固定した結果、いちばん守るべき無次元の比 \(\alpha\) を、うっかり動かしてしまったのです。<strong>守るべきは個々の定数ではなく、その比だった</strong>。</p>
+  </div>
+
+  <h2><span class="n">03</span>本当のジレンマ ── 無害だが無力 / 有力だが有害</h2>
+
+  <p>ではVSLはどうすればよかったのか。ここで、避けられない二択が現れます。このシリーズの背骨 ──「物理的に意味があるのは無次元の比 \(\alpha\) だけ、次元付きの \(c\) 単独を動かすのは基準の取り替え」── を使うと、道は二つしかない。</p>
+
+  <div class="twocol">
+    <div class="opt optA">
+      <div class="h">道A：α を守って c を動かす</div>
+      \(c\) が動くぶん \(e,\hbar\) も連動させ、\(\alpha\) は一定に保つ。原子時計に叩かれない。<br>でも ── そのとき \(c\) の変化は<strong>ただの単位の付け替え</strong>になり、観測に何の跡も残さない。地平線問題を“解く”物理的な力を持たない。
+      <div class="verdict">→ 無害だが、無力</div>
+    </div>
+    <div class="opt optB">
+      <div class="h">道B：α を本当に動かす</div>
+      \(c\) だけを動かし、\(\alpha\) の時間変化を許す。これなら初期宇宙の物理が実際に変わり、地平線問題を解く力を持つ。<br>でも ── 原子時計の \(10^{-19}\)/年に<strong>即座に衝突</strong>して死ぬ。
+      <div class="verdict">→ 有力だが、有害</div>
+    </div>
+  </div>
+
+  <p>本家VSLは実質、道Bを選んで(あるいはAとBの区別に無頓着なまま)、Bの罰を受けました。<strong>惜しかったのは、「地平線を解く力」と「\(\alpha\) 不変(＝実験と両立)」を同時に満たす“第三の道”を、見つけられなかったこと</strong>です。下の図で、この二択のあいだで身動きが取れなくなる様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：VSLのジレンマ。「c を動かす度合い」を上げると、地平線を解く力（緑）は増えるが、α のズレ（赤）も増え、原子時計の限界を超えてしまう</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>c を（他を固定して）動かす度合い <span class="val" id="vk">0.5</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>あなたの c·t=一定 は、なぜ罠を踏まなかったか</h2>
+
+  <p>ここが今回の核心であり、これまでの回への“お返し”です。第1回〜第4回で組み立ててきた \(c\cdot t=\text{一定}\) の宇宙は、このVSLの罠を<strong>構造的に回避</strong>していました。理由は、動かしていたものが違うから。</p>
+
+  <div class="keybox">
+    <div class="lbl">決定的な違い</div>
+    <p style="margin:6px 0 0;">VSLが動かしたのは <strong>\(c\) そのもの</strong>（他の定数を固定して）。<br>\(c\cdot t=\text{一定}\) が本当に動かしていたのは <strong>膨張のしかた \(a\propto t\)（まっすぐ膨張）</strong>。\(c\) の変化は、その膨張を光速の言葉で書き直した“言い換え”にすぎない。</p>
+  </div>
+
+  <p>この違いが、二択を両取りさせます。</p>
+
+  <p><strong>道Bの「力」を、\(c\) を動かさずに手に入れている。</strong> 地平線問題を解く仕事をしているのは、\(c\) の可変性ではなく \(a\propto t\) という膨張則の物理(第4回の \(\int c\,dt\) が発散する話、正体は \(R_h=ct\) 宇宙)。だから \(\alpha\) を動かさずに、解く力だけを得ている。</p>
+
+  <p><strong>道Aの「無害さ」も、同時に持っている。</strong> \(c\cdot t=\text{一定}\) は「膨張を光速の言葉で書いただけ」の言い換え(ゲージ)としても読めるので、\(\alpha\) は不変のまま。原子時計に叩かれない。</p>
+
+  <p>VSLが二択のあいだで動けなくなったところを、あなたの補助線は<em>「\(c\) は帳簿の言い換え、本体は膨張則」と割り切ること</em>で、つまずく足場そのものを消していた。VSLは「\(c\) を動かす」に固執して定数の帳尻でこけた。\(c\cdot t=\text{一定}\) は \(c\) に固執しなかったので、こける場所がなかった ── これが「VSLは惜しい、\(c\cdot t=\text{一定}\) のほうが筋がいい」の、正確な中身です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（シリーズの背骨）</span>
+    第1回「\(c\) を動かすのは基準の取り替え」、第2回「守るべきは単位の消えた \(\alpha\)」、第6回「\(\alpha\) こそ宇宙そのものの数」── これらを全部使うと、VSLの惜しさが一言で診断できます。<strong>「次元付きの \(c\) を動かして、無次元の \(\alpha\) を守り損ねた」</strong>。このシリーズの背骨は、惜しかった本物の理論が、どこで足を踏み外したかを正確に指させてくれる。理論を評価する“ものさし”としても効くのです。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 勝ち誇らないために</span>
+    <p style="margin-top:0;">VSLを蹴落として \(c\cdot t=\text{一定}\) を持ち上げたいわけではありません。VSLは「インフレーションなしで地平線問題を解けるか」という価値ある問いを立て、真剣な計算を積んだ本物の研究です。そこから学べた教訓(＝守るべきは \(\alpha\))が、たまたまこの補助線に実装されていた、というだけ。</p>
+    <p style="margin-bottom:0;">そして \(c\cdot t=\text{一定}\)（＝\(R_h=ct\) 宇宙）にも、まだ払っていない宿題があります ── 第1回で触れた<strong>初期の元素合成(ビッグバン元素合成)との整合</strong>。まっすぐ膨張が初期の元素の量と両立するかは、いまも決着していない争点。惜しかったのはVSLだけ、こちらは完璧、という話ではありません。どの理論も、どこかに未払いの宿題を抱えています。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>守るべきは、個々の定数ではなく「比」だった</h2>
+    <p>VSLの動機 ── インフレなしで地平線問題を解く ── は正しかった。つまずいたのは実装で、\(c\) だけを動かし他を固定した結果、いちばん守るべき無次元の比 \(\alpha\) を動かしてしまい、原子時計に衝突した。行き着く先は二択 ── \(\alpha\) を守れば無害だが無力、\(\alpha\) を動かせば有力だが有害。この第三の道を見つけられなかったのが、惜しさの正体でした。</p>
+    <p>\(c\cdot t=\text{一定}\) がこの罠を踏まなかったのは、動かしていたのが \(c\) ではなく膨張則 \(a\propto t\) で、\(c\) の変化を“言い換え”と割り切っていたから。<strong>次元付きの値に固執せず、守るべき比を守る</strong> ── VSLの惜しさが教えてくれたこの一点は、このシリーズがずっと言ってきたことの、そのままの実例でした。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編④（本編級）</span>
+    「空間が歪むのと、光速が遅くなるのは、どういう条件で等価か」。今回の裏返しです。VSLが失敗した「\(c\) を動かす」を、<strong>正しく等価にする条件</strong>は何か。\(c_B\cdot a=\text{一定}\)、\(\alpha\) 不変 ── このシリーズがずっと感覚で使ってきた「空間の伸び ＝ 光速の減少」を、今度は<em>厳密に、どんな時に成り立ちどんな時に破れるか</em>まで、はっきりさせます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編③、物理好きの高校生・大学生向け読み物です。光速可変理論(VSL)はAlbrecht–Magueijo(1999)およびBarrowらによる実在の宇宙論プログラムで、地平線・平坦性問題への代替アプローチとして提案されました。本家VSLで \(c\) の変化が微細構造定数 \(\alpha\) の変化を伴い、原子時計や分光による \(\dot\alpha/\alpha\) の制約(現在およそ \(10^{-19}\)/年以下)と緊張することは実際の論点です。図はジレンマを示す模式的なもので、定量的な理論曲線ではありません。\(R_h=ct\)(線形膨張)モデルにもビッグバン元素合成などの未解決の争点があります。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーでジレンマの綱引きが見えます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var k=parseFloat(sk.value); vk.textContent=k.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t*(w-pad-14);}       // t: 0..1 = k
+    function Y(v){return (h-pad)-v*(h-pad-16);}    // v: 0..1
+    // grid
+    ctx.strokeStyle='#efe4dc';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=12+g*(h-pad-12)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#c8bcb2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('c を動かす度合い →', w-160, h-pad+18);
+    // 地平線を解く力（緑, 増える）: 比例的に上昇
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=2.6;ctx.beginPath();
+    for(var t=0;t<=1.0001;t+=0.01){var x=X(t),y=Y(t*0.92);if(t===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // α のズレ（赤, 増える）
+    ctx.strokeStyle='#b03a2e';ctx.lineWidth=2.6;ctx.beginPath();
+    for(var t2=0;t2<=1.0001;t2+=0.01){var x=X(t2),y=Y(t2*0.92);if(t2===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 2本が重なるのでαを少しずらして点線で
+    ctx.strokeStyle='#b03a2e';ctx.setLineDash([5,4]);ctx.lineWidth=2.6;ctx.beginPath();
+    for(var t3=0;t3<=1.0001;t3+=0.01){var x=X(t3),y=Y(t3*0.92)-3;if(t3===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 原子時計の限界ライン
+    var limit=0.12;
+    ctx.strokeStyle='#8a4b2f';ctx.setLineDash([3,3]);ctx.lineWidth=1.4;ctx.beginPath();
+    ctx.moveTo(pad,Y(limit));ctx.lineTo(w-8,Y(limit));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a4b2f';ctx.font='11px sans-serif';
+    ctx.fillText('原子時計が許す α のズレの上限', pad+6, Y(limit)-6);
+    // labels
+    ctx.fillStyle='#2f7d5a';ctx.font='12px sans-serif';ctx.fillText('地平線を解く力', X(0.62), Y(0.62)+18);
+    ctx.fillStyle='#b03a2e';ctx.fillText('α のズレ（実験に反する）', X(0.30), Y(0.30)-10);
+    // marker
+    var mx=X(k), force=k*0.92, alpha=k*0.92;
+    ctx.strokeStyle='#9a4230';ctx.setLineDash([4,4]);ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.moveTo(mx,10);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a';ctx.beginPath();ctx.arc(mx,Y(force),5,0,7);ctx.fill();
+    ctx.fillStyle='#b03a2e';ctx.beginPath();ctx.arc(mx,Y(alpha)-3,5,0,7);ctx.fill();
+    // verdict
+    if(k<0.02){
+      rd.style.background='#eaf1ec';rd.style.color='#1f6b45';
+      rd.textContent='道A側：c をほぼ動かさない → α は無事だが、地平線を解く力もゼロ。「無害だが無力」。';
+    } else if(alpha<=limit){
+      rd.style.background='#eaf1ec';rd.style.color='#1f6b45';
+      rd.textContent='まだ α のズレは限界内。でも地平線を解く力も小さいまま ── 力を出そうとすると…（右へ動かして）';
+    } else {
+      rd.style.background='#f6e9e6';rd.style.color='#a5311f';
+      rd.textContent='✗ 地平線を解く力を得るほど α のズレが限界を突破 → 原子時計に反する。「有力だが有害」。これがVSLの詰み。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>空間の歪みと光速の減少は、いつ等価か ── わかる宇宙論 番外編④</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7faf9; --paper-edge:#dde7e4;   /* 番外編④：ティールの紙（二つの見方の出会い） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d5b56; --calc-bg:#e6f0ed;
+    --rule:#cbd8d4; --hair:#b8c7c2;
+    --acc:#1f7a6e;    /* 番外編④アクセント＝ティール */
+    --grid:#d3e0dc;
+    --space:#2166a0;  /* 空間の伸び＝青 */
+    --light:#b06a12;  /* 光速の減少＝琥珀 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6df 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e6f0ed;color:#1d5b56;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 条件チェックリスト */
+  .cond{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .cond .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .cond .row:last-child{border-bottom:none;}
+  .cond .mk{flex-shrink:0;width:22px;font-weight:700;font-size:16px;}
+  .cond .ok{color:#1f7a6e;} .cond .no{color:#b03a2e;}
+  .cond .row .txt strong{display:block;margin-bottom:2px;}
+  .cond .row .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4faf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1a4741;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e6f0ed;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1a4741;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.cond{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ④（本編級）／ シリーズの土台を、厳密に</span></div>
+  <p class="eyebrow">ずっと感覚で使ってきた「空間の伸び ＝ 光速の減少」を、今回は条件つきで証明する</p>
+  <h1>空間の歪みと光速の減少は、<br>いつ等価か
+    <span class="sub">第1回からの合言葉「空間が伸びる ＝ 光が遅くなる」── これは、いつ成り立ち、いつ破れるのか。<br>番外編③の「守るべきは α」が、そのまま等価条件の半分になる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：割り算、比例、光は距離÷時間で進むこと</span>
+    <span>c_B · a = 一定 ／ α 不変</span>
+  </div>
+
+  <p class="lead">このシリーズは第1回からずっと、「空間が伸びる」と「光速が遅くなる」は同じことの言い換えだ、と繰り返してきました。番外編③では、VSLがこの言い換えを取り違えて失敗した理由も見ました。では、いよいよ正面から ── <em>この二つは、正確にどういう条件で等価なのか。そして、どこで破れるのか。</em> 感覚ではなく、条件を並べて確かめます。結論を先に言えば、等価は<strong>二つの条件がそろったときだけ</strong>成り立ち、そのうちの一つは、番外編③でVSLが守れなかったあの \(\alpha\) 不変です。</p>
+
+  <h2><span class="n">01</span>まず「空間が伸びる」を、光の側から書く</h2>
+
+  <p>膨張する宇宙では、遠くの銀河までの距離が時間とともに増えます。その伸び具合を表すのが<strong>スケール因子 \(a(t)\)</strong>。今を \(a=1\) として、昔は \(a\) が小さく、未来は大きい。空間の物差しが、まるごと \(a(t)\) 倍に伸び縮みする、というイメージです。</p>
+
+  <p>ここで見方を切り替えます。空間を「伸びない格子(共動座標)」として固定し、代わりに<em>その格子の上を光が進む速さ</em>を考える。空間が \(a\) 倍に伸びているぶん、固定した格子から見ると、光は同じ時間で進める“格子の目”が減って見える。これを式にすると ──</p>
+
+  <div class="keybox">
+    <div class="lbl">空間の伸び を 光速の言葉に翻訳する</div>
+    $$c_B(t) = \frac{c_0}{a(t)}\qquad(\text{固定格子の上で測った、光の実効的な速さ})$$
+  </div>
+
+  <p>\(a\) が大きい(空間が伸びた)ほど、\(c_B\) は小さい(光が遅い)。これが第1回の「空間が伸びる ＝ 光が遅くなる」の、式としての姿です。両辺に \(a\) を掛ければ、シリーズでおなじみの形になります。</p>
+
+  <div class="keybox">
+    <div class="lbl">合言葉の正体</div>
+    $$c_B(t)\cdot a(t) = c_0 = \text{一定}$$
+  </div>
+
+  <p>「光速 × 空間の伸び ＝ 一定」。空間が \(a\) 倍に伸びることと、光速が \(1/a\) 倍に落ちることは、この一本の式でぴったり裏返し。<strong>これが等価条件の一つ目</strong>です。</p>
+
+  <div class="fig">
+    <div class="cap">図：c_B（光速の減少・琥珀）と a（空間の伸び・青）は、常に積が一定。片方を動かすと、もう片方が必ず裏返しに動く</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>空間の伸び a（右ほど宇宙が育つ）<span class="val" id="va">1.0</span>
+        <input type="range" id="sa" min="0.3" max="3.0" step="0.05" value="1.0">
+      </label>
+    </div>
+    <div class="readout" id="rd">a = 1.00　→　c_B = c₀/a = 1.00　→　積 c_B·a = 1.00（一定）</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--space);"></i>空間の伸び a</span>
+      <span><i class="swatch" style="background:var(--light);"></i>光速 c_B = c₀/a</span>
+      <span><i class="swatch" style="background:#1f7a6e;"></i>積 c_B·a（動かない）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>でも、これだけでは「見かけの等価」にすぎない</h2>
+
+  <p>\(c_B\cdot a=\text{一定}\) は、確かに「空間の伸び」を「光速の減少」に書き換えます。でも ── これだけなら、ただ<em>記号を置き換えただけ</em>かもしれない。番外編②で見た通り、次元のついた量(\(c\) や長さ)は、基準の取り替えでいくらでも姿を変えられる。本当に「同じ物理」だと言うには、<strong>書き換えても観測が一つも変わらない</strong>ことを保証しなければなりません。</p>
+
+  <p>観測 ── たとえば原子の出す光の色、原子時計のリズム、物質のふるまい ── を決めているのは、第2回・第6回で見た通り、単位の消えた比<strong>微細構造定数 \(\alpha\)</strong> です。だから等価が本物であるためには、書き換えの前後で \(\alpha\) が動いてはいけない。</p>
+
+  <div class="keybox">
+    <div class="lbl">等価条件の二つ目</div>
+    $$\alpha = \frac{e^2}{4\pi\varepsilon_0\hbar c}\ \text{が、書き換えの前後で不変}$$
+  </div>
+
+  <p>\(c_B\) を動かすなら、\(\alpha\) を守るために \(e,\hbar\) も連動させる ── つまり「光速の減少」は<em>すべての物理をひとそろい込みで、単位ごと書き換える</em>操作でなければならない。そうすれば、原子も時計も物差しも全部一緒にスケールし、比を取ると変化が打ち消えて、観測は寸分変わらない。<strong>これが二つ目の条件</strong>。番外編③でVSLが守れなかった、まさにその条件です。</p>
+
+  <div class="aside">
+    <span class="tag">番外編③の回収</span>
+    VSLは条件一つ目(\(c\) を動かす)はやったが、二つ目(\(\alpha\) 不変)を破った ── \(c\) だけ動かして \(e,\hbar\) を固定したから。だから「見かけだけ等価で、観測が変わってしまう(＝原子時計に反する)」書き換えになった。<strong>等価の二条件のうち、一つしか満たさなかった</strong> ── これがVSLの惜しさの、厳密な言い方です。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>等価が成り立つ条件と、破れる条件を並べる</h2>
+
+  <p>二つの条件がそろえば、「空間の伸び」と「光速の減少」は完全に等価 ── どちらで計算しても、どんな観測でも、区別できません。逆に、条件のどこかが崩れると等価は破れる。整理します。</p>
+
+  <div class="cond">
+    <div class="row"><span class="mk ok">✓</span><div class="txt"><strong>条件1：\(c_B\cdot a=\text{一定}\)（光速の減少と空間の伸びが裏返し）</strong><span>これは定義に近い。空間の伸びを光速の言葉で書けば、自動的に満たされる。</span></div></div>
+    <div class="row"><span class="mk ok">✓</span><div class="txt"><strong>条件2：\(\alpha\) が不変（＝全物理を単位ごと書き換える）</strong><span>書き換えが「単なる記号の付け替え」であるための保証。これが観測不変を担保する。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>破れる場合A：\(c\) だけ動かして \(\alpha\) を動かす（VSL型）</strong><span>条件2が破れる。観測が変わり、原子時計に反する。等価ではなく“別の物理”になる。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>破れる場合B：ごく短い距離・極端な重力（プランクスケール）</strong><span>「空間の伸びは全方向いちようで、なめらか」という前提が怪しくなる領域。第5回の“帯域の端”にあたる。ここでは等価が保証されない。</span></div></div>
+  </div>
+
+  <p>つまり、このシリーズがずっと使ってきた「空間の伸び ＝ 光速の減少」は、<strong>条件1と条件2がそろう範囲でだけ、厳密に正しい</strong>。その範囲は、私たちが触れられるほぼすべての物理を含みます ── だから合言葉として安心して使えた。でも「いつでも無条件に」ではなかった。破れる場所(VSL型の書き換え、プランクスケール)も、はっきり指させる。</p>
+
+  <div class="calc">
+    <span class="tag">なぜ二条件で「観測不変」が言えるのか（筋道）</span>
+    <p class="lbl">① 光の進み方は変わらない</p>
+    <p style="margin-top:8px;">条件1により、光が届く距離 \(\int c_B\,dt\) は、空間の伸びで書いても光速の減少で書いても同じ値(第4回で数値でも確認)。因果構造・赤方偏移・地平線は不変。</p>
+    <p class="lbl">② 物質の側も変わらない</p>
+    <p style="margin-bottom:14px;">条件2により、原子のサイズ・エネルギー準位・時計のリズムを決める \(\alpha\) が不変。だから物質のふるまいも不変。①と②で、光も物質も変わらない ── <strong>観測できるものが全部同じ</strong>なら、二つの見方は同じ物理。これが「等価」の意味です。</p>
+  </div>
+
+  <h2><span class="n">04</span>だから、どちらで語ってもいい ── ただし条件つきで</h2>
+
+  <p>結論です。条件1・2がそろう範囲では、「空間が伸びる」と「光が遅くなる」は<em>同じ一つの物理の、二つの語り方</em>。第5回のレコードとCDのように、媒体が二つあるだけで、鳴っている音楽はひとつ。だから第1回で「わかりやすいほう(光速の減少)で語ってよい」と言えたのは、気分ではなく、この二条件に支えられた<strong>正当な選択</strong>だったのです。</p>
+
+  <p>そして、この回はシリーズの土台を厳密にすると同時に、VSLの教訓を裏側から照らしました ── <em>等価を保つ鍵は、次元付きの \(c\) をどう動かすかではなく、無次元の \(\alpha\) を守れるかどうか</em>。番外編③の診断「守るべきは \(\alpha\)」が、そのまま等価条件の二つ目でした。二つの回が、同じ一点で握手します。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「等価」と言えるのは、あくまで<strong>観測できる範囲(条件1・2が保たれる領域)</strong>での話です。プランクスケールのような極限で、空間が本当になめらかに伸びるのか、そこでも等価が保たれるのかは、第5回で見た「帯域の端」と同じく未解決 ── まだ誰も実験で確かめていません。</p>
+    <p style="margin-bottom:0;">また、この等価は「\(c\cdot t=\text{一定}\) という特定のモデルが正しい」という主張ではありません。等価なのは<strong>語り方どうし</strong>であって、どんな膨張のしかた(\(a(t)\) の形)が現実かは、別に観測で決める問題です。等価性は「見方の自由」を保証するだけで、モデルの正否までは決めません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>空間が2倍に伸びた(\(a=2\))とき、\(c_B\cdot a=\text{一定}\) から光速 \(c_B\) は元の何倍か。
+        <details><summary>答えを見る</summary><div class="ans">\(c_B=c_0/a=c_0/2\)。元の半分。空間が2倍に伸びる ＝ 光速が半分に落ちる、が裏返しの関係です。</div></details>
+      </li>
+      <li>「\(c_B\cdot a=\text{一定}\) を満たすのに、\(\alpha\) が動いてしまう」書き換えは、等価か否か。理由も。
+        <details><summary>答えを見る</summary><div class="ans">等価ではない。条件1は満たすが条件2(\(\alpha\) 不変)を破るため、観測(原子時計など)が変わってしまう。これがVSL型の失敗で、「見かけの等価」にすぎない。</div></details>
+      </li>
+      <li>「空間の伸び＝光速の減少」が破れうる場所を、今回と第5回の内容から1つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">プランクスケール(ごく短い距離・極端な重力)。「空間がなめらかに一様に伸びる」という前提が保証されない、第5回でいう“帯域の端”にあたる領域。ここでは等価が担保されない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>等価は「二つの条件」の上に立っていた</h2>
+    <p>「空間が伸びる ＝ 光が遅くなる」が厳密に等価なのは、二つの条件がそろうとき ── ①\(c_B\cdot a=\text{一定}\)(光速の減少と空間の伸びが裏返し)、②\(\alpha\) 不変(全物理を単位ごと書き換える)。①が光の進み方の不変を、②が物質のふるまいの不変を保証し、合わせて「観測が全部同じ＝同じ物理」を担保する。</p>
+    <p>破れるのは、②を守れないVSL型の書き換えと、前提が怪しくなるプランクスケール。第1回からの合言葉は、この範囲でだけ正しかった ── そしてその範囲は、私たちが触れるほぼ全部を含む。<strong>等価を保つ鍵は \(c\) の動かし方ではなく \(\alpha\) を守れるか</strong> ── 番外編③の教訓が、そのまま等価条件になって、シリーズの土台を締めました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">シリーズはまだ続きます</span>
+    これで「空間の歪み ＝ 光速の減少」の土台が、条件つきで厳密になりました。残る大きな扉は、第6回・後編で予告した「三つの力は一点で出会うか(大統一)」、そして「重力をこの絵に入れられるか」。等価の範囲を保証する条件2(\(\alpha\) 不変)が、そうした未解決の問いでも、ずっと道しるべになります。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編④、物理好きの高校生・大学生向け読み物です。\(c_B=c_0/a\)、\(c_B\cdot a=\text{一定}\) はFLRW宇宙で空間膨張を共動系の実効光速として書き換えたもので、共形時間表示に対応します。等価性(因果構造・赤方偏移・地平線の不変)は、次元付き量の再パラメータ化＋無次元量 \(\alpha\) 不変の下で厳密に成り立ちます。局所的に測る光速は常に \(c_0\) です。プランクスケールでの離散性・等価性の成否は未解決の物理課題です。本稿の「等価」は語り方(座標・単位の選択)どうしの等価であり、特定の膨張モデルの正当性を主張するものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで c_B·a が一定に保たれる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sa=document.getElementById('sa'), va=document.getElementById('va'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var A_MIN=0.3, A_MAX=3.0, VMAX=3.2;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var a=parseFloat(sa.value); va.textContent=a.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(av){return pad+(av-A_MIN)/(A_MAX-A_MIN)*(w-pad-14);}
+    function Y(v){return (h-pad)-(v/VMAX)*(h-pad-14);}
+    // grid
+    ctx.strokeStyle='#e2ece8';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=10+g*(h-pad-10)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#b8c7c2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('空間の伸び a →', w-130, h-pad+18);
+    // a line (青, y=a) : 空間の伸びそのもの（45度）
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2.4;ctx.beginPath();var f=true;
+    for(var t=A_MIN;t<=A_MAX+1e-9;t+=0.02){var x=X(t),y=Y(t);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // c_B line (琥珀, y=1/a) : 光速の減少
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=2.4;ctx.beginPath();f=true;
+    for(var t2=A_MIN;t2<=A_MAX+1e-9;t2+=0.02){var x=X(t2),y=Y(1/t2);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // product (ティール, y=1 一定)
+    ctx.strokeStyle='#1f7a6e';ctx.lineWidth=2.6;ctx.setLineDash([6,4]);ctx.beginPath();
+    ctx.moveTo(X(A_MIN),Y(1));ctx.lineTo(X(A_MAX),Y(1));ctx.stroke();ctx.setLineDash([]);
+    // markers at current a
+    var mx=X(a);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,10);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2166a0';ctx.beginPath();ctx.arc(mx,Y(a),5,0,7);ctx.fill();
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(mx,Y(1/a),5,0,7);ctx.fill();
+    ctx.fillStyle='#1f7a6e';ctx.beginPath();ctx.arc(mx,Y(1),4.5,0,7);ctx.fill();
+    // labels
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#2166a0';ctx.fillText('a（空間）', X(A_MAX)-70, Y(A_MAX)+4);
+    ctx.fillStyle='#b06a12';ctx.fillText('c_B=c₀/a（光速）', X(A_MAX)-130, Y(1/A_MAX)-8);
+    ctx.fillStyle='#1f7a6e';ctx.fillText('c_B·a=一定', X(A_MIN)+8, Y(1)-8);
+    rd.textContent='a = '+a.toFixed(2)+'　→　c_B = c₀/a = '+(1/a).toFixed(2)+'　→　積 c_B·a = '+(a*(1/a)).toFixed(2)+'（つねに一定）';
+  }
+  sa.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

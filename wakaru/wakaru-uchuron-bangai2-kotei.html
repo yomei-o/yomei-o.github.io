@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜ光速を「固定」したのか ── わかる宇宙論 番外編②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7f9; --paper-edge:#dfe3e8;   /* 番外編②：青灰の紙（基準・計量の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#37506b; --calc-bg:#e9eef4;
+    --rule:#cdd3da; --hair:#bcc3cc;
+    --acc:#3a5a80;    /* 番外編②アクセント＝青灰 */
+    --grid:#d5dae1;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:730px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 86px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d5deea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cdd6e0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  /* 年表 */
+  .timeline{margin:26px 0;border-left:2px solid var(--rule);padding-left:0;}
+  .tl{position:relative;padding:2px 0 18px 26px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .tl:before{content:'';position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--acc);}
+  .tl.key:before{background:var(--acc);}
+  .tl .yr{font-weight:700;color:var(--acc);letter-spacing:.05em;margin-right:8px;}
+  .tl .what{color:var(--ink);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eef1f5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.timeline{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:730px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ② ／ 測ることの、そもそもの話</span></div>
+  <p class="eyebrow">第1回の「光速は測れない」を、今度は歴史の側から ── なぜ人類は光速を“固定”したのか</p>
+  <h1>なぜ光速を<br>「固定」したのか
+    <span class="sub">1983年、人類は光速の値を「これで確定」と決めた。もう二度と測り直さない、と。<br>それは進歩ではなく、ある意味「あきらめ」だった ── 比べる相手が、いなくなったから。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：割り算と、「比べる」という発想だけ</span>
+    <span>速さ ＝ 距離 ÷ 時間</span>
+  </div>
+
+  <p class="lead">第1回で「光速が遅くなっても測れない、なぜなら物差し自身が光速で定義されているから」と言いました。今回はその裏側 ── <em>そもそも、なぜ光速を物差しの定義にしてしまったのか</em>。実はこれ、人類が「もう光速を独立に測るのをやめる」と決めた瞬間の話です。進歩の到達点のように語られますが、見方を変えると、<strong>比べる基準がなくなったので、固定するしかなかった</strong>という、少し切ない事情でもある。測るとはどういうことか、その根っこに関わる番外編です。</p>
+
+  <h2><span class="n">01</span>「測る」は、いつも「比べる」こと</h2>
+
+  <p>速さは \(\text{距離}\div\text{時間}\) で決まります。光速を測るには、光がある距離を進むのにかかった時間を測ればいい。ここで大事なのは ── <strong>距離を測るには「長さの基準(物差し)」が、時間を測るには「時間の基準(時計)」が要る</strong>ということ。測定とは、必ず<em>何か別の基準と比べる</em>行為なのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">測定の正体</div>
+    <p style="margin:6px 0 0;">光速 \(c = \dfrac{\text{距離}}{\text{時間}}\) を「測る」＝ 光速を、<strong>長さの基準</strong>と<strong>時間の基準</strong>という、二つの“ものさし”と比べること。基準がなければ、そもそも数値は出せない。</p>
+  </div>
+
+  <p>だから光速の値は、ずっと「長さの基準」と「時間の基準」に<em>相対的に</em>決められてきました。基準が変われば、光速の数値も変わる。ここに、今回の話の種があります。</p>
+
+  <h2><span class="n">02</span>基準がだんだん、光そのものに近づいていく</h2>
+
+  <p>人類が使ってきた「長さの基準」の歴史を並べると、あることに気づきます。基準がどんどん<strong>光の性質そのもの</strong>に近づいていくのです。</p>
+
+  <div class="timeline">
+    <div class="tl"><span class="yr">〜1799</span><span class="what">地球の大きさを基準に。「北極から赤道までの1000万分の1」を1メートルとした。</span></div>
+    <div class="tl"><span class="yr">1889</span><span class="what">白金イリジウムの金属棒(メートル原器)を基準に。「この棒の長さが1メートル」。物として保管。</span></div>
+    <div class="tl key"><span class="yr">1960</span><span class="what">クリプトン86という原子が出す光の波長を基準に。「その光の波長 1650763.73個分が1メートル」。基準が“光の波長”になった。</span></div>
+    <div class="tl key"><span class="yr">1983</span><span class="what">ついに光速そのものを基準に。「光が 1/299792458 秒で進む距離が1メートル」。長さの基準が“光の速さ”になった。</span></div>
+  </div>
+
+  <p>金属の棒 → 光の波長 → 光の速さ。<em>長さの基準が、だんだん光に寄っていった</em>。理由は単純で、光のほうが金属棒よりずっと精密で、世界のどこでも同じように再現できるから。金属棒は温度で伸び縮みするし、盗まれたり傷ついたりする。光の性質は、宇宙のどこでも変わらない ── そう信じられている。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ「時間」が主役になったか</span>
+    決め手は、<strong>時間がいちばん精密に測れる</strong>ことでした。原子時計は、長さの物差しより桁違いに正確(セシウム原子で 10桁以上の精度)。だから「正確な時間 × 光速」で長さを作るほうが、長さを直接測るより精密になる。1983年の定義は、いちばん正確な時間の基準に、長さを“おんぶ”させた、とも言えます。</p>
+  </div>
+
+  <h2><span class="n">03</span>1983年 ── 比べる相手が、いなくなった</h2>
+
+  <p>1970年代、光速の測定はどんどん精密になり、その精度は<strong>「長さの基準(クリプトンの光の波長)そのものの精度」に頭打ち</strong>になりました。つまり、光速をこれ以上正確に測ろうとしても、比べる相手である“長さの物差し”のほうがボヤけていて、測れない。物差しの目盛りより細かくは、何も測れないのです。</p>
+
+  <p>ここで人類は、選択を迫られました。二つの道があった ──</p>
+
+  <div class="calc">
+    <span class="tag">二つの道</span>
+    <p class="lbl">道A：光速を「測る量」のまま続ける</p>
+    <p style="margin-top:8px;">長さの基準を別に持ち続け、光速はそれと比べて測る。でも ── 基準の精度で頭打ち。これ以上は進めない。</p>
+    <p class="lbl">道B：光速を「基準」にしてしまう</p>
+    <p style="margin-bottom:14px;">光速の値を「これで確定(299792458 m/s)」と<strong>定義</strong>し、逆に長さのほうを光速から作る。こうすれば、時間の精度がそのまま長さの精度になり、頭打ちが消える。</p>
+  </div>
+
+  <p>選ばれたのは道B。1983年、光速は「もう測る量ではなく、決めた値」になりました。値の <strong>299792458</strong> は、それまでの最良の測定値に合わせて選ばれた ── だから何かが変わったわけではなく、<em>役割が入れ替わった</em>。「測られる側」だった光速が、「測る側(基準)」に回った。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 固定は「あきらめ」でもある</div>
+    <p style="margin:6px 0 0;">光速を固定したのは、<strong>光速より精密で、光速と独立な“別のものさし”が、もう存在しなかったから</strong>。比べる相手がいれば「測る」を続けられた。いなくなったから「これを基準と決める」しかなかった ── 前向きに言えば英断、正直に言えば、比較対象の消失による“固定せざるを得なかった”選択でした。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>だから「光速は変わらない」は、半分は“決めごと”</h2>
+
+  <p>ここが第1回とつながる結論です。「光速は変わらない」とよく言われます。でも1983年以降、その一部は<strong>物理法則というより“取り決め”</strong>になりました。光速が \(299792458\) から動かないのは、宇宙がそう振る舞うからではなく、<em>私たちが「動かない」と決めて、長さをそれに合わせて作っているから</em>。物差しが光速で作られている以上、光速を物差しで測れば、いつでもぴったり \(299792458\) に決まっている ── これは発見ではなく、定義の帰結です。</p>
+
+  <p>では、物理として「光速が変わっていないか」は、どうやって問えるのか? 答えは第2回・第6回で見た通り ── <strong>単位のつかない比、微細構造定数 \(\alpha\) を見るしかない</strong>。\(\alpha\) は物差しに依存しない純粋な数だから、基準を固定しても、なお「本当に変わったか」を問える。1983年に人類が手放したのは「\(c\) を測ること」であって、「\(\alpha\) を測ること」ではなかった。<em>比べる相手を失った量(\(c\))は固定するしかなく、比べる相手が要らない量(\(\alpha\))だけが、測り続けられる</em>。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（シリーズの背骨）</span>
+    第1回「\(c\) が遅くなっても測れない」、第2回「単位の消えた \(\alpha\) だけが測れる」、第6回「\(\alpha\) すら見る細かさで走る」── 今回の話は、その全部の<strong>土台</strong>です。単位のついた量(\(c\)、長さ、エネルギー)は、比べる基準しだいで値が決まり、基準を固定すれば“定義”に変わる。単位の消えた比(\(\alpha\))だけが、基準に依存せず、宇宙そのものを問える。<strong>絶対の値は測れない、比だけが測れる</strong> ── このシリーズがずっと言ってきたことの、歴史における実例が1983年でした。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（軽く一枚）</span>
+    <p style="margin:0;">「固定は決めごと」と言っても、いい加減に決めたわけではありません。値 \(299792458\) は、それ以前の最良の測定に精密に合わせて選ばれ、単位の連続性が保たれています。また「光速は基準に依存せず不変」という物理的な内容(特殊相対論の、真空中の光速は誰が見ても同じ)は、定義とは別に実験で確かめられ続けています。今回の話は「数値 \(299792458\) が定義である」という一点についてで、相対論そのものが取り決めだ、という意味ではありません。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>比べる相手を失った数は、基準になる</h2>
+    <p>測るとは比べること。光速は長い間、長さと時間の基準に比べて測られてきた。基準がだんだん光そのものに近づき、1970年代には「光速の精度＝長さの基準の精度」で頭打ちになった。比べる相手が光速に追いつき、追い越せなくなった。だから1983年、人類は光速を「測る量」から「基準」へ ── <em>固定せざるを得なかった</em>。</p>
+    <p>それ以来「光速は \(299792458\) で不変」は、半分は物理、半分は決めごと。宇宙が本当に変わっていないかを問える窓は、単位の消えた比 \(\alpha\) にだけ残された。<strong>絶対の値は、比べる相手がいなければ固定するしかない。測り続けられるのは、比だけ</strong> ── これが、このシリーズの背骨の、いちばん根っこにある話でした。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編②、物理好きの高校生・大学生向け読み物です。メートルの定義史（1799年頃の地球基準、1889年のメートル原器、1960年のクリプトン86波長、1983年の光速による定義）および、光速が1983年の第17回CGPMで 299792458 m/s に固定され「測定量」から「定義定数」へ移行したことは史実です。値は当時の最良測定に合わせて選ばれ単位の連続性が保たれました。特殊相対論の光速不変性は定義とは独立に実験検証され続けています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。</p>
+</body>
+</html>

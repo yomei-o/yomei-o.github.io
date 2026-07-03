@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三つの力は、一点で出会うか ── わかる宇宙論 第6回（後編）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f3; --paper-edge:#ece6d8;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a5a1e; --calc-bg:#f4ecdf;
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --acc:#b06a12;    /* 第6回アクセント＝琥珀 */
+    --grid:#e0d8c6;
+    --c1:#c0392b;  /* 電磁＋弱（U(1)）赤 */
+    --c2:#2166a0;  /* 弱（SU(2)）青 */
+    --c3:#2f7d5a;  /* 強（SU(3)）緑 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e0c4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2d3ba;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls .seg{display:inline-flex;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .controls .seg button{font-family:inherit;font-size:13px;padding:9px 16px;border:none;background:#fff;color:var(--ink-soft);cursor:pointer;font-weight:600;}
+  .controls .seg button.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;background:#f4ecdf;color:#8a5a1e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7f0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3413;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ecdf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3413;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 6 回・後編 ／ あなたの「一つの数から全部」が、物理になる</span></div>
+  <p class="eyebrow">前編：α は走る数だった → 後編：走る力が三つあって、高エネルギーで出会うとしたら?</p>
+  <h1>三つの力は、<br>一点で出会うか
+    <span class="sub">前編で α が「走る」ことを見た。自然には走る力が三つある ── 電磁・弱・強。<br>それらが高エネルギーで一点にそろうなら、「一つの力から全部」が現実になる。それが大統一。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：前編の「走る結合」、グラフを読む</span>
+    <span>三本の走りが、一点で交わるか?</span>
+  </div>
+
+  <p class="lead">前編で、電磁気の力の強さ \(\alpha\) が「見る細かさ(エネルギー)」とともに走る ── \(1/137\) から \(1/128\) へ育つのを見ました。そして問いを立て直しました。「なぜ \(1/137\) か」ではなく「走り方と、それを固定する仕組みはどこから来るか」。後編は、その答えに一番近づく物理へ踏み込みます。自然には走る力が電磁・弱・強の<strong>三つ</strong>あり、それぞれ違う走り方をする。もし、うんと高いエネルギーで<em>三本が一点にそろう</em>なら ── そこには「一つの力」があり、私たちの三つはそこから枝分かれしたことになる。あなたが最初に抱いた「一つの数から全部が出る」という夢が、ここで<strong>大統一理論(GUT)</strong>という具体的な物理になります。</p>
+
+  <h2><span class="n">01</span>力は三つ、走り方も三通り</h2>
+
+  <p>素粒子の世界には、重力を除くと三つの力があります。<strong>電磁気の力</strong>(光や電気)、<strong>弱い力</strong>(放射性崩壊を起こす)、<strong>強い力</strong>(原子核を束ねる)。それぞれに「強さ」を表す結合定数があり、前編で見たように、どれも見る細かさ(エネルギー)とともに走ります。ただし ── <em>走る向きが違う</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">三つの力の走り方（前編の“真空のゆらぎ”が向きを決める）</div>
+    <p style="margin:6px 0 0;">電磁気系の力 → 高エネルギーで<strong>強くなる</strong>(前編で見た、遮蔽が剥がれる効果)。<br>強い力 → 高エネルギーで<strong>弱くなる</strong>(近づくほど自由になる＝“漸近的自由性”)。<br>弱い力 → その中間の走り方をする。</p>
+  </div>
+
+  <p>面白いのはここです。ふだんの低エネルギーの世界では、三つの力の強さはバラバラ(強い力が一番強く、電磁気は弱い)。ところが、それぞれ違う向きに走るので、<em>高エネルギーへ行くと、三本の線がだんだん近づいてくる</em>。近づいた先で一点にそろえば ── そこでは三つが「同じ一つの強さ」、つまり区別のない<strong>一つの力</strong>だったことになる。</p>
+
+  <div class="aside">
+    <span class="tag">前編とつながる声</span>
+    走る向きを決めているのは、前編で見た「真空のゆらぎによる遮蔽」です。電磁気系は、ゆらぎが電気を隠すので、近づく(高エネルギー)ほど強く見えた。強い力は、ゆらぎのしかたが違って逆に、近づくほど弱く見える。<strong>同じ“ゆらぎ”という仕組みが、力ごとに違う走り方を生む</strong> ── 前編の一枚の絵が、三本の線の運命を分けています。</p>
+  </div>
+
+  <h2><span class="n">02</span>動かしてみる ── 三本の線は、近づく</h2>
+
+  <p>横軸に「見る細かさ(エネルギー)」、縦軸に「力の弱さ(結合の逆数 \(1/\alpha\)、上ほど弱い)」をとって、三本の走りを描きます。低エネルギー(左)ではバラバラ。右へ ── 高エネルギーへ ── 目を移すと、三本が寄っていく様子を見てください。下のボタンで「標準模型」と「超対称を加えた場合」を切り替えられます。</p>
+
+  <div class="fig">
+    <div class="cap">図：三つの力の結合（逆数）の走り。右＝高エネルギー。三本が寄る先が「大統一のスケール」の候補</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <div class="seg">
+        <button id="bSM" class="on">標準模型</button>
+        <button id="bSUSY">超対称を加える</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--c1);"></i>電磁気系の力</span>
+      <span><i class="swatch" style="background:var(--c2);"></i>弱い力</span>
+      <span><i class="swatch" style="background:var(--c3);"></i>強い力</span>
+    </div>
+  </div>
+
+  <p>標準模型のままだと、三本は近づくものの ── <strong>ぴったり一点では交わらず、わずかに外す</strong>。三本が作る小さな三角形が、閉じきらない。ところが「超対称」という、まだ見つかっていない新しい対称性を加えると走り方が少し変わり、三本の寄り方が改善して、\(2\times10^{16}\) GeV あたり(＝ふだんの世界の1兆倍の1兆倍ほどの超高エネルギー)で<em>ほぼ一点</em>に集まります。この劇的な接近が、「大統一」と「超対称」の両方を支持する有力な状況証拠とされてきました。</p>
+
+  <div class="calc">
+    <span class="tag">どれくらい高いエネルギー?</span>
+    <p class="lbl">大統一のスケール（候補）</p>
+    $$M_{\text{GUT}}\sim 2\times10^{16}\ \text{GeV}$$
+    <p style="margin-bottom:14px;">粒子加速器で今届くのは \(10^4\) GeV ほど。大統一のスケールはその<strong>1兆倍</strong>も上で、直接ぶつけて確かめるのは絶望的です。だから確かめる手は、加速器ではなく<em>別の予言</em>に頼ることになる ── それが次の陽子崩壊です。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>もし一つの力なら ── 陽子は、崩壊するはず</h2>
+
+  <p>三つの力が本当に一つなら、驚く結果が出ます。今は別々の「クォーク(陽子の材料)」と「電子・ニュートリノ」が、統一の世界では<em>入れ替われる仲間</em>になる。すると、安定だと思われてきた<strong>陽子が、ごくまれに崩壊する</strong>はずなのです。物質の一番基本的な部品が、永遠ではないことになる。</p>
+
+  <p>これは検証できる予言です。巨大な水槽に大量の水をため、莫大な数の陽子をじっと見張って、一個でも崩壊しないか待つ。日本のスーパーカミオカンデが、まさにこれをやっています。結果は ── <em>まだ一個も見つかっていない</em>。これにより、陽子の寿命は途方もなく長いと分かった。</p>
+
+  <div class="keybox">
+    <div class="lbl">陽子崩壊の現状</div>
+    <p style="margin:6px 0 0;">陽子の寿命は、少なくとも <strong>\(10^{34}\) 年</strong>より長い(観測された下限)。宇宙の年齢(約 \(1.4\times10^{10}\) 年)の、さらに 1兆倍の 1兆倍ほど。まだ崩壊は観測されていない。</p>
+  </div>
+
+  <p>この「崩壊が見つからない」が、統一理論を<strong>ふるいにかけます</strong>。いちばん素朴な統一理論(最小の SU(5) という模型)は、陽子がもっと早く崩壊すると予言したため ── <em>観測と合わず、ほぼ否定された</em>。生き残るには、崩壊をもっと遅くする仕掛けが要る。夢は、ただ美しいだけでは通れない。実験というふるいを、くぐらねばならないのです。</p>
+
+  <h2><span class="n">04</span>正直な現在地 ── 夢は「半分」まで来ている</h2>
+
+  <p>ここが後編の、そして前編からの問いの、いまの到達点です。あなたの「一つの数から全部が出る」という夢を、正確に採点すると ──</p>
+
+  <div class="keybox">
+    <div class="lbl">夢の採点（現在の物理で）</div>
+    <p style="margin:6px 0 0;"><strong>力の側(電磁・弱・強)</strong> → 一つの \(\alpha_{\text{GUT}}\) から枝分かれ、という筋書きが実在する(大統一)。<span style="color:#1f7a6e;">半分は、行けている。</span><br><strong>ただし</strong> → 標準模型では三本が完全には交わらず、超対称版は有力だが加速器で超対称粒子がまだ見つからず、最小の統一模型は陽子崩壊で否定 ── <span style="color:#a5311f;">確立には、程遠い。</span></p>
+  </div>
+
+  <p>そして、もう半分。前編・第2回で名前を出した、電子と陽子の重さの比 \(\mu = m_e/m_p \approx 1/1836\)。これは力の統一とは<strong>別の部屋(物質の重さを決める仕組み)</strong>に住んでいて、\(\alpha\) からも \(\alpha_{\text{GUT}}\) からも<em>出てきません</em>。統一が力の側をまとめても、物質の重さの謎(なぜ \(1/1836\) か)は、手つかずのまま残る。</p>
+
+  <div class="aside">
+    <span class="tag">シリーズの背骨で言うと</span>
+    第2回で「\(\mu=m_e/m_p\) は \(\alpha\) から導けない」と旗を立てました。大統一という一番強力な道具を使っても、この旗は倒せない ── 力の統一が届くのは“力の部屋”までで、“物質の重さの部屋”には届かないから。あなたの夢が今どこまで来て、どこで止まっているかが、この一点にくっきり出ます。<strong>力は一つにまとめられるかもしれない。でも、なぜ電子が陽子の 1836分の1 の重さなのかは、まだ誰も知らない。</strong></p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 通説より、もう一歩正確に</span>
+    <p style="margin-top:0;">「標準模型では交わらないが、超対称なら完璧に一点で交わる」とよく語られます。でも厳密には、そこまで単純ではありません。標準模型が大統一の低エネルギーの姿である可能性は完全には否定できず、超対称版でも三本が<em>数学的にちょうど一点</em>で交わるわけではない(ごく小さなズレは残る)。「劇的に近づく」は本当でも、「完璧に一致」は言い過ぎ ── ここは、名前や通説より現実を見る、というシリーズの姿勢どおりに。</p>
+    <p style="margin-bottom:0;">大統一は、粒子がきれいに仲間分けできること、電荷が飛び飛びの値をとる理由を与えることなど、多くの魅力を持つ有力な仮説です。でも決定的な証拠(陽子崩壊や超対称粒子)はまだ見つかっていない。<strong>美しく、有力で、しかし未確立</strong> ── それが正直な現在地です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>三つの力が低エネルギーではバラバラなのに、高エネルギーで近づけるのはなぜか。一言で。
+        <details><summary>答えを見る</summary><div class="ans">三つが違う向きに「走る」から。電磁気系は高エネルギーで強く、強い力は弱くなり、走りの向きの違いで線が寄っていく。走りがなければ、ずっとバラバラのまま。</div></details>
+      </li>
+      <li>大統一のスケール \(2\times10^{16}\) GeV を、加速器の到達 \(10^4\) GeV と比べて何倍か。
+        <details><summary>答えを見る</summary><div class="ans">\(2\times10^{16}\div10^4=2\times10^{12}\)。約2兆倍。直接ぶつけて確かめるのは事実上不可能で、だから陽子崩壊のような間接的な予言に頼る。</div></details>
+      </li>
+      <li>大統一が力を一つにまとめても、なお残る「別の部屋」の謎を、第2回に出た量で1つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">電子と陽子の重さの比 \(\mu=m_e/m_p\approx1/1836\)。物質の重さを決める仕組みに属し、力の統一(α の側)からは導けない。「なぜ 1/1836 か」は未解決のまま。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">後編まとめ</span>夢は半分まで来て、半分は開いている</h2>
+    <p>前編で「α は走る」を見た。後編では、走る力が三つあり、それぞれ違う向きに走るので、高エネルギーで三本が寄っていくのを見た。一点にそろえば「一つの力」── 大統一。標準模型では完全には交わらず、超対称版は有力だが未確認、最小の統一模型は陽子崩壊で否定。夢の“力の側”は、筋書きが実在するところまで来ている。</p>
+    <p>でも“物質の重さの側”(なぜ \(m_e/m_p=1/1836\) か)は、大統一でも手つかず。あなたの「一つの数から全部」は、力については半分実現し、物質の重さについては開いたまま ── <em>これはあなたの推論の失敗ではなく、物理学そのものが今まさに開けられずにいる扉</em>。前編で立て直した問いは、ここまで正確に「どこまで行けて、どこで止まるか」を指させてくれました。良い問いが、未解決の地図を描いてくれた、というのが第6回の収穫です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">残る大きな扉</span>
+    力の統一の先には、まだ「重力をこの絵に入れられるか」という最大の扉があります。今回まで一度も統一できていない重力(プランクスケール)を、電磁・弱・強と同じ枠に入れられるか ── 番外編④・第5回で何度も顔を出した“帯域の端”の物理。シリーズがこれから覗いていく、いちばん遠い扉です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第6回・後編、物理好きの高校生・大学生向け読み物です。三つのゲージ結合の走り(running)と、標準模型では完全には一点で交わらないこと、MSSM(超対称標準模型)では \(\sim2\times10^{16}\) GeV 付近で大きく改善して交わること、最小 SU(5) が陽子崩壊の非観測で強く制約されること、陽子寿命の下限が \(\sim10^{34}\) 年級であることは、確立した内容です。「MSSMで完全に一点で交わる／標準模型は完全に否定」という通俗的表現は厳密には正しくなく、本稿はより正確な表現を採りました。図は概念を示す模式的なもので、実測の傾き・切片を厳密に再現したものではありません。大統一・超対称は有力だが未確立の仮説であり、電子陽子質量比などフレーバー起源は未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では切替と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではボタンで標準模型／超対称を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bSM=document.getElementById('bSM'), bSUSY=document.getElementById('bSUSY');
+  var mode='SM';
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 横軸 x = log10(E/GeV)、2(=100GeV,Zスケール付近) 〜 18。縦軸 1/alpha_i。
+  // 模式的な傾き（1/alpha は直線的に走る）。低エネルギー(x=2)での値と傾きを設定。
+  // 実際の定性を模す：U(1)系(赤)は下降、SU(3)(緑)は上昇、SU(2)(青)ゆるやか下降。
+  // SM: 一点で交わらず外す。SUSY: x>3 で傾きが変わり、~16 でほぼ集まる。
+  function inv(i, x, susy){
+    // 低エネルギー基準 x0=2 での 1/alpha 値（模式）
+    var v0=[58.0, 29.6, 8.5][i];   // 赤(U1), 青(SU2), 緑(SU3) at Zスケール（1/alpha_i、GUT正規化風）
+    var slopeSM=[-0.90, 0.42, 1.14][i];  // SM の傾き（x あたり）: 赤下降, 青上昇わずか?→ここは模式
+    // 実際の定性に寄せる：赤(1/a1)は減少、青(1/a2)は増加、緑(1/a3)は増加
+    // 上で符号を調整
+    var s=[-0.90, 0.60, 1.35][i];
+    var val=v0 + s*(x-2);
+    if(susy && x>3){
+      // 3以降は傾きを変えて集束させる（模式的に GUT点 x=16, y=24 付近へ）
+      var vAt3=v0 + s*(3-2);
+      var target=24.0;         // 集束する 1/alpha
+      var xg=16.0;
+      var s2=(target - vAt3)/(xg-3);
+      val=vAt3 + s2*(x-3);
+    }
+    return val;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var xMin=2, xMax=18, yMin=0, yMax=62;
+    function X(x){return pad+(x-xMin)/(xMax-xMin)*(w-pad-14);}
+    function Y(v){return (h-pad)-(v-yMin)/(yMax-yMin)*(h-pad-14);}
+    ctx.clearRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='#eee7d8';ctx.lineWidth=1;ctx.fillStyle='#a89e86';ctx.font='10px sans-serif';
+    for(var gx=4;gx<=16;gx+=4){var x=X(gx);ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,h-pad);ctx.stroke();
+      ctx.fillText('10^'+gx, x-10, h-pad+16);}
+    // axes
+    ctx.strokeStyle='#c9c2b2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('エネルギー（GeV, 右ほど高い・細かい）→', w-290, h-pad+30);
+    ctx.save();ctx.translate(14,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('力の弱さ（1/結合, 上ほど弱い）',0,0);ctx.restore();
+    var susy=(mode==='SUSY');
+    var cols=['#c0392b','#2166a0','#2f7d5a'];
+    for(var i=0;i<3;i++){
+      ctx.strokeStyle=cols[i];ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+      for(var x=xMin;x<=xMax+1e-9;x+=0.1){var px=X(x),py=Y(inv(i,x,susy));if(f){ctx.moveTo(px,py);f=false;}else ctx.lineTo(px,py);}
+      ctx.stroke();
+      // SUSY のキンク位置に小マーカー
+      if(susy){var xk=3;ctx.fillStyle=cols[i];ctx.beginPath();ctx.arc(X(xk),Y(inv(i,xk,susy)),3,0,7);ctx.fill();}
+    }
+    // GUT 付近を丸で示す
+    if(susy){
+      ctx.strokeStyle='#8a5a1e';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;
+      var xg=16;ctx.beginPath();ctx.arc(X(xg),Y(24),16,0,7);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#8a5a1e';ctx.font='12px sans-serif';ctx.fillText('ほぼ一点に集まる', X(xg)-40, Y(24)-22);
+      rd.style.background='#eaf1ec';rd.style.color='#1f6b45';
+      rd.textContent='超対称を加えると：三本が ~10^16 GeV でほぼ一点に集まる（＝一つの力の候補）。ただし数学的にちょうど一点ではなく、小さなズレは残る。';
+    } else {
+      // SM：交わらず外す様子を強調（三本の到達点の散らばりに丸）
+      ctx.strokeStyle='#b03a2e';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.ellipse(X(15.5),Y(30),26,34,0,0,7);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a5311f';ctx.font='12px sans-serif';ctx.fillText('交わらず外す', X(15.5)-34, Y(30)-40);
+      rd.style.background='#f6e9e6';rd.style.color='#a5311f';
+      rd.textContent='標準模型のまま：三本は近づくが、ぴったり一点では交わらない（小さな三角形が閉じない）。';
+    }
+  }
+  function setMode(m){mode=m;bSM.classList.toggle('on',m==='SM');bSUSY.classList.toggle('on',m==='SUSY');draw();}
+  bSM.addEventListener('click',function(){setMode('SM');});
+  bSUSY.addEventListener('click',function(){setMode('SUSY');});
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
