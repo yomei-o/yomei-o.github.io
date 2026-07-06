@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ニュートリノは、差しか教えてくれない ── わかる宇宙論 第11回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fb; --paper-edge:#e0dbea;   /* 第11回：ニュートリノ・混合＝すみれ色の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#5b3a86; --calc-bg:#efe9f6;   /* 計算色＝すみれ */
+    --rule:#d6cfe4; --hair:#c2b9d6;
+    --acc:#6b3fa0;    /* アクセント＝すみれ紫 */
+    --grid:#e2dcef;
+    --ok:#2f7d5a; --bad:#a83a22; --f1:#6b3fa0; --f2:#2a8fb0; --f3:#c0567a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd0f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d8cfe8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:230px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;background:#efe9f6;color:#5b3a86;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#efe9f6;color:#4e2f78;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f2fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3c2860;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fcfbfe,#ede8f5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#efe9f6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3c2860;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 11 回 ／ 質量の側へ ── 背骨が、実験でそのまま起きる</span></div>
+  <p class="eyebrow">番外編②「絶対値は測れない、差だけが物理」が、比喩でなくニュートリノで literally 起きている</p>
+  <h1>ニュートリノは、差しか教えてくれない
+    <span class="sub">ニュートリノの絶対質量は、誰にもまだ測れていない。測れるのは質量の「二乗差」だけ。<br>これは番外編②で光速について言ったこと ── 絶対値は帳簿、差だけが物理 ── の、実験による証明です。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第9回の i と位相、二乗差、sin²、混合</span>
+    <span>測れるのは Δm² だけ ／ 絶対質量は不明</span>
+  </div>
+
+  <p class="lead">これまでシリーズは、力の側(\(\alpha\))を深く掘ってきました。この回で初めて<strong>質量の側</strong>に踏み込みます。主役はニュートリノ ── 電子の1000万分の1以下という途方もなく軽い粒子。面白いのは、その<em>絶対質量が、いまだに誰にも測れていない</em>ことです。わかっているのは質量の「二乗差」\(\Delta m^2\) だけ。これは偶然の限界ではなく、番外編②で光速について言った背骨 ──<strong>絶対値は測る基準しだいの帳簿、物理的に意味があるのは差や比だけ</strong>── が、ニュートリノという実在の粒子で、比喩でなく<em>実験でそのまま起きている</em>ということなのです。そしてそれを暴くのが、第9回で見た \(i\) の位相 ── <strong>ニュートリノ振動</strong>です。</p>
+
+  <h2><span class="n">01</span>ニュートリノは3種が「混ざって」いる</h2>
+
+  <p>ニュートリノには3種類あります(電子型 \(\nu_e\)、ミュー型 \(\nu_\mu\)、タウ型 \(\nu_\tau\) ── これを<em>フレーバー</em>と呼ぶ)。ところが決定的なことに、この「フレーバー」は<strong>質量が確定した状態ではない</strong>。質量が確定した状態(\(\nu_1,\nu_2,\nu_3\)、質量 \(m_1,m_2,m_3\))は別にあって、フレーバーはその<em>混ざり合わせ</em>なのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">フレーバーは、質量状態の混ざり合わせ（2種で書くと）</div>
+    $$\nu_e = \cos\theta\,\nu_1 + \sin\theta\,\nu_2,\qquad \nu_\mu = -\sin\theta\,\nu_1 + \cos\theta\,\nu_2$$
+  </div>
+
+  <p>「電子型ニュートリノ」を1個つくったつもりでも、それは中身では \(\nu_1\) と \(\nu_2\) の重ね合わせ。混ざり具合を決めるのが<em>混合角 \(\theta\)</em> です。ここまでで、第2回・第8回の「原子の中の \(\alpha\)」とは全然ちがう景色 ── 質量の世界は、こういう「混ざり」から始まります。</p>
+
+  <h2><span class="n">02</span>振動は「位相のずれ」── 第9回の i が、また効く</h2>
+
+  <p>ここで第9回が戻ってきます。\(\nu_1\) と \(\nu_2\) は質量が違うので、飛んでいる間に<strong>違う速さで位相を回す</strong>(第9回でやった \(e^{-iE t/\hbar}\)、\(i\) の実軸方向の回転)。エネルギーは \(E=\sqrt{p^2c^2+m^2c^4}\approx pc+\dfrac{m^2c^4}{2pc}\) で、質量の効きは \(m^2\) を通してだけ。だから \(\nu_1,\nu_2\) の<em>位相のずれ</em>は、質量の<strong>二乗差 \(\Delta m^2=m_2^2-m_1^2\)</strong> で決まります。</p>
+
+  <p>飛ぶうちに位相がずれ、はじめ「電子型」だった混ざり方が「ミュー型」の混ざり方へ移り変わる ── これが<strong>ニュートリノ振動</strong>。第9回で「\(i\) の位相のずれが同一性を移す」と言ったこと(崩壊のときと同じ絵)が、ここではフレーバーの移り変わりとして現れます。式にするとこうです。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">振動確率 ── 効くのは Δm²（差）だけ</div>
+    $$P(\nu_e\!\to\!\nu_\mu)=\sin^2(2\theta)\,\sin^2\!\left(1.27\,\frac{\Delta m^2\,[\text{eV}^2]\;L\,[\text{km}]}{E\,[\text{GeV}]}\right)$$
+  </div>
+
+  <p>位相の中に入っているのは \(\Delta m^2\) ── 個々の \(m_1,m_2\) ではなく、その<em>二乗差</em>。これが今回の背骨の芽です。下の図で、飛ぶ距離を割ったエネルギー \(L/E\) を動かしてみてください。フレーバーが波打つ ── その波の速さを決めているのは \(\Delta m^2\) だけです。</p>
+
+  <div class="fig">
+    <div class="cap">図：ニュートリノ振動。横軸は L/E（飛距離÷エネルギー）。上=電子型で生まれたニュートリノが、飛ぶうちにミュー型へ振動。波の速さを決めるのは Δm² だけ。下のスライダーで Δm² と、全体の絶対質量シフトを別々に動かせる</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>Δm²（質量の二乗差、10⁻³ eV²）<span class="val" id="vd">2.5</span>
+        <input type="range" id="sd" min="0.5" max="5" step="0.1" value="2.5">
+      </label>
+      <label>絶対質量シフト（全 mᵢ に一律 +Δ、eV）<span class="val" id="vm">0.0</span>
+        <input type="range" id="sm" min="0" max="1" step="0.02" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--f1);"></i>電子型 νₑ で残る確率</span>
+      <span><i class="swatch" style="background:var(--f2);"></i>ミュー型 ν_μ に化けた確率</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>だから、絶対質量は測れない ── 背骨そのもの</h2>
+
+  <p>いま図で確かめてほしいのは、右のスライダー ──<strong>全部の質量に一律に \(+\Delta\) を足しても、振動が寸分変わらない</strong>ことです。理由は式が全部言っています。振動に効くのは \(\Delta m^2=m_2^2-m_1^2\) だけ。全部の \(m_i\) を底上げしても、二乗差は(ほぼ)変わらないから、振動は同じ。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 絶対値を変えても差は変わらない</span>
+    <p class="lbl">測れるのは二乗差だけ（2024–25年の測定値）</p>
+    $$\Delta m^2_{21}\approx 7.5\times10^{-5}\ \text{eV}^2,\qquad |\Delta m^2_{31}|\approx 2.5\times10^{-3}\ \text{eV}^2$$
+    <p class="lbl">同じ Δm² を与える質量は、無限にある</p>
+    $$(m_1,m_2)=(0,\,0.009)\ \text{eV}\quad\text{も}\quad (0.10,\,0.100)\ \text{eV}\quad\text{も、}\ \Delta m^2\ \text{は同じ}$$
+    <p style="margin-bottom:14px;">振動は二乗差しか教えてくれないので、\(m_1\) が \(0\) なのか \(0.1\) eV なのか ── <strong>絶対質量は原理的に振動に現れない</strong>。実際、ニュートリノの絶対質量は今も未測定で、わかっているのは二乗差と、宇宙論などからの「合計の上限」だけ。これは番外編②で光速について言ったこと ──<em>絶対値は基準しだいの帳簿、物理は差だけ</em>── の、そっくりそのままの実現です。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">背骨との一致 ── 比喩が、実物になった</span>
+    番外編②では「光速の絶対値は測る基準を決めない限り意味を持たない、意味があるのは無次元比 \(\alpha\) だけ」と言いました。ニュートリノでは、それが<strong>質量について literally 起きている</strong> ── 絶対質量 \(m_i\) は(振動では)測れず、測れるのは差 \(\Delta m^2\) だけ。第1回からの背骨「絶対値は帳簿、差・比だけが物理」が、思考実験ではなく、稼働中の実験(スーパーカミオカンデ、T2K、JUNO…)の日々の測定結果として、目の前に立っているのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>なぜこんなに軽いのか ── シーソーが GUT スケールと握手する</h2>
+
+  <p>ニュートリノの質量スケールは \(\sim0.05\) eV(二乗差の平方根)。電子の \(10^7\) 分の1以下という異常な軽さです。なぜか。有力な答えが<strong>シーソー機構</strong> ── 「とても重い相棒」がいると、見えるニュートリノは逆に「とても軽く」なる、という仕組みです。</p>
+
+  <div class="keybox">
+    <div class="lbl">シーソー機構 ── 軽さは、重さの逆数</div>
+    $$m_\nu \sim \frac{(y\,v)^2}{M_R}\qquad(v=\text{ヒッグスの}246\ \text{GeV},\ M_R=\text{重い相棒の質量})$$
+  </div>
+
+  <p>シーソー(片方が重いほど、もう片方が軽く持ち上がる)の名の通り、\(M_R\) が大きいほど \(m_\nu\) は小さい。ここで \(m_\nu\sim0.05\) eV を出すのに必要な \(M_R\) を逆算すると ──</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 軽さから、重い相棒のスケールを逆算</span>
+    $$M_R \sim \frac{(y\,v)^2}{m_\nu}\sim\frac{(246\ \text{GeV})^2}{0.05\ \text{eV}}\sim 10^{15}\ \text{GeV}\quad(y\sim1)$$
+    <p style="margin-bottom:14px;">出てきた \(M_R\sim10^{15}\) GeV は、第6回の大統一スケール、第10回で陽子崩壊を支配した \(M_X\sim10^{16}\) GeV の<strong>すぐ近く</strong>。ニュートリノの<em>軽さ</em>という身近な事実が、大統一という<em>最も重いスケール</em>と、逆数を通じて手を握る。質量の側にも、シリーズがずっと指してきた「プランク／GUT スケールの向こう」への扉が開いている。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">力の側との対比 ── 対称性 vs 対称性の破れ</span>
+    第8回で「力は<em>対称性</em>(ゲージ原理)から生まれる」と見ました。質量はその逆 ──<strong>対称性の破れ</strong>(ヒッグス機構)から生まれる。\(\alpha\) の起源はゲージ原理で見えたが(第8回)、質量比や湯川結合 \(y\) が<em>なぜその値か</em>は、完全に未解決。ニュートリノのシーソーは、その未解決の質量の側が、GUT スケールの重い物理に根を持つらしい、という最も強い手がかりです。力の側(\(\alpha\))を掘り終えたシリーズが、質量の側で出会う「まだ誰も知らない半分」の入口。
+  </div>
+
+  <h2><span class="n">05</span>判決 ── c·t=一定 を、質量の側にかける</h2>
+
+  <p>最後に、いつもの判定を質量の側にかけます。\(\Delta m^2\) は次元付き(eV²)の量。もし「\(c\cdot t=\text{一定}\) のクロックダウンが \(\Delta m^2\) を時代とともに走らせる」と読むと、どうなるか。</p>
+
+  <p>ニュートリノ振動も、遠方の超新星や宇宙初期(BBN、CMB)の情報を通じて「昔と今で変わっていないか」が制約されています。だから第7回・第10回とまったく同じ判定が下ります ── 次元付きの \(\Delta m^2\) を額面で走らせれば観測と衝突して<strong>棄却</strong>。無次元比(質量比 \(m_2/m_1\)、混合角 \(\theta\))を不変に保つゲージとして読めば、観測に跡を残さず<strong>生存(ただし観測不能)</strong>。</p>
+
+  <table class="verdict">
+    <tr><th>読み方</th><th>動かす量</th><th>判決</th></tr>
+    <tr>
+      <td><strong>Δm² を額面で走らせる</strong></td>
+      <td>Δm²（次元付き, eV²）</td>
+      <td class="v-bad">棄却（振動の遠方観測・宇宙論と衝突）</td>
+    </tr>
+    <tr>
+      <td><strong>無次元比・混合角を不変に保つ</strong></td>
+      <td>質量比・混合角（無次元）は不変</td>
+      <td class="v-ok">生存（観測不能、番外編④の等価）</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── この回でわかること / わからないこと</span>
+    <p style="margin-top:0;"><strong>わかること。</strong> ニュートリノ振動は確立した物理(2015年ノーベル賞)で、二乗差 \(\Delta m^2\) は実験で精密に測られている(値は年々更新中 ── JUNO などが2025年に精度を更新)。「絶対質量は振動では測れず、差だけが測れる」も、実験事実です。だからこの回は、シリーズの背骨を<em>実物で</em>確認できる、特別な回になっています。</p>
+    <p style="margin-bottom:0;"><strong>わからないこと。</strong> ニュートリノの絶対質量、質量の順番(正常階層か逆階層か)、マヨラナ性の有無、シーソーの相棒 \(M_R\) の正体、そして湯川結合 \(y\) が<em>なぜその値か</em> ── これらは<strong>未解決</strong>。本稿のシーソーの \(M_R\sim10^{15}\) GeV は \(y\sim1\) と仮定した目安で、\(y\) や機構しだいで大きく動きます。\(c\cdot t=\text{一定}\) との接続も、\(\Delta m^2\) を走らせれば棄却・不変ゲージなら観測不能で、番外編④の等価条件をそのまま踏襲します ── 質量の側でも、守るべきは無次元の同一性、という背骨は少しも揺らぎません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>振動確率 \(P=\sin^2(2\theta)\sin^2(1.27\,\Delta m^2 L/E)\) で、全部の質量に一律 \(+\Delta\) を足すと \(P\) はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">\(P\) は \(\Delta m^2=m_2^2-m_1^2\) だけに依存する。全部の \(m_i\) に同じ量を足しても二乗差はほぼ変わらない(厳密には \(m^2\) の差なので底上げ分が相殺)ので、\(P\) は変わらない。だから絶対質量は振動に現れない=測れない。</div></details>
+      </li>
+      <li>\(\Delta m^2_{31}=2.5\times10^{-3}\) eV² のとき、振動が最初に極大になる \(L/E\)（位相が \(\pi/2\)）はいくつか。
+        <details><summary>答えを見る</summary><div class="ans">\(1.27\,\Delta m^2 L/E=\pi/2\) より \(L/E=(\pi/2)/(1.27\times2.5\times10^{-3})\approx495\) km/GeV。例えば \(E=1\) GeV なら \(L\approx495\) km で最初の極大。</div></details>
+      </li>
+      <li>シーソー \(m_\nu\sim(yv)^2/M_R\) で、相棒 \(M_R\) が10倍重くなると \(m_\nu\) はどうなるか。「シーソー」の名の意味を一言で。
+        <details><summary>答えを見る</summary><div class="ans">\(m_\nu\propto1/M_R\) なので、\(M_R\) が10倍で \(m_\nu\) は1/10。相棒が重いほど、見えるニュートリノは軽い ── シーソーの片方を押し下げると他方が持ち上がる、あの関係。だから極端な軽さは、極端な重さ(GUTスケール)の裏返し。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第11回まとめ</span>質量の側でも、物理は「差」だけを語った</h2>
+    <p>ニュートリノは3種のフレーバーが質量状態の混ざりで(STEP 01)、飛ぶうちに \(\nu_1,\nu_2\) の位相がずれて振動する ── 第9回の \(i\) の位相が、フレーバーの移り変わりとして再登場(STEP 02)。振動確率に効くのは質量の二乗差 \(\Delta m^2\) だけで、全質量を底上げしても振動は不変。だから<strong>絶対質量は原理的に測れず、差 \(\Delta m^2\) だけが測れる</strong>(STEP 03) ── 番外編②「絶対値は帳簿、差だけが物理」の、実験によるそのままの実現。</p>
+    <p>そして異常な軽さの起源はシーソー \(m_\nu\sim(yv)^2/M_R\)、逆算すると相棒は \(M_R\sim10^{15}\) GeV ── 第6・10回のGUTスケールと握手(STEP 04)。\(c\cdot t=\text{一定}\) 判定も第7・10回と同じ:\(\Delta m^2\)(次元付き)を額面で走らせれば棄却、無次元比・混合角を守れば観測不能で生存(STEP 05)。<em>力の側の \(\alpha\) も、質量の側の \(\Delta m^2\) も、物理が語るのは絶対値ではなく差・比だけ</em> ── シリーズの背骨が、質量の世界でも寸分違わず貫いていました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">シリーズの構造 ── 第11回の位置</span>
+    第2〜10回で「力の側(\(\alpha\))」を掘り、第11回でついに「質量の側」に踏み込みました。ニュートリノは、シリーズの背骨「絶対値は測れない、差・比だけ」が、思考実験でなく実験でそのまま起きている唯一の場所 ── だから質量の側への最初の扉に選びました。残る質量の問い(質量比 \(\mu=m_e/m_p\)、湯川結合が<em>なぜその値か</em>、質量の順番、マヨラナ性)は、力の側の \(\alpha\) の起源(第8回)と同じく、多くがプランク／GUTスケールの向こう ── finaleが指した「まだ誰も触れられない領域」に根を持ちます。背骨は、そこでも道しるべであり続けます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第11回、物理好きの高校生・大学生向け読み物です。ニュートリノが3世代のフレーバー状態と質量状態の混合(PMNS行列)で記述され、質量二乗差により振動すること、真空振動確率が2フレーバー近似で \(P=\sin^2(2\theta)\sin^2(1.27\,\Delta m^2[\text{eV}^2]\,L[\text{km}]/E[\text{GeV}])\) で与えられること(係数1.267…)、振動が絶対質量ではなく二乗差 \(\Delta m^2\) のみに依存すること、シーソー機構が \(m_\nu\sim(yv)^2/M_R\) で軽い質量を説明することは、確立した標準物理です。測定値 \(\Delta m^2_{21}\approx7.5\times10^{-5}\ \text{eV}^2\)、\(|\Delta m^2_{31}|\approx2.5\times10^{-3}\ \text{eV}^2\) は2024–2025年の世界平均(NuFIT 6.0 および JUNO 2025 更新)に基づく概数で、精度は今後も向上します。絶対質量・質量順序・マヨラナ性・シーソースケール \(M_R\)・湯川結合 \(y\) は未解決で、本稿の \(M_R\sim10^{15}\) GeV は \(y\sim1\) を仮定した目安です。図は真空2フレーバー近似の模式的な可視化です。\(c\cdot t=\text{一定}\) で \(\Delta m^2\) を走らせる解釈は遠方観測・宇宙論と矛盾し、無次元比を不変に保つゲージとしての解釈のみが観測と整合します(番外編④)。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では Δm² と絶対質量シフトを別々に動かせます。Δm² だけが振動を変え、絶対質量シフトは何も変えないのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sd=document.getElementById('sd'), vd=document.getElementById('vd'),
+      sm=document.getElementById('sm'), vm=document.getElementById('vm'), rd=document.getElementById('rd');
+  var s2_2theta=0.85; // sin²(2θ) の見た目用（θ≈33°で ~0.85）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var dm2=parseFloat(sd.value)*1e-3;   // eV²
+    var mshift=parseFloat(sm.value);      // eV, 一律シフト（振動には効かない＝表示で示す）
+    vd.textContent=(dm2*1e3).toFixed(1);
+    vm.textContent=mshift.toFixed(2);
+    // 横軸 L/E: 0..1000 km/GeV
+    var LEmax=1000;
+    function X(le){return pad+le/LEmax*(w-pad-14);}
+    function Y(p){return (h-pad)-p*(h-pad-24);}   // p:0..1
+    ctx.clearRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='#e6e0f0';ctx.lineWidth=1;ctx.fillStyle='#aca4c4';ctx.font='10px sans-serif';
+    for(var p=0;p<=1.001;p+=0.25){var y=Y(p);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText(p.toFixed(2),6,y+3);}
+    // ν_μ 出現確率（青）と νe 残存（紫）
+    // P_appear = s2·sin²(1.27 dm2 L/E)  （絶対質量シフト mshift は Δm² を変えないので P に不変 → それを図で示す）
+    function Pmu(le){return s2_2theta*Math.pow(Math.sin(1.27*dm2*le),2);}
+    ctx.strokeStyle='#2a8fb0';ctx.lineWidth=2.4;ctx.beginPath();var f=true;
+    for(var i=0;i<=400;i++){var le=LEmax*i/400; var x=X(le),y=Y(Pmu(le)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    ctx.strokeStyle='#6b3fa0';ctx.lineWidth=2.4;ctx.beginPath();f=true;
+    for(var j=0;j<=400;j++){var le2=LEmax*j/400; var x2=X(le2),y2=Y(1-Pmu(le2)); if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // 第1極大の位置マーカー
+    var LEpk=(Math.PI/2)/(1.27*dm2);
+    if(LEpk<=LEmax){
+      ctx.strokeStyle='#c2b9d6';ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(X(LEpk),18);ctx.lineTo(X(LEpk),h-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#8a80a8';ctx.font='10px sans-serif';ctx.fillText('第1極大 L/E≈'+LEpk.toFixed(0), X(LEpk)+4, 26);
+    }
+    // 軸
+    ctx.strokeStyle='#c2b9d6';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,14);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('飛距離 ÷ エネルギー  L/E [km/GeV] →', pad+30, h-pad+22);
+    ctx.save();ctx.translate(15,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('確率',0,0);ctx.restore();
+    // readout
+    rd.textContent='Δm² = '+(dm2*1e3).toFixed(1)+'×10⁻³ eV² が振動の速さを決める（第1極大 L/E≈'+LEpk.toFixed(0)+'）。'
+      + '一方、絶対質量シフト +'+mshift.toFixed(2)+' eV を足しても Δm² は変わらず、上のグラフは1ミリも動かない ── 絶対質量は振動に現れない＝測れない（番外編②の背骨）。';
+  }
+  sd.addEventListener('input',draw); sm.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

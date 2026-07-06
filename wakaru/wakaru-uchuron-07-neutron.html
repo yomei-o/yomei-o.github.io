@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中性子は、正直な証人 ── わかる宇宙論 第7回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f4; --paper-edge:#e9ddd6;   /* 第7回：初期宇宙の炉＝赤茶の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a3520; --calc-bg:#f4e6e0;   /* 計算色＝中性子崩壊の赤茶 */
+    --rule:#dcd0c8; --hair:#c9bcb2;
+    --acc:#a83a22;    /* アクセント＝崩壊の赤 */
+    --grid:#e6d8d0;
+    --ok:#2f7d5a; --bad:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0d6cc 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e6cabf;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#e5f0ea;color:#245c43;}
+  .readout.bad{background:#f6e0da;color:#8a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f4e6e0;color:#7a2f1c;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf4f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5a2214;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbf9,#f4e9e3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4e6e0;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5a2214;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 7 回 ／ シリーズの主張を、実データで裁く</span></div>
+  <p class="eyebrow">第6回で予告した崩壊の話 ── ただし陽子ではなく、実際に壊れる中性子で。ここでモデルに判決が下る</p>
+  <h1>中性子は、正直な証人
+    <span class="sub">陽子崩壊は 10³⁴ 年の彼方で「確率だから見つからない」と逃げられた。<br>でも中性子は 880 秒で本当に壊れる ── そして 138 億年前の実験結果(ヘリウム量)が、シリーズの主張に判決を下す。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：番外編③④の等価条件、5乗のスケーリング、対数</span>
+    <span>Γ ∝ Q⁵ ／ c·t = 一定</span>
+  </div>
+
+  <p class="lead">第6回で「陽子は崩壊するか」を扱いました。でも陽子の寿命は \(10^{34}\) 年 ── 宇宙年齢の \(10^{24}\) 倍で、実験室でいくら待っても「確率だから見つからない」で済んでしまう。検証にならない。ところが<em>中性子</em>は違います。自由な中性子は、たった<strong>約880秒(15分)</strong>で本当に崩壊する。そしてこの崩壊は、宇宙が生まれて数分後の「元素合成(BBN)」で、ヘリウムの量を決めた。つまり中性子崩壊は、<strong>138億年前の宇宙で実際に走った実験</strong>で、その結果(ヘリウム量)が今も観測できる。この回では、その実データを使って ── これまでのシリーズがずっと言ってきた「\(c\) を額面で動かすと死ぬ、\(\alpha\) 不変のゲージなら生きる」という主張に、<strong>数字で判決を下します</strong>。</p>
+
+  <h2><span class="n">01</span>中性子崩壊は「差の5乗」で効く ── だから増幅器になる</h2>
+
+  <p>中性子は、陽子・電子・反ニュートリノに崩壊します(\(n\to p+e^-+\bar\nu\))。ここで崩壊の速さを決めるのは、中性子の全質量エネルギー \(m_nc^2\approx939\) MeV では<strong>ありません</strong>。効くのは、中性子と(陽子+電子)の<em>質量エネルギーの差</em>、たった \(Q\approx0.782\) MeV だけ。しかも ── サージェント則という関係で、崩壊率はこの差の<strong>5乗</strong>で効きます。</p>
+
+  <div class="keybox">
+    <div class="lbl">サージェント則 ── 崩壊率は差 Q の5乗</div>
+    $$\Gamma \propto Q^5,\qquad Q=(m_n-m_p-m_e)c^2\approx 0.782\ \text{MeV}$$
+    $$\Rightarrow\quad \tau_n \propto \frac{1}{Q^5},\qquad \frac{\Delta\tau_n}{\tau_n} = -5\,\frac{\Delta Q}{Q}$$
+  </div>
+
+  <p>これが決定的です。第6回・番外編④で「効くのは全質量ではなく無次元の比」と何度も言いました。中性子でも同じ ── 効くのは全質量 \(m_nc^2\) ではなく、微小な差 \(Q\)(全質量のわずか0.08%)。そしてこの \(Q\) が1%ずれれば、<em>5乗が効いて寿命は5%動く</em>。中性子は「\(Q\) のわずかな変化を5倍に増幅して寿命に映す」<strong>天然の増幅器</strong>なのです。第7回の主役は、この5乗の増幅です。</p>
+
+  <div class="aside">
+    <span class="tag">陽子崩壊との違い ── なぜ中性子が「証人」になれるか</span>
+    陽子崩壊(第6回)は寿命が \(10^{34}\) 年、宇宙年齢の \(10^{24}\) 倍。だから「まだ壊れていない」は「確率的にまだ順番が来ていない」で説明でき、モデルを裁けない。中性子崩壊は880秒で、しかもBBNで宇宙のヘリウム量を実際に決めた ── <strong>結果が観測に残っている実験</strong>。だから中性子は、モデルに「有罪か無罪か」を言い渡せる、シリーズで初めての正直な証人になれます。
+  </div>
+
+  <h2><span class="n">02</span>138億年前の実験 ── ヘリウム量が中性子寿命を縛る</h2>
+
+  <p>宇宙が生まれて約1〜3分のころ、温度が下がって陽子と中性子から軽い原子核が作られました(ビッグバン元素合成、BBN)。このとき<em>中性子がどれだけ速く崩壊するか</em>で、宇宙に残るヘリウムの量が決まる。中性子が速く壊れれば、ヘリウムになる前に減ってヘリウムが少なくなる。遅ければヘリウムが増える。だからヘリウム量 \(Y_p\)(質量比、観測では約 \(0.245\))は、<strong>初期宇宙での中性子寿命の直接の記録</strong>なのです。</p>
+
+  <p>感度は実際に数字で分かっています。中性子寿命が5秒ずれると、ヘリウム量は \(0.001\) 変わる。観測の不確かさ幅は \(\sigma(Y_p)\approx0.003\) 程度。ここから、初期宇宙で許される中性子寿命の幅を逆算できます。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── ヘリウム観測が中性子寿命に許す幅</span>
+    <p class="lbl">感度（実測）</p>
+    $$\Delta\tau_n = 5\ \text{秒}\ \Rightarrow\ \Delta Y_p = 0.0010\qquad\Longrightarrow\qquad \frac{\Delta Y_p}{\Delta\tau_n}\approx 2\times10^{-4}\,/\text{秒}$$
+    <p class="lbl">観測幅から許容される寿命のズレ</p>
+    $$\Delta\tau_n^{\text{許容}} = \frac{\sigma(Y_p)}{\Delta Y_p/\Delta\tau_n} = \frac{0.003}{2\times10^{-4}/\text{秒}} \approx 15\ \text{秒}$$
+    <p style="margin-bottom:14px;">つまり ── <strong>初期宇宙(138億年前)の中性子寿命は、今の値 \(\tau_n\approx880\) 秒と \(\pm15\) 秒以内、割合で \(\Delta\tau_n/\tau_n\lesssim1.7\%\) 以内で一致していなければならない</strong>。文献が「BBNから好ましい中性子寿命 \(870\pm16\) 秒」と実験室の値と整合させているのも、この窓の中の話です。</p>
+  </div>
+
+  <h2><span class="n">03</span>寿命の窓を、Q の窓に翻訳する ── 5乗が窓を狭める</h2>
+
+  <p>ここで STEP 01 の5乗を使います。寿命の窓 \(|\Delta\tau_n/\tau_n|\lesssim1.7\%\) を、\(Q\) の窓に押し戻すと ── \(\Delta\tau_n/\tau_n=-5\,\Delta Q/Q\) なので、5倍の増幅が<em>逆に効いて窓を1/5に狭めます</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">BBNが Q に許す窓</div>
+    $$\left|\frac{\Delta Q}{Q}\right| \lesssim \frac{1.7\%}{5} \approx 0.34\%$$
+  </div>
+
+  <p>つまりBBNは、<strong>初期宇宙の \(Q\)(中性子と陽子+電子の質量エネルギー差 0.782 MeV)が、今の値と 0.3〜0.4% 以内で一致すること</strong>を要求する。5乗の増幅は、崩壊の検出感度を上げるだけでなく、<em>制約の厳しさも5倍にする</em>。下の図で、この窓を実際に動かしてみましょう。\(Q\) をずらすと、5乗で寿命が動き、ヘリウム量が観測窓を出入りします。</p>
+
+  <div class="fig">
+    <div class="cap">図：Q のズレ（横スライダー）→ Sargent の5乗で中性子寿命 τ_n が動く → ヘリウム量 Y_p が観測窓（緑帯）を出入りする</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>初期宇宙での Q のズレ ΔQ/Q <span class="val" id="vq">0.0%</span>
+        <input type="range" id="sq" min="-2" max="2" step="0.05" value="0">
+      </label>
+    </div>
+    <div class="readout ok" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>予言されるヘリウム量 Y_p</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>観測が許す窓（Y_p = 0.245 ± 0.003）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>判決 ── c·t=一定 を積分すると、窓を1万倍突き破る</h2>
+
+  <p>いよいよ、シリーズの主張 \(c\cdot t=\text{一定}\) を、この窓にかけます。あなたのモデルの核は \(c(t)\cdot t=\text{一定}\)、つまり \(c(t)=k/t\)。時間微分すると \(\dot c/c=-1/t\)。BBN期(\(t_{\text{BBN}}\approx100\) 秒)から今(\(t_0\approx4.4\times10^{17}\) 秒)まで積分します。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── クロックダウンの総変化を積分する</span>
+    <p class="lbl">c の総変化（対数で出る）</p>
+    $$\int_{t_{\text{BBN}}}^{t_0}\frac{\dot c}{c}\,dt = -\int_{t_{\text{BBN}}}^{t_0}\frac{dt}{t} = -\ln\frac{t_0}{t_{\text{BBN}}}$$
+    <p class="lbl">数字を入れる</p>
+    $$\frac{t_0}{t_{\text{BBN}}}\approx\frac{4.4\times10^{17}}{100}\approx4\times10^{15}\quad\Rightarrow\quad \ln\frac{t_0}{t_{\text{BBN}}}\approx 36$$
+    <p style="margin-bottom:14px;">つまり \(c\cdot t=\text{一定}\) を額面通り受け取ると、BBN期から今までに \(c\) は比で「36」── 桁で言えば \(e^{36}\sim10^{15}\) 倍も変化したことになる。これを \(Q\) の走りに素朴に翻訳すると \(|\Delta Q/Q|\sim36=3600\%\)。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">窓と、額面モデルの予言</div>
+    <p style="margin:6px 0 0;">BBNが許す窓：<strong>\(|\Delta Q/Q|\lesssim0.34\%\)</strong><br>額面通りの \(c\cdot t=\text{一定}\)：<strong>\(|\Delta Q/Q|\sim3600\%\)</strong><br>→ 比にして約<strong>1万倍</strong>、窓を突き破っている。</p>
+  </div>
+
+  <p>\(Q\) が3600%も動いたら、\(\Delta\tau_n/\tau_n=-5\times36\approx-180\) で、5乗が完全に破綻する。初期宇宙の中性子は \(Q>0\)(崩壊できる条件)すら保てず、ヘリウムもリチウムも今の量で残らない。宇宙の姿が根本から変わってしまう。<strong>だから、\(c\) を額面で動かす \(c\cdot t=\text{一定}\) は、中性子とヘリウムによって明確に棄却される</strong>。陽子崩壊では \(10^{34}\) 年の彼方で永遠に裁けなかったモデルが、中性子では今日、はっきり有罪判決を受けます。</p>
+
+  <h2><span class="n">05</span>でも、これは「予想通りの棄却」── 二つの読み方の分かれ道</h2>
+
+  <p>ここで慌てないでください。この棄却は、番外編③④がずっと言ってきたことの<em>当然の帰結</em>であって、モデルの死ではありません。棄却されたのは「\(c\) を額面の物理として動かす」読み方 ── まさにVSLが踏んだ罠です。\(\Delta c/c\approx36\) を「\(\alpha\) や \(Q\) が本当にそれだけ動いた」と読むから死ぬ。</p>
+
+  <p>番外編④の等価条件②(\(\alpha\) 不変)で正しく読むと、話はまったく変わります。\(c\cdot t=\text{一定}\) の \(\Delta c/c\approx36\) を、<strong>\(\alpha\) を不変に保つ完全な単位の付け替え(ゲージ)</strong>として読むなら ── \(e,\hbar,\varepsilon_0\) が連動し、無次元比 \(Q/m_nc^2\) が動かない。すると \(c\) が座標上で \(e^{36}\) 倍変わっても、\(Q\) には一切伝わらず、中性子寿命もヘリウム量も<strong>寸分変わらない</strong>。BBNは何の異常も見ない。</p>
+
+  <table class="verdict">
+    <tr><th>c·t=一定 の読み方</th><th>ΔQ/Q</th><th>中性子寿命・ヘリウム量</th><th>判決</th></tr>
+    <tr>
+      <td><strong>VSL型</strong><br>（c を額面で動かす、α が走る）</td>
+      <td>約 3600%<br>（窓の約1万倍）</td>
+      <td>寿命が完全破綻、ヘリウム桁外れ</td>
+      <td class="v-bad">棄却</td>
+    </tr>
+    <tr>
+      <td><strong>ゲージ型</strong><br>（α 不変の単位付け替え）</td>
+      <td>0%</td>
+      <td>寸分変わらない</td>
+      <td class="v-ok">無罪（ただし観測不能）</td>
+    </tr>
+  </table>
+
+  <div class="aside">
+    <span class="tag">中性子に「第三の道」はない ── 5乗が残酷なほど鮮明にする</span>
+    番外編③でVSLが夢見たのは「\(\alpha\) を<em>少しだけ</em>動かして観測に効かせる第三の道」でした。中性子崩壊は、この第三の道が<strong>存在しない</strong>ことを、5乗の増幅で残酷なほど鮮明にします。\(Q\) が少しでも本当に走れば、5倍に増幅されて即座にヘリウム量にバレる。走らなければ完全に沈黙する。中間はない ── 有罪か、無罪かつ観測不能か。中性子は、VSLの「惜しさ」を実データで最終確認する証人なのです。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「棄却」が意味すること</span>
+    <p style="margin-top:0;">誤解しないでほしいのは、棄却されたのは \(c\cdot t=\text{一定}\) という<strong>言い換え(ゲージ)そのものではなく、それを「宇宙で \(c\) が額面通り桁で変わっている」と読む解釈</strong>だけ、という点です。第1回から一貫して言ってきた通り、\(c\cdot t=\text{一定}\) は \(\alpha\) 不変のゲージとして読むぶんには完全に無傷 ── ただし、その読み方では観測に跡を残さない。中性子はそれを、5乗という最も敏感な増幅器で確認しただけです。</p>
+    <p style="margin-bottom:0;">なお、ここで使った感度・窓の値(\(\Delta\tau_n=5\)秒 で \(\Delta Y_p=0.001\)、観測幅 \(\sigma(Y_p)\approx0.003\))は概算で、文献により多少幅があります。また \(Q\) を動かすには \(\alpha\) かクォーク質量差を動かす必要があり、原子時計(\(\dot\alpha/\alpha<10^{-19}\)/年)はBBNよりさらに桁違いに厳しい制約を、現在の走りにかけています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>中性子崩壊率が \(\Gamma\propto Q^5\) のとき、\(Q\) が 2% 大きくなると寿命 \(\tau_n\) は何%変わるか。
+        <details><summary>答えを見る</summary><div class="ans">\(\Delta\tau_n/\tau_n=-5\times\Delta Q/Q=-5\times2\%=-10\%\)。\(Q\) が大きいほど速く崩壊し、寿命は10%短くなる。5乗の増幅で、2%の差が10%の寿命変化になる。</div></details>
+      </li>
+      <li>ヘリウム観測が中性子寿命に \(\pm15\) 秒(1.7%)の窓を許すとき、\(Q\) に許される窓は何%か。
+        <details><summary>答えを見る</summary><div class="ans">\(|\Delta Q/Q|=|\Delta\tau_n/\tau_n|/5=1.7\%/5\approx0.34\%\)。5乗のせいで、寿命の窓より \(Q\) の窓は5倍狭くなる。</div></details>
+      </li>
+      <li>\(c\cdot t=\text{一定}\) を額面で読んだときの \(\ln(t_0/t_{\text{BBN}})\approx36\) が、なぜ棄却を意味するか、窓の数字を使って一言で。
+        <details><summary>答えを見る</summary><div class="ans">額面の \(|\Delta Q/Q|\sim36\)(3600%)は、BBNの窓 \(0.34\%\) の約1万倍。\(Q\) がそれだけ動けばヘリウム量が観測から桁で外れるため。ただし \(\alpha\) 不変のゲージとして読めば \(\Delta Q/Q=0\) で無罪。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第7回まとめ</span>正直な証人が、シリーズの主張を最終確認した</h2>
+    <p>中性子崩壊率は差 \(Q\)(0.782 MeV)の5乗で効く(サージェント則)。この5乗が中性子を「\(Q\) の変化を増幅する天然の証人」にする。138億年前のBBNは、初期宇宙の中性子寿命が今と \(\pm1.7\%\) 以内、\(Q\) が \(\pm0.34\%\) 以内で一致することを要求する ── これがヘリウム観測から出る実データの窓。</p>
+    <p>そこに \(c\cdot t=\text{一定}\) を積分してかけると、額面では \(|\Delta Q/Q|\sim3600\%\)、窓の約1万倍で突き破り、<strong>棄却</strong>。でもこれは番外編③④の予言通り ── \(\alpha\) 不変のゲージとして読めば \(\Delta Q/Q=0\) で<strong>無罪、ただし観測不能</strong>。中性子には「\(\alpha\) を少しだけ動かす第三の道」がなく、5乗がそれを残酷なほど鮮明にした。<em>絶対値(\(c\))を額面で動かせば死ぬ、比(\(\alpha\))を守れば生きるが跡を残さない</em> ── 第1回からの背骨が、最も正直な証人によって、実データで最終確認されました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">シリーズの構造 ── 第7回の位置</span>
+    第6回が「陽子崩壊/大統一(\(10^{34}\) 年、裁けない)」を扱い、番外編③④が「VSLの惜しさ/等価条件(\(\alpha\) を守れ)」を立てました。第7回は、その二つを一つの実データ検証に収束させた回です ── 中性子という測れる崩壊で、番外編の主張に判決を下す。そして finale「重力を、この絵に入れられるか」へ:中性子も BBN も \(\alpha\) を動かせないなら、\(\alpha\) の値を決める場所は、観測可能な宇宙のどこでもなく、まだ誰も触れられないプランクスケールの向こうだけ、という結論と、ここで手を握ります。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第7回、物理好きの高校生・大学生向け読み物です。自由中性子の平均寿命(約880秒)、崩壊のQ値(\(Q=(m_n-m_p-m_e)c^2\approx0.782\) MeV)、崩壊率がQの約5乗で効くサージェント則、BBNのヘリウム質量比 \(Y_p\approx0.245\) と中性子寿命への感度(\(\Delta\tau_n\approx5\)秒 で \(\Delta Y_p\approx0.001\))は、確立した物理です。BBNから好ましい中性子寿命が \(870\pm16\) 秒級と評価されることも文献にあります。窓の数値(寿命 \(\pm1.7\%\)、\(Q\ \pm0.34\%\))は本稿の概算で、観測系統誤差や解析により幅があります。\(c\cdot t=\text{一定}\) の \(\ln(t_0/t_{\text{BBN}})\approx36\) は模式的な見積もりで、「額面解釈は棄却、\(\alpha\) 不変ゲージ解釈は観測不能」という結論の骨子を示すものです。\(Q\) の変化は \(\alpha\) やクォーク質量差を通じてのみ起こり、原子時計は現在の走りにさらに厳しい上限(\(\dot\alpha/\alpha<10^{-19}\)/年)を与えます。図は概念を示す模式的なものです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで Q を動かすと、5乗で寿命が動き、ヘリウム量が観測窓を出入りします。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sq=document.getElementById('sq'), vq=document.getElementById('vq'), rd=document.getElementById('rd');
+  var tau0=880, Yp0=0.245, sigma=0.003, dYp_dtau=0.0010/5; // 2e-4 /s
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=54;
+    var dQ = parseFloat(sq.value)/100;      // ΔQ/Q  (-0.02..0.02)
+    vq.textContent=(dQ*100).toFixed(2)+'%';
+    var dtau_over_tau = -5*dQ;
+    var dtau = dtau_over_tau*tau0;
+    var Yp = Yp0 + dYp_dtau*dtau;
+    // Y_p 軸レンジ
+    var yMin=0.235, yMax=0.255;
+    function Y(v){return (h-pad)-(v-yMin)/(yMax-yMin)*(h-pad-16);}
+    function X(frac){return pad+frac*(w-pad-14);}  // frac 0..1 across
+    ctx.clearRect(0,0,w,h);
+    // grid + y labels
+    ctx.strokeStyle='#ece0d8';ctx.lineWidth=1;ctx.fillStyle='#b0a49c';ctx.font='10px sans-serif';
+    for(var gv=0.235; gv<=0.2551; gv+=0.005){
+      var y=Y(gv); ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillText(gv.toFixed(3), 8, y+3);
+    }
+    // 観測窓（緑帯）Y_p = 0.245 ± 0.003
+    ctx.fillStyle='rgba(47,125,90,0.13)';
+    ctx.fillRect(pad, Y(Yp0+sigma), w-pad-8, Y(Yp0-sigma)-Y(Yp0+sigma));
+    ctx.strokeStyle='#2f7d5a';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(pad,Y(Yp0+sigma));ctx.lineTo(w-8,Y(Yp0+sigma));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,Y(Yp0-sigma));ctx.lineTo(w-8,Y(Yp0-sigma));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a';ctx.font='11px sans-serif';
+    ctx.fillText('観測が許す窓 (0.245 ± 0.003)', pad+6, Y(Yp0+sigma)-6);
+    // 中心線
+    ctx.strokeStyle='#cbbdb4';ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(pad,Y(Yp0));ctx.lineTo(w-8,Y(Yp0));ctx.stroke();ctx.setLineDash([]);
+    // axes
+    ctx.strokeStyle='#c9bcb2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('← Q 小（寿命長・He 少）      ΔQ/Q      Q 大（寿命短・He 多）→', pad+40, h-pad+22);
+    ctx.save();ctx.translate(16,h/2+50);ctx.rotate(-Math.PI/2);ctx.fillText('ヘリウム量 Y_p',0,0);ctx.restore();
+    // Y_p(ΔQ) 曲線：ΔQ/Q を -0.02..0.02 で、frac 0..1 に対応
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var i=0;i<=200;i++){
+      var dq=(-0.02)+(0.04)*i/200;
+      var yp = Yp0 + dYp_dtau*(-5*dq)*tau0;
+      var x=X(i/200), y=Y(Math.max(yMin-0.005,Math.min(yMax+0.005,yp)));
+      if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // 現在位置マーカー
+    var fracNow=(dQ-(-0.02))/0.04;
+    var mx=X(fracNow), my=Y(Math.max(yMin-0.005,Math.min(yMax+0.005,Yp)));
+    var inWin = Math.abs(Yp-Yp0)<=sigma;
+    ctx.fillStyle = inWin ? '#2f7d5a' : '#a83a22';
+    ctx.beginPath();ctx.arc(mx,my,6,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    if(inWin){
+      rd.className='readout ok';
+      rd.textContent='ΔQ/Q = '+(dQ*100).toFixed(2)+'% → 寿命 '+(dtau_over_tau*100).toFixed(1)+'%（Δτ='+dtau.toFixed(0)+'秒）→ Y_p = '+Yp.toFixed(4)+'。観測窓の中。整合 ✓（|ΔQ/Q| ≤ 0.34% が窓の境界）';
+    } else {
+      rd.className='readout bad';
+      rd.textContent='ΔQ/Q = '+(dQ*100).toFixed(2)+'% → 寿命 '+(dtau_over_tau*100).toFixed(1)+'%（Δτ='+dtau.toFixed(0)+'秒）→ Y_p = '+Yp.toFixed(4)+'。窓の外＝観測と矛盾 ✗。c·t=一定 の額面値 ΔQ/Q~3600% は、ここをはるか右外(約1万倍)へ突き破る。';
+    }
+  }
+  sq.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

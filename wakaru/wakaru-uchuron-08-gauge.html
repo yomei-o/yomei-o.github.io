@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>i の曖昧さが、力を生む ── わかる宇宙論 第8回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f8fb; --paper-edge:#dde2ea;   /* 第8回：位相・電磁場＝藍青の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1f3f7a; --calc-bg:#e7ecf6;   /* 計算色＝ゲージの藍青 */
+    --rule:#cdd4df; --hair:#b9c1ce;
+    --acc:#2a55b0;    /* アクセント＝位相の青 */
+    --grid:#d6deea;
+    --ok:#2f7d5a; --bad:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfdcf5 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cfd8ea;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;background:#e7ecf6;color:#1f3f7a;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4f7fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1d2f57;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfcfe,#eaeff8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e7ecf6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1d2f57;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 8 回 ／ i の正体・前編 ── 曖昧さが力になる</span></div>
+  <p class="eyebrow">第3回で残った i、第2回・第6回の α ── その二つが、ここで一本につながる</p>
+  <h1>i の曖昧さが、力を生む
+    <span class="sub">波動関数の位相 i は「どうでもいい曖昧さ」に見える。でも、その曖昧さを<br>「各点で自由に選んでいい」と認めた瞬間 ── それを取りつくろうために、電磁気力が生まれる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第3回の i、複素数の位相、微分（隣との差）</span>
+    <span>∂ → D = ∂ − iA</span>
+  </div>
+
+  <p class="lead">第3回で、シュレディンガー方程式には虚数単位 \(i\) が残りました。\(c\to\infty\) で相対論が消えても、\(i\) だけは消えなかった。この \(i\) は何なのか。よくある答えは「複素数を使うと計算が楽だから」。でも、それでは浅い。この回では、\(i\) の持つ<em>位相の曖昧さ</em>を突き詰めると ── 第2回・第6回で主役だった \(\alpha\approx1/137\)、つまり<strong>電磁気力そのものが、論理的な必然として生まれてくる</strong>ことを見ます。\(i\)・曖昧さ・\(1/137\) が、一本の線でつながる。20世紀物理で最も深い洞察の一つ、<strong>ゲージ原理</strong>を、手を動かして体験します。</p>
+
+  <h2><span class="n">01</span>位相の曖昧さ ── 全体で回すぶんには、何も起きない</h2>
+
+  <p>波動関数 \(\psi\) は複素数で、\(\psi=|\psi|e^{i\theta}\) と大きさ(振幅)と向き(位相 \(\theta\))を持ちます。観測に効くのは確率 \(|\psi|^2\) だけ。だから全体の位相を \(\theta\) だけ回しても ──</p>
+
+  <div class="keybox">
+    <div class="lbl">全体の位相回転（大域変換）── 観測に効かない</div>
+    $$\psi \to e^{i\theta}\psi \qquad\Rightarrow\qquad |\psi|^2 \to |e^{i\theta}\psi|^2 = |\psi|^2$$
+  </div>
+
+  <p>確率は寸分変わらない。位相の原点をどこに取るかは、<em>私たちの帳簿の付け方</em>にすぎず、宇宙は気にしない。これは番外編②「単位の取り替えは帳簿の問題」、番外編④「\(\alpha\) 不変なら観測に跡を残さない」で見た、あの<strong>跡を残さない曖昧さ</strong>です。\(i\) の位相は、大域的に回すぶんには、まさにこの無害な曖昧さ。ここまでは「\(i\) は曖昧さ」という直感が、そのまま正しい。</p>
+
+  <div class="aside">
+    <span class="tag">第9回との対比（先に一言）</span>
+    この「跡を残さない位相の曖昧さ」を<em>虚時間の方向に回す</em>と、第9回でやる「\(i\) が温度を生む(ウィック回転)」に行きます。今回(第8回)は逆に、この曖昧さを<em>各点で独立に許す(空間・時間方向に局所化する)</em>とどうなるか。同じ \(i\) の同じ曖昧さを、二つの方向に追うのが第8回・第9回です。</p>
+  </div>
+
+  <h2><span class="n">02</span>各点で独立に回すと ── 方程式が壊れる</h2>
+
+  <p>ここで決定的な問いを立てます。位相の原点は「宇宙のどこでも同じ」でなければいけないのか? 私がここで選ぶ原点と、遠くのあなたが選ぶ原点は、独立でいいはず。そこで \(\theta\) を<strong>場所ごと・時刻ごとに自由な \(\theta(x)\)</strong> にします(局所変換)。すると、方程式に入っている<em>微分</em>が問題を起こす。微分は「隣の点との差」を測る操作だからです。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 局所位相を微分すると、余計な項が出る</span>
+    <p class="lbl">積の微分（ライプニッツ則）で開く</p>
+    $$\partial_x\!\left(e^{i\theta(x)}\psi\right) = e^{i\theta(x)}\Big(\partial_x\psi + i\,(\partial_x\theta)\,\psi\Big)$$
+    <p style="margin-bottom:14px;">元の \(\partial_x\psi\) のほかに、<strong>\(i(\partial_x\theta)\psi\) という余計な項</strong>が出た。\(\theta\) が定数なら \(\partial_x\theta=0\) で消えるが、場所ごとに違う \(\theta(x)\) だと消えない。この項のせいで、局所的に位相を変えると<em>方程式の形が変わってしまう</em> ── つまり物理法則が「私が各点で位相をどう選ぶか」という帳簿に依存してしまう。これは困る。</p>
+  </div>
+
+  <p>なぜ困るのか。番外編②④の背骨を思い出してください ── <strong>帳簿の付け方(位相の原点の選び方)を変えても、物理は不変であるべき</strong>。大域的にはそれが成り立っていた(STEP 01)。局所的にも成り立たせたい。でも素朴にやると、余計な項 \(i(\partial_x\theta)\) が邪魔をする。どうするか。</p>
+
+  <h2><span class="n">03</span>余計な項を打ち消す「相棒」を導入する ── それが電磁場</h2>
+
+  <p>方針は一つ。あの余計な項をちょうど打ち消してくれる<strong>相棒の場</strong>を、方程式に加える。微分 \(\partial_x\) を、補正項つきの新しい微分(共変微分)に置き換えます。</p>
+
+  <div class="keybox">
+    <div class="lbl">共変微分 ── 相棒 A を連れた微分</div>
+    $$\partial_x \;\longrightarrow\; D_x = \partial_x - i\,A_x$$
+    <p style="margin:8px 0 0;">そして、位相を \(\theta(x)\) 回すと<strong>同時に</strong>、相棒 \(A_x\) もこう連動する、というルールを課す：</p>
+    $$\theta \to \theta + \theta(x)\ \text{のとき}\quad A_x \to A_x + \partial_x\theta$$
+  </div>
+
+  <p>すると魔法のように相殺します。局所位相から出た余計な項 \(+i(\partial_x\theta)\) と、相棒 \(A_x\) の変化分 \(-i(\partial_x\theta)\) が、ちょうど打ち消し合う。共変微分 \(D_x\psi\) は、\(\psi\) と同じ位相の回り方をきれいに保つ ── <strong>方程式が、局所的な帳簿の付け替えに対して不変になった</strong>。これがゲージ不変性です。</p>
+
+  <p>そして、いま導入した相棒 \(A_x\) の正体こそ ── <strong>電磁ポテンシャル</strong>。電場も磁場も、この \(A_x\) から出てきます。つまり：</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">この回の核心</div>
+    <p style="margin:6px 0 0;">「\(i\) の位相の曖昧さを、<strong>各点で独立に選んでよい</strong>」と要求した瞬間、それを取りつくろうために、<strong>電磁場が論理的必然として現れる</strong>。力は、曖昧さを整合させる相棒として、いわば宇宙に<em>要求された</em>。</p>
+  </div>
+
+  <p>順序が逆転していることに注目してください。ふつうは「電磁気力があるから電子が動く」と考える。でもゲージ原理では ── <em>位相の局所的な曖昧さを許したいから、電磁場が要らざるをえない</em>。力が先で曖昧さが後、ではなく、<strong>曖昧さが先で力が後</strong>。あなたが \(i\) に感じた「曖昧さ」は、この順序で、力の母親だったのです。</p>
+
+  <h2><span class="n">04</span>動かしてみる ── 「跡を残さない曖昧さ」が、跡を残す瞬間</h2>
+
+  <p>STEP 01 で「位相の曖昧さは跡を残さない」と言いました。ところが局所化して電磁場と結びつくと、位相の曖昧さは<em>観測できる跡</em>を残し始める。その最も鮮やかな実例が<strong>アハラノフ・ボーム効果</strong>です。</p>
+
+  <p>電子を二つの経路に分けて、その間に磁束 \(\Phi\)(磁場の束)を閉じ込める。驚くべきことに、<em>電子が通る道には磁場がゼロ</em>でも、囲んだ磁束 \(\Phi\) が二経路の位相差を生み、電子の干渉縞をずらす。位相差は、相棒 \(A\) の一周積分で決まります。</p>
+
+  <div class="keybox">
+    <div class="lbl">アハラノフ・ボームの位相差</div>
+    $$\Delta\varphi = \frac{e}{\hbar}\oint A\cdot dl = 2\pi\,\frac{\Phi}{\Phi_0},\qquad \Phi_0=\frac{h}{e}\ (\text{磁束量子})$$
+  </div>
+
+  <p>下の図で、囲む磁束 \(\Phi\)(磁束量子 \(\Phi_0\) を単位に)を動かしてみてください。磁場ゼロの領域を通っているのに、干渉縞が横にずれていく。\(\Phi/\Phi_0\) が1増えるごとに、縞はちょうど1本ぶんずれて元に戻る ── 位相の曖昧さが、観測できる物理として顔を出す瞬間です。</p>
+
+  <div class="fig">
+    <div class="cap">図：アハラノフ・ボーム効果。囲む磁束 Φ（横スライダー）を変えると、電子が磁場ゼロの領域を通っていても干渉縞がずれる。Φ/Φ₀ が1増えるごとに縞が1本ぶんずれて復帰</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>囲む磁束 Φ / Φ₀ <span class="val" id="vp">0.00</span>
+        <input type="range" id="sp" min="0" max="3" step="0.02" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>電子の干渉縞（明＝電子が来やすい）</span>
+      <span><i class="swatch" style="background:#a83a22;"></i>縞の中心（Φ とともに動く）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">種明かし ── これが「跡を残す曖昧さ」の実証</span>
+    アハラノフ・ボーム効果は、磁場そのもの(\(B\))がゼロの場所でも、相棒 \(A\) の一周積分(位相の曖昧さの巻き数)が観測に効くことを示します。位相の曖昧さは、大域的には無害(STEP 01)でも、局所化して \(A\) と結びつくと<strong>実在の物理</strong>になる。1959年に予言され、実験でも確認済み。「\(i\) は単なる計算の便法」では、この実験を説明できません。<strong>\(i\) の位相は、局所化されると消せない物理になる。</strong>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>その力の強さが α ── そして三つの力へ</h2>
+
+  <p>相棒 \(A\) が波動関数とどれくらい強く結びつくか ── その結合の強さが、電気の量 \(e\)、無次元にすれば第2回の \(\alpha\) です。</p>
+
+  <div class="keybox">
+    <div class="lbl">結合の強さ ＝ 第2回の α</div>
+    $$\alpha=\frac{e^2}{4\pi\varepsilon_0\hbar c}\approx\frac{1}{137}$$
+  </div>
+
+  <p>第2回で「\(\alpha\) は原子の中に隠れた1/137」、第6回で「\(\alpha\) は見る細かさで走る」とやりました。この回はその手前 ── <strong>\(\alpha\) が、そもそもどこから来るか</strong>に答えます。\(i\) の位相の局所的曖昧さを整合させる、相棒 \(A\) の結合の強さ。<em>\(i\)・曖昧さ・1/137 が、ゲージ原理という一本の論理でつながった</em>。あなたが「\(i\) は曖昧さでは?」と感じた直感の、最も深い着地点がこれです。</p>
+
+  <p>さらに第6回の「三つの力が一点で出会う」も、この延長にあります。位相の曖昧さは1種類(円周上の回転)でしたが、もっと複雑な「内部の向きの曖昧さ」(球面上の回転のような)を局所化すると、まったく同じ論理で<strong>弱い力・強い力</strong>が生まれる。三つの力はすべて「何らかの内部的な曖昧さの局所化」から出ている ── 第6回で「走る力が三つ」と言った三つは、<em>三種類の曖昧さの局所化</em>だったのです。この回は、第6回の土台そのものでした。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── c·t=一定 と結びつけると、どうなるか</span>
+    <p style="margin-top:0;">ここまでは確立した標準物理(ゲージ原理)です。では、このシリーズの \(c\cdot t=\text{一定}\) と結びつくとどうか。位相の回転速度は \(E/\hbar\) で決まり、その比が \(\alpha\)。もし「\(c\cdot t=\text{一定}\) のクロックダウンが、\(i\) の位相回転を通じて \(\alpha\) を時代とともに走らせる」と読むと ── 第7回で裁いた通り、\(\alpha\) が観測可能なほど走れば原子時計(\(\dot\alpha/\alpha<10^{-19}\)/年)とBBNが即座に棄却する(番外編③のVSLの罠)。</p>
+    <p style="margin-bottom:0;">だから正しい位置づけはこう:ゲージ原理は<strong>\(\alpha\) を「生む」論理としては完全に正しく、観測にも跡を残す(アハラノフ・ボーム)</strong>。でも \(c\cdot t=\text{一定}\) で<strong>\(\alpha\) を「走らせる」主張にすると棄却される</strong>。\(c\cdot t=\text{一定}\) は \(\alpha\) 不変のゲージとして読むぶんには、この \(i\) の位相構造に一切触れない ── 番外編④の等価条件の通りです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>全体の位相を \(\theta\) だけ回したとき(\(\psi\to e^{i\theta}\psi\))、確率 \(|\psi|^2\) はどう変わるか。
+        <details><summary>答えを見る</summary><div class="ans">\(|e^{i\theta}\psi|^2=e^{i\theta}\psi\cdot\overline{e^{i\theta}\psi}=e^{i\theta}e^{-i\theta}|\psi|^2=|\psi|^2\)。まったく変わらない。だから大域的な位相の曖昧さは観測に跡を残さない。</div></details>
+      </li>
+      <li>局所位相 \(e^{i\theta(x)}\) を微分すると出る「余計な項」は何か。定数位相のときはなぜ消えるか。
+        <details><summary>答えを見る</summary><div class="ans">余計な項は \(i(\partial_x\theta)\psi\)。\(\theta\) が定数なら \(\partial_x\theta=0\) なので消える。場所ごとに違う \(\theta(x)\) のときだけ残り、それを打ち消すために相棒 \(A\) が要る。</div></details>
+      </li>
+      <li>アハラノフ・ボーム効果で、囲む磁束が \(\Phi=2\Phi_0\) のとき、位相差 \(\Delta\varphi\) は何ラジアンか。干渉縞は元に戻るか。
+        <details><summary>答えを見る</summary><div class="ans">\(\Delta\varphi=2\pi\times(\Phi/\Phi_0)=2\pi\times2=4\pi\)。\(2\pi\) の整数倍なので、干渉縞は元の位置に完全に戻る。\(\Phi/\Phi_0\) が整数のたびに縞が復帰する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第8回まとめ</span>曖昧さが先、力が後 ── i は力の母親だった</h2>
+    <p>波動関数の位相 \(i\theta\) は、全体で回すぶんには観測に跡を残さない曖昧さ(STEP 01)。でも「各点で独立に選んでよい」と局所化すると、微分から余計な項 \(i(\partial_x\theta)\) が出て方程式が壊れる(STEP 02)。それを打ち消す相棒 \(A\) を要求すると ── <strong>電磁場が論理的必然として現れる</strong>(STEP 03、ゲージ原理)。力は、曖昧さを整合させるために宇宙に要求された。</p>
+    <p>その曖昧さは、局所化されると観測に跡を残す(STEP 04、アハラノフ・ボーム)。そして相棒 \(A\) の結合の強さが \(\alpha\approx1/137\)(STEP 05) ── 第2回・第6回の \(\alpha\) の起源。同じ論理で三つの力すべてが「内部的な曖昧さの局所化」から生まれる。<em>\(i\) の曖昧さが先、力が後</em>。あなたが \(i\) に見た曖昧さは、局所化という一歩で、電磁気力とその強さ \(1/137\) の母親でした。ただし \(c\cdot t=\text{一定}\) で \(\alpha\) を走らせると第7回に棄却 ── 生むのは論理、走らせるのは禁物。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第9回（i の正体・後編）</span>
+    「i を虚軸に回すと、温度が生まれる」。今回は \(i\) の曖昧さを<em>空間・各点に局所化</em>して力を生みました。第9回は同じ \(i\) を<em>時間の虚軸に回す</em>(ウィック回転)。すると振動が減衰に、量子が熱に化け、虚時間の周期がそのまま温度になる ── そして \(c\cdot t=\text{一定}\) の膨張と重ねると、第7回のBBN(宇宙の冷却)につながります。\(i\) は、局所化すれば力(第8回)、虚軸に回せば温度(第9回)を生む蝶番。その後半へ。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第8回、物理好きの高校生・大学生向け読み物です。局所 \(U(1)\) 位相変換に対する不変性(ゲージ不変性)を要求すると共変微分 \(D_\mu=\partial_\mu-iA_\mu\) と電磁ポテンシャル \(A_\mu\) が必然的に現れること、その結合定数が微細構造定数 \(\alpha\approx1/137\) であること、アハラノフ・ボーム効果(磁場ゼロ領域でもベクトルポテンシャルの周回積分 \(\oint A\cdot dl\) が位相差 \(\Delta\varphi=2\pi\Phi/\Phi_0\) を与え干渉縞をずらす、\(\Phi_0=h/e\))は、確立した標準物理です。非可換ゲージ群 \(SU(2)\times SU(3)\) の局所化が弱い力・強い力を与えることも標準模型の内容です。図はアハラノフ・ボーム位相差 \(\Delta\varphi=2\pi\Phi/\Phi_0\) による干渉縞シフトの模式図です。\(c\cdot t=\text{一定}\) で \(\alpha\) を走らせる解釈は原子時計(\(\dot\alpha/\alpha<10^{-19}\)/年)およびBBNと矛盾し(第7回)、\(\alpha\) 不変ゲージとしての解釈のみが観測と整合します(番外編④)。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで磁束を動かすと、干渉縞がずれます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sp=document.getElementById('sp'), vp=document.getElementById('vp'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var pf = parseFloat(sp.value);         // Φ/Φ0
+    vp.textContent=pf.toFixed(2);
+    var dphi = 2*Math.PI*pf;               // 位相差(ラジアン)
+    ctx.clearRect(0,0,w,h);
+    // 縞の描画領域
+    var x0=60, x1=w-20, ytop=24, ybot=h-64, bandH=ybot-ytop;
+    var kfr=11; // 縞本数スケール
+    // 干渉縞：I(x)=cos^2((k*u + dphi)/2), u は -pi..pi にマップ
+    for(var px=x0; px<=x1; px++){
+      var u = (px-x0)/(x1-x0)*2*Math.PI*3 - 3*Math.PI; // 位相ランプ
+      var I = Math.pow(Math.cos((u*kfr/6 + dphi)/2),2);
+      var g = Math.round(255-I*205);
+      ctx.strokeStyle='rgb('+(g)+','+(Math.round(g*0.55+40*I))+','+(Math.round(120+135*I))+')';
+      ctx.beginPath();ctx.moveTo(px,ytop);ctx.lineTo(px,ybot);ctx.stroke();
+    }
+    // 枠
+    ctx.strokeStyle='#b9c1ce';ctx.lineWidth=1;ctx.strokeRect(x0,ytop,x1-x0,bandH);
+    // 中心縞マーカー：明線の位置は (k/6*u + dphi) = 2πn。中央付近の最寄り明線
+    // 中央 u=0 の明線位置ずれ:dphi/2 ぶん位相がずれる → x 方向シフト
+    var shiftFrac = ((dphi/(2*Math.PI)) % 1 + 1) % 1; // 0..1 の縞1本内シフト
+    var period = (x1-x0)/(3* (kfr/6) *2*Math.PI /(2*Math.PI)); // おおよその縞間隔
+    // 明線を実際に探して赤線を引く(中央に最も近い I≈1 の点)
+    var bestx=x0, bestI=-1;
+    for(var qx=x0; qx<=x1; qx++){
+      var uu=(qx-x0)/(x1-x0)*2*Math.PI*3-3*Math.PI;
+      var II=Math.pow(Math.cos((uu*kfr/6+dphi)/2),2);
+      var cen=1-Math.abs(qx-(x0+x1)/2)/((x1-x0)/2); // 中央重み
+      var score=II*0.7+cen*0.3;
+      if(score>bestI){bestI=score;bestx=qx;}
+    }
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(bestx,ytop-6);ctx.lineTo(bestx,ybot+6);ctx.stroke();ctx.setLineDash([]);
+    // 磁束シンボル（左）
+    ctx.fillStyle='#1f3f7a';ctx.font='12px sans-serif';
+    ctx.beginPath();ctx.arc(30,(ytop+ybot)/2,13,0,7);ctx.strokeStyle='#2a55b0';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillText('Φ',26,(ytop+ybot)/2+4);
+    ctx.fillText('磁場ゼロの領域を電子が通る →', x0, ybot+22);
+    ctx.fillStyle='#6b6f60';
+    ctx.fillText('スクリーン上の位置', (x0+x1)/2-48, ybot+40);
+    // readout
+    var frac = ((pf%1)+1)%1;
+    var backHome = (Math.abs(frac)<0.03 || Math.abs(frac-1)<0.03);
+    rd.textContent='Φ/Φ₀ = '+pf.toFixed(2)+' → 位相差 Δφ = '+ (dphi).toFixed(2) +' rad ('+(pf).toFixed(2)+'×2π)。'
+      + (backHome ? '整数倍 → 干渉縞は元の位置に復帰。' : '縞が横にずれている（磁場ゼロでも！）。')
+      + ' 磁場そのものは電子の通り道でゼロ ── 効いているのは相棒 A の巻き数だけ。';
+  }
+  sp.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

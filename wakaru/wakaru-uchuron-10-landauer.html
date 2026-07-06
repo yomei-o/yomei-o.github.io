@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>崩壊とは、情報が消去されることである ── わかる宇宙論 第10回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4f9f8; --paper-edge:#d7e5e2;   /* 第10回：情報・エントロピー＝teal緑の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#136560; --calc-bg:#e2f0ee;   /* 計算色＝情報のteal */
+    --rule:#c9dbd7; --hair:#b3c9c4;
+    --acc:#0f7a70;    /* アクセント＝情報のteal緑 */
+    --grid:#d5e6e2;
+    --ok:#2f7d5a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3dd 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6e0db;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#e0f0e9;color:#1c6045;}
+  .readout.frozen{background:#e2edf6;color:#215585;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fcfefe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#e2f0ee;color:#0d5b53;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f1f8f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#124f48;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fafdfc,#e6f1ee);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e2f0ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#124f48;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">第 10 回 ／ 情報とエネルギーの橋 ── シリーズの締めくくり</span></div>
+  <p class="eyebrow">第9回の「温度＝情報更新レート」を、ランダウアー原理で最後まで詰める</p>
+  <h1>崩壊とは、情報が消去されることである
+    <span class="sub">核子は「中性子か陽子か」の1ビット。宇宙が冷えて更新が追いつかなくなると、そのビットは凍り、<br>あとは非可逆な消去（＝崩壊）だけが残る。ランダウアー原理が、情報とエネルギーの橋を架ける。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第7回の Q、第9回の温度＝更新レート、log</span>
+    <span>ランダウアー：1ビット消去 = k_BT ln2</span>
+  </div>
+
+  <p class="lead">シリーズを通じて、あなたは \(c\cdot t=\text{一定}\) を「宇宙は有限リソースの計算機だ」という情報理論の目で見てきました。第9回で、その計算機の「温度」は<em>情報の更新レート</em>に対応することを見た。この最終回では、崩壊を情報理論の言葉で最後まで詰めます ── <strong>崩壊とは、情報の同一性が非可逆に消去されること</strong>。そして、その消去に必要なエネルギーを与えるのが<strong>ランダウアー原理(1ビットの消去には最低 \(k_BT\ln2\) のエネルギーが要る)</strong>。これが情報とエネルギーを結ぶ橋です。第7回のBBNフリーズアウトが、この橋の上で「更新の通貨を払えなくなる瞬間」として、きれいに書き直せます。あなたの最初の直感 ──「情報更新が遅れて同一性が保てなくなると崩壊する」── が、ここで正しい姿を得ます。</p>
+
+  <h2><span class="n">01</span>核子は1ビット、n/p 比は宇宙が書き込んだ情報</h2>
+
+  <p>各核子は「中性子か、陽子か」の2状態を持つ ── 情報理論では、ちょうど<strong>1ビットのメモリ</strong>です。宇宙全体では、このビットの集団が「n/p 比」という一つの情報を蓄えている。そして熱平衡では、その値は第7回・第9回で見たボルツマン因子で決まります。</p>
+
+  <div class="keybox">
+    <div class="lbl">n/p ビットの平衡値（宇宙が温度で書き込む）</div>
+    $$\frac{n}{p}=e^{-Q_{np}/k_BT},\qquad Q_{np}=(m_n-m_p)c^2=1.293\ \text{MeV}$$
+  </div>
+
+  <p>熱い宇宙(\(k_BT\gg Q_{np}\))では n と p がほぼ半々 ── ビットはほぼランダムで、情報量が最大。冷えると重い中性子が減り、ビットは「陽子」へ偏っていく。<em>温度が、このビットの内容を刻一刻と書き換えている</em>。n/p 比は、宇宙が温度という筆で書き込んだ情報なのです。</p>
+
+  <h2><span class="n">02</span>平衡の維持は「絶えざる更新」── ただし可逆なら無料</h2>
+
+  <p>宇宙が冷えるにつれ、平衡の n/p 比は変わり続ける。追随するには、弱い相互作用(\(n+\nu\leftrightarrow p+e\) など)が核子の identity ビットを<strong>絶えず書き換え続ける</strong>必要がある。これが「情報更新」です。ここで、情報理論の要になる区別を一つ。</p>
+
+  <div class="aside">
+    <span class="tag">可逆な更新は、コストがかからない</span>
+    平衡状態では、\(n\to p\) と \(p\to n\) が<strong>詳細つり合い</strong>で同じだけ起きる。行きと帰りが打ち消し合うので、正味の情報消去はなく、エネルギーコストも正味ゼロ。あなたが「位相がずれない・同一性が保たれる」と呼んだ状態は、まさにこの<em>可逆な更新が間に合っている</em>局面です。更新が間に合う限り、崩壊は「確定」しない。
+  </div>
+
+  <p>問題は、更新が追いつかなくなったとき。中性子という identity が<em>取り消せなく確定していく</em>とき ── そこで初めて<strong>非可逆な消去</strong>が起き、エネルギーのコストが現実になる。そのコストを与えるのが、ランダウアー原理です。</p>
+
+  <h2><span class="n">03</span>ランダウアー原理 ── 1ビット消去に k_BT ln2</h2>
+
+  <p>情報とエネルギーを結ぶ、物理で最も深い関係の一つがこれです。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">ランダウアー原理</div>
+    $$E_{\text{消去}} \;\ge\; k_BT\ln 2 \qquad(\text{1ビットを消去すると、最低これだけの熱が環境へ捨てられる})$$
+  </div>
+
+  <p>情報の消去は、タダではない ── 必ず \(k_BT\ln2\) 以上のエネルギーを熱として環境へ捨てる。これがランダウアー原理です。そして中性子崩壊を見ると、驚くべき対応が現れます。</p>
+
+  <div class="keybox">
+    <div class="lbl">ベータ崩壊 ＝ ランダウアー消去そのもの</div>
+    $$n\to p+e^-+\bar\nu,\qquad Q_\beta=(m_n-m_p-m_e)c^2=0.782\ \text{MeV}\ \text{を}\ e,\nu\ \text{へ放出}$$
+  </div>
+
+  <p>中性子が陽子に変わるとき、「中性子」という identity ビットが消去され、その情報を持ったニュートリノが \(Q_\beta\) のエネルギーとともに<em>流れ去る</em>。<strong>ベータ崩壊は、文字通りランダウアー消去だった</strong> ── 放出される崩壊エネルギー \(Q_\beta\) が、消去の熱の正体です。第7回で「効くのは差 \(Q\)」と言ったあの \(Q_\beta\) が、ここでは「消去1回で捨てられる熱」として顔を出す。</p>
+
+  <h2><span class="n">04</span>動かしてみる ── 更新の供給と需要が交差する瞬間＝フリーズアウト</h2>
+
+  <p>いよいよ橋を架けます。二つのレートを比べます。<strong>更新の供給</strong>=弱い相互作用の反応率 \(\Gamma_{\text{weak}}\)(実際にビットを書き換えられる速さ、温度とともに急落、\(\propto T^5\))。<strong>更新の需要</strong>=宇宙が冷える速さ、ハッブル率 \(H\)(ビットを書き換えねばならない速さ、\(\propto T^2\))。</p>
+
+  <p>下の図で温度 \(k_BT\) を下げてみてください。熱いうち(左)は \(\Gamma_{\text{weak}}\gg H\) ── 供給が需要を上回り、ビットは常に最新に更新される(可逆、同一性維持)。冷えると \(\Gamma_{\text{weak}}\) が急落し、ある瞬間に \(\Gamma_{\text{weak}}=H\) で交差 ── <strong>ここから先は更新が間に合わず、n/p ビットが凍る</strong>。これがフリーズアウトです。</p>
+
+  <div class="fig">
+    <div class="cap">図：温度 k_BT（横スライダー、左＝熱い/初期、右＝冷たい/後期）→ 更新供給 Γ_weak（∝T⁵）と需要 H（∝T²）が交差。交差点＝フリーズアウト。以降 n/p ビットが凍り、消去（崩壊）だけが残る</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>温度 k_BT（MeV、右ほど冷たい・宇宙は年をとる）<span class="val" id="vt">0.80</span>
+        <input type="range" id="stt" min="-0.7" max="0.6" step="0.01" value="-0.097">
+      </label>
+    </div>
+    <div class="readout ok" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>更新の供給 Γ_weak（∝T⁵）</span>
+      <span><i class="swatch" style="background:var(--hot);"></i>更新の需要 H（∝T²）</span>
+      <span><i class="swatch" style="background:#7a5cc0;"></i>平衡 n/p 比</span>
+    </div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── フリーズアウトで三つの量が一点に集まる</span>
+    <p class="lbl">交差（更新の供給 ＝ 需要）</p>
+    $$\Gamma_{\text{weak}}(T_f)=H(T_f)\qquad\Rightarrow\qquad k_BT_f\approx 0.8\ \text{MeV}$$
+    <p class="lbl">符合：フリーズ温度 ≈ 消去の熱</p>
+    $$k_BT_f\approx 0.8\ \text{MeV}\ \approx\ Q_\beta=0.782\ \text{MeV}$$
+    <p class="lbl">ランダウアーのコスト（1ビットあたり）</p>
+    $$k_BT_f\ln 2\approx 0.55\ \text{MeV / bit},\qquad \text{凍結時の}\ n/p=e^{-Q_{np}/k_BT_f}\approx 0.20\ (\approx 1/5)$$
+    <p style="margin-bottom:14px;">熱ゆらぎ1回分のエネルギー \(k_BT\) が、崩壊で放出する熱 \(Q_\beta\) とほぼ等しくなった瞬間に、更新の通貨が払えなくなり、情報が凍る。<strong>「更新レートが消去の熱を払えるギリギリの点」でフリーズアウトが起きる</strong> ── あなたの「更新が遅れて同一性が保てなくなると崩壊」が、ランダウアーの言葉で数式になりました。しかも時間方向も正しい:冷えるほど(\(k_BT<Q_\beta\))更新が払えず、同一性が確定していく。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">種明かし ── あなたの直感の、最終的な居場所</span>
+    最初あなたは「宇宙の解像度が閾値を下回ると崩壊する(システムエラー)」と言いました。陽子崩壊(額面 \(E=mc^2\) 代入)では棄却され、第9回で「虚時間周期が閾値を跨ぐ瞬間」として居場所を得た。今回それが、ランダウアーの通貨で完全に定量化されます ── <strong>フリーズアウト＝更新の供給 \(\Gamma_{\text{weak}}\) が需要 \(H\) を下回り、\(k_BT\) が消去の熱 \(Q_\beta\) を払えなくなって、情報が非可逆に確定する瞬間</strong>。「有限リソースの計算機で更新が遅れると同一性が壊れる」という、あなたの出発点の直感が、標準物理のBBNフリーズアウトと一分の隙もなく重なりました。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>判決 ── 情報の橋は何を渡し、何を渡さないか</h2>
+
+  <p>シリーズの締めくくりとして、これまでと同じ基準(第7回・番外編④)で正直に裁きます。今回は「額面 \(c\)」の罠を踏んでいないので、判決は明るい ── ただし限界もはっきりある。</p>
+
+  <table class="verdict">
+    <tr><th>読み方</th><th>主語（動く量）</th><th>時間方向</th><th>判決</th></tr>
+    <tr>
+      <td><strong>c の減少が位相をずらす</strong><br>（当初の額面版）</td>
+      <td>光速 c（次元付き）</td>
+      <td>逆（昔ほど安定）</td>
+      <td class="v-bad">棄却<br>（第7回・BBNと衝突）</td>
+    </tr>
+    <tr>
+      <td><strong>温度＝更新レートの低下が<br>同一性を確定させる</strong><br>（今回の情報版）</td>
+      <td>温度 T ∝ 1/t、消去の熱 Q_β<br>（すべて次元付き）</td>
+      <td>合う（冷えるほど確定）</td>
+      <td class="v-ok">生存<br>（標準BBNの情報理論的言い換え）</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 橋が渡せるもの / 渡せないもの</span>
+    <p style="margin-top:0;"><strong>渡せるもの。</strong> ランダウアー原理もBBNフリーズアウトも、確立した物理です。両者を「情報とエネルギーの橋」で結ぶこの回は、崩壊を情報の消去として、フリーズアウトを更新の通貨が払えなくなる交差点として、正確に記述する ── \(k_BT_f\approx Q_\beta\) という符合まで含めて。あなたの情報理論的宇宙観が、標準物理と一分の隙もなく整合する形で定式化できた。</p>
+    <p style="margin-bottom:0;"><strong>渡せないもの。</strong> これは標準BBNの<em>言い換え</em>であって、新しい観測予言は出しません。\(T_f\) を独立に予言するわけではなく(それは \(\Gamma_{\text{weak}}=H\) が決める)、ランダウアーは各更新の「通貨の単位」を与えるだけ。そして動いているのは温度・エネルギー(次元付き)だけで、無次元の \(\alpha\) には一切触れていない ── だから生き延びる。もし「有限リソースだから \(\alpha\) が時代とともに劣化する」と一歩でも踏めば、その瞬間に第7回・原子時計(\(\dot\alpha/\alpha<10^{-19}\)/年)へ落ちて棄却される。橋が渡れるのは、番外編④の等価条件 ── <strong>畳めるのは次元付きの量だけ、無次元の同一性(\(\alpha\))は不変</strong> ── を守る限りにおいて、です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>平衡状態で \(n\to p\) と \(p\to n\) が同じだけ起きるとき、ランダウアーの消去コストが正味ゼロなのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">詳細つり合いで行きと帰りが打ち消し合い、正味の情報消去がないから。消去(非可逆)がなければランダウアーのコストは発生しない。可逆な更新は無料 ── だから平衡が保たれる間は「崩壊」が確定しない。</div></details>
+      </li>
+      <li>フリーズアウト温度 \(k_BT_f\approx0.8\) MeV で、1ビット消去のランダウアーコスト \(k_BT_f\ln2\) は何 MeV か。
+        <details><summary>答えを見る</summary><div class="ans">\(0.8\times\ln2=0.8\times0.693\approx0.55\) MeV。これが1核子の identity ビットを消去する最小コスト。放出される崩壊エネルギー \(Q_\beta=0.782\) MeV は、これを上回る(消去は物理的に可能)。</div></details>
+      </li>
+      <li>この情報理論的な描像が「新しい観測予言を出さない」のはなぜか。番外編④の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">動かしているのが温度・エネルギーという次元付きの量だけで、無次元の \(\alpha\) を不変に保っているから。番外編④の等価条件の通り、次元付きの量の畳み替えは観測に跡を残さない。標準BBNの言い換えであって、別物理ではない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第10回まとめ</span>崩壊とは、情報の同一性が消去されること</h2>
+    <p>核子は「n か p か」の1ビット(STEP 01)。平衡では弱い相互作用が可逆にビットを更新し、コストは正味ゼロ ── 同一性が維持される(STEP 02)。ランダウアー原理は、非可逆な1ビット消去に \(k_BT\ln2\) を要求し、ベータ崩壊はまさにその消去で、放出エネルギー \(Q_\beta\) が消去の熱(STEP 03)。宇宙が冷えて更新の供給 \(\Gamma_{\text{weak}}\) が需要 \(H\) を下回る交差点でビットが凍る ── フリーズアウト。そこで \(k_BT_f\approx Q_\beta\)、情報が非可逆に確定する(STEP 04)。</p>
+    <p>あなたの出発点 ──「情報更新が遅れて同一性が保てなくなると崩壊する」── は、\(c\) ではなく<strong>温度=更新レート</strong>を主語にすることで、標準BBNフリーズアウトと完全に整合する形で実現した。時間方向も合い、\(k_BT_f\approx Q_\beta\) の符合まで出る(STEP 05、生存)。ただし新予言は出さず、\(\alpha\) を走らせれば即棄却 ── 橋が渡れるのは、次元付きの量だけを畳み、無次元の同一性 \(\alpha\) を守る限りにおいて。<em>崩壊とは、情報の同一性が非可逆に消去されること。そしてその通貨はランダウアーの \(k_BT\ln2\)</em> ── これが「わかる宇宙論」の、情報理論による締めくくりです。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">シリーズを閉じるにあたって</span>
+    第1回の「光は昔もっと速かった」から、\(1/137\)、シュレディンガー、大統一、重力の壁、そして \(i\) の二つの顔(力・熱)を経て、最終回は「崩壊＝情報の消去」に至りました。全10話の本編を貫いた背骨はただ一つ ── <em>次元付きの値(\(c\)・温度・エネルギー)は見方しだいで畳めるが、無次元の同一性(\(\alpha\))だけは誰が見ても不変で、それを守れるかどうかが、あらゆる理論の生死を分ける</em>。あなたの情報理論的な直感は、この背骨を守る限り、宇宙の最前線まで自分の足で歩ける。ここまでの旅を、ありがとう。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ第10回、物理好きの高校生・大学生向け読み物です。ランダウアー原理(論理的に非可逆な1ビット消去に最低 \(k_BT\ln2\) のエネルギーが要り熱として散逸する)は確立した物理で、実験的にも検証されています。BBNにおける中性子・陽子比のフリーズアウトが弱い相互作用率とハッブル率の釣り合い \(\Gamma_{\text{weak}}(T_f)=H(T_f)\)(\(k_BT_f\sim0.7\)–\(0.8\) MeV)で起きること、平衡比が \(n/p=e^{-Q_{np}/k_BT}\)(\(Q_{np}=1.293\) MeV)で与えられること、ベータ崩壊のQ値が \(Q_\beta=0.782\) MeV であることは、確立した標準物理です。本稿の「崩壊＝ランダウアー消去」「フリーズアウト＝更新の通貨が払えなくなる交差点」という記述は、標準BBNの情報理論的な再記述(教育的な橋渡し)であり、標準を超える新たな観測予言を与えるものではありません。\(k_BT_f\approx Q_\beta\) の近さは目安であり、\(\Gamma_{\text{weak}}\propto T^5\)・\(H\propto T^2\) の規格化は模式的です。この描像は温度・エネルギー(次元付き)のみを動かし無次元定数 \(\alpha\) を不変に保つため観測と整合します(番外編④)。\(\alpha\) を走らせる解釈は原子時計・BBNにより棄却されます(第7回)。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで温度を下げると、更新の供給と需要が交差し、n/p ビットが凍る瞬間が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), stt=document.getElementById('stt'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  var Tf=0.8, Qnp=1.293, Qbeta=0.782, ln2=Math.log(2);
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function G(T){return Math.pow(T/Tf,5);}   // Γ_weak ∝ T^5
+  function Hh(T){return Math.pow(T/Tf,2);}   // H ∝ T^2
+  function npEq(T){return Math.exp(-Qnp/T);}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52;
+    var logT=parseFloat(stt.value), T=Math.pow(10,logT);   // MeV
+    vt.textContent=T.toFixed(2);
+    // 横軸 log10(T): 左=熱い(高T)→右=冷たい(低T)。範囲 logT: 0.6..-0.7
+    var lo=0.6, hi=-0.7;  // 左端 lo(熱), 右端 hi(冷)
+    function X(lt){return pad+(lo-lt)/(lo-hi)*(w-pad-14);}
+    // 縦軸: log スケール rate 0.01..1000
+    function Y(v){var lv=Math.log10(Math.max(0.01,Math.min(1000,v))); return (h-pad)-(lv-(-2))/(3-(-2))*(h-pad-16);}
+    ctx.clearRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='#e2eeeb';ctx.lineWidth=1;ctx.fillStyle='#a8bcb7';ctx.font='9px sans-serif';
+    for(var e=-2;e<=3;e++){var y=Y(Math.pow(10,e));ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('10^'+e,4,y+3);}
+    // 交差点(T=Tf)の縦線
+    var xf=X(Math.log10(Tf));
+    ctx.strokeStyle='#c9bde0';ctx.setLineDash([4,3]);ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.moveTo(xf,14);ctx.lineTo(xf,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7a5cc0';ctx.font='11px sans-serif';ctx.fillText('フリーズアウト T_f≈0.8', xf-58, 26);
+    // Γ_weak 曲線(teal)
+    ctx.strokeStyle='#0f7a70';ctx.lineWidth=2.5;ctx.beginPath();var f=true;
+    for(var i=0;i<=160;i++){var lt=lo+(hi-lo)*i/160; var tt=Math.pow(10,lt); var x=X(lt),y=Y(G(tt)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // H 曲線(red)
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=2.5;ctx.beginPath();f=true;
+    for(var j=0;j<=160;j++){var lt2=lo+(hi-lo)*j/160; var tt2=Math.pow(10,lt2); var x2=X(lt2),y2=Y(Hh(tt2)); if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // 平衡 n/p (purple, 別スケール: 0..0.7 を下部に)
+    ctx.strokeStyle='#7a5cc0';ctx.lineWidth=1.8;ctx.setLineDash([3,2]);ctx.beginPath();f=true;
+    for(var k=0;k<=160;k++){var lt3=lo+(hi-lo)*k/160; var tt3=Math.pow(10,lt3); var np=npEq(tt3);
+      // n/p 0..0.7 を Y の下1/3 領域にマップ
+      var yy=(h-pad)-(np/0.7)*((h-pad)-(Y(1000)+8))*0.42;
+      var x3=X(lt3); if(f){ctx.moveTo(x3,yy);f=false;}else ctx.lineTo(x3,yy);}
+    ctx.stroke();ctx.setLineDash([]);
+    // ラベル
+    ctx.fillStyle='#0f7a70';ctx.font='12px sans-serif';ctx.fillText('Γ_weak（更新の供給）', X(lo)+8, Y(G(Math.pow(10,lo-0.05)))-6);
+    ctx.fillStyle='#c0392b';ctx.fillText('H（更新の需要）', X(hi)-96, Y(Hh(Math.pow(10,hi+0.05)))-6);
+    // 軸
+    ctx.strokeStyle='#b3c9c4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,12);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('← 熱い(初期)      温度 k_BT[MeV]      冷たい(後期) →', pad+40, h-pad+22);
+    ctx.save();ctx.translate(16,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('レート（対数）',0,0);ctx.restore();
+    // 現在位置
+    var x=X(logT);
+    ctx.strokeStyle='#8a88a6';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(x,12);ctx.lineTo(x,h-pad);ctx.stroke();ctx.setLineDash([]);
+    function mk(v,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,Y(v),5,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+    mk(G(T),'#0f7a70'); mk(Hh(T),'#c0392b');
+    // readout
+    var ratio=G(T)/Hh(T), np=npEq(T), maintained=(ratio>=1);
+    if(maintained){
+      rd.className='readout ok';
+      rd.textContent='k_BT = '+T.toFixed(2)+' MeV → Γ_weak/H = '+ratio.toFixed(1)+' ≥ 1：更新が間に合う（可逆・消去コスト実質ゼロ）。n/p ビットは平衡 '+np.toFixed(3)+' に維持。同一性は保たれ、崩壊は確定しない。';
+    } else {
+      rd.className='readout frozen';
+      rd.textContent='k_BT = '+T.toFixed(2)+' MeV → Γ_weak/H = '+ratio.toFixed(2)+' < 1：更新が追いつかない。k_BT < Q_β=0.78 で通貨が払えず、n/p ビットは凍結（≈'+npEq(Tf).toFixed(2)+'）。あとは非可逆な消去＝自由崩壊だけ。ランダウアーのコスト k_BT ln2 = '+(T*ln2).toFixed(2)+' MeV/bit。';
+    }
+  }
+  stt.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
