@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本命を選ぶ ── 明示公式は「跡公式」だった ／ ミレニアム問題を解くぞ 戦略①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#3a4a86; --side-bg:#e8eaf4;
+    --warn:#8a4b2f;
+    --calc:#3a4a86; --calc-bg:#e8eaf4;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#3a4a86;      /* 戦略編：藍青 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d8ee 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#232a44;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#232a44;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#e8eaf4;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e8eaf4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#232a44;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略①（深掘り）</span></div>
+  <p class="eyebrow">もし本気で挑むなら ── どの道を、なぜ選ぶか</p>
+  <h1>本命を選ぶ ── 明示公式は「跡公式」だった
+    <span class="sub">挑戦編で分かった縁は「例外0個を強制する剛い構造が無い」こと。<br>ではどの道が本命か ── <strong>C（作用素）とD（有限体）を結ぶ橋</strong>が、実は第5回の<em>明示公式</em>に隠れていた。<br>「素数の和＝零点の和」は、幾何学で<strong>跡公式</strong>と呼ばれる形。零点は"どこかの作用素のスペクトル"のはず。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：本命ルートの選定と、跡公式という共通言語</span>
+    <span>一言で：明示公式＝跡公式。零点＝スペクトル、を作れ</span>
+  </div>
+
+  <p class="lead">挑戦編（全6回）で、五つの道はみな同じ縁を指しました ── <em>「整数に固有の、全ゼロを一斉に線上へ固定する剛い構造」が欠けている</em>。戦略編では、もし本気で挑むならどの道を選び、その縁をどこまでクリーンに掘れるかを追います。結論から言うと本命は<strong>C（スペクトル＝作用素）とD（有限体＝幾何）の合流</strong>。そして両者を結ぶ橋は、入門編の第5回で既に手にしていた ── <strong>明示公式</strong>です。あれは単なる公式ではなく、幾何学で<em>跡公式</em>と呼ばれる、深い普遍構造の一例だったのです。</p>
+
+  <h2><span class="n">01</span>思い出す ── 明示公式は「素数の和 ＝ 零点の和」</h2>
+
+  <p>第5回の明示公式を、形だけ取り出します。</p>
+
+  <div class="keybox">
+    <div class="lbl">明示公式（形だけ）── 二つの世界を等号で結ぶ</div>
+    $$\underbrace{\sum_{p,k}(\log p)\,f(p^k)}_{\text{素数側}}\ \;=\;\ \underbrace{\hat f(0)+\hat f(1)-\sum_{\rho}\hat f(\rho)}_{\text{零点側}}$$
+    <p style="margin:8px 0 0;">左は<strong>素数</strong>を渡る和、右は<strong>零点 \(\rho\)</strong> を渡る和（\(f\) は試験関数、\(\hat f\) はその変換）。素数の情報と零点の情報が、一枚の等式で釣り合う。第5回では「零点の波を足すと素数の階段が出る」と見た、あの関係の一般形です。</p>
+  </div>
+
+  <p>この「<strong>片側は素数（周期的なモノ）の和、もう片側はスペクトル（固有値）の和</strong>」という形 ── 幾何学と物理では、これに名前がついています。<strong>跡公式（trace formula）</strong>。そして跡公式が現れるところには、たいてい<em>作用素とその固有値</em>が潜んでいます。</p>
+
+  <h2><span class="n">02</span>跡公式とは ── 「太鼓の音で、形が分かる」</h2>
+
+  <p>跡公式のいちばん有名な例は、<strong>セルバーグの跡公式</strong>。ざっくり言うと ── ある曲面について、</p>
+
+  <div class="keybox">
+    <div class="lbl">跡公式の心（セルバーグ）</div>
+    $$\underbrace{\sum_{\text{閉じた測地線}}(\cdots)}_{\text{「周期軌道」側}}\ \;=\;\ \underbrace{\sum_{\text{ラプラシアンの固有値}}(\cdots)}_{\text{「スペクトル」側}}$$
+    <p style="margin:8px 0 0;">左は曲面上の<strong>閉じた道（周期軌道）</strong>を渡る和、右は<strong>ラプラシアン（自己共役作用素）の固有値</strong>を渡る和。固有値は<em>太鼓の音（固有振動）</em>のようなもの。<strong>「周期軌道の並び」と「音の並び」が等号で結ばれる</strong> ── これが跡公式。</p>
+  </div>
+
+  <p>明示公式と、見比べてください。<strong>素数 ↔ 閉じた測地線（周期軌道）</strong>、<strong>零点 ↔ ラプラシアンの固有値（音）</strong>。同じ形です。<em>つまり明示公式は「素数を周期軌道、零点を固有値とする、どこかの隠れた曲面の跡公式」だと読める</em> ── これが本命ルートの出発点。零点は、まだ見ぬ作用素の<strong>スペクトル（音）</strong>なのではないか。</p>
+
+  <h2><span class="n">03</span>三つの跡公式 ── 二つは証明済み、一つは夢</h2>
+
+  <p>この「跡公式」という共通言語で、三つの世界を並べます。下の図で<strong>列を選ぶ</strong>と、各世界の「周期軌道の役」「音（固有値）の役」「RHの状態」が読めます。左二つ（セルバーグ・有限体）は<span style="color:var(--solved);font-weight:700;">作用素が実在し、RHが証明済み</span>。右（リーマン）だけ、<span style="color:var(--open);font-weight:700;">形は同じなのに作用素が未発見</span>。</p>
+
+  <div class="fig">
+    <div class="cap">図：三つの跡公式。<span style="color:var(--solved);font-weight:700;">セルバーグ（曲面）・有限体（曲線）は証明済み</span>／<span style="color:var(--open);font-weight:700;">リーマン（整数）は同じ形なのに未証明</span>。列を選ぶと対応が出る。零点＝固有値、素数＝周期軌道。</div>
+    <canvas id="cvTrace" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-c="0">セルバーグ（曲面）</button>
+      <button class="btn" data-c="1">有限体（曲線）</button>
+      <button class="btn" data-c="2">リーマン（整数）</button>
+    </div>
+    <div class="readout" id="rdTrace"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>証明済み（作用素あり）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未証明（作用素なし）</span>
+    </div>
+  </div>
+
+  <p>左二つは、C（作用素の夢）が<em>現実になった</em>世界です ── セルバーグではラプラシアン、有限体ではフロベニウス。どちらも自己共役／幾何的な本物の作用素で、その固有値の性質からRHが出る。<strong>本命とは、この機構をリーマンの世界（いちばん右の列）で作ること</strong>。跡公式は、それが可能だと囁く共通言語なのです。</p>
+
+  <h2><span class="n">04</span>コンヌの一手 ── 明示公式を「本物の跡公式」にする</h2>
+
+  <p>「明示公式は跡公式<em>っぽい</em>」を、<em>本当に</em>跡公式にしたのが<strong>コンヌ</strong>（1990年代）。彼は、整数の全ての素点（各素数 \(p\) と、無限素点 \(\infty\)）を束ねた<strong>アデール類空間</strong>という舞台を用意し、その上の作用の<em>跡</em>として明示公式を書き直しました。</p>
+
+  <div class="keybox">
+    <div class="lbl">コンヌの跡公式（1990s）── RH ⟺ 正値性</div>
+    <p style="margin:0 0 6px;">明示公式＝アデール類空間上のスケーリング作用の跡、と読める。すると<strong>リーマン予想 ⟺ ワイル正値性</strong>（明示公式が定める二次形式が、常に \(\ge0\)）に還元される。零点は、この空間上の作用の<em>「吸収スペクトル」</em>として現れる。</p>
+    <p style="margin:0;">跡公式そのものは<strong>半局所（有限個の素点）では証明済み</strong>。だが全ての素点を込めた完全版と、RHに等しい<strong>正値性</strong>は未達 ── そこが縁。</p>
+  </div>
+
+  <p>これでルートCの「作用素の夢」は、<em>作用素の候補が住む具体的な舞台（アデール類空間）</em>と、<em>証明すべき一点（正値性）</em>にまで絞り込まれました。抽象的な願望から、掘るべき場所が定まった。</p>
+
+  <h2><span class="n">05</span>本命の設計図と、欠けた部品（グレイル）</h2>
+
+  <p>本命ルートを完成させるのに必要な"部品"を並べます。下の図で<strong>部品をクリック</strong>すると、それが<span style="color:var(--solved);font-weight:700;">手にあるか</span>／<span style="color:var(--gold);font-weight:700;">部分的か</span>／<span style="color:var(--open);font-weight:700;">欠けているか</span>が分かります。手にある部品は多い。欠けは<em>ごく少数の一点</em>に集まります。</p>
+
+  <div class="fig">
+    <div class="cap">図：本命ルート（零点＝スペクトル）の設計図。部品を選ぶと状態が出る。<span style="color:var(--solved);font-weight:700;">緑＝有り</span>／<span style="color:var(--gold);font-weight:700;">金＝部分的</span>／<span style="color:var(--open);font-weight:700;">赤＝欠け</span>。欠けが集まる先＝グレイル。</div>
+    <canvas id="cvGrail" width="680" height="320"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-g="0">明示公式</button>
+      <button class="btn" data-g="1">素数↔軌道</button>
+      <button class="btn" data-g="2">作用素の舞台</button>
+      <button class="btn" data-g="3">整数の幾何</button>
+      <button class="btn" data-g="4">無限素点∞</button>
+      <button class="btn" data-g="5">正値性</button>
+    </div>
+    <div class="readout" id="rdGrail"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">グレイル（本命ルートの欠けた一個の物）</div>
+    <p class="big" style="margin:0;">\(\mathrm{Spec}\,\mathbb{Z}\) に<strong>無限素点 \(\infty\) まで込めた"曲線"の幾何</strong>と、その上で<strong>零点を固有値に生むコホモロジー（作用素の舞台）</strong>、そしてその作用素が実スペクトルを持つことを強制する<strong>反射正値性（＝ワイル正値性）</strong>── この<em>一組</em>。有限体には ∞ が無いぶん軽やかに存在するのに、整数では ∞ の扱いが継ぎ目になる。</p>
+  </div>
+
+  <p>姉妹編ヤン=ミルズの戦略編も、最後は「一個の物＝グレイル（RP保存かつ共変かつ一様な粗視化）」に還元されました。リーマンのグレイルも同じ顔です ── <em>「正しい機構は隣の世界で分かっている。欠けは整数固有の一部品」</em>。次回（戦略②）は、この本命の心臓＝コンヌの跡公式と正値性を、一段深く覗きます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">明示公式（リーマン＝フォン・マンゴルト、ワイルによる一般化1952）が跡公式（レフシェツ型／セルバーグ型）と同じ構造を持つことは、広く認識された事実です。セルバーグ跡公式（1956）は閉測地線とラプラシアン固有値を結び、対応する（セルバーグ・ゼータの）リーマン予想類似は自己共役性から従います。有限体上の曲線・多様体ではフロベニウスのエタール・コホモロジー上の作用（レフシェツ跡公式）から有限体版RHが出ます（Weil 1948／Grothendieck／Deligne 1974）── いずれも証明済み。</p>
+    <p style="margin-bottom:0;">コンヌ（1996–99）は明示公式をアデール類空間 \(\mathbb{A}_{\mathbb{Q}}/\mathbb{Q}^\times\) 上のスケーリング作用の跡公式として定式化し、リーマン予想を<strong>ワイル正値性</strong>（明示公式が定める二次形式の正定値性）に対応づけました。跡公式は半局所的な場合に証明されていますが、全素点を込めた完全版とRHに等しい正値性は未証明です。「零点＝スペクトル」の完全な実現、\(\mathrm{Spec}\,\mathbb{Z}\)（無限素点込み）の幾何・コホモロジー（コンヌ–コンサニの数論的サイト、ドニンガーの力学系的コホモロジー等）は未確立で、リーマン予想は2025年時点で未解決です。図はいずれも対応関係を示す模式図で、配置に定量的意味はありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>明示公式が「跡公式」だと読める、というのはどういう意味？
+        <details><summary>答えを見る</summary><div class="ans">明示公式は「素数側の和 ＝ 零点側の和」という形。跡公式（セルバーグや有限体のレフシェツ）は「周期軌道の和 ＝ 作用素の固有値の和」という形。両者は同じ構造で、素数↔周期軌道、零点↔固有値と対応する。だから零点は「どこかの隠れた作用素のスペクトル（音）」のはず、と読める。これが本命ルート（C×D）の出発点。</div></details>
+      </li>
+      <li>セルバーグ・有限体の跡公式が「証明済み」で、リーマンが「未証明」なのは何が違う？
+        <details><summary>答えを見る</summary><div class="ans">左二つには本物の作用素が実在する（セルバーグ＝ラプラシアン、有限体＝フロベニウスのコホモロジー作用）。その固有値の性質からRHが出る。リーマンでは明示公式が同じ跡公式の形をしているのに、零点を固有値に持つ作用素とその舞台（整数の幾何・コホモロジー）がまだ無い。形は同じ、物が無い。</div></details>
+      </li>
+      <li>コンヌは本命ルートを、どこまで絞り込んだ？
+        <details><summary>答えを見る</summary><div class="ans">明示公式をアデール類空間上の作用の跡公式として書き直し、RHを「ワイル正値性（明示公式の二次形式が常に≥0）」という一点に還元した。跡公式は半局所では証明済み。抽象的な「作用素を探せ」から、「この舞台の上の、この正値性を示せ」へと掘るべき場所が定まった。残る正値性が縁。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略①まとめ</span>本命は「零点＝スペクトル」</h2>
+    <p>挑戦編の縁「例外0個を強制する剛い構造が無い」に対し、本命は<strong>C（作用素）×D（有限体）の合流</strong>。橋は第5回の<strong>明示公式</strong>で、その形「素数の和＝零点の和」は幾何学の<strong>跡公式</strong>（周期軌道の和＝固有値の和）そのもの。<strong>零点は、まだ見ぬ作用素のスペクトル（音）</strong>だと読める。</p>
+    <p>三つの跡公式のうち、セルバーグ（曲面・ラプラシアン）と有限体（曲線・フロベニウス）は作用素が実在し<strong>RH類似が証明済み</strong>。リーマンだけ形は同じで物が無い。<strong>コンヌ</strong>はこれをアデール類空間上の跡公式にし、RHを<strong>ワイル正値性</strong>一点に還元した（半局所では証明済み）。欠けはグレイルに集まる ── <em>Spec ℤ（無限素点込み）の幾何＋零点を固有値に生むコホモロジー＋正値性</em>。継ぎ目は「∞」。次回は、この心臓＝コンヌの跡公式と正値性を深掘り。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-11-iikae.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e8eaf4;font-weight:700;letter-spacing:.03em;">← 挑戦編⑥</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e8eaf4;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku2-connes.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e8eaf4;font-weight:700;letter-spacing:.03em;">戦略②：コンヌの跡公式 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略①（深掘り）、数学好きの高校生・大学生向け読み物。明示公式（Riemann–von Mangoldt、Weil 1952 による一般化）が跡公式（Selberg 1956／有限体のレフシェツ跡公式）と同じ構造を持つこと、Selberg の場合に閉測地線とラプラシアン固有値が対応し対応する RH 類似が証明されること、有限体・関数体の場合にフロベニウスのエタール・コホモロジー上の作用から有限体版 RH が従うこと（Weil 1948／Deligne 1974）は確立した事実です。コンヌ（1996–99）はアデール類空間上のスケーリング作用の跡公式として明示公式を定式化し、リーマン予想をワイル正値性に対応づけました（半局所では証明済み、完全版と正値性は未証明）。「零点＝スペクトル」の完全な実現、無限素点を込めた Spec ℤ の幾何・コホモロジー（Connes–Consani の数論的サイト、Deninger の力学系的コホモロジー等）は未確立で、リーマン予想は2025年時点で未解決です。図は対応関係の模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1の列ボタンで三つの跡公式、図2の部品ボタンで本命ルートの設計図と欠けたグレイルを体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* ===== 図1：三つの跡公式 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvTrace'), rd=document.getElementById('rdTrace');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-c]'));
+  var lastW=680, sel=0;
+  var cols=[
+    {name:'セルバーグ（曲面）', proven:true, rows:['双曲曲面','閉じた測地線（周期軌道）','ラプラシアンの固有値（音）','セルバーグ跡公式','臨界線上＝証明済み'],
+     msg:'<b>セルバーグ（曲面）</b>：舞台＝双曲曲面。素数の役＝<b>閉じた測地線</b>、零点の役＝<b>ラプラシアンの固有値（＝太鼓の音）</b>。跡公式で両者が等号。ラプラシアンは自己共役＝固有値は実数だから、対応する零点は<b style="color:#2f7d5a;">臨界線上＝証明済み</b>。作用素が実在する世界。'},
+    {name:'有限体（曲線）', proven:true, rows:['𝔽_q 上の曲線','フロベニウスの周期軌道（点）','フロベニウス固有値（コホモロジー）','レフシェツ跡公式','臨界線上＝証明済み'],
+     msg:'<b>有限体（曲線）</b>：舞台＝𝔽_q 上の曲線。素数の役＝<b>点／フロベニウスの周期軌道</b>、零点の役＝<b>フロベニウス作用素のコホモロジー上の固有値</b>。レフシェツ跡公式で結ばれ、固有値の大きさ√qから<b style="color:#2f7d5a;">臨界線上＝証明済み（Weil・Deligne）</b>。ここも作用素が実在。'},
+    {name:'リーマン（整数）', proven:false, rows:['Spec ℤ ＋ 無限素点∞','素数 p','ゼータの零点 ρ','明示公式（＝跡公式の形）','臨界線上＝未証明（夢）'],
+     msg:'<b>リーマン（整数）</b>：舞台＝Spec ℤ（＋∞）。素数の役＝<b>素数 p</b>、零点の役＝<b>ゼータの零点</b>。明示公式は左二つと<b>同じ跡公式の形</b>。でも零点を固有値に持つ<b style="color:#a5473a;">作用素と舞台が未発見＝未証明（夢）</b>。形は同じ、物が無い。'}
+  ];
+  var labels=['舞台','「素数」の役','「零点」の役','公式','RH'];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=96,mR=12,mT=14,mB=10, pW=w-mL-mR, pH=h-mT-mB;
+    var colW=(pW-2*10)/3, nRow=5, rowH=pH/nRow;
+    ctx.clearRect(0,0,w,h);
+    // 行ラベル
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='right'; ctx.fillStyle='#6a6a7a';
+    for(var r=0;r<nRow;r++){ ctx.fillText(labels[r], mL-8, mT+r*rowH+rowH/2+4); }
+    for(var ci=0;ci<3;ci++){
+      var x=mL+ci*(colW+10), col=cols[ci], on=(ci===sel);
+      // ヘッダ
+      ctx.fillStyle= col.proven? (on?'#cfe6da':'#e6f0ea') : (on?'#f3d9d4':'#f7ece9');
+      // 各行
+      for(var r2=0;r2<nRow;r2++){
+        var y=mT+r2*rowH;
+        var isRH=(r2===nRow-1);
+        ctx.fillStyle = isRH? (col.proven? (on?'#cfe6da':'#e6f0ea') : (on?'#f3d9d4':'#f7ece9'))
+                            : (on? '#dfe3f2':'#eef0f7');
+        roundRect(ctx,x,y+3,colW,rowH-6,5); ctx.fill();
+        ctx.strokeStyle= on? (isRH?(col.proven?'#2f7d5a':'#a5473a'):'#3a4a86') : '#d3d3e0';
+        ctx.lineWidth= on?1.8:1; roundRect(ctx,x,y+3,colW,rowH-6,5); ctx.stroke();
+        // テキスト（折り返し）
+        ctx.fillStyle= isRH? (col.proven?'#1f5a3f':'#a5473a') : '#2a3050';
+        ctx.font= (r2===0||isRH)?'bold 11.5px sans-serif':'11px sans-serif'; ctx.textAlign='center';
+        wrap(ctx, col.rows[r2], x+colW/2, y+rowH/2-4, colW-10, 13);
+      }
+      // 列名
+      ctx.fillStyle= col.proven? '#2f7d5a':'#a5473a'; ctx.font='bold 11.5px sans-serif'; ctx.textAlign='center';
+    }
+  }
+  function wrap(ctx,text,cx,cy,maxw,lh){
+    var lines=[],cur='';
+    for(var i=0;i<text.length;i++){ var t=cur+text[i]; if(ctx.measureText(t).width>maxw&&cur){lines.push(cur);cur=text[i];}else cur=t; }
+    if(cur)lines.push(cur); lines=lines.slice(0,3);
+    var y0=cy-(lines.length-1)*lh/2;
+    for(var k=0;k<lines.length;k++) ctx.fillText(lines[k],cx,y0+k*lh+4);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-c'),10)===i); }); draw(); rd.innerHTML=cols[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-c'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+
+/* ===== 図2：本命ルートの設計図（グレイル） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvGrail'), rd=document.getElementById('rdGrail');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-g]'));
+  var lastW=680, sel=0;
+  // status: 2=有り,1=部分的,0=欠け
+  var parts=[
+    {name:'明示公式（跡公式の形）', st:2, msg:'<b>明示公式</b>：素数の和＝零点の和。跡公式の形として<b style="color:#2f7d5a;">既に手にある</b>（第5回）。設計図の骨格。'},
+    {name:'素数 ↔ 周期軌道 の対応', st:2, msg:'<b>素数↔軌道</b>：素数を「周期軌道」、零点を「固有値」とみなす読み替えは<b style="color:#2f7d5a;">確立</b>。セルバーグ・有限体で実証済みの対応。'},
+    {name:'作用素の舞台（アデール類空間）', st:1, msg:'<b>作用素の舞台</b>：コンヌのアデール類空間として<b style="color:#a9791a;">部分的に用意できた</b>。跡公式は半局所で証明済み。だが完全版は未達。'},
+    {name:'整数の幾何／コホモロジー', st:0, msg:'<b>整数の幾何</b>：零点を固有値に生む Spec ℤ 上のコホモロジーは<b style="color:#a5473a;">欠けている</b>。有限体のエタール・コホモロジーに当たる物が整数に無い（F₁・数論的サイト・ドニンガーが挑戦中）。'},
+    {name:'無限素点 ∞ の扱い', st:0, msg:'<b>無限素点∞</b>：有限体には無い「∞（アルキメデス素点）」の幾何的扱いが<b style="color:#a5473a;">継ぎ目</b>。整数を"閉じた曲線"にするにはここを込める必要があり、最大の難所。'},
+    {name:'ワイル正値性（＝RH）', st:0, msg:'<b>正値性</b>：明示公式の二次形式が常に≥0（ワイル正値性）＝<b>RHそのもの</b>。<b style="color:#a5473a;">これが最後の欠け</b>。作用素が実スペクトルを持つこと＝反射正値性に対応。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=16,mR=16,mT=14,mB=12, pW=w-mL-mR, pH=h-mT-mB;
+    var n=parts.length, rowH=pH/n;
+    ctx.clearRect(0,0,w,h);
+    var COL={2:['#e6f0ea','#2f7d5a','有り'],1:['#f7f0e4','#a9791a','部分的'],0:['#f7ece9','#a5473a','欠け']};
+    for(var i=0;i<n;i++){
+      var y=mT+i*rowH, p=parts[i], on=(i===sel), c=COL[p.st];
+      ctx.fillStyle= on? shade(c[0]):c[0]; roundRect(ctx,mL,y+4,pW,rowH-8,7); ctx.fill();
+      ctx.strokeStyle=c[1]; ctx.lineWidth= on?2.4:1.2; roundRect(ctx,mL,y+4,pW,rowH-8,7); ctx.stroke();
+      // 状態バッジ
+      ctx.fillStyle=c[1]; roundRect(ctx,mL+10,y+rowH/2-11,58,22,11); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillText(c[2], mL+39, y+rowH/2+4);
+      // 名前
+      ctx.fillStyle= p.st===0? '#a5473a':(p.st===1?'#8a6a1a':'#1f4a37'); ctx.font='bold 13.5px sans-serif'; ctx.textAlign='left';
+      ctx.fillText(p.name, mL+80, y+rowH/2+5);
+      // 番号
+      ctx.fillStyle='#9a9aa8'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('部品'+(i+1), mL+pW-12, y+rowH/2+4);
+    }
+  }
+  function shade(hex){ return hex; } // 簡易
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-g'),10)===i); }); draw();
+    rd.innerHTML=parts[i].msg + (parts[i].st===0?'　<span style="color:#a5473a;">← この欠けが集まる先が「グレイル」。</span>':''); }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-g'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

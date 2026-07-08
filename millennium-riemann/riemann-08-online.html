@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>線の上を数える ── 「全部」でなく「割合」 ／ ミレニアム問題を解くぞ 挑戦編③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#a5622a; --side-bg:#f4ece1;
+    --warn:#8a4b2f;
+    --calc:#a5622a; --calc-bg:#f4ece1;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#a5622a;      /* ルートB：琥珀 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #efdcc2 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3a2c1c;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#3a2c1c;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#a5622a;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#f4ece1;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4ece1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a2c1c;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編③（ルートB）</span></div>
+  <p class="eyebrow">発想の転換 ── 「全部」でなく「割合」を稼ぐ</p>
+  <h1>線の上を数える ── 「全部」でなく「割合」
+    <span class="sub">ルートAは全ゼロを線の外から締め出そうとして、1に貼りついた。<br>ならば逆に ── <strong>「線の上に、少なくとも何％のゼロが乗っているか」を数える</strong>。<br>Hardy(無限個)→Selberg(正の割合)→Levinson(1/3)→Conrey(2/5)→<em>約41.7%</em>。着実に。でも100%は、遠い。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：割合を数える技（Z関数とmollifier）と、頭打ちの壁</span>
+    <span>一言で：線上の割合 ≈ 41.7% までは証明済み</span>
+  </div>
+
+  <p class="lead">ルートA（前回）は「ゼロが<em>いない</em>領域」を広げる正攻法でしたが、壁が \(\mathrm{Re}(s)=1\) から剥がれませんでした。ルートBは発想を裏返します ── <strong>全部が線上だと一気に示すのは諦め、「線の上に確実に乗っているゼロの<em>割合</em>」を、こつこつ稼ぐ</strong>。100年でこの割合は 0 → 1/3 → 2/5 → 約41.7% と伸びました。着実な、そして本物の前進。でも、伸びは<em>止まりかけて</em>いて、100%（＝RH）は依然として遠い。その技と壁を見ます。</p>
+
+  <h2><span class="n">01</span>発想の転換 ── 「反例ゼロ」でなく「味方ゼロ」を数える</h2>
+
+  <p>臨界帯の中の非自明なゼロは、高さ \(T\) までに <strong>\(N(T)\approx\dfrac{T}{2\pi}\log\dfrac{T}{2\pi}\)</strong> 個あります（リーマン＝フォン・マンゴルトの数え上げ公式）。このうち、<em>確かに臨界線 \(\mathrm{Re}(s)=1/2\) の上にある</em>個数を \(N_0(T)\) と書きます。ルートBの目標は、比 \(N_0(T)/N(T)\) の<strong>下限</strong>を上げること。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートBが証明したい形</div>
+    $$\frac{N_0(T)}{N(T)}\ \ge\ \kappa\qquad(\text{高さ }T\to\infty\text{ で})$$
+    <p style="margin:8px 0 0;">「非自明なゼロの<strong>少なくとも割合 \(\kappa\)</strong> が、確実に臨界線上にある」。\(\kappa=1\) まで上げられればRH ── だが下限を積み上げる方式なので、いくら上げても「残り」が消えない。まず \(\kappa>0\) すら難関でした。</p>
+  </div>
+
+  <h2><span class="n">02</span>Hardyの魔法 ── 実数の波の「符号変化」を数える</h2>
+
+  <p>「線上にゼロがある」をどう数えるか。ハーディ（1914）の発明が効きます ── 臨界線上のゼータを、<strong>実数だけの値をとる関数 \(Z(t)\)</strong> に化かすのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">ハーディの Z 関数 ── 複素を実に</div>
+    $$\zeta\!\left(\tfrac12+it\right)=e^{-i\theta(t)}\,Z(t),\qquad Z(t)\in\mathbb{R},\quad |Z(t)|=\left|\zeta\!\left(\tfrac12+it\right)\right|$$
+    <p style="margin:8px 0 0;">うまく位相 \(\theta(t)\)（リーマン＝ジーゲルのシータ関数）をかけると、\(Z(t)\) は<strong>実数の波</strong>になる。すると ── <em>ζ が臨界線上でゼロ ⟺ \(Z(t)=0\) ⟺ \(Z(t)\) が符号を変える（＋から−へ横切る）</em>。線上のゼロ探しが、<strong>1本の実グラフのゼロ交差を数える</strong>問題に化ける。</p>
+  </div>
+
+  <p>下が \(Z(t)\) のグラフです。<strong>0を横切るたびに、臨界線上のゼロが1個</strong>。実際、交差点は \(t\approx14.13,\ 21.02,\ 25.01,\dots\)── 第1回・第4回で見たあのゼロたちと、ぴったり同じ高さです。クリック（またはスライダー）で交差点を確認してください。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">ハーディの Z(t)</span>（実数の波）。<span style="color:#a5473a;font-weight:700;">0を横切る点＝臨界線上のゼロ</span>（赤丸）。交差＝ζ(1/2+it)=0。スライダーで t を動かし、値と交差数を確認。</div>
+    <canvas id="cvZ" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <label>t ：<input type="range" id="sldT" min="3" max="36" value="14.13" step="0.05"><span id="tVal" style="font-weight:700;color:var(--acc);">14.13</span></label>
+    </div>
+    <div class="readout" id="rdZ"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#a5622a;"></i>Z(t)（実の波）</span>
+      <span><i class="swatch" style="background:#a5473a;border-radius:50%;"></i>0交差＝線上のゼロ</span>
+    </div>
+  </div>
+
+  <p>ハーディは、この \(Z(t)\) が<strong>無限回符号を変える</strong>ことを証明しました（＝臨界線上に<em>無限個</em>のゼロ）。歴史的な第一歩です。ただし「無限個」でも、全体 \(N(T)\sim \frac{T}{2\pi}\log T\) に比べれば<em>割合はまだ 0</em>。ここから「正の割合」への戦いが始まります。</p>
+
+  <h2><span class="n">03</span>数え上げの行進 ── 0 → 1/3 → 2/5 → 41.7%</h2>
+
+  <p>「線上の割合 \(\kappa\)」は、100年かけて次のように押し上げられてきました。下のバーの<strong>マイルストーンを選ぶ</strong>と、誰が・いつ・どこまで、が読めます。</p>
+
+  <div class="fig">
+    <div class="cap">図：線上のゼロの割合 \(\kappa\) の下限、その歴史的前進。<span style="color:var(--acc);font-weight:700;">琥珀＝証明済みの割合</span>、<span style="color:#a5473a;font-weight:700;">赤＝頭打ちの壁</span>、右端の旗＝目標100%（RH）。ボタンでマイルストーンを選ぶ。</div>
+    <canvas id="cvBar" width="680" height="230"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-m="0">Hardy 1914</button>
+      <button class="btn" data-m="1">Selberg 1942</button>
+      <button class="btn" data-m="2">Levinson 1974</button>
+      <button class="btn" data-m="3">Conrey 1989</button>
+      <button class="btn" data-m="4">現代 ~2020</button>
+      <button class="btn" data-m="5">目標 RH</button>
+    </div>
+    <div class="readout" id="rdBar"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">行進の記録</div>
+    <p style="margin:0 0 4px;">・<strong>ハーディ 1914</strong>：線上に<em>無限個</em>（ただし割合はまだ 0）。</p>
+    <p style="margin:0 0 4px;">・<strong>セルバーグ 1942</strong>：初めて<em>正の割合</em> \(\kappa>0\)（小さいが 0 でない）。</p>
+    <p style="margin:0 0 4px;">・<strong>レヴィンソン 1974</strong>：\(\kappa\ge 1/3\)（約34%）。まったく別の技（下記）。</p>
+    <p style="margin:0 0 4px;">・<strong>コンリー 1989</strong>：\(\kappa\ge 2/5\)（約40.9%）。しかも多くが<em>単純ゼロ</em>。</p>
+    <p style="margin:0;">・<strong>現代（2020年前後）</strong>：改良を積んで<strong>約41.7%</strong>まで。</p>
+  </div>
+
+  <h2><span class="n">04</span>割合を出す道具 ── 「mollifier（なだめ役）」</h2>
+
+  <p>セルバーグ以降の主力は、<strong>mollifier（モリファイア＝なだめ役）</strong>と呼ばれる技です。仕組みだけ、たとえで。</p>
+
+  <div class="aside">
+    <span class="tag">mollifier のアイデア（たとえ）</span>
+    ゼータ \(\zeta(1/2+it)\) は激しく上下に暴れるので、そのままでは符号変化を数えにくい。そこで、\(\zeta\) に<strong>うまく作った短い多項式 \(M(s)\)（＝なだめ役）</strong>を掛けて、\(\zeta M\) を<em>できるだけ「1に近い、穏やかな」波にならす</em>。穏やかになれば、平均の大きさ（<strong>二乗平均＝モーメント</strong>）を精密に計算でき、そこから「符号変化が最低◯回ある＝ゼロが最低◯個ある」を絞り出せる。レヴィンソンはさらに <\(\zeta\) の微分を組み合わせ、ゼロ数を数える<em>偏角の原理</em>と接続して \(1/3\) を得た。<br>要は ── <strong>ζ をならして、味方ゼロを"確実に下から"数える</strong>技。なだめ役 \(M\) を長く・賢くするほど割合が上がる。
+  </div>
+
+  <h2><span class="n">05</span>壁 ── 下から数える限り、全部には届かない</h2>
+
+  <p>ルートBは着実で、しかも「4割は確かに線上」という具体的な定理を残しました。でも壁も、はっきりしています。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートB の壁（二重）</div>
+    <p style="margin:0 0 6px;">① <strong>mollifier法の頭打ち</strong>：なだめ役を長くしても、割合は 40%台前半で伸びが鈍る。モーメント計算の難しさが指数的に増し、\(50\%\) すら現行技術では射程外とみられる。</p>
+    <p style="margin:0;">② <strong>「下限」は「全部」に化けない</strong>：この方式が出すのは \(N_0/N\ge\kappa\) という<em>下からの評価</em>。\(\kappa\) を 0.99 まで上げられたとしても、残り \(1\%\) に反例ゼロが<em>無い</em>ことは言えない。<strong>100%＝例外0個は、数え上げの原理的な外</strong>にある。</p>
+  </div>
+
+  <p>さらに正直に言うと ── <em>「ほとんど全部（割合→1）が線上」ですら、まだ誰も証明できていません</em>。無条件で言えるのは約41.7%。ルートAが「幅」を稼げなかったように、ルートBは「割合」を100%まで詰められない。<strong>味方を下から数える戦法は、"例外0個"という質の要求には、原理的に届かない。</strong></p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <p>A（外から締め出す）もB（内から数える）も、ゼロを<em>解析的に一個ずつ</em>相手にする限りの壁でした。次回（挑戦編④）は、まったく違う夢へ ── ゼロを<strong>ある作用素の「固有値」</strong>とみなし、<em>実数だから自動的に線上</em>にしてしまう。ランダム行列とヒルベルト=ポリアの、いちばん華やかなルートCへ。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">数え上げ公式 \(N(T)=\dfrac{T}{2\pi}\log\dfrac{T}{2\pi}-\dfrac{T}{2\pi}+O(\log T)\) はリーマン＝フォン・マンゴルトの定理。ハーディ（1914）は臨界線上に無限個の零点があることを証明。ハーディ＝リトルウッド（1921）は \(N_0(T)\gg T\)。セルバーグ（1942）が初めて正の割合 \(N_0(T)\ge cN(T)\) を示し、レヴィンソン（1974）が \(\ge1/3\)、コンリー（1989）が \(\ge2/5\)（約40.88%、うち多くが単純零点）。その後 Bui–Conrey–Young（2011, ≈41.05%）、Feng（2012, ≈41.28%）、Pratt–Robles–Zaharescu–Zeindler（2020, ≈41.7%）などで改良。いずれも既知の定理です。</p>
+    <p style="margin-bottom:0;">ハーディの \(Z(t)\)（リーマン＝ジーゲルの \(Z\) 関数）は実数値で \(|Z(t)|=|\zeta(1/2+it)|\)、その符号変化が臨界線上の零点に対応します。図1は本ページ内で複素ゼータ（ボーウェン法）と \(\theta(t)\)（スターリング近似）から \(Z(t)\) を計算しており、交差点は既知の零点 14.13, 21.02, 25.01, 30.42, 32.94… と一致します（\(t\gtrsim36\) で近似が甘くなるため表示は \(t\le36\)）。mollifier 法・レヴィンソン法の説明は仕組みの概略で、実際は二次・四次モーメントの精密評価と偏角の原理を要します。「ほとんど全ての零点が臨界線上（割合→1）」は<strong>未証明</strong>で、無条件の下限は約41.7%というのが2025年時点の状況です（零点密度評価により「大多数の零点が臨界線の近くにある」ことは別途言えますが、"線上"とは異なります）。リーマン予想自体も未解決です。図2のバーは割合の下限の前進を示す模式図です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ハーディの Z(t) を使うと、「線上のゼロを数える」はどんな問題に化ける？
+        <details><summary>答えを見る</summary><div class="ans">Z(t) は実数値の波で |Z(t)|=|ζ(1/2+it)|。ζ が臨界線上でゼロ ⟺ Z(t)=0 ⟺ Z(t) が符号を変える。だから「線上のゼロを数える」＝「実グラフ Z(t) の0交差（符号変化）を数える」問題になる。ハーディはこれが無限回起きることを示した（＝線上に無限個）。</div></details>
+      </li>
+      <li>ルートB は割合を 0→1/3→2/5→約41.7% と伸ばした。なぜ 100%（RH）に届かないと言える？
+        <details><summary>答えを見る</summary><div class="ans">二重の壁。①mollifier法は40%台前半で頭打ち（モーメント計算が難しくなり伸びが鈍る）。②この方式が出すのは「割合 ≥ κ」という下限で、κ を上げても「残り」に反例ゼロが無いとは言えない。100%＝例外0個は、下から数える戦法の原理的な外。実際「割合→1（ほとんど全部）」ですら未証明。</div></details>
+      </li>
+      <li>ルートA（前回）とルートB は、共通してどこで止まっている？
+        <details><summary>答えを見る</summary><div class="ans">どちらもゼロを解析的に一個ずつ相手にしている。Aは「幅」（1から1/2への距離）を稼げず、Bは「割合」を100%まで詰められない。共通の縁は、地図（挑戦編①）で言った「例外0個を強制する剛い構造が無い」こと。次のルートC（作用素）はその構造そのものを狙う。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編③まとめ</span>線の上を数える</h2>
+    <p>ルートBは発想の転換 ── 全ゼロを締め出す代わりに<strong>「線上に乗っている割合 \(N_0/N\ge\kappa\)」を下から稼ぐ</strong>。武器はハーディの<strong>\(Z(t)\)</strong>（複素ゼータを実の波に化かし、<em>符号変化＝線上のゼロ</em>）と、<strong>mollifier（なだめ役）</strong>（ζ をならしてモーメントを精密計算し、味方ゼロを確実に下から数える）。行進は ハーディ（無限個）→セルバーグ（正の割合）→レヴィンソン（1/3）→コンリー（2/5）→現代（約41.7%）。</p>
+    <p>壁は二重 ── ①mollifier は40%台で頭打ち、②「下限」はそもそも「例外0個」に化けない（"割合→1"すら未証明）。A（幅）もB（割合）も、ゼロを解析的に一個ずつ相手にする限りの限界だった。次回は質を変える ── ゼロを<strong>作用素の固有値</strong>にして、実数ゆえ自動で線上にする夢（ルートC：ランダム行列・ヒルベルト=ポリア）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-07-zerofree.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f4ece1;font-weight:700;letter-spacing:.03em;">← 挑戦編②</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f4ece1;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-09-spectral.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f4ece1;font-weight:700;letter-spacing:.03em;">挑戦編④：音を聞く →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編③（ルートB）、数学好きの高校生・大学生向け読み物。数え上げ公式 \(N(T)\sim\frac{T}{2\pi}\log\frac{T}{2\pi}\)（リーマン＝フォン・マンゴルト）、ハーディ（1914、線上に無限個）、ハーディ＝リトルウッド（1921、\(N_0(T)\gg T\)）、セルバーグ（1942、正の割合）、レヴィンソン（1974、\(\ge1/3\)）、コンリー（1989、\(\ge2/5\)・単純零点を含む）、その後の改良（Bui–Conrey–Young 2011、Feng 2012、Pratt–Robles–Zaharescu–Zeindler 2020、約41.7%）はいずれも既知の定理です。ハーディの \(Z\) 関数は実数値で \(|Z(t)|=|\zeta(1/2+it)|\)、符号変化が臨界線上の零点に対応します。図1はブラウザ内で \(Z(t)\) を数値計算しており（\(t\le36\) 表示）、交差点は既知の零点と一致します。mollifier／レヴィンソン法の記述は概略です。無条件では「ほとんど全ての零点が臨界線上（割合→1）」も未証明で、リーマン予想は2025年時点で未解決です。図2は割合の下限の前進を示す模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーで Z(t) の0交差＝線上のゼロ、図2のボタンで割合の歴史的前進が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+function zetaC(sigma,t){var n=28,d=new Array(n+1),si=1.0,acc=si;d[0]=acc;
+for(var i=1;i<=n;i++){si=si*(4*(n+i-1)*(n-i+1))/((2*i)*(2*i-1));acc+=si;d[i]=acc;}
+var dn=d[n],reSum=0,imSum=0;
+for(var k=0;k<n;k++){var coef=(d[k]-dn)*((k%2===0)?1:-1);var b=k+1,mag=Math.pow(b,-sigma),ang=-t*Math.log(b);reSum+=coef*mag*Math.cos(ang);imSum+=coef*mag*Math.sin(ang);}
+var eR=-reSum/dn,eI=-imSum/dn;var m=Math.pow(2,1-sigma),a=-t*Math.log(2);var wR=1-m*Math.cos(a),wI=-m*Math.sin(a),de=wR*wR+wI*wI;
+return [(eR*wR+eI*wI)/de,(eI*wR-eR*wI)/de];}
+function theta(t){ return (t/2)*Math.log(t/(2*Math.PI)) - t/2 - Math.PI/8 + 1/(48*t) + 7/(5760*t*t*t); }
+function Zfun(t){ var z=zetaC(0.5,t), th=theta(t); return Math.cos(th)*z[0]-Math.sin(th)*z[1]; }
+
+/* ===== 図1：ハーディの Z(t) ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvZ'), rd=document.getElementById('rdZ');
+  var sld=document.getElementById('sldT'), tVal=document.getElementById('tVal');
+  var T0=3, T1=36, lastW=680;
+  // 既知ゼロ（この範囲）
+  var zeros=[14.134725,21.022040,25.010858,30.424876,32.935062];
+  function draw(){
+    var tm=parseFloat(sld.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=40,mR=16,mT=16,mB=28, pW=w-mL-mR, pH=h-mT-mB;
+    // サンプル
+    var xs=[], ys=[], ymax=0.5;
+    for(var i=0;i<=600;i++){ var t=T0+(T1-T0)*i/600; var v=Zfun(t); xs.push(t); ys.push(v); if(Math.abs(v)>ymax) ymax=Math.abs(v); }
+    ymax=Math.min(ymax,3.6)*1.08;
+    function X(t){ return mL + (t-T0)/(T1-T0)*pW; }
+    function Y(v){ return mT + pH/2 - v/ymax*(pH/2); }
+    ctx.clearRect(0,0,w,h);
+    // 0線
+    ctx.strokeStyle='#c9bcae'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+pW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#8a7f72'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('0', mL-5, Y(0)+4);
+    // Z 曲線
+    ctx.strokeStyle='#a5622a'; ctx.lineWidth=2.2; ctx.beginPath();
+    for(var j=0;j<xs.length;j++){ if(j===0) ctx.moveTo(X(xs[j]),Y(ys[j])); else ctx.lineTo(X(xs[j]),Y(ys[j])); }
+    ctx.stroke();
+    // 0交差（既知ゼロ）
+    for(var k=0;k<zeros.length;k++){ if(zeros[k]<T0||zeros[k]>T1) continue;
+      ctx.beginPath(); ctx.arc(X(zeros[k]),Y(0),5,0,7); ctx.fillStyle='#a5473a'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.stroke(); }
+    // x メモリ
+    ctx.fillStyle='#8a7f72'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var tv=5;tv<=T1;tv+=5) ctx.fillText('t='+tv, X(tv), mT+pH+16);
+    // マーカー
+    var xx=X(tm), yy=Y(Zfun(tm));
+    ctx.strokeStyle='#2f7d5a'; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(xx,mT); ctx.lineTo(xx,mT+pH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(xx,yy,4.5,0,7); ctx.fillStyle='#2f7d5a'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.stroke();
+  }
+  function report(){
+    var tm=parseFloat(sld.value); tVal.textContent=tm.toFixed(2);
+    var v=Zfun(tm);
+    // 最寄りゼロ
+    var near=null,bd=9; for(var k=0;k<zeros.length;k++){var dd=Math.abs(zeros[k]-tm); if(dd<bd){bd=dd;near=zeros[k];}}
+    var cnt=0; for(var k2=0;k2<zeros.length;k2++) if(zeros[k2]<=tm) cnt++;
+    rd.innerHTML='t='+tm.toFixed(2)+' で Z(t)=<b>'+v.toFixed(3)+'</b>。'+(bd<0.3?'<b style="color:#a5473a;">ここは0交差＝臨界線上のゼロ（t≈'+near.toFixed(2)+'）！</b>':' ここまでに Z は '+cnt+' 回0を横切った（＝線上のゼロ '+cnt+' 個）。')+'  |ζ(1/2+it)|=|Z(t)|='+Math.abs(v).toFixed(3)+'。';
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：割合の行進バー ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvBar'), rd=document.getElementById('rdBar');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-m]'));
+  var lastW=680, sel=0;
+  var miles=[
+    {name:'ハーディ 1914', pct:0.5, disp:'∞個（割合0）', col:'#8a7a52',
+      msg:'<b>ハーディ 1914</b>：臨界線上に<b>無限個</b>のゼロがあると証明（Z(t)が無限回符号変化）。歴史的第一歩。だが全体 N(T)~ (T/2π)logT に比べ<b>割合はまだ0</b>。'},
+    {name:'セルバーグ 1942', pct:4, disp:'正の割合（>0）', col:'#a5622a',
+      msg:'<b>セルバーグ 1942</b>：初めて<b>正の割合</b> κ&gt;0 を証明（小さいが確実に0でない）。mollifier的手法の源流。「0%の壁」を破った。'},
+    {name:'レヴィンソン 1974', pct:33.3, disp:'≥ 1/3（約34%）', col:'#a5622a',
+      msg:'<b>レヴィンソン 1974</b>：<b>1/3以上</b>（約34%）。ζの微分を組み合わせ、mollifierと偏角の原理を接続した新手法。一気に跳ねた。'},
+    {name:'コンリー 1989', pct:40.9, disp:'≥ 2/5（約40.9%）', col:'#a5622a',
+      msg:'<b>コンリー 1989</b>：<b>2/5以上</b>（約40.9%）。しかも多くが<b>単純ゼロ</b>（重複なし）だと示した。長く標準の記録に。'},
+    {name:'現代 ~2020', pct:41.7, disp:'約41.7%', col:'#a5622a',
+      msg:'<b>現代（2020年前後）</b>：Bui–Conrey–Young、Feng、Pratt–Robles–Zaharescu–Zeindler らの改良で<b>約41.7%</b>。だが伸びは鈍り、mollifier法は<b style="color:#a5473a;">40%台前半で頭打ち</b>。'},
+    {name:'目標 RH', pct:100, disp:'100%（＝RH）', col:'#2f7d5a',
+      msg:'<b>目標＝RH</b>：<b>100%（例外0個）</b>。だが下から数える方式は原理的にここへ届かない。<b style="color:#a5473a;">「割合→1（ほとんど全部）」ですら未証明。</b>41.7%と100%の間が、ルートBの壁。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=20,mR=20,mT=40,mB=54, barY=mT+30, barH=34, pW=w-mL-mR;
+    function X(p){ return mL + p/100*pW; }
+    ctx.clearRect(0,0,w,h);
+    // 枠（0-100%）
+    ctx.fillStyle='#efe6da'; ctx.fillRect(mL,barY,pW,barH);
+    // 証明済み（41.7%まで琥珀）
+    ctx.fillStyle='#d9a866'; ctx.fillRect(mL,barY,X(41.7)-mL,barH);
+    // 選択マイルストーンまで濃く
+    var m=miles[sel];
+    if(m.pct<=41.7){ ctx.fillStyle='#a5622a'; ctx.fillRect(mL,barY,X(m.pct)-mL,barH); }
+    else { ctx.fillStyle='#a5622a'; ctx.fillRect(mL,barY,X(41.7)-mL,barH); }
+    // 壁（41.7% のすぐ右にハッチ）
+    ctx.save(); ctx.beginPath(); ctx.rect(X(41.7),barY,X(100)-X(41.7),barH); ctx.clip();
+    ctx.strokeStyle='rgba(165,71,58,.28)'; ctx.lineWidth=1;
+    for(var xx=X(41.7)-barH;xx<X(100)+barH;xx+=8){ ctx.beginPath(); ctx.moveTo(xx,barY); ctx.lineTo(xx+barH,barY+barH); ctx.stroke(); }
+    ctx.restore();
+    // 目盛
+    ctx.fillStyle='#8a7f72'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    [0,25,50,75,100].forEach(function(p){ ctx.fillText(p+'%', X(p), barY+barH+18);
+      ctx.strokeStyle='#c9bcae'; ctx.beginPath(); ctx.moveTo(X(p),barY+barH); ctx.lineTo(X(p),barY+barH+5); ctx.stroke(); });
+    // マイルストーンのピン
+    miles.forEach(function(mi,idx){
+      var x=X(mi.pct), on=(idx===sel);
+      ctx.strokeStyle= on? '#1a1e28':mi.col; ctx.lineWidth=on?2.6:1.6;
+      ctx.beginPath(); ctx.moveTo(x,barY-6); ctx.lineTo(x,barY+barH+6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x,barY-10, on?6:4, 0,7); ctx.fillStyle= on? '#1a1e28':mi.col; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.stroke();
+    });
+    // 目標旗（100%）
+    var xf=X(100); ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(xf,barY-10); ctx.lineTo(xf,barY-26); ctx.stroke();
+    ctx.fillStyle='#2f7d5a'; ctx.beginPath(); ctx.moveTo(xf,barY-26); ctx.lineTo(xf-14,barY-22); ctx.lineTo(xf,barY-18); ctx.closePath(); ctx.fill();
+    // 選択ラベル
+    ctx.fillStyle= m.col==='#2f7d5a'? '#2f7d5a':'#a5622a'; ctx.font='bold 14px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(m.name+' ── '+m.disp, mL, mT-14);
+    // 41.7% ラベル
+    ctx.fillStyle='#a5473a'; ctx.font='bold 10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('▲現状 ≈41.7%', X(41.7), barY-30);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-m'),10)===i); }); draw(); rd.innerHTML=miles[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-m'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

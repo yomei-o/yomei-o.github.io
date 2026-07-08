@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ランダム行列とL関数の族 ── Katz–Sarnak ／ ミレニアム問題を解くぞ 戦略③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a6a9c; --side-bg:#eaecf4;
+    --warn:#8a4b2f;
+    --calc:#5a6a9c; --calc-bg:#eaecf4;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a6a9c;      /* 戦略③：藍紫 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+    --uni:#5a6a9c; --sp:#a5473a; --orth:#2f7d5a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d5d9ec 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#262c42;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#262c42;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  input[type=range]{width:200px;accent-color:#5a6a9c;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#eaecf4;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eaecf4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#262c42;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略③（深掘り）</span></div>
+  <p class="eyebrow">1本のζでなく、L関数の"族"を見る ── ランダム行列が定理になり、数を予言する</p>
+  <h1>ランダム行列とL関数の族 ── Katz–Sarnak
+    <span class="sub">ζは、リーマン予想を持つ関数の<strong>一族の長</strong>。族ごとに<em>対称性の型</em>（ユニタリ/直交/斜交）があり、低い零点の並びが<strong>ランダム行列</strong>とそっくり。<br>有限体の族では、これは<em>Deligneの定理</em>で<strong>証明済み</strong>。しかもランダム行列は、誰も予想できなかった<strong>数論の定数を予言</strong>する（Keating–Snaith）。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：族の対称性・有限体での定理・モーメント予言</span>
+    <span>一言で：族の統計＝ランダム行列。族では定理、本体は壁</span>
+  </div>
+
+  <p class="lead">挑戦編④で、1本のゼータの<em>高い</em>零点の並びがランダム行列（GUE）とそっくりだと見ました。戦略③はこれを<strong>族（family）</strong>の視点へ広げます ── ゼータは、リーマン予想を持つ関数（L関数）の一族のほんの一員。族をまとめて眺めると、<strong>族ごとに決まった"対称性の型"</strong>が現れ、その<em>低い</em>零点の分布が対応するランダム行列と一致する（Katz–Sarnak）。この一致は、<strong>有限体の族では Deligne の定理で証明済み</strong>。そして同じランダム行列が、ゼータのモーメントの<em>正確な定数</em>まで言い当てる（Keating–Snaith）── 予言する道具になったのです。</p>
+
+  <h2><span class="n">01</span>ζは一族の長 ── L関数とその族</h2>
+
+  <p>リーマン予想を持つのは、ゼータだけではありません。よく似た関数が無数にあり、まとめて<strong>L関数</strong>と呼ばれます（ディリクレL関数、楕円曲線のL関数、保型形式のL関数…）。どれもオイラー積を持ち、臨界線 \(\mathrm{Re}(s)=1/2\) に零点が乗ると予想される ── これらをまとめた予想が<strong>一般化リーマン予想（GRH）</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">L関数の「族」── 一本でなく、まとめて眺める</div>
+    <p style="margin:0;">同じ種類のL関数を集めた集団を<strong>族</strong>という。例：<em>全てのディリクレL関数</em>（指標 \(\chi\) を動かす）、<em>二次指標のL関数 \(L(s,\chi_d)\)</em>（\(d\) を動かす）、<em>楕円曲線のL関数</em>（曲線を動かす）。1本ずつの零点は追いにくいが、<strong>族全体の"統計"は驚くほど整然</strong>としている。</p>
+  </div>
+
+  <p>ポイントは<em>視点の高さ</em>。挑戦編④は「1本のζの、高い所の零点」でした。ここでは「族の多数のL関数の、<strong>中心（\(s=1/2\)）に近い低い零点</strong>」を見ます。すると ── 族の"素性"が、零点の並び方に刻印されているのが見えてきます。</p>
+
+  <h2><span class="n">02</span>族には「対称性の型」がある ── U / O / Sp</h2>
+
+  <p>カッツとサルナク（1999）が見抜いたのは ── <strong>どの族も、三つの対称性の型のどれかに属す</strong>ということ。<strong>ユニタリ (U)・直交 (O)・斜交 (Sp)</strong>。これはランダム行列を作る三つの古典群の名前で、族の低い零点の分布が、対応する群の固有値分布と一致します。</p>
+
+  <p>下の図は、中心（\(x=0\)、臨界点）付近での<strong>零点の"混み具合"（1レベル密度）</strong>。型によって、中心での振る舞いがくっきり違います ── <span style="color:var(--sp);font-weight:700;">斜交Spは中心を避け（へこむ）</span>、<span style="color:var(--orth);font-weight:700;">直交O(偶)は中心に群がり（盛り上がる）</span>、<span style="color:var(--uni);font-weight:700;">ユニタリUは平ら</span>。族の型を、中心での零点の混み方で<em>聴き分け</em>られる。</p>
+
+  <div class="fig">
+    <div class="cap">図：族の低い零点の混み具合（1レベル密度）。<span style="color:var(--sp);font-weight:700;">Sp＝中心でへこむ（避ける）</span>／<span style="color:var(--orth);font-weight:700;">O(偶)＝中心で盛り上がる（群がる）</span>／<span style="color:var(--uni);font-weight:700;">U＝平ら</span>。ボタンで型を選ぶと、その型を持つ実例の族が出る。</div>
+    <canvas id="cvDensity" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-t="U">ユニタリ U</button>
+      <button class="btn" data-t="Sp">斜交 Sp</button>
+      <button class="btn" data-t="O">直交 O(偶)</button>
+    </div>
+    <div class="readout" id="rdDensity"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#5a6a9c;"></i>U＝1</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>Sp＝1−sin2πx/2πx</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>O(偶)＝1+sin2πx/2πx</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">挑戦編④との違い ── 高い零点 vs 低い零点</span>
+    挑戦編④は「1本のζの<em>高い</em>零点」の間隔で、これは<strong>ユニタリ（GUE）</strong>型。今回は「族の多数のL関数の<em>中心近くの低い</em>零点」で、族ごとに<strong>U/O/Sp</strong>の三型に分かれる。中心（関数等式の対称点）での混み方が、族の"対称性の素性"を映す ── 高い所では見えなかった構造が、低い所と族の視点で浮かぶ。
+  </div>
+
+  <h2><span class="n">03</span>有限体では、これは定理 ── Deligneの一様分布</h2>
+
+  <p>この「族の対称性の型」の物語、実は<strong>有限体の族では完全に証明されています</strong>。カッツ＝サルナクは、<strong>Deligne の一様分布定理</strong>（挑戦編⑤のフロベニウス＝コホモロジーの機構の一部）を使って、関数体上のL関数の族について<em>対称性の型と零点分布の一致を証明</em>しました。</p>
+
+  <div class="keybox">
+    <div class="lbl">有限体の族＝証明済み、数体の族＝条件付き</div>
+    <p style="margin:0 0 6px;">・<strong>関数体（有限体上）の族</strong>：Deligne の一様分布（モノドロミー＝大きな対称性）により、族の零点分布がランダム行列と一致することが<strong style="color:#2f7d5a;">定理</strong>（Katz–Sarnak 1999）。</p>
+    <p style="margin:0;">・<strong>数体（\(\mathbb{Q}\)上）の族</strong>：数値実験と部分的結果（Iwaniec–Luo–Sarnak らの、試験関数の台を限った1レベル密度など）が強く支持。だが<em>完全な主張は GRH 依存・条件付き</em>。</p>
+  </div>
+
+  <p>またしても ── <strong>有限体の世界では定理、整数（数体）の世界では未証明</strong>という、挑戦編⑤・戦略②で見たのと同じ地形です。ランダム行列の振る舞いは、幾何（Deligne）が保証する<em>本物の構造</em>であって、単なる数値の偶然ではない。だが整数側にその幾何が無い。</p>
+
+  <h2><span class="n">04</span>ランダム行列が「数」を予言する ── Keating–Snaith</h2>
+
+  <p>族の話と並ぶ、もう一つの決定的な成果。<strong>キーティングとスネイス（2000）</strong>は、ランダム行列（ユニタリ群 \(U(N)\) の特性多項式）の平均を計算し、それをもとに<strong>ゼータのモーメント</strong>（臨界線上での \(|\zeta|\) の \(2k\) 乗の平均）の<em>正確な主要係数</em>を予言しました。</p>
+
+  <div class="keybox">
+    <div class="lbl">ゼータのモーメントと、ランダム行列の予言</div>
+    $$\frac1T\int_0^T\big|\zeta(\tfrac12+it)\big|^{2k}\,dt\ \sim\ c_k\,(\log T)^{k^2}$$
+    <p style="margin:8px 0 0;">指数は <strong>\(k^2\)</strong>（\(k=1,2,3,4\to 1,4,9,16\)）。係数 \(c_k=a_k\,g_k\) の<strong>\(g_k\)（ランダム行列由来の因子）</strong>を、Keating–Snaith が \(U(N)\) の計算から予言した。\(g_1=1,\ g_2=\tfrac1{12},\dots\)。</p>
+  </div>
+
+  <p>すごいのは、この予言が<em>検証できる</em>こと。下の図で \(k\) を選んでください。<span style="color:var(--solved);font-weight:700;">\(k=1,2\) は昔から証明済み</span>（2乗＝ハーディ＝リトルウッド、4乗＝インガム）で、Keating–Snaith の値と<strong>ぴたり一致</strong>。そして <span style="color:var(--acc);font-weight:700;">\(k=3,4,\dots\) は誰も知らなかった値をランダム行列が予言</span>し、その後の研究が強く支持しています。<em>物理の道具（ランダム行列）が、数論の定数を言い当てた</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：ゼータの \(2k\) 乗モーメントの指数 \(k^2\)（棒の高さ）。<span style="color:var(--solved);font-weight:700;">緑＝古典的に証明済み（k=1,2）</span>／<span style="color:var(--acc);font-weight:700;">藍＝ランダム行列が予言（k≥3）</span>。ボタンで k を選ぶと式と物語。</div>
+    <canvas id="cvMoment" width="680" height="290"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-k="1">k=1（2乗）</button>
+      <button class="btn" data-k="2">k=2（4乗）</button>
+      <button class="btn" data-k="3">k=3（6乗）</button>
+      <button class="btn" data-k="4">k=4（8乗）</button>
+      <button class="btn" data-k="5">k=5</button>
+      <button class="btn" data-k="6">k=6</button>
+    </div>
+    <div class="readout" id="rdMoment"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>壁 ── 「族の統計」は「1本の零点の位置」ではない</h2>
+
+  <p>族＋ランダム行列は、本命ルート（戦略①②）を強力に補強します ── 幾何が生む対称性（Deligne）が有限体で機構を証明し、ランダム行列が数論の値を予言する。C（作用素）とD（有限体）を結ぶ、確かな橋。でも壁も、地図どおりの場所にあります。</p>
+
+  <div class="keybox">
+    <div class="lbl">戦略③の壁（二重）</div>
+    <p style="margin:0 0 6px;">① <strong>統計 ≠ 個別</strong>：族の零点分布や モーメントが分かっても、それは<em>平均・分布</em>の話。<strong>ある1本のL関数の、ある1個の零点が線上にある</strong>を直接には言わない。GRH（各L関数の零点が全部線上）は、族の統計とは別の質の要求。</p>
+    <p style="margin:0;">② <strong>数体では条件付き・限定的</strong>：有限体の族では定理だが、数体（\(\mathbb{Q}\)）では GRH 依存か、試験関数の台を限った部分結果まで。関数体→数体の橋は、<strong>Deligne の幾何（モノドロミー）に当たる物が数体に無い</strong>── 挑戦編⑤・戦略②と<em>同じ \(\mathbb{F}_1\)・無限素点の壁</em>。</p>
+  </div>
+
+  <p>ランダム行列は、リーマン予想の<em>「なぜ正しそうか」</em>をこれ以上ないほど雄弁に語り、有限体では機構を証明し、数論の定数まで予言します。でも「1本のζの全零点が例外なく線上」という<strong>個別・整数固有の主張</strong>には、統計の側からは届かない。次回（戦略④）は、有限体の成功を整数へ運ぶ最前線 ── ドニンガーの<strong>力学系コホモロジー</strong>の夢を覗きます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">L関数（ディリクレ・保型・楕円曲線など）とその一般化リーマン予想（GRH）は標準的な枠組みです。カッツ＝サルナク（1999, "Random Matrices, Frobenius Eigenvalues, and Monodromy"）は、L関数の族を対称性の型（ユニタリ U・直交 O・斜交 Sp）に分類し、族の低位零点の分布が対応する古典コンパクト群の固有値分布に一致することを提唱、<strong>関数体（有限体上）の族については Deligne の一様分布定理を用いて証明</strong>しました。数体上の族については、Iwaniec–Luo–Sarnak（2000）らが試験関数の台を制限した1レベル密度などの部分的結果を得ており、数値的にも強く支持されますが、完全な主張は条件付き（GRH 等）です。図1の1レベル密度カーネル \(W_U(x)=1,\ W_{Sp}(x)=1-\frac{\sin2\pi x}{2\pi x},\ W_{SO(\text{even})}(x)=1+\frac{\sin2\pi x}{2\pi x}\) は標準的な公式で、ブラウザ内で計算しています（実例の族は Sp＝二次指標のL関数、O＝楕円曲線・保型形式、U＝ディリクレL関数一般やζの高位零点、が代表例）。</p>
+    <p style="margin-bottom:0;">キーティング＝スネイス（2000）は \(U(N)\) の特性多項式のモーメントから、\(\frac1T\int_0^T|\zeta(1/2+it)|^{2k}dt\sim c_k(\log T)^{k^2}\) の主要係数 \(c_k=a_k g_k\)（\(g_k\) がランダム行列因子、\(g_1=1,g_2=1/12,g_3=42/9!,\dots\)）を予想しました。\(k=1\)（2乗、ハーディ＝リトルウッド 1918）と \(k=2\)（4乗、インガム 1926）は証明済みで予想値と一致。\(k\ge3\) の主要係数は<strong>未証明</strong>（Conrey–Ghosh／Conrey–Gonek らの予想、上下からの評価や部分的結果はあるが完全な証明ではない）で、RMT予想は強く支持されています。これらの統計・モーメントはいずれも<strong>リーマン予想そのものを証明しない</strong>（多くは GRH を仮定するか、平均的性質を述べる）。リーマン予想は2025年時点で未解決です。図2の棒は指数 \(k^2\) を示す模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>挑戦編④（1本のζの高い零点）と、この回（L関数の族の低い零点）は、何が違う？
+        <details><summary>答えを見る</summary><div class="ans">④は1本のζの高い所の零点間隔で、型は一つ＝ユニタリ（GUE）。この回は多数のL関数を集めた「族」の、中心（s=1/2）近くの低い零点の分布で、族ごとにユニタリ/直交/斜交の三型に分かれる（Katz–Sarnak）。中心での混み方（Spは避け、O偶は群がり、Uは平ら）が族の対称性の素性を映す。</div></details>
+      </li>
+      <li>「族の対称性の型」が有限体では定理で、数体では未証明なのはなぜ？
+        <details><summary>答えを見る</summary><div class="ans">有限体の族では、Deligneの一様分布定理（フロベニウス＝コホモロジーの大きなモノドロミー＝幾何）が零点分布とランダム行列の一致を保証する＝定理。数体にはこの幾何に当たる物が無いので、数値・部分結果（台を限った1レベル密度）や GRH 依存にとどまる。挑戦編⑤・戦略②と同じ F₁・無限素点の壁。</div></details>
+      </li>
+      <li>Keating–Snaith の何がすごく、なぜそれでもRHは解けない？
+        <details><summary>答えを見る</summary><div class="ans">ランダム行列（U(N)）の計算から、ゼータのモーメント ∫|ζ|^{2k} ~ c_k(logT)^{k²} の正確な係数を予言した。k=1,2は既知の定理と一致、k≥3は誰も知らなかった値を予言し支持されている＝物理の道具が数論の定数を言い当てた。だがこれは平均・分布・モーメントの話で、1本のζの全零点が例外なく線上、という個別・整数固有の主張は言わない。統計は個別に届かない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略③まとめ</span>族の統計はランダム行列、本体は壁</h2>
+    <p>ζはL関数<strong>一族の長</strong>。族をまとめて低い零点を見ると、<strong>三つの対称性の型（U/O/Sp）</strong>に分かれ、分布が対応するランダム行列と一致する（Katz–Sarnak）。中心での混み方が族の素性を映す（Sp避け・O偶群がり・U平ら）。この一致は<strong>有限体の族では Deligne の定理で証明済み</strong>。さらに Keating–Snaith は \(U(N)\) の計算で<strong>ゼータのモーメント \((\log T)^{k^2}\) の係数を予言</strong>（k=1,2は既知と一致、k≥3は予言）── 物理の道具が数論の値を言い当てた。</p>
+    <p>これはC（作用素）とD（有限体）を結ぶ強力な橋。だが壁は二重 ── ①<strong>族の統計は1本の零点の位置を言わない</strong>（GRHは別の質）、②<strong>数体では条件付き・限定的</strong>で、関数体→数体の橋は Deligne の幾何に当たる物が数体に無い（同じ \(\mathbb{F}_1\)・∞ の壁）。ランダム行列は「なぜ正しそうか」を雄弁に語り機構を有限体で証明するが、整数固有の個別主張には届かない。次回は有限体を整数へ運ぶ最前線＝ドニンガーの力学系コホモロジーへ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-senryaku2-connes.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaecf4;font-weight:700;letter-spacing:.03em;">← 戦略②</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaecf4;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku4-deninger.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaecf4;font-weight:700;letter-spacing:.03em;">戦略④：Deningerの力学系コホモロジー →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略③（深掘り）、数学好きの高校生・大学生向け読み物。L関数・一般化リーマン予想（GRH）、カッツ＝サルナク（1999）の族の対称性分類（ユニタリ/直交/斜交）と低位零点分布のランダム行列一致、関数体の族に対する Deligne の一様分布定理を用いた証明、数体の族に対する Iwaniec–Luo–Sarnak（2000）らの部分的結果はいずれも実在の研究・定理です。1レベル密度カーネル \(W_U=1,\ W_{Sp}=1-\sin(2\pi x)/(2\pi x),\ W_{SO(\text{even})}=1+\sin(2\pi x)/(2\pi x)\) は標準的な公式。キーティング＝スネイス（2000）のモーメント予想 \(\int_0^T|\zeta(1/2+it)|^{2k}dt\sim c_k T(\log T)^{k^2}\)（\(c_k=a_kg_k\)）は、\(k=1\)（ハーディ＝リトルウッド 1918）・\(k=2\)（インガム 1926）で証明済みの値と一致し、\(k\ge3\) は予想（Conrey–Ghosh／Conrey–Gonek 系、未証明）です。これらの統計・モーメントはリーマン予想を証明せず（GRH 仮定や平均的性質）、関数体→数体の橋も未確立で、リーマン予想は2025年時点で未解決です。図はブラウザ内で計算した密度・模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1の型ボタンで中心での零点の混み方の違い、図2の k ボタンでモーメントの指数と「証明済み vs ランダム行列の予言」を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 図1：1レベル密度（三つの型） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvDensity'), rd=document.getElementById('rdDensity');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-t]'));
+  var lastW=680, sel='U';
+  function sinc2(x){ if(Math.abs(x)<1e-9) return 1; return Math.sin(2*Math.PI*x)/(2*Math.PI*x); }
+  var types={
+    U:{col:'#5a6a9c', f:function(x){return 1;}, name:'ユニタリ U', ex:'ディリクレL関数（族）、ζの高位零点。中心でも平ら（1）── 特別な対称点を持たない族。'},
+    Sp:{col:'#a5473a', f:function(x){return 1-sinc2(x);}, name:'斜交 Sp', ex:'二次指標のL関数 L(s,χ_d)（族）。中心で密度が0へ落ちる＝<b>零点が中心を避ける</b>（中心付近の零点が少ない）。'},
+    O:{col:'#2f7d5a', f:function(x){return 1+sinc2(x);}, name:'直交 O(偶)', ex:'楕円曲線・保型形式のL関数（族）。中心で密度が2まで盛り上がる＝<b>零点が中心に群がる</b>（中心付近に零点が多い）。'}
+  };
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=42,mR=16,mT=16,mB=32, pW=w-mL-mR, pH=h-mT-mB;
+    var X0=0,X1=3, yMax=2.2;
+    function X(x){ return mL + (x-X0)/(X1-X0)*pW; }
+    function Y(v){ return mT + pH - v/yMax*pH; }
+    ctx.clearRect(0,0,w,h);
+    // grid
+    ctx.strokeStyle='#e3e5ef'; ctx.lineWidth=1;
+    for(var g=0;g<=2;g+=0.5){ var yy=Y(g); ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+pW,yy); ctx.stroke();
+      ctx.fillStyle='#8a90a4'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText(g.toFixed(1), mL-5, yy+4); }
+    // 中心線 x=0 強調
+    ctx.strokeStyle='#c3c7db'; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(X(0),mT); ctx.lineTo(X(0),mT+pH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#8a90a4'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var xv=0;xv<=3;xv+=1) ctx.fillText('x='+xv, X(xv), mT+pH+16);
+    ctx.textAlign='left'; ctx.fillText('中心（臨界点 s=1/2）からの距離 →', mL+4, mT+pH+28);
+    // 全型を薄く、選択を濃く
+    ['U','Sp','O'].forEach(function(k){
+      var t=types[k], on=(k===sel);
+      ctx.strokeStyle=t.col; ctx.lineWidth= on?3:1.4; ctx.globalAlpha= on?1:0.35;
+      ctx.beginPath();
+      for(var x=X0;x<=X1;x+=0.01){ var v=t.f(x); if(x===X0) ctx.moveTo(X(x),Y(v)); else ctx.lineTo(X(x),Y(v)); }
+      ctx.stroke(); ctx.globalAlpha=1;
+    });
+    // 中心マーカー（選択型の中心値）
+    var v0=types[sel].f(0.0001);
+    ctx.fillStyle=types[sel].col; ctx.beginPath(); ctx.arc(X(0),Y(v0),5,0,7); ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  function report(){
+    var t=types[sel]; var v0=t.f(0.0001);
+    rd.innerHTML='<b>'+t.name+'</b> ── 中心(x=0)での密度 ≈ <b>'+v0.toFixed(2)+'</b>。'+t.ex;
+  }
+  function pick(k){ sel=k; btns.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-t')===k); }); draw(); report(); }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(b.getAttribute('data-t')); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick('U');},40); window.addEventListener('load',function(){pick('U');});
+})();
+
+/* ===== 図2：モーメントの指数 k^2 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvMoment'), rd=document.getElementById('rdMoment');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-k]'));
+  var lastW=680, sel=1;
+  var info={
+    1:{proven:true, txt:'<b>k=1（2乗モーメント）</b>：∫|ζ|² ~ (log T)¹。<b style="color:#2f7d5a;">ハーディ＝リトルウッド（1918）で証明済み</b>。Keating–Snaith の g₁=1 と一致。'},
+    2:{proven:true, txt:'<b>k=2（4乗モーメント）</b>：∫|ζ|⁴ ~ c₂(log T)⁴。<b style="color:#2f7d5a;">インガム（1926）で証明済み</b>（係数 1/2π²）。g₂=1/12 と一致。'},
+    3:{proven:false, txt:'<b>k=3（6乗モーメント）</b>：~ c₃(log T)⁹。<b style="color:#5a6a9c;">ランダム行列（Keating–Snaith 2000）が係数を予言</b>。主要係数は未証明だが強く支持（Conrey–Ghosh 系）。'},
+    4:{proven:false, txt:'<b>k=4（8乗モーメント）</b>：~ c₄(log T)¹⁶。<b style="color:#5a6a9c;">RMT の予言</b>。未証明。'},
+    5:{proven:false, txt:'<b>k=5</b>：~ (log T)²⁵。RMT が係数を与えるが未証明。指数 k² が急伸。'},
+    6:{proven:false, txt:'<b>k=6</b>：~ (log T)³⁶。同上。ζ がどれだけ大きく振れるかを支配する量。'}
+  };
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=42,mR=16,mT=18,mB=42, pW=w-mL-mR, pH=h-mT-mB;
+    var ks=[1,2,3,4,5,6], yMax=40;
+    var n=ks.length, cw=pW/n;
+    function Y(v){ return mT + pH - v/yMax*pH; }
+    ctx.clearRect(0,0,w,h);
+    // y メモリ（指数）
+    ctx.fillStyle='#8a90a4'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    for(var g=0;g<=40;g+=10){ var yy=Y(g); ctx.strokeStyle='#e3e5ef'; ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+pW,yy); ctx.stroke(); ctx.fillText(g, mL-5, yy+4); }
+    ctx.save(); ctx.translate(14,mT+pH/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillStyle='#6a7088'; ctx.fillText('指数 k²（(log T) の冪）',0,0); ctx.restore();
+    for(var i=0;i<n;i++){
+      var k=ks[i], ex=k*k, x=mL+i*cw+cw/2, on=(k===sel), prov=info[k].proven;
+      var col= prov? '#2f7d5a':'#5a6a9c';
+      var bw=Math.min(cw*0.56,46), yTop=Y(ex);
+      ctx.fillStyle=col; ctx.globalAlpha= on?1:0.55;
+      ctx.fillRect(x-bw/2,yTop,bw,mT+pH-yTop); ctx.globalAlpha=1;
+      if(on){ ctx.strokeStyle='#1a1e28'; ctx.lineWidth=2; ctx.strokeRect(x-bw/2,yTop,bw,mT+pH-yTop); }
+      // 値
+      ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center'; ctx.fillText('k²='+ex, x, yTop-6);
+      // k ラベル
+      ctx.fillStyle='#3a3a44'; ctx.font='bold 11.5px sans-serif'; ctx.fillText('k='+k, x, mT+pH+16);
+      ctx.fillStyle= prov?'#2f7d5a':'#5a6a9c'; ctx.font='10px sans-serif'; ctx.fillText(prov?'証明済':'RMT予言', x, mT+pH+30);
+    }
+  }
+  function report(){ rd.innerHTML=info[sel].txt + '　∫₀ᵀ|ζ(1/2+it)|^{2k}dt ~ c_k·(log T)^{k²}。指数 k² は急速に伸びる。'; }
+  function pick(k){ sel=k; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-k'),10)===k); }); draw(); report(); }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-k'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(1);},40); window.addEventListener('load',function(){pick(1);});
+})();
+</script>
+</body>
+</html>

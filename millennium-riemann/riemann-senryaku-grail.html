@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>継ぎ目は「無限素点」── 欠けた一個の物 ／ ミレニアム問題を解くぞ 戦略・グレイル</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#8a5a2e; --side-bg:#f2e9dd;
+    --warn:#8a4b2f;
+    --calc:#8a5a2e; --calc-bg:#f2e9dd;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#8a5a2e;      /* グレイル：ブロンズ/金 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcc0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3a2c18;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#3a2c18;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#f2e9dd;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2e9dd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a2c18;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略・グレイル（深掘り）</span></div>
+  <p class="eyebrow">縁の、そのまた縁 ── 全ての道が止まった、たった一つの場所</p>
+  <h1>継ぎ目は「無限素点」── 欠けた一個の物
+    <span class="sub">戦略①②③④は、別々の道なのに<em>毎回まったく同じ場所</em>で止まった ── <strong>無限素点 \(\infty\)</strong>。<br>有限体には無く、整数だけが背負う、この"連続の素点"。<br>欠けているのは4つの難問ではなく、<strong>4つの性質を同時に満たす一個の物（グレイル）</strong>。それを一文にする。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：繰り返す継ぎ目を収束させ、グレイルを名指す</span>
+    <span>一言で：欠けは「∞込みの幾何＋零点＝スペクトル＋正値性」一個</span>
+  </div>
+
+  <p class="lead">戦略編で本命ルート（零点＝スペクトル）を四つの角度から掘りました ── ①明示公式＝跡公式、②コンヌの正値性、③L関数の族とランダム行列、④ドニンガーの力学系。方向はどれも正しく、有限体では機構が定理になる。なのに整数に来ると、<em>判で押したように同じ一点</em>で止まる ── <strong>無限素点 \(\infty\)</strong>。この回は姉妹編ヤン=ミルズの「グレイル」回にならい、その継ぎ目を正面から掘り、<strong>欠けた一個の物</strong>を、できるだけ鋭い一文にします。掟は変わりません ── 旗は立てない、縁の標識を立てる。ここは<em>縁の、そのまた縁</em>です。</p>
+
+  <h2><span class="n">01</span>くり返し現れた継ぎ目 ── 四つの道、同じ壁</h2>
+
+  <p>戦略①〜④が「どこで止まったか」を並べると、全部が一点を指しています。下の図で<strong>各ルートを選ぶ</strong>と、その止まった場所が読めます ── どれも矢印の先は同じ、<strong>\(\infty\)（と、その幾何 \(\mathbb{F}_1\)）</strong>。</p>
+
+  <div class="fig">
+    <div class="cap">図：戦略①②③④が止まった場所は、すべて<strong>無限素点 ∞ ／ 𝔽₁</strong> に収束する。ルートのボタンを選ぶと、そこでの継ぎ目が出る。別々の道が同じ縁で会う。</div>
+    <canvas id="cvConv" width="680" height="320"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-r="0">①跡公式</button>
+      <button class="btn" data-r="1">②コンヌ正値性</button>
+      <button class="btn" data-r="2">③族・RMT</button>
+      <button class="btn" data-r="3">④ドニンガー</button>
+    </div>
+    <div class="readout" id="rdConv"></div>
+  </div>
+
+  <h2><span class="n">02</span>なぜ ∞ だけが違うのか ── 離散の素数、連続の無限遠</h2>
+
+  <p>戦略②で見たとおり、\(\mathbb{Q}\) の"場所（素点）"は、各素数 \(p\) と、無限素点 \(\infty\) で全部でした。この \(\infty\) だけが、他の素点と<strong>質が違う</strong>のです。</p>
+
+  <div class="keybox">
+    <div class="lbl">有限素点 p と 無限素点 ∞ ── 離散 vs 連続</div>
+    <p style="margin:0 0 6px;">・<strong>有限素点 \(p\)</strong>：\(p\)進の世界は<em>離散的・代数的</em>。フロベニウス、コホモロジー、点の数え上げ ── <strong>有限体の機械がそのまま効く</strong>（挑戦編⑤）。</p>
+    <p style="margin:0;">・<strong>無限素点 \(\infty\)</strong>：完備化すると<em>実数 \(\mathbb{R}\)（連続・解析的）</em>。ゼータの<strong>ガンマ因子 \(\Gamma(s/2)\pi^{-s/2}\)</strong> がここに宿る。<em>有限体にはそもそも \(\infty\) が無い</em>── だから有限体の機械には、\(\infty\) を扱う部品が最初から付いていない。</p>
+  </div>
+
+  <p>これが核心です。有限体版RHが解けるのは、<em>\(\infty\) が無いから</em>とも言える。整数は \(\infty\) を背負っている ── <strong>離散的な素数たちと、連続的な \(\infty\) を、一つの幾何の中で同じ土俵に乗せる</strong>。それができれば、有限体の機構（フロベニウス・コホモロジー・正値性）が整数にも及ぶ。できないのは、その"両刀の幾何"が無いから。</p>
+
+  <div class="aside">
+    <span class="tag">完備化ゼータ ── ∞ を足すと、対称になる</span>
+    ゼータに \(\infty\) の因子（ガンマ因子）を掛けた<strong>完備化ゼータ \(\xi(s)=\pi^{-s/2}\Gamma(s/2)\,\zeta(s)\)</strong> は、\(\xi(s)=\xi(1-s)\) というきれいな鏡対称（第4回の関数等式）を満たす。<em>\(\infty\) を足して初めて、素数たちの世界が"閉じた・対称な"姿になる</em>。第一部ヤン=ミルズで「反射正値性 (RP) が鏡対称の要」だったのと同じ役どころ ── \(\infty\) は、整数の世界を"閉じる"ための最後のピース。だが閉じ方（幾何）が分からない。
+  </div>
+
+  <h2><span class="n">03</span>グレイル ── 欠けた一個の物を、一文で</h2>
+
+  <p>戦略①〜④で必要だった部品を全部重ねると、欠けは<em>ばらばらの難問ではなく</em>、<strong>一個の物</strong>に集まります。</p>
+
+  <div class="keybox">
+    <div class="lbl">リーマン予想のグレイル（欠けた一個の物）</div>
+    <p class="big" style="margin:0;"><strong>無限素点 \(\infty\) まで込めた \(\mathrm{Spec}\,\mathbb{Z}\) の"曲線"の幾何（＝\(\mathbb{F}_1\) 上の幾何）</strong>であって、その上で<strong>ゼータの零点を固有値に生むコホモロジー（フロベニウス的作用素の舞台）</strong>を持ち、かつ<strong>その固有値を臨界線に固定する反射正値性（ワイル／ホッジ型の正値性）</strong>を備えた、<em>ただ一つの構造</em>。</p>
+  </div>
+
+  <p>これは第一部ヤン=ミルズのグレイル ──「RP保存 ∧ ゲージ共変 ∧ 対数一様な粗視化」という<em>一個の物</em>── と、驚くほど同じ顔をしています。<strong>正しい機構は隣の世界（有限体／格子の強結合）で分かっている。欠けは、整数／連続極限に固有の"一部品"</strong>。物理の谷と数論の谷が、最後は同じ形の縁になる。</p>
+
+  <h2><span class="n">04</span>四つの対立 ── どのプログラムも、一つ落とす</h2>
+
+  <p>グレイルが手強いのは、それが<em>4つの別々の難問</em>だからではなく、<strong>4つの性質を"同時に"満たさねばならない</strong>から。現存のプログラムは、いくつかを掴むと、必ず一つを取りこぼします。下の表で<strong>プログラムを選ぶ</strong>と、何を満たし、何を落とすかが見えます ── <em>すべてに◯が付く列は、まだ一つも無い。</em></p>
+
+  <div class="fig">
+    <div class="cap">図：グレイルの4性質 ×　各プログラム。<span style="color:var(--solved);font-weight:700;">◯＝満たす</span>／<span style="color:var(--gold);font-weight:700;">△＝部分的</span>／<span style="color:var(--open);font-weight:700;">✕＝落とす</span>。列を選ぶと状態。<strong>全部◯の列＝グレイル</strong>は空欄のまま。有限体は全部◯だが"別世界（∞が無い）"。</div>
+    <canvas id="cvMatrix" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-c="0">有限体（別世界）</button>
+      <button class="btn" data-c="1">コンヌ跡公式</button>
+      <button class="btn" data-c="2">ドニンガー</button>
+      <button class="btn" data-c="3">数論的サイト</button>
+      <button class="btn" data-c="4">グレイル（理想）</button>
+    </div>
+    <div class="readout" id="rdMatrix"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">4つの対立（同時に満たせない緊張）</div>
+    <p style="margin:0 0 5px;">・<strong>離散 ⊥ 連続</strong>：素数は代数幾何（\(\mathbb{F}_1\)・フロベニウス）を、\(\infty\) は解析幾何（\(\mathbb{R}\)・流れ・ガンマ因子）を要求する。一つの空間が両方であれ。</p>
+    <p style="margin:0 0 5px;">・<strong>幾何 ⊥ 正値性</strong>：空間を夢見る（ドニンガー）ことも、正値性を述べる（コンヌ）こともできる。だが<em>幾何が正値性を実際に生む</em>（有限体のホッジ指数定理のように）繋ぎが無い。</p>
+    <p style="margin:0 0 5px;">・<strong>半局所 ⊥ 完全</strong>：跡公式・正値性は有限個の素点では証明できる。\(\infty\) を含む<em>全体</em>で閉じない。</p>
+    <p style="margin:0;">・<strong>統計 ⊥ 個別</strong>：族・ランダム行列は分布を与える。<em>1本の零点</em>を線上に固定はしない。</p>
+    <p style="margin:10px 0 0;">金字塔（各プログラム）は、必ずどれか一つを落とす。欠けは一個の物＝<strong>4対立を同時に解く \(\infty\) 込みの幾何＋正値性</strong>。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>縁の、そのまた縁</h2>
+
+  <p>ここまで来ました。リーマン予想の難しさは、<em>あちこちに薄く広がっている</em>のではありません。<strong>ただ一点 ── 無限素点 \(\infty\) を、素数たちと同じ幾何の土俵に乗せ、そこに零点を固有値とする正値なコホモロジーを作る</strong> ── に、恐ろしく濃く凝縮している。有限体という隣の世界が「その機構は本物だ」と保証し、コンヌ・ドニンガー・数論的サイトが設計図を描き、ランダム行列が「正しそうだ」と歌う。それでも、その<em>一個の物</em>は、まだ誰の手の中にもない。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの掟（再掲）</div>
+    <p class="big" style="margin:0;">旗は立てない。<strong>縁の標識を立てる。</strong>私たちは「解けた」と言わない ── 代わりに、150年の難問の難しさが<em>どの一点に凝縮しているか</em>を、できるだけ正確に指した。それが \(\infty\) の幾何と正値性、というグレイル。分かったふりも、解けたふりも、しない。</p>
+  </div>
+
+  <p>次回（戦略⑥・完）は、この長い探索をメタに畳みます ── 「\(L\) が成り立てばRH」という形に<strong>最小の補題 \(L\)</strong> へ還元し、良い還元と（言い換えの罠と同じ）循環を分ける掟で、戦略編を締めくくります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(\mathbb{Q}\) の素点が有限素点（各素数 \(p\)、\(p\)進・非アルキメデス）と無限素点（\(\infty\)、実数体 \(\mathbb{R}\)・アルキメデス）から成ること、完備化ゼータ \(\xi(s)=\pi^{-s/2}\Gamma(s/2)\zeta(s)\) が \(\xi(s)=\xi(1-s)\) を満たし、ガンマ因子が無限素点の局所因子であることは標準的な事実です。有限体・関数体には（実数体への完備化という意味の）アルキメデス素点が無く、これが有限体版RHが証明できる一因である、という見方も広く共有されています。「グレイル（\(\infty\) 込みの \(\mathbb{F}_1\) 幾何＋零点を固有値とするコホモロジー＋ワイル/ホッジ型正値性）」という定式化は、本シリーズが戦略①〜④の共通の欠落を<strong>一つの対象として指すための整理・比喩</strong>であり、確立した単一の定理・定義ではありません。</p>
+    <p style="margin-bottom:0;">コンヌの跡公式とワイル正値性（半局所で証明済み）、ドニンガーの力学系的コホモロジー（予想的プログラム）、コンヌ＝コンサニの数論的サイト・\(\mathbb{F}_1\) 幾何（構成途上）、Katz–Sarnak／ランダム行列（族の統計、関数体で証明・数体で条件付き）は、いずれも前の各回で述べたとおりの状況で、無限素点の扱いが共通の未解決点です。「4つの対立」も、これらの緊張関係を分かりやすく整理した表現で、正式な分類ではありません。第一部ヤン=ミルズのグレイル（RP・ゲージ共変・対数一様）との類比は、両問題の「正しい機構は隣接領域で分かるのに、対象固有の一部品が欠ける」という構造の相似を指す比喩です。リーマン予想は2025年時点で未解決です。図はいずれも対応・収束関係を示す模式図で、配置に定量的意味はありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>戦略①〜④は別々の道なのに、なぜ「同じ壁」で止まると言えるのか。
+        <details><summary>答えを見る</summary><div class="ans">①跡公式のアルキメデス項、②コンヌの正値性の無限素点の項 W_∞、③関数体→数体の橋（∞にモノドロミーの類似が無い）、④ドニンガーの流れの固定点＝∞ ── どれも止まった場所が無限素点 ∞（とその幾何 𝔽₁）に収束する。別々の角度が同じ縁で会う。</div></details>
+      </li>
+      <li>無限素点 ∞ は、有限素点 p とどう質が違う？ なぜそれがRHの継ぎ目になる？
+        <details><summary>答えを見る</summary><div class="ans">有限素点 p は離散的・代数的で、有限体の機械（フロベニウス・コホモロジー・数え上げ）がそのまま効く。無限素点 ∞ は完備化が実数 ℝ で連続的・解析的、ゼータのガンマ因子が宿る。有限体には ∞ が無いので、その機械には ∞ を扱う部品が無い。整数は ∞ を背負うため、離散の素数と連続の ∞ を一つの幾何に同居させる必要があり、そこが継ぎ目。</div></details>
+      </li>
+      <li>リーマン予想の「グレイル（欠けた一個の物）」を一文で。
+        <details><summary>答えを見る</summary><div class="ans">無限素点 ∞ まで込めた Spec ℤ の"曲線"の幾何（𝔽₁ 上の幾何）で、ゼータの零点を固有値に生むコホモロジー（フロベニウス的作用素の舞台）を持ち、かつその固有値を臨界線に固定する反射正値性（ワイル/ホッジ型）を備えた、ただ一つの構造。4つの性質を同時に満たす一個の物で、どの現存プログラムも一つは落とす。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略・グレイルまとめ</span>継ぎ目は「無限素点」</h2>
+    <p>戦略①〜④は別々の道なのに、判で押したように<strong>同じ一点＝無限素点 \(\infty\)</strong>で止まった。\(\infty\) だけが他の素点と質が違う ── 有限素点 \(p\) は離散的・代数的（有限体の機械が効く）、\(\infty\) は連続的・解析的（実数 \(\mathbb{R}\)・ガンマ因子）。有限体に \(\infty\) が無いことが、あちらでRHが解ける一因。完備化ゼータ \(\xi(s)=\pi^{-s/2}\Gamma(s/2)\zeta(s)\) は \(\infty\) を足して初めて鏡対称に閉じる。</p>
+    <p>欠けは4つの難問でなく<strong>一個の物＝グレイル</strong>：<em>\(\infty\) 込みの \(\mathbb{F}_1\) 幾何 ＋ 零点を固有値に生むコホモロジー ＋ 臨界線に固定する反射正値性</em>。4つの対立（離散⊥連続・幾何⊥正値性・半局所⊥完全・統計⊥個別）を同時に解く必要があり、どのプログラムも一つ落とす。第一部ヤン=ミルズのグレイルと同じ顔 ── 正しい機構は隣で分かり、欠けは対象固有の一部品。私たちは旗を立てず、難しさが凝縮する<strong>その一点</strong>を指した。縁の、そのまた縁。次回（完）はこれを最小の補題に還元する。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-senryaku4-deninger.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f2e9dd;font-weight:700;letter-spacing:.03em;">← 戦略④</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f2e9dd;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku6-hodai.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f2e9dd;font-weight:700;letter-spacing:.03em;">戦略⑥：最小の補題に還元 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略・グレイル（深掘り）、数学好きの高校生・大学生向け読み物。\(\mathbb{Q}\) の素点（有限素点＝各素数の \(p\)進、無限素点＝実数体 \(\mathbb{R}\)）、完備化ゼータ \(\xi(s)=\pi^{-s/2}\Gamma(s/2)\zeta(s)\) と関数等式 \(\xi(s)=\xi(1-s)\)、ガンマ因子が無限素点の局所因子であることは標準的な事実です。有限体・関数体にアルキメデス素点が無いことが有限体版RHの可解性の一因という見方も広く共有されています。本回の「グレイル」および「4つの対立」は、戦略①〜④（コンヌの跡公式・ワイル正値性、ドニンガーの力学系的コホモロジー、コンヌ＝コンサニの数論的サイト／\(\mathbb{F}_1\)、Katz–Sarnak／ランダム行列）の共通の未解決点を一つの対象・緊張関係として整理・比喩したもので、確立した単一の定理・定義や公式な分類ではありません。第一部ヤン=ミルズのグレイルとの類比も構造の相似を指す比喩です。リーマン予想は2025年時点で未解決です。図は模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1で四つの道が同じ継ぎ目∞に収束、図2でグレイルの4性質×プログラムの対立を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* ===== 図1：四つの道が ∞ に収束 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvConv'), rd=document.getElementById('rdConv');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-r]'));
+  var lastW=680, sel=0;
+  var routes=[
+    {name:'① 明示公式＝跡公式', stop:'跡公式のアルキメデス項',
+     msg:'<b>① 跡公式</b>：明示公式は跡公式の形。有限個の素点（半局所）では書けるが、<b style="color:#a5473a;">アルキメデス項（∞）</b>を含む完全版で閉じない。止まる場所＝∞。'},
+    {name:'② コンヌ正値性', stop:'無限素点の項 W_∞',
+     msg:'<b>② コンヌ</b>：RH⟺ワイル正値性 W(f)=Σ_v W_v(f)≥0。半局所は証明済み。難所は決まって<b style="color:#a5473a;">無限素点の項 W_∞</b>。止まる場所＝∞。'},
+    {name:'③ 族・ランダム行列', stop:'関数体→数体の橋（∞にモノドロミー無し）',
+     msg:'<b>③ 族・RMT</b>：関数体の族では Deligne の幾何（モノドロミー）で証明。数体には<b style="color:#a5473a;">その幾何（∞を含む 𝔽₁）に当たる物が無い</b>ので条件付き。止まる場所＝∞/𝔽₁。'},
+    {name:'④ ドニンガー力学系', stop:'流れの固定点＝∞（空間が未構成）',
+     msg:'<b>④ ドニンガー</b>：素数＝閉軌道、零点＝流れのスペクトル。∞は<b style="color:#a5473a;">流れの固定点</b>に対応するが、その空間・∞の扱いが未構成。止まる場所＝∞。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=16,mR=16,mT=16,mB=12, pW=w-mL-mR, pH=h-mT-mB;
+    ctx.clearRect(0,0,w,h);
+    // 中心 ∞ ノード（右）
+    var cxN=mL+pW*0.80, cyN=mT+pH/2, R=46;
+    // 4つのルート（左）
+    var bx=mL+8, bw=pW*0.42, bh=44, gap=(pH-4*bh)/3;
+    for(var i=0;i<4;i++){
+      var by=mT+i*(bh+gap), on=(i===sel);
+      // 矢印（先に描く）
+      ctx.strokeStyle= on? '#8a5a2e':'#d8c6a8'; ctx.lineWidth= on?2.6:1.4;
+      ctx.beginPath(); ctx.moveTo(bx+bw, by+bh/2);
+      ctx.quadraticCurveTo((bx+bw+cxN)/2, by+bh/2, cxN-R*0.9, cyN + (by+bh/2-cyN)*0.25);
+      ctx.stroke();
+      // ボックス
+      ctx.fillStyle= on? '#efe0c8':'#f6efe2'; roundRect(ctx,bx,by,bw,bh,7); ctx.fill();
+      ctx.strokeStyle= on? '#8a5a2e':'#d8c6a8'; ctx.lineWidth= on?2:1; roundRect(ctx,bx,by,bw,bh,7); ctx.stroke();
+      ctx.fillStyle='#3a2c18'; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText(routes[i].name, bx+12, by+bh/2-8);
+      ctx.fillStyle='#a5473a'; ctx.font='10.5px sans-serif'; ctx.fillText('止：'+routes[i].stop, bx+12, by+bh/2+9);
+    }
+    ctx.textBaseline='alphabetic';
+    // ∞ ノード
+    ctx.beginPath(); ctx.arc(cxN,cyN,R,0,7); ctx.fillStyle='#8a5a2e'; ctx.fill();
+    ctx.strokeStyle='#5a3a18'; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 30px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('∞', cxN, cyN-4);
+    ctx.font='bold 11px sans-serif'; ctx.fillText('無限素点 / 𝔽₁', cxN, cyN+20);
+    ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#8a5a2e'; ctx.font='11px sans-serif'; ctx.fillText('すべての道が、ここへ', cxN, cyN+R+18);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-r'),10)===i); }); draw(); rd.innerHTML=routes[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-r'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+
+/* ===== 図2：グレイルの対立マトリクス ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvMatrix'), rd=document.getElementById('rdMatrix');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-c]'));
+  var lastW=680, sel=0;
+  var props=['∞込みの幾何（𝔽₁）','零点＝スペクトル（実現）','完全な跡公式','RHを出す正値性'];
+  // 2=◯,1=△,0=✕
+  var cols=[
+    {name:'有限体（別世界）', v:[2,2,2,2], note:'別世界＝∞が無い',
+     msg:'<b>有限体（別世界）</b>：4性質すべて◯＝だからRHが定理（Weil・Deligne）。ただし土台は本物の体 𝔽_q で、<b>そもそも ∞ が無い</b>。整数の問題の"答え合わせ"にはなるが、直接は使えない。'},
+    {name:'コンヌ跡公式', v:[0,1,1,0],
+     msg:'<b>コンヌ跡公式</b>：零点＝吸収スペクトル（△実現）、跡公式は半局所（△）、正値性=RHは未（✕）、∞込みの幾何は無い（✕）。正値性を最もクリーンに述べるが、幾何と∞を落とす。'},
+    {name:'ドニンガー', v:[1,1,1,0],
+     msg:'<b>ドニンガー</b>：∞を流れの固定点として"設計図"には書く（△）、零点＝スペクトル・跡公式も夢として書ける（△）。だが空間が未構成で、RHを出す正値性は未（✕）。設計図はあるが建物が無い。'},
+    {name:'数論的サイト', v:[1,1,1,0], note:'Connes–Consani',
+     msg:'<b>数論的サイト（Connes–Consani）</b>：𝔽₁ 幾何を構成中（△）、有限体版RHをこの言葉で再導出、半局所正値性も証明。だが∞込みの完全な正値性（RH）は未（✕）。基礎工事は進むが頂上は未達。'},
+    {name:'グレイル（理想）', v:[2,2,2,2], grail:true,
+     msg:'<b>グレイル（理想）</b>：4性質すべて◯を、<b>∞込みの整数の幾何で</b>実現する一個の物。これが在ればRH。<b style="color:#a5473a;">現存のどの列も、必ず一つ以上を落とす</b>。全部◯の列は、まだ空欄。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=150,mR=14,mT=40,mB=12, pW=w-mL-mR, pH=h-mT-mB;
+    var col=cols[sel], n=props.length, rowH=pH/n;
+    ctx.clearRect(0,0,w,h);
+    // 見出し
+    ctx.font='bold 13.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle= col.grail? '#8a5a2e' : (sel===0?'#2f7d5a':'#3a2c18');
+    ctx.fillText(col.name+(col.note?'（'+col.note+'）':''), mL+pW/2, 22);
+    var SYM={2:['◯','#2f7d5a','#e6f0ea'],1:['△','#a9791a','#f7f0e4'],0:['✕','#a5473a','#f7ece9']};
+    for(var i=0;i<n;i++){
+      var y=mT+i*rowH, st=col.v[i], s=SYM[st];
+      // プロパティ名
+      ctx.fillStyle='#5a4a30'; ctx.font='12px sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+      wrapR(ctx, props[i], mL-12, y+rowH/2, 132, 14);
+      // セル
+      ctx.fillStyle=s[2]; roundRect(ctx,mL,y+6,pW,rowH-12,8); ctx.fill();
+      ctx.strokeStyle=s[1]; ctx.lineWidth=1.6; roundRect(ctx,mL,y+6,pW,rowH-12,8); ctx.stroke();
+      // 記号
+      ctx.fillStyle=s[1]; ctx.font='bold 26px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(s[0], mL+40, y+rowH/2);
+      // ラベル
+      ctx.fillStyle=s[1]; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='left';
+      ctx.fillText(st===2?'満たす':(st===1?'部分的':'落とす'), mL+72, y+rowH/2);
+    }
+    ctx.textBaseline='alphabetic';
+    // 全◯かの判定バッジ
+    var all = col.v.every(function(x){return x===2;});
+    ctx.fillStyle= (all&&col.grail)?'#8a5a2e':(all?'#2f7d5a':'#a5473a'); ctx.font='bold 11px sans-serif'; ctx.textAlign='right';
+  }
+  function wrapR(ctx,text,rx,cy,maxw,lh){var lines=[],cur='';for(var i=0;i<text.length;i++){var t=cur+text[i];if(ctx.measureText(t).width>maxw&&cur){lines.push(cur);cur=text[i];}else cur=t;}if(cur)lines.push(cur);lines=lines.slice(0,2);var y0=cy-(lines.length-1)*lh/2;for(var k=0;k<lines.length;k++)ctx.fillText(lines[k],rx,y0+k*lh);}
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-c'),10)===i); }); draw(); rd.innerHTML=cols[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-c'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

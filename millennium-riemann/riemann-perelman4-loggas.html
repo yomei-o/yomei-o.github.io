@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>log-ガスとW-エントロピー ── 零点は自由エネルギーの勾配流で緩む ／ リーマン・ペレルマン編 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#efe9f3; --warn:#8a4b2f; --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#5a2a6e; --gold:#a9791a; --grid:#e6dcc7; --heat:#c05a2a;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d5ee 62%);padding:0 .05em;} strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2e1c38;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.03em;padding:8px 13px;border:1.5px solid var(--rule);border-radius:4px;background:#efe9f3;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#2e1c38;} .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .map{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .map .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);} .map .row:last-child{border-bottom:none;}
+  .map .row>div{flex:1;min-width:190px;padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.65;}
+  .map .row .l{background:#efe9f3;color:#2e1c38;border-right:1px solid var(--rule);} .map .row .r{background:#f3ece1;color:#4a3e22;}
+  .map .row.head>div{font-weight:700;font-size:12px;letter-spacing:.1em;} .map .row.head .l{color:var(--side);} .map .row.head .r{color:var(--warn);}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#2e1c38;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.map{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;} details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・ペレルマン編 ── 熱流でRHを</span><span class="ep">第 4 回</span></div>
+  <p class="eyebrow">ペレルマンのW-エントロピーの、いちばん"文字どおり"の親戚がここにいる</p>
+  <h1>log-ガスとW-エントロピー ── 零点は自由エネルギーで緩む
+    <span class="sub">零点は反発し合う気体（log-ガス）。その流れ（<strong>ダイソンのブラウン運動</strong>）は、<em>自由エネルギー（エネルギー−エントロピー）の勾配流</em>── ペレルマンのWの、文字どおりの親戚だ。<br>自由エネルギーは単調に減り、平衡＝<strong>半円則</strong>（固定点）へ。GUEもここから出る。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：零点ガスの流れが「単調な自由エネルギー」を持つことを見る</span>
+    <span>一言で：Dyson流＝自由エネルギーの勾配流＝Wの文字どおり版</span>
+  </div>
+
+  <p class="lead">前回、Λ=0 の臨界では<strong>「より鋭い単調量／剛性」</strong>が要ると分かりました。その候補を探すと、姉妹編ペレルマンのW-エントロピーの<em>いちばん文字どおりの親戚</em>に出会います ── 零点を反発し合う気体（log-ガス）と見たときの<strong>自由エネルギー</strong>です。零点の流れは、この自由エネルギーを<em>単調に</em>下げていく勾配流。ペレルマンが「フローに沿って単調な情報量」と言ったもの、その確率論版がここに実在します。</p>
+
+  <h2><span class="n">01</span>零点は「反発＋閉じ込め」の気体</h2>
+
+  <p>零点ガスには二つの力が働きます。<strong>反発</strong>（互いに近づきたくない＝準位反発、log 型の力）と、<strong>閉じ込め</strong>（全体が散り散りにならないよう引き戻す力）。この二つの綱引きが、零点の"ちょうどいい間隔"を決めます。物理では<strong>クーロン気体（log-ガス）</strong>と呼ばれる、よく調べられた系です。</p>
+
+  <div class="keybox">
+    <div class="lbl">自由エネルギー（気体の"良さ"の総合点）</div>
+    $$\mathcal{F}[\mu]=\underbrace{\int V\,d\mu}_{\text{閉じ込め}}\;-\;\underbrace{\iint \log|x-y|\,d\mu\,d\mu}_{\text{反発}}\;-\;\tfrac{1}{\beta}\underbrace{\int \mu\log\mu}_{\text{エントロピー}}$$
+    <p style="margin:8px 0 0;">エネルギー（閉じ込め−反発）から<strong>エントロピー</strong>を引いたもの。姉妹編でWが「ガウスからの相対エントロピー」だったのと<em>同じ骨格</em>── 情報量が主役です。</p>
+  </div>
+
+  <h2><span class="n">02</span>ダイソン流 ── 自由エネルギーの勾配流（＝Wの文字どおり版）</h2>
+
+  <p>この気体を時間発展させる自然な流れが、<strong>ダイソンのブラウン運動</strong>です。そして決定的な事実 ── <em>この流れは、自由エネルギー \(\mathcal{F}\) を谷底へ下る「勾配流」になっている</em>。だから \(\mathcal{F}\) は<strong>流れに沿って単調に減り</strong>（リャプノフ関数）、やがて<strong>平衡</strong>で止まる。平衡の形は有名な<strong>半円則</strong>（ウィグナーの半円）── これが気体の"固定点"です。</p>
+
+  <p>下の図で「▶流す」を押してください。中央に固まった零点ガスが、反発で広がり、<strong>半円の分布</strong>に落ち着く。右のメーター（自由エネルギー）は<em>片道で下がって</em>底で止まります ── これが単調量の姿です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>ダイソン流＝自由エネルギーの勾配流</strong>。中央に固まった零点（粒子）が反発で広がり、<span style="color:#5a2a6e;font-weight:700;">半円則の分布</span>（点線）へ緩む＝平衡（固定点）。右のメーター<strong>自由エネルギー</strong>は<em>単調に減って</em>底で止まる ── ペレルマンのWと同じ「フローに沿って単調」。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="ctrlrow">
+      <button class="btn on" id="bPlay">▶ 流す</button>
+      <button class="btn" id="bReset">中央に集め直す</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#5a2a6e;"></i>零点（粒子）</span>
+      <span><i class="swatch" style="background:#c9bfa6;"></i>半円則（目標＝平衡）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>自由エネルギー（単調↓）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">ペレルマンのWとの対応（第4回・姉妹編）</span>
+    <strong>フロー</strong>＝ダイソン流／<strong>参照とのペア</strong>＝分布 \(\mu\) 全体で考える（Wasserstein幾何の勾配流）／<strong>単調性</strong>＝自由エネルギーが凸性から単調に減る（完全平方・正値性の親戚）／<strong>ガウス参照・エントロピー</strong>＝\(\mathcal{F}\) の \(-\int\mu\log\mu\) 項／<strong>固定点</strong>＝半円則（＝ソリトン）。<em>ペレルマンのW（幾何）と、Dyson流の自由エネルギー（確率）は、同じ「フロー＋エントロピー＋凸性」の骨格</em>── これが「文字どおりの親戚」の意味です。
+  </div>
+
+  <h2><span class="n">03</span>GUEとの符合 ── 気体の"ゆらぎ"が零点統計に一致</h2>
+
+  <p>この気体像の凄いところは、<em>平衡のゆらぎ</em>まで当たること。log-ガスの平衡での間隔ゆらぎは、ランダム行列<strong>GUE</strong>の固有値統計そのもの。そして挑戦編④・戦略③で見たとおり、<strong>ゼータの零点の統計は、この GUE と驚くほど一致</strong>する（モンゴメリー＝オドリツコ）。零点が「反発する気体の平衡」だという描像は、単なる比喩ではなく<em>数値で裏打ち</em>されているのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>でも壁 ── 「統計」は「剛性」ではない</h2>
+
+  <p>ここで正直に。このルートは<strong>零点が"線の近くに反発しながら並ぶ"という構造と統計を、見事に説明します</strong>。でも、リーマン予想が要求するのは<em>もっと厳しいこと</em> ── <strong>すべての零点が、例外なく、ぴったり Re(s)=1/2 の上にある</strong>という<strong>剛性</strong>です。</p>
+
+  <div class="keybox" style="border-color:var(--open);">
+    <div class="lbl" style="color:var(--open);">ルートG（log-ガス）の壁</div>
+    <p class="big" style="margin:0;">自由エネルギーの単調性は「気体が平衡へ緩む」を言う ── <em>平均・統計の言明</em>。<br>でもRHは「<strong>一つも</strong>例外がない」という<em>剛性の言明</em>。<br>統計が合っても、<strong>たった一個の零点を線から外すことを禁じる力</strong>は、まだ出てこない。</p>
+  </div>
+
+  <p>これは前回の marginality と同じ壁の別の顔です。自由エネルギーは<em>平衡へ向かう平均的な傾向</em>を捉えるが、<strong>臨界（Λ=0）で一個の例外も許さない鋭さ</strong>は持っていない。しかも、この気体像は本来<em>ランダム行列の固有値</em>の話で、ゼータの零点そのものが本当にある作用素の固有値かは未解決（＝挑戦編④ヒルベルト＝ポリアの夢、戦略②Connes）。<strong>構造は借りられた。剛性は、まだ。</strong></p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">log-ガス（1次元クーロン気体）／ダイソンのブラウン運動が自由エネルギー汎関数のWasserstein勾配流であり、自由エネルギーがリャプノフ関数として単調減少し平衡（ウィグナー半円則）へ収束することは、ランダム行列理論の確立した事実です。零点統計とGUEの一致（Montgomery 1973の対相関、Odlyzkoの数値）は<em>予想レベル</em>（証明されていない）だが強力な数値的裏づけがあります。ペレルマンのW-エントロピーとの対応（フロー＋エントロピー＋凸性）はアナロジーで、Dyson流とリッチフローが同一という主張ではありません。</p>
+    <p style="margin-bottom:0;">本ルートの壁：自由エネルギーの単調性は分布の緩和（統計・平均）を与えるが、「全零点が例外なく臨界線上」という<strong>剛性</strong>は導かない。さらに、この気体像はランダム行列の固有値についてのもので、ゼータ零点がある自己共役作用素のスペクトルである保証（ヒルベルト＝ポリア）はまだ無い。図は \(V(x)=x^2/2\) 型の閉じ込め＋log反発の勾配降下を模した教育用シミュレーションで、実際の零点運動ではありません。RHは未証明です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ダイソン流は何の「勾配流」で、何が単調か。
+        <details><summary>答えを見る</summary><div class="ans">零点ガスの<strong>自由エネルギー</strong>（エネルギー−エントロピー）の勾配流。自由エネルギーが<strong>単調に減る</strong>（リャプノフ関数）で、平衡＝<strong>半円則</strong>（固定点）に止まる。ペレルマンのW（フローに沿って単調な情報量）の確率論版。</div></details>
+      </li>
+      <li>なぜこれがペレルマンのWの「文字どおりの親戚」なのか。
+        <details><summary>答えを見る</summary><div class="ans">骨格が同じ ── <strong>フロー＋エントロピー＋凸性（正値性）</strong>。Wは「ガウスからの相対エントロピーが各点で単調」、Dyson流は「自由エネルギー（エントロピー項つき）が勾配流で単調」。固定点はそれぞれソリトン／半円則。</div></details>
+      </li>
+      <li>このルート（log-ガス）の壁は何か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>統計 ≠ 剛性</strong>。自由エネルギーの単調性は「気体が平衡へ緩む」＝平均・統計を説明するが、RHが要る「<strong>一つも</strong>例外なく臨界線上」という剛性は出ない。加えて、この像はランダム行列の固有値の話で、零点が本当に作用素のスペクトルかは未解決。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>Wの文字どおりの親戚 ── でも統計止まり</h2>
+    <p>零点は<strong>反発＋閉じ込めの気体（log-ガス）</strong>。その流れ<strong>ダイソンのブラウン運動</strong>は、<em>自由エネルギー（エネルギー−エントロピー）の勾配流</em>で、自由エネルギーは<strong>単調に減って</strong>平衡＝<strong>半円則</strong>（固定点）へ。これは<strong>ペレルマンのWの文字どおりの親戚</strong>（フロー＋エントロピー＋凸性）。平衡のゆらぎ＝GUE＝零点統計とも一致。</p>
+    <p>だが壁は前回と同じ顔：<strong>統計 ≠ 剛性</strong>。自由エネルギーは「平衡へ緩む」平均の言明で、RHの「<em>一つも</em>例外なく臨界線上」という剛性を出さない（しかも零点が作用素のスペクトルかも未解決）。構造は借りられたが、臨界で一個も外さない鋭さは、まだ無い。次回は、その<strong>剛性を"正値性の証明書"として捕まえる</strong>ルート（Weil・Li）とAIへ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-perelman3-marginality.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第3回：間違った半分</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman5-positivity.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第5回：正値性ルートとAI →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・ペレルマン編・第4回。1次元log-ガス（クーロン気体）とダイソンのブラウン運動（Dyson 1962）が自由エネルギー汎関数のWasserstein勾配流であり、自由エネルギーがリャプノフ関数として単調減少し平衡（ウィグナー半円則）へ収束することは、ランダム行列理論の確立した事実です。零点統計とGUEの一致はMontgomery（1973、対相関予想）とOdlyzkoの数値が支持する予想。ペレルマンのW-エントロピー（フロー＋相対エントロピー＋Bochner型正値性）との対応はアナロジーで、Dyson流とリッチフローの同一性を主張するものではありません。本ルートの壁：自由エネルギーの単調性は分布の緩和（統計）を与えるが、全零点が例外なく臨界線上という剛性は導かず、また零点が自己共役作用素のスペクトルであること（ヒルベルト＝ポリア）も未解決。図は \(V(x)=x^2/2\) の閉じ込め＋log反発による勾配降下を模した教育用シミュレーションで、実際の零点運動ではありません。RHは未証明です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「▶流す」で零点ガスが半円則へ緩み、自由エネルギーが単調に減る様子を見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bPlay=document.getElementById('bPlay'), bReset=document.getElementById('bReset');
+  var lastW=680, N=42, xs=[], playing=true, step=0, F0=null, Fnow=0;
+  function reset(){
+    xs=[]; for(var i=0;i<N;i++){ xs.push((i-(N-1)/2)/N*0.5 + 0.02*Math.sin(i*7.1)); } // clumped near center
+    step=0; F0=null; playing=true; bPlay.textContent='❚❚ 停止';
+  }
+  function freeEnergy(){
+    // F = sum V(x) - (1/N) sum_{i<j} log|xi-xj|
+    var V=0,rep=0,i,j;
+    for(i=0;i<N;i++){ V += 0.5*xs[i]*xs[i]; }
+    for(i=0;i<N;i++) for(j=i+1;j<N;j++){ var dd=Math.abs(xs[i]-xs[j])+1e-4; rep += Math.log(dd); }
+    return V - rep/N;
+  }
+  function evolve(){
+    var dt=0.006, nx=xs.slice();
+    for(var i=0;i<N;i++){
+      var force=-xs[i];            // confinement -V'
+      for(var j=0;j<N;j++){ if(j!==i){ var d=xs[i]-xs[j]; if(Math.abs(d)<1e-3) d=(d>=0?1:-1)*1e-3; force += (1/N)/d; } }
+      nx[i]=xs[i]+dt*force;
+    }
+    xs=nx;
+  }
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var L=40, R=w*0.66, midY=140, sc=(R-L)/5.4;  // x in ~[-2.4,2.4]
+    function X(x){ return (L+R)/2 + x*sc; }
+    // semicircle target (density on [-2,2]) as a filled curve baseline
+    ctx.strokeStyle='#c9bfa6'; ctx.setLineDash([4,4]); ctx.lineWidth=1.6; ctx.beginPath();
+    for(var k=0;k<=80;k++){ var x=-2+4*k/80; var rho=Math.sqrt(Math.max(0,4-x*x))/(2*Math.PI); var yy=midY-rho*300; if(k===0)ctx.moveTo(X(x),yy); else ctx.lineTo(X(x),yy); }
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#a99'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.fillText('半円則（平衡＝固定点）', (L+R)/2, midY-92);
+    // line
+    ctx.strokeStyle='#5a2a6e'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(L,midY); ctx.lineTo(R,midY); ctx.stroke();
+    // particles
+    for(var i=0;i<N;i++){
+      ctx.fillStyle='#5a2a6e'; ctx.beginPath(); ctx.arc(X(xs[i]),midY,4.5,0,7); ctx.fill();
+    }
+    ctx.fillStyle='#4a4f5e'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('零点（反発＋閉じ込め）', (L+R)/2, midY+26);
+
+    // free energy meter
+    var mx=R+34, mw=44, mtop=30, mh=200;
+    ctx.fillStyle='#f2ede1'; ctx.fillRect(mx,mtop,mw,mh); ctx.strokeStyle='#cabfa3'; ctx.lineWidth=1.2; ctx.strokeRect(mx,mtop,mw,mh);
+    Fnow=freeEnergy(); if(F0===null) F0=Fnow;
+    var Feq=-0.6; // approx equilibrium (illustrative floor)
+    var frac=Math.max(0,Math.min(1,(Fnow-Feq)/((F0-Feq)||1)));
+    ctx.fillStyle='#2f7d5a'; ctx.globalAlpha=.9; ctx.fillRect(mx+1, mtop+mh-mh*frac, mw-2, mh*frac); ctx.globalAlpha=1;
+    ctx.fillStyle='#4a4f5e'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('自由', mx+mw/2, mtop-16); ctx.fillText('エネルギー', mx+mw/2, mtop-3);
+    ctx.fillStyle='#2f7d5a'; ctx.font='bold 18px sans-serif'; ctx.fillText('↓', mx+mw/2, mtop+mh+18);
+    // note
+    ctx.textAlign='center'; ctx.fillStyle= frac<0.06?'#2f7d5a':'#4a4f5e'; ctx.font=(frac<0.06?'bold ':'')+'12.5px sans-serif';
+    ctx.fillText(frac<0.06?'平衡に到達 ✓（半円則＝固定点）':'流れ中：自由エネルギーが単調に減少', (L+R)/2, midY+58);
+  }
+  function tick(){ if(playing){ evolve(); step++; if(step>900) playing=false; } draw(); requestAnimationFrame(tick); }
+  function say(){
+    rd.innerHTML='<b>ダイソン流＝自由エネルギーの勾配流。</b> 中央に固まった零点が反発で広がり、<b>半円則</b>（平衡＝固定点）へ。右のメーター（自由エネルギー）は<b>片道で下がる</b> ── これが「フローに沿って単調」＝ペレルマンのWの確率論版。';
+  }
+  bPlay.addEventListener('click',function(){ playing=!playing; bPlay.textContent=playing?'❚❚ 停止':'▶ 流す'; });
+  bReset.addEventListener('click',function(){ reset(); });
+  window.addEventListener('resize',draw);
+  reset(); say(); requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

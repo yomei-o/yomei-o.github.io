@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜ大事？ ── ゼロが素数のゆらぎを指揮する ／ ミレニアム問題を解くぞ 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#5a2a6e;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .recap{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .recap .row{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .recap .row:first-child{border-top:none;}
+  .recap .k{flex:0 0 96px;background:#efe9f3;color:var(--acc);font-weight:700;font-size:12.5px;padding:12px 14px;letter-spacing:.06em;}
+  .recap .v{flex:1;min-width:220px;padding:12px 16px;font-size:13.5px;color:#33283b;line-height:1.7;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.recap{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">第 5 回（入門編・完）</span></div>
+  <p class="eyebrow">フィナーレ ── ゼロが、素数の"音楽"を指揮する</p>
+  <h1>なぜ大事？ ── ゼロが素数のゆらぎを指揮する
+    <span class="sub">ゼータのゼロ点一つ一つが、素数の分布に<strong>「波（音）」</strong>を送っている。<br>その波をぜんぶ足すと ── <em>気まぐれだったはずの素数の階段が、ぴたりと現れる</em>。<br>そしてリーマン予想は「その波の音量が、可能なかぎり小さい」の別名だった。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：明示公式で、ゼロと素数を一本につなぐ</span>
+    <span>一言で：素数の階段 ＝ 主項 − ゼロたちの波の和</span>
+  </div>
+
+  <p class="lead">入門編もこれで最終回。第2回で「素数は<em>気まぐれ</em>な顔と<em>規則正しい</em>顔を持ち、そのゆらぎを握るのがゼータのゼロ点だ」と予告しました。第3・4回でゼータとゼロ点の正体を見てきた今、いよいよその約束を回収します。鍵は<strong>明示公式</strong> ── リーマンが1859年の論文で書いた、<em>素数の分布とゼータのゼロ点を等号で結ぶ</em>驚きの式。これで、なぜゼロ点が「\(1/2\) の線」に乗るかどうかが、私たちの世界（素数の並び方）にとって死活問題なのかが、腑に落ちます。</p>
+
+  <h2><span class="n">01</span>思い出す ── 素数の階段は「主項 ＋ ゆらぎ」だった</h2>
+
+  <p>第2回で、素数の個数 \(\pi(x)\) は「なめらかな主項 \(\mathrm{Li}(x)\)」と「ゆらぎ」に分かれる、と見ました。この回では、扱いが少しだけ楽になる<strong>もう一つの素数の階段 \(\psi(x)\)</strong> を主役にします。難しくありません ── <em>素数（とその累乗）に来るたびに \(\ln p\) だけ上がる階段</em>です。</p>
+
+  <div class="aside">
+    <span class="tag">\(\psi(x)\)（チェビシェフの階段）── 素数を"重みつき"で数える</span>
+    \(\psi(x)=\displaystyle\sum_{p^k\le x}\ln p\)。たとえば \(2\) で \(\ln2\)、\(3\) で \(\ln3\)、\(4=2^2\) でまた \(\ln2\)、\(5\) で \(\ln5\)… と上がる。\(\pi(x)\) と同じ「素数の情報」を持つが、<strong>主項がぴったり \(x\)</strong> になるので式が一番きれい。素数定理は「\(\psi(x)\approx x\)」とシンプルに言い換わります。
+  </div>
+
+  <h2><span class="n">02</span>明示公式 ── 素数とゼロを結ぶ等号</h2>
+
+  <p>リーマンの明示公式は、この階段 \(\psi(x)\) を<strong>ゼータのゼロ点で完全に書き下します</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">明示公式（フォン・マンゴルトの形）── この回の心臓</div>
+    $$\psi(x)\;=\;\underbrace{x}_{\text{なめらかな主項}}\;-\;\sum_{\rho}\underbrace{\frac{x^{\rho}}{\rho}}_{\text{ゼロ }\rho\text{ が送る波}}\;-\;\ln(2\pi)\;-\;\tfrac12\ln\!\big(1-x^{-2}\big)$$
+    <p style="margin:8px 0 0;">\(\rho\) は<strong>非自明なゼロ</strong>を全部走ります。右辺の主役は二つ ── なめらかな<strong>主項 \(x\)</strong>（＝素数定理）と、<strong>ゼロ一つ一つが作る波 \(x^{\rho}/\rho\) の合計</strong>。最後の二項はごく小さなおまけ。<em>素数の階段のギザギザは、ぜんぶゼロ点が作っている</em>のです。</p>
+  </div>
+
+  <p>ゼロは \(\rho=\tfrac12+i\gamma\) と、その鏡 \(\rho=\tfrac12-i\gamma\) がペアで現れます。二つを足すと、虚部が打ち消えて<strong>実数の波</strong>になります ── \(x\) が進むにつれて上下する、きれいな振動です。次の図で、その"一つの波"を見てみましょう。</p>
+
+  <h2><span class="n">03</span>一つのゼロ ＝ 一つの音</h2>
+
+  <p>下は、\(k\) 番目のゼロ \(\tfrac12+i\gamma_k\)（と鏡のペア）が \(\psi(x)\) に送る波だけを取り出したもの。スライダーでゼロを選べます。どのゼロも、<span style="color:#a5622a;font-weight:700;">封筒（振幅の上限）は \(\pm2\sqrt{x}/|\rho|\)</span> ── つまり<strong>音量は \(\sqrt{x}\) で大きくなる</strong>。そして<em>高いゼロほど、速くて小さい波</em>（高音・弱音）。ゼロ点は、素数に向けて鳴らされる<strong>純音（ピュアトーン）</strong>なのです。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:#7a4fa0;font-weight:700;">紫＝k番目のゼロが送る波</span>（ψ(x)への寄与）、<span style="color:#a5622a;font-weight:700;">茶の点線＝±2√x/|ρ| の封筒</span>。スライダーでゼロを選ぶ。高いゼロほど速く・小さい。</div>
+    <canvas id="cvWave" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <label>ゼロ番号 k ：<input type="range" id="sldK" min="1" max="12" value="1" step="1"><span id="kVal" style="font-weight:700;color:var(--acc);">1</span></label>
+    </div>
+    <div class="readout" id="rdWave"></div>
+  </div>
+
+  <h2><span class="n">04</span>波を積み上げると ── 気まぐれな素数が、現れる</h2>
+
+  <p>ここがフィナーレ。<span style="color:#8a3550;font-weight:700;">本物の素数の階段 \(\psi(x)\)</span>（カクカク）に対し、最初は<span style="color:#2f7d5a;font-weight:700;">なめらかな主項 \(x\)</span> だけを描きます（\(K=0\)）。そこへ、ゼロの波を<strong>1個ずつ足していく</strong>（スライダーで \(K\) を増やす）。すると ── なめらかだった線が、だんだん<em>ギザギザを覚え</em>、本物の階段の段差に、一段、また一段と<strong>吸い付いていく</strong>。<br>あの気まぐれな素数の並びが、<em>ゼロ点たちの合唱</em>から組み上がる瞬間です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:#8a3550;font-weight:700;">濃赤の階段＝本物の ψ(x)</span>、<span style="color:#7a4fa0;font-weight:700;">紫の曲線＝主項＋K個のゼロの波</span>。スライダーで K（使うゼロの数）を増やす。K=0はなめらか、Kを増やすほど階段に吸い付く。</div>
+    <canvas id="cvBuild" width="680" height="340"></canvas>
+    <div class="ctrlrow no-print">
+      <label>使うゼロの数 K ：<input type="range" id="sldKK" min="0" max="40" value="0" step="1"><span id="kkVal" style="font-weight:700;color:var(--acc);">0</span></label>
+      <button class="btn" id="btnAll">全部のせる（K=40）</button>
+    </div>
+    <div class="readout" id="rdBuild"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">「素数の音楽」（豆知識）</span>
+    この描像から、ゼロ点の列は<strong>「素数の音楽（the music of the primes）」</strong>と呼ばれます。各ゼロが一つの純音（高さ \(\gamma_k\) が音程、\(\sqrt{x}\) が音量の伸び）で、素数分布のギザギザは、その全部が重なった<em>和音</em>。リーマン予想は「すべての音が、同じ音量カーブ \(\sqrt{x}\) で鳴っている」という、この上なく整った合唱を主張しているのです。
+  </div>
+
+  <h2><span class="n">05</span>だから Re(s)=1/2 が死活問題 ── ゆらぎ最小の保証</h2>
+
+  <p>なぜ「\(1/2\) の線」がそんなに大事か、もう見えています。波 \(x^{\rho}/\rho\) の<strong>音量（振幅）は \(x^{\beta}\)</strong>（\(\beta=\mathrm{Re}(\rho)\)）で決まる。もし、ただ一つでもゼロが線より右（\(\beta>1/2\)）にずれていたら ── そのゼロは \(x^{\beta}\) という<em>より大きな音</em>を鳴らし、素数の分布に大きなゆらぎを叩き込みます。</p>
+
+  <div class="keybox">
+    <div class="lbl">リーマン予想 ＝ 素数のゆらぎ最小（第2回の回収）</div>
+    $$\text{全ゼロが }\mathrm{Re}(\rho)=\tfrac12\ \Longleftrightarrow\ \big|\psi(x)-x\big|\le C\sqrt{x}\,(\ln x)^2\ \Longleftrightarrow\ \big|\pi(x)-\mathrm{Li}(x)\big|\le C'\sqrt{x}\,\ln x$$
+    <p style="margin:8px 0 0;">全部のゼロが \(\beta=1/2\) なら、どの波も音量 \(\sqrt{x}\) ── これが<strong>可能な最小</strong>。だから素数のゆらぎも \(\sqrt{x}\) 程度に抑えられる。第2回で「リーマン予想＝素数はこれ以上ないほど行儀よく並ぶ」と言ったのは、まさにこの意味。<em>ゼロが一直線に乗ること</em>と、<em>素数が最高に規則正しく散らばること</em>は、同じ一つの事実の表と裏なのです。</p>
+  </div>
+
+  <p>逆に言えば、リーマン予想が崩れる（線を外れたゼロが一つでもある）と、素数の分布に予想外の大きな"うねり"が存在することになる。暗号や数論の無数の結果が「素数はお行儀よい」を前提にしているので、これは遠い抽象論ではありません。<strong>ゼロ点の一直線は、素数という土台の"平らさ"の保証書</strong>なのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>入門編の総括 ── 5回を、一本に</h2>
+
+  <div class="recap">
+    <div class="row"><div class="k">第1回</div><div class="v">リーマン予想を一言で ── ゼータの非自明なゼロは臨界線 Re(s)=1/2 に乗る。数値は10兆個超そろうのに証明はゼロ、という<strong>谷</strong>。</div></div>
+    <div class="row"><div class="k">第2回</div><div class="v">素数の二つの顔 ── 個々は気まぐれ、全体は規則正しい（素数定理 π(x)≈x/ln x）。<strong>π(x)＝Li(x)＋ゆらぎ</strong>。</div></div>
+    <div class="row"><div class="k">第3回</div><div class="v">ゼータ＝素数の暗号帳 ── オイラー積 Σ1/nˢ＝Π1/(1−p⁻ˢ)。正体は解析版エラトステネスのふるい。</div></div>
+    <div class="row"><div class="k">第4回</div><div class="v">「一直線」の正体 ── 解析接続で複素平面へ、自明／非自明なゼロ、関数等式が Re(s)=1/2 を鏡の軸にする。</div></div>
+    <div class="row"><div class="k">第5回</div><div class="v">明示公式 ── <strong>素数の階段＝主項−ゼロたちの波の和</strong>。ゼロが一直線＝素数のゆらぎ最小。すべてが一本につながる。</div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">入門編を一文で</div>
+    <p class="big" style="margin:0;">リーマン予想とは ── <strong>素数の暗号帳ゼータの非自明なゼロが、すべて一本の線 Re(s)=1/2 に乗る</strong>と証明せよ。それは<em>素数がこれ以上ないほど行儀よく並ぶ</em>ことの保証であり、数値は兆の単位で正しいのに、無限に対する証明だけが、160年間ずっと無い。</p>
+  </div>
+
+  <p>ここまでで「問題の正体」は、高校生の言葉でひととおりほどけました。ヤン=ミルズの第一部と同じく、このシリーズはここから先<strong>「では、どう攻めるのか」</strong>の挑戦編・戦略編へ進むこともできます（掟は同じ ── 旗は立てない、縁の標識を立てる）。まずは入門編、おつかれさまでした。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">明示公式 \(\psi(x)=x-\sum_\rho x^\rho/\rho-\ln(2\pi)-\tfrac12\ln(1-x^{-2})\) は、リーマンおよびフォン・マンゴルト（1895年）による<strong>正しい等式</strong>です（ゼロ \(\rho\) の和は対称的に取る）。図では非自明なゼロの高さ \(\gamma_k\)（14.134725, 21.022040, …）に<strong>既知の正確な値40個</strong>を用い、ペア \(\rho,\bar\rho\) の寄与 \(2\,\mathrm{Re}(x^\rho/\rho)\) を積み上げています。有限個（K≤40）で打ち切るため、本物の階段の段差付近では波打ち（ギブス現象）が残り、完全一致はしません ── 無限個のゼロで初めて厳密に一致します。式中の \(-\tfrac12\ln(1-x^{-2})\) など微小項は図では省略。</p>
+    <p style="margin-bottom:0;">「全ゼロが \(\mathrm{Re}(\rho)=1/2\) ⟺ \(|\psi(x)-x|\le C\sqrt{x}(\ln x)^2\)」および「⟺ \(|\pi(x)-\mathrm{Li}(x)|\le C'\sqrt{x}\ln x\)」は確立した同値関係です（後者はフォン・コッホ、1901年）。ここで用いた \(\psi(x)\) はチェビシェフの関数で、素数定理は \(\psi(x)\sim x\) と同値。なお本文は非自明なゼロがすべて \(0<\mathrm{Re}(\rho)<1\) にあること（既知）を前提にしており、「すべて \(\mathrm{Re}(\rho)=1/2\)」がリーマン予想（未証明）です。「素数の音楽」は M. デュ・ソートイらによる有名な比喩です。図はいずれもブラウザ内で ψ(x) と波の和を数値計算しています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>明示公式は、素数の階段 ψ(x) を何と何で書く？
+        <details><summary>答えを見る</summary><div class="ans">なめらかな主項 x（＝素数定理）と、非自明なゼロ ρ 一つ一つが作る波 xᵖ/ρ の合計（＋微小なおまけ項）。ψ(x)=x − Σ_ρ xᵖ/ρ − …。素数のギザギザは、ぜんぶゼロ点が作っている。</div></details>
+      </li>
+      <li>「一つのゼロ＝一つの波」の音量（振幅）は、何で決まる？ なぜ Re(ρ)=1/2 が特別？
+        <details><summary>答えを見る</summary><div class="ans">波 xᵖ/ρ の振幅は x^β（β=Re(ρ)）で決まる。全ゼロが β=1/2 なら音量は √x で、これが可能な最小。もし一つでも β>1/2 のゼロがあれば x^β のより大きな波が乗り、素数のゆらぎが大きくなる。だから「全ゼロが 1/2」＝「素数のゆらぎ最小」。</div></details>
+      </li>
+      <li>「ゼロが一直線に乗る」と「素数が行儀よく並ぶ」の関係は？
+        <details><summary>答えを見る</summary><div class="ans">同じ一つの事実の表と裏。全ゼロが Re=1/2 ⟺ |π(x)−Li(x)|≤C√x·ln x（ゆらぎが √x 程度＝最小）。ゼロの幾何（一直線）と素数の統計（最小ゆらぎ）が、明示公式でぴったり結ばれている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ ／ 入門編・完</span>ゼロが、素数の音楽を指揮する</h2>
+    <p>明示公式 <strong>\(\psi(x)=x-\sum_\rho x^\rho/\rho-\cdots\)</strong> が、素数の階段とゼータのゼロ点を等号で結ぶ。ゼロ \(\tfrac12+i\gamma\) は素数に一つの<strong>波（純音）</strong>を送り、その音量は \(\sqrt{x}\)、音程は \(\gamma\)。波を積み上げると、気まぐれな素数の階段が<em>ゼロ点の合唱から組み上がる</em>。これが「素数の音楽」。</p>
+    <p>波の音量は \(x^{\mathrm{Re}(\rho)}\)。全ゼロが \(\mathrm{Re}=1/2\) なら音量は最小の \(\sqrt{x}\) ── だから<strong>リーマン予想＝素数のゆらぎ最小</strong>（\(|\pi(x)-\mathrm{Li}(x)|\le C\sqrt{x}\ln x\)、第2回の回収）。ゼロの一直線は、素数という土台の平らさの保証書。入門編はこれで完 ── 問題の正体は、高校生の言葉でほどけた。この先は「どう攻めるか」の挑戦編へ進める（掟は同じ、旗は立てず縁の標識を）。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-04-icchokusen.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第4回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-06-semekata.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">挑戦編①：攻め方の地図 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 第5回（入門編・完）、数学好きの高校生・大学生向け読み物。チェビシェフ関数 \(\psi(x)=\sum_{p^k\le x}\ln p\) と、リーマン＝フォン・マンゴルトの明示公式 \(\psi(x)=x-\sum_\rho x^\rho/\rho-\ln(2\pi)-\tfrac12\ln(1-x^{-2})\) は確立した事実です（\(\rho\) は非自明なゼロ、和は対称的に取る）。素数定理は \(\psi(x)\sim x\) と同値。ゼロのペア \(\rho=\tfrac12\pm i\gamma\) の寄与は実数の振動 \(2\,\mathrm{Re}(x^\rho/\rho)\) を与え、振幅は \(x^{\mathrm{Re}(\rho)}\) で決まります。リーマン予想は「\(|\psi(x)-x|=O(\sqrt{x}(\log x)^2)\)」および「\(|\pi(x)-\mathrm{Li}(x)|=O(\sqrt{x}\log x)\)」（フォン・コッホ、1901年）と同値です。図では非自明なゼロの既知の値40個を用い、有限項打ち切りのためギブス現象が残ります（無限個で厳密一致）。「素数の音楽」は有名な比喩です。非自明なゼロがすべて臨界線上にあること自体は未証明（＝リーマン予想）です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーで「一つのゼロ＝一つの音」、図2のスライダーで K（ゼロの数）を増やして「波の合唱から素数の階段が現れる」を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* 非自明なゼロの高さ γ（既知の正確な値・40個） */
+var GAM=[14.134725,21.022040,25.010858,30.424876,32.935062,37.586178,40.918719,43.327073,
+48.005151,49.773832,52.970321,56.446248,59.347044,60.831779,65.112544,67.079811,69.546402,
+72.067158,75.704691,77.144840,79.337375,82.910381,84.735493,87.425275,88.809111,92.491899,
+94.651344,95.870634,98.831194,101.317851,103.725538,105.446623,107.168611,111.029536,
+111.874659,114.320221,116.226680,118.790783,121.370125,122.946829];
+/* k番目のゼロ（0始まり）が ψ(x) に送る波：2 Re(x^ρ/ρ), ρ=1/2+iγ */
+function wave(x,g){ var th=g*Math.log(x), sx=Math.sqrt(x);
+  return -2*sx*(0.5*Math.cos(th)+g*Math.sin(th))/(0.25+g*g); }
+
+/* ===== 図1：一つのゼロ＝一つの音 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvWave'), rd=document.getElementById('rdWave');
+  var sld=document.getElementById('sldK'), kVal=document.getElementById('kVal');
+  var X0=2, X1=60, lastW=680;
+  function draw(){
+    var kk=parseInt(sld.value,10), g=GAM[kk-1];
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=44,mR=16,mT=14,mB=28, plotW=w-mL-mR, plotH=h-mT-mB;
+    var amp=2*Math.sqrt(X1)/Math.sqrt(0.25+g*g);
+    var yMax=amp*1.15; if(yMax<0.2) yMax=0.2;
+    function X(x){ return mL + (x-X0)/(X1-X0)*plotW; }
+    function Y(v){ return mT + plotH/2 - v/yMax*(plotH/2); }
+    ctx.clearRect(0,0,w,h);
+    // 0線
+    ctx.strokeStyle='#d8ccdd'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+plotW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('0', mL-6, Y(0)+4);
+    // 封筒 ±2√x/|ρ|
+    ctx.strokeStyle='#a5622a'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    ctx.beginPath(); for(var xa=X0;xa<=X1;xa+=0.5){ var e=2*Math.sqrt(xa)/Math.sqrt(0.25+g*g); if(xa===X0) ctx.moveTo(X(xa),Y(e)); else ctx.lineTo(X(xa),Y(e)); } ctx.stroke();
+    ctx.beginPath(); for(var xb=X0;xb<=X1;xb+=0.5){ var e2=2*Math.sqrt(xb)/Math.sqrt(0.25+g*g); if(xb===X0) ctx.moveTo(X(xb),Y(-e2)); else ctx.lineTo(X(xb),Y(-e2)); } ctx.stroke();
+    ctx.setLineDash([]);
+    // 波
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2; ctx.beginPath();
+    for(var x=X0;x<=X1;x+=0.15){ var v=wave(x,g); if(x===X0) ctx.moveTo(X(x),Y(v)); else ctx.lineTo(X(x),Y(v)); }
+    ctx.stroke();
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var xv=10;xv<=X1;xv+=10) ctx.fillText('x='+xv, X(xv), mT+plotH+16);
+  }
+  function report(){
+    var kk=parseInt(sld.value,10), g=GAM[kk-1]; kVal.textContent=kk;
+    var amp60=2*Math.sqrt(60)/Math.sqrt(0.25+g*g);
+    rd.innerHTML='第'+kk+'ゼロ ρ = 1/2 + <b>'+g.toFixed(3)+'</b> i ── 素数に送る波：音程（速さ）は γ='+g.toFixed(2)+'、音量の封筒は ±2√x/|ρ|（x=60 で ±'+amp60.toFixed(2)+'）。<b>高いゼロほど速く・小さい</b>。RHではどのゼロも封筒が √x で同じ。';
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：波を積み上げて ψ(x) を復元（フィナーレ） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvBuild'), rd=document.getElementById('rdBuild');
+  var sld=document.getElementById('sldKK'), kkVal=document.getElementById('kkVal'), btnAll=document.getElementById('btnAll');
+  var X0=2, X1=34, lastW=680;
+  // ψ の厳密な階段：素数べきで ln p だけ上がる
+  var jumps=[]; // {x:n, dv:ln p}
+  for(var n=2;n<=X1;n++){
+    var mm=n, base=0;
+    for(var pp=2;pp*pp<=mm;pp++){ if(mm%pp===0){ base=pp; break; } }
+    if(base===0) base=n;
+    var tt=n, isPow=true; while(tt%base===0) tt/=base; if(tt!==1) isPow=false;
+    if(isPow) jumps.push({x:n, dv:Math.log(base)});
+  }
+  function psiAt(x){ var s=0; for(var i=0;i<jumps.length;i++){ if(jumps[i].x<=x) s+=jumps[i].dv; else break; } return s; }
+  function approx(x,K){ var v=x-Math.log(2*Math.PI); for(var k=0;k<K;k++) v+=wave(x,GAM[k]); return v; }
+  function draw(){
+    var K=parseInt(sld.value,10);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=40,mR=16,mT=14,mB=28, plotW=w-mL-mR, plotH=h-mT-mB;
+    var yMax=X1*1.02, yMin=0;
+    function X(x){ return mL + (x-X0)/(X1-X0)*plotW; }
+    function Y(v){ return mT + plotH - (v-yMin)/(yMax-yMin)*plotH; }
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#d8ccdd'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(mL,mT); ctx.lineTo(mL,mT+plotH); ctx.lineTo(mL+plotW,mT+plotH); ctx.stroke();
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    for(var gi=0;gi<=3;gi++){ var vv=yMax*gi/3, yy=Y(vv);
+      ctx.strokeStyle='#f0e8f3'; ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+plotW,yy); ctx.stroke();
+      ctx.fillStyle='#8a7f92'; ctx.fillText(vv.toFixed(0), mL-5, yy+4);
+    }
+    ctx.textAlign='center';
+    for(var xv=10;xv<=X1;xv+=10) ctx.fillText('x='+xv, X(xv), mT+plotH+16);
+    // 本物の ψ 階段
+    ctx.strokeStyle='#8a3550'; ctx.lineWidth=2; ctx.beginPath();
+    var cur=0, px=X0; ctx.moveTo(X(X0),Y(0));
+    for(var i=0;i<jumps.length;i++){ var jx=jumps[i].x; if(jx>X1) break;
+      ctx.lineTo(X(jx),Y(cur)); cur+=jumps[i].dv; ctx.lineTo(X(jx),Y(cur)); }
+    ctx.lineTo(X(X1),Y(cur)); ctx.stroke();
+    // 近似曲線
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2; ctx.beginPath();
+    var started=false;
+    for(var x=X0;x<=X1;x+=0.06){ var v=approx(x,K); if(v<yMin) v=yMin; if(v>yMax) v=yMax;
+      if(!started){ ctx.moveTo(X(x),Y(v)); started=true; } else ctx.lineTo(X(x),Y(v)); }
+    ctx.stroke();
+  }
+  function report(){
+    var K=parseInt(sld.value,10); kkVal.textContent=K;
+    if(K===0){
+      rd.innerHTML='K=0 ── まだ<b>なめらかな主項 x</b>（−ln2π）だけ。素数定理の"平均"の線。ここへゼロの波を足していく。';
+    } else {
+      // 適当な評価点での一致度
+      var xs=[10.5,20.5,30.5], msg=xs.map(function(x){return 'ψ('+x+')≈'+psiAt(x).toFixed(1)+' / 近似'+ ( (x- Math.log(2*Math.PI)) + (function(){var s=0;for(var k=0;k<K;k++)s+=wave(x,GAM[k]);return s;})() ).toFixed(1);}).join('、 ');
+      rd.innerHTML='K='+K+' 個のゼロの波を重ねた ── 紫が本物の階段（濃赤）に吸い付いていく。'+ (K>=40?'（40個。段差付近の小さな波打ちはギブス現象＝有限打ち切りの名残）':'') +'<br><span style="font-size:12.5px;color:#5a5060;">'+msg+'</span>';
+    }
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  btnAll.addEventListener('click', function(){ sld.value=40; draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+</script>
+</body>
+</html>

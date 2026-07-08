@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>単調量はもうある ── Rodgers–TaoがΛ≥0を証明した ／ リーマン・ペレルマン編 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#efe9f3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e; --gold:#a9791a; --grid:#e6dcc7; --heat:#c05a2a;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d5ee 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2e1c38;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.03em;padding:8px 13px;border:1.5px solid var(--rule);border-radius:4px;
+    background:#efe9f3;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#2e1c38;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2e1c38;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・ペレルマン編 ── 熱流でRHを</span><span class="ep">第 2 回</span></div>
+  <p class="eyebrow">ヤン=ミルズでは"探すしかなかった"単調量が、ここでは既に走っている</p>
+  <h1>単調量はもうある ── Rodgers–TaoがΛ≥0を証明した
+    <span class="sub">2018年、ロジャースとタオが<strong>Λ≥0</strong>を証明した。その中身は、零点を<em>反発し合う気体</em>と見て、流れに沿って<strong>単調なエネルギー</strong>を追う ── まさにペレルマンの型。<br>「Λが負なら零点はならされ過ぎ、でも本物は素数由来のゆらぎを必ず持つ」── だからΛ≥0。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：Λ≥0の証明が「フロー＋単調量」で回っていることを掴む</span>
+    <span>一言で：零点ガスのエネルギーが単調 → Λ&lt;0は矛盾</span>
+  </div>
+
+  <p class="lead">前回、リーマン予想は <strong>RH ⟺ Λ≤0</strong> という「熱流＋Λ」の姿になりました。そしてニューマンが予想した下端 <strong>Λ≥0</strong> は、<strong>2018年に定理として証明</strong>されています（ロジャース＝タオ）。今回の主役はこの証明 ── なぜなら、それが<em>ペレルマンの型そのもの</em>で回っているからです。零点を反発し合う気体と見て、流れに沿って単調なエネルギーを追い、「Λが負だと矛盾する」を導く。姉妹編で"探すしかなかった"単調量が、リーマンでは<strong>すでに走っている</strong>のです。</p>
+
+  <h2><span class="n">01</span>零点は「反発し合う気体」 ── 準位反発とGUE</h2>
+
+  <p>挑戦編④（スペクトル）で見たことの復習です。ゼータの零点は、<em>ランダムに散らばっている</em>のではありません。互いに<strong>反発し合って</strong>、近づきすぎない ── 物理でいう<strong>準位反発</strong>。この統計が、ランダム行列（GUE）の固有値の統計と<em>驚くほど一致</em>する（モンゴメリー＝オドリツコ）。</p>
+
+  <p>だから零点は、一本の線の上に並んだ<strong>「反発し合う粒子の気体（クーロン気体・log-ガス）」</strong>として扱えます。この見方が、熱流の下で威力を出します。熱流をかけると、この気体は<em>だんだん"ならされて"平衡へ</em>近づいていく ── 温度がならされるのと同じ。</p>
+
+  <h2><span class="n">02</span>Rodgers–Taoの一手 ── 単調なエネルギーで「Λ&lt;0は無理」</h2>
+
+  <p>証明の骨格は、姉妹編のペレルマンと<strong>同じ形</strong>です。零点ガスの<strong>局所エネルギー</strong>（＝どれだけ"詰まっているか／ならされているか"を測る量）を考える。これが熱流に沿って<em>単調に変化</em>する。そして、こう論じます。</p>
+
+  <div class="keybox">
+    <div class="lbl">背理法の芯（高校生向けに）</div>
+    <p class="big" style="margin:0;">もし <strong>Λ&lt;0</strong> だったら ── 本物のゼータ（\(t=0\)）は、境目 Λ より<em>ずっと後ろ</em>にいることになる。<br>熱流は気体をならすから、\(t=0\) の零点は<strong>「ならされ過ぎ」＝異常になめらか</strong>になっているはず。<br>でも本物の零点は、<em>素数由来のゆらぎ</em>を必ず持っている（消せない）。<br>∴ ならされ過ぎは<strong>ありえない</strong> → <strong>Λ≥0</strong>。</p>
+  </div>
+
+  <p>下の図で、二つのシナリオを切り替えてください。<strong>本物（Λ≥0）</strong>では零点はゆらぎを保った健全な間隔。<strong>Λ&lt;0を仮定</strong>すると、零点は不自然に均一な格子（ならされ過ぎ）になり、素数のゆらぎと両立せず<span style="color:#a5473a;font-weight:700;">矛盾</span>します。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>零点ガスと局所エネルギー</strong>。上段＝一本の線上の零点（反発し合う粒子）。右のメーターは<strong>「ゆらぎのエネルギー」</strong>。<strong>本物（Λ≥0）</strong>はゆらぎ有りで健全、<strong>Λ&lt;0仮定</strong>はならされ過ぎ（エネルギー≈0）で<span style="color:#a5473a;font-weight:700;">素数のゆらぎと矛盾</span>。「▶熱で流す」で気体が平衡へ緩む様子も見られる。</div>
+    <canvas id="cv" width="680" height="290"></canvas>
+    <div class="ctrlrow">
+      <button class="btn on" id="bReal">本物の零点（Λ≥0）</button>
+      <button class="btn" id="bNeg">Λ&lt;0 を仮定</button>
+      <button class="btn" id="bFlow">▶ 熱で流す</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#5a2a6e;"></i>零点（粒子）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>ゆらぎのエネルギー（単調）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>矛盾（ならし過ぎ）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>これは「ペレルマンの型が回った実例」だ</h2>
+
+  <p>姉妹編・第4回で見たWの3部品を思い出してください。ロジャース＝タオの証明は、その型をきれいになぞっています。</p>
+
+  <div class="aside">
+    <span class="tag">ペレルマンの型との対応</span>
+    <strong>フロー</strong>＝熱流（零点をならす）／<strong>単調量</strong>＝零点ガスの局所エネルギー（流れに沿って一方向）／<strong>完全平方・正値性</strong>＝反発（クーロン）エネルギーの正値性／<strong>固定点</strong>＝平衡の間隔／<strong>結論</strong>＝「単調だから戻れない → Λ&lt;0は不可能」。<em>姉妹編で「探すしかない」と言った単調量が、リーマン予想では<strong>本当に構成され、定理を生んだ</strong></em> ── これが今日いちばん伝えたいことです。
+  </div>
+
+  <p>さらに、上端も現代の計算で締まりました。<strong>Polymath15（2019年、タオが主導した共同プロジェクト）</strong>が、デ・ブランの \(\Lambda\le\tfrac12\) を大幅に改善し <strong>\(\Lambda\le0.2\)</strong> を示した。両側から挟み込まれ、いまや ──</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">現在地（二つの錨）</div>
+    <p class="big" style="margin:0;">$$0 \;\le\; \Lambda \;\le\; 0.2$$<span style="font-size:15px;font-weight:400;color:var(--ink-soft);">下端 \(0\le\Lambda\)＝Rodgers–Tao（2018）。上端 \(\Lambda\le0.2\)＝Polymath15（2019）。RHは <strong>\(\Lambda=0\)</strong> を主張 ── 残るのは、この狭い窓を<em>ちょうど0</em>に詰めきること。</span></p>
+  </div>
+
+  <p>姉妹編ヤン=ミルズで「両端に錨があり、真ん中の無人地帯に橋を渡す」と言ったのと、<strong>まったく同じ構図</strong>です。しかも、こちらは<em>錨がずっと近い</em>（0と0.2）。ならば、あと一押しで詰まりそう ── ところが、ここに残酷なひねりがあります。次回、その「間違った半分」を見ます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">零点の準位反発とGUE統計との一致は、Montgomery（1973、対相関予想）とOdlyzko の数値が支持する<em>予想レベル</em>の事実（証明はされていない）ですが、零点を反発する気体として扱う描像の土台です。<strong>Rodgers–Tao（2018）</strong>は「de Bruijn–Newman定数は非負（Λ≥0）」を証明した本物の定理で、零点の熱流のダイナミクスを相互作用粒子系として解析し、局所的なエネルギー／エントロピー的量の制御で背理法を回します（本文は高校向けに単純化）。<strong>Polymath15（2019）</strong>は上界を \(\Lambda\le0.2\) に改善（de Bruijn の 1/2 から）。</p>
+    <p style="margin-bottom:0;">「素数由来のゆらぎ」「ならされ過ぎ」は、証明の心（零点はある種の剛性／ゆらぎを持ち、過度に緩和した配置は取れない）を高校向けに翻訳したもので、原論文の厳密な評価そのものではありません。図の粒子配置・エネルギーは機構を模した教育用モデルです。RH（Λ=0）は未証明です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>Rodgers–Tao は何を証明し、それはどんな型か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>Λ≥0</strong>（de Bruijn–Newman定数の非負性、2018年）。零点を<strong>反発し合う気体</strong>と見て、熱流に沿って<strong>単調なエネルギー</strong>を追う ── ペレルマンの「フロー＋単調量」の型。</div></details>
+      </li>
+      <li>「Λ&lt;0は矛盾」を、ことばで。
+        <details><summary>答えを見る</summary><div class="ans">Λ&lt;0なら本物のゼータ（t=0）は境目より後ろ＝熱でならされ過ぎ＝異常になめらかなはず。でも本物の零点は<strong>素数由来のゆらぎ</strong>を必ず持つので、ならされ過ぎはありえない → Λ≥0。</div></details>
+      </li>
+      <li>いまの「二つの錨」と、残った仕事は？
+        <details><summary>答えを見る</summary><div class="ans">下端 <strong>0≤Λ</strong>（Rodgers–Tao 2018）と上端 <strong>Λ≤0.2</strong>（Polymath15 2019）。RHは <strong>Λ=0</strong> の主張なので、残るのは狭い窓 [0,0.2] を<strong>ちょうど0</strong>に詰めきること。ヤン=ミルズの「両端の錨＋真ん中」と同じ構図。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>ペレルマンの型が、実際に定理を生んだ</h2>
+    <p>零点は<strong>反発し合う気体</strong>（準位反発・GUE）。熱流はこの気体をならして平衡へ運ぶ。<strong>Rodgers–Tao（2018）</strong>は、零点ガスの<strong>局所エネルギーの単調性</strong>を使い「Λ&lt;0なら零点がならされ過ぎ＝素数のゆらぎと矛盾」→ <strong>Λ≥0</strong> を証明。これは姉妹編で"探すしかない"と言った<em>「フロー＋単調量」の型が、実際に回った実例</em>。</p>
+    <p>上端も <strong>Polymath15（2019）</strong>が \(\Lambda\le0.2\) に締め、いまや <strong>0≤Λ≤0.2</strong>。両端に近い錨があり、残るは窓を<strong>ちょうど0</strong>に詰めること ── ヤン=ミルズと同じ構図で、しかも錨は近い。だが次回、その一押しを阻む<strong>「間違った半分」</strong>という残酷なひねりを見る。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-perelman1-netsuryu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第1回：熱流の発見</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman3-marginality.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第3回：間違った半分 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・ペレルマン編・第2回。零点の準位反発とGUE統計の一致はMontgomery（1973）の対相関予想とOdlyzkoの数値計算が支持する予想であり、零点を相互作用気体（log-ガス／クーロン気体）として扱う描像の基礎です。Rodgers–Tao（Brad Rodgers, Terence Tao, 2018；Forum of Mathematics Pi 2020）は de Bruijn–Newman定数の非負性 Λ≥0 を、熱流下の零点の相互作用粒子系としての解析（局所エネルギー的量の単調性・制御）で証明しました。Polymath15（2019）は上界を Λ≤0.2 に改善（de Bruijn 1950 の Λ≤1/2 から）。本文の「素数由来のゆらぎ」「ならされ過ぎ＝矛盾」は証明の心を高校向けに翻訳したもので、厳密な評価そのものではありません。図は機構を模した教育用モデルです。RH（Λ=0）は未証明。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「本物／Λ&lt;0仮定」を切替え、「▶熱で流す」で気体が緩む様子を見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bReal=document.getElementById('bReal'), bNeg=document.getElementById('bNeg'), bFlow=document.getElementById('bFlow');
+  var lastW=680, mode='real', flowing=false, phase=0;
+  var N=13, base=[], jit=[];
+  (function init(){ for(var i=0;i<N;i++){ base.push((i+0.5)/N); // uniform positions in [0,1]
+    // pseudo-random but deterministic jitter
+    jit.push(0.5*Math.sin(i*12.9898)*Math.cos(i*4.1414)); } })();
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var L=40, R=w*0.68, lineY=110, spacing=(R-L)/N;
+    // relaxation factor: flowing reduces jitter toward 0 (ならす)
+    var relax = flowing? Math.max(0, 1-phase*0.02) : 1;
+    var jitAmp = mode==='neg' ? 0.0 : 0.62*relax;   // neg mode = over-smoothed (no jitter)
+    // line
+    ctx.strokeStyle='#5a2a6e'; ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(L,lineY); ctx.lineTo(R,lineY); ctx.stroke();
+    ctx.fillStyle='#5a2a6e'; ctx.font='12px sans-serif'; ctx.textAlign='left'; ctx.fillText('臨界線上の零点', L, lineY-34);
+    // particles
+    var energy=0;
+    for(var i=0;i<N;i++){
+      var x=L+spacing*(i+0.5) + jit[i]*jitAmp*spacing*0.6;
+      energy += Math.abs(jit[i]*jitAmp);
+      ctx.fillStyle= mode==='neg' ? '#a5473a' : '#5a2a6e';
+      ctx.beginPath(); ctx.arc(x,lineY,7,0,7); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.6; ctx.stroke();
+      // spacing marks
+    }
+    energy/=N;
+    // description of spacing
+    ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#7a6a52';
+    ctx.fillText(mode==='neg'?'不自然に均一（ならし過ぎ）':'ゆらぎのある健全な間隔', (L+R)/2, lineY+34);
+
+    // energy meter (right)
+    var mx=R+34, mw=44, mtop=30, mh=150;
+    ctx.fillStyle='#f2ede1'; ctx.fillRect(mx,mtop,mw,mh); ctx.strokeStyle='#cabfa3'; ctx.lineWidth=1.2; ctx.strokeRect(mx,mtop,mw,mh);
+    var ev = mode==='neg'? 0.03 : Math.max(0.06,energy*1.3);
+    var col = mode==='neg' ? '#a5473a' : '#2f7d5a';
+    ctx.fillStyle=col; ctx.globalAlpha=.9; ctx.fillRect(mx+1, mtop+mh-mh*Math.min(1,ev), mw-2, mh*Math.min(1,ev)); ctx.globalAlpha=1;
+    ctx.fillStyle='#4a4f5e'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('ゆらぎ', mx+mw/2, mtop-14); ctx.fillText('エネルギー', mx+mw/2, mtop-1);
+
+    // verdict box (bottom)
+    ctx.textAlign='center';
+    if(mode==='neg'){
+      ctx.fillStyle='#a5473a'; ctx.font='bold 13.5px sans-serif';
+      ctx.fillText('Λ<0 を仮定 → ならし過ぎ（エネルギー≈0）', (L+R)/2, 210);
+      ctx.font='13px sans-serif';
+      ctx.fillText('でも本物は素数由来のゆらぎを必ず持つ → 矛盾 → Λ≥0', (L+R)/2, 232);
+    } else {
+      ctx.fillStyle='#2f7d5a'; ctx.font='bold 13.5px sans-serif';
+      ctx.fillText('本物の零点：ゆらぎ有り（健全）＝ Λ≥0 と両立', (L+R)/2, 210);
+      ctx.font='13px sans-serif'; ctx.fillStyle='#4a4f5e';
+      ctx.fillText(flowing?'熱で流すと、ゆらぎが単調に緩んで平衡へ近づく':'「▶熱で流す」で、ゆらぎが単調に緩む様子を見られる', (L+R)/2, 232);
+    }
+  }
+  function tick(){ if(flowing){ phase++; if(phase>46){ flowing=false; bFlow.textContent='▶ 熱で流す'; } } draw(); requestAnimationFrame(tick); }
+  function say(){
+    rd.innerHTML = mode==='neg'
+      ? '<b>Λ&lt;0 を仮定。</b> 零点が不自然に均一＝ならし過ぎでエネルギー≈0。でも本物の零点は素数由来のゆらぎを消せない → <b>矛盾</b>。よって <b>Λ≥0</b>（Rodgers–Tao）。'
+      : '<b>本物の零点（Λ≥0）。</b> ゆらぎを保った健全な間隔でエネルギー&gt;0。熱で流すと、この気体は<b>単調に</b>ならされて平衡へ ── フロー＋単調量というペレルマンの型そのもの。';
+  }
+  bReal.addEventListener('click',function(){ mode='real'; bReal.classList.add('on'); bNeg.classList.remove('on'); phase=0; flowing=false; bFlow.textContent='▶ 熱で流す'; say(); });
+  bNeg.addEventListener('click',function(){ mode='neg'; bNeg.classList.add('on'); bReal.classList.remove('on'); flowing=false; bFlow.textContent='▶ 熱で流す'; say(); });
+  bFlow.addEventListener('click',function(){ if(mode!=='real'){ mode='real'; bReal.classList.add('on'); bNeg.classList.remove('on'); } flowing=!flowing; phase=0; bFlow.textContent=flowing?'❚❚ 停止':'▶ 熱で流す'; say(); });
+  window.addEventListener('resize',draw);
+  say(); requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

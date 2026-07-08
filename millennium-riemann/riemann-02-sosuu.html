@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素数ってなんだ？ ── バラバラなのに、隠れた規則 ／ ミレニアム問題を解くぞ 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;    /* 濃紫 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#5a2a6e;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  table.ptab{width:100%;border-collapse:collapse;margin:8px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.ptab th,table.ptab td{border:1px solid var(--rule);padding:7px 9px;text-align:right;}
+  table.ptab th{background:#efe9f3;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  table.ptab td:first-child,table.ptab th:first-child{text-align:center;}
+  table.ptab tr:last-child td{background:#f3ece1;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,table.ptab{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">第 2 回</span></div>
+  <p class="eyebrow">主役その一 ── 数の"原子"、素数の二つの顔</p>
+  <h1>素数ってなんだ？ ── バラバラなのに、隠れた規則
+    <span class="sub">2, 3, 5, 7, 11… 次がどこに来るか、いまだに誰も式で言い当てられない。<br>なのに<em>「全体では」</em>驚くほどきれいな法則がある ── これが<strong>素数定理</strong>。<br>「一個ずつは気まぐれ、集団では規則正しい」── この二面性こそ、リーマン予想の主戦場。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：素数の"二つの顔"を、動く図でつかむ</span>
+    <span>一言で：個々はバラバラ、全体では π(x)≈x/ln x</span>
+  </div>
+
+  <p class="lead">前回、リーマン予想の登場人物は<strong>「素数」と「ゼータ関数」</strong>の二人だと言いました。この回は、まず素数の顔をじっくり見ます。素数はふつう「割り切れない、気まぐれな数」と思われています。それは半分あたり。でももう半分 ── <em>集団になると、時計のように規則正しい</em> ── を知らないと、リーマン予想が「何のゆらぎ」を問題にしているのかが見えません。この二つの顔を、動く図で行き来します。</p>
+
+  <h2><span class="n">01</span>素数は「数の原子」 ── そして、無限にある</h2>
+
+  <p><strong>素数</strong>とは、1とその数自身でしか割り切れない、2以上の整数のこと。2, 3, 5, 7, 11, 13, 17… と続きます（1は素数に含めません）。大事なのは、<em>すべての整数は素数のかけ算でただ一通りに書ける</em>こと（12＝2×2×3、100＝2×2×5×5）。だから素数は<strong>数の"原子"</strong>── これ以上分解できない、数の素材です。</p>
+
+  <div class="aside">
+    <span class="tag">素数は無限にある（ユークリッドの証明・紀元前）</span>
+    もし素数が有限個 \(p_1,\dots,p_k\) しかないなら、全部かけて1足した数 \(N=p_1p_2\cdots p_k+1\) を考える。\(N\) はどの \(p_i\) で割っても1あまる＝どれでも割り切れない。すると \(N\) は新しい素数を持つ ── 矛盾。だから素数は<strong>尽きない</strong>。2000年以上前の、たった数行の完璧な証明。
+  </div>
+
+  <h2><span class="n">02</span>一つ目の顔：一個ずつは、気まぐれ</h2>
+
+  <p>下は 1〜120 のタイルです。<span style="color:var(--acc);font-weight:700;">紫</span>が素数。<strong>クリック</strong>すると、その数が素数か、次の素数までどれだけ空いているか（＝<em>素数の間隔＝ギャップ</em>）が分かります。並び方に規則が見えますか？ ── 見えません。ぎっしり詰まったり（<strong>双子素数</strong>：11と13のように差が2）、ぽっかり空いたり（大きなギャップ）。</p>
+
+  <div class="fig">
+    <div class="cap">図：1〜120。<span style="color:var(--acc);font-weight:700;">紫＝素数</span>。タイルをクリックすると素数判定と「次の素数までのギャップ」が出る。差が2の隣どうし＝<strong>双子素数</strong>を金枠で表示。</div>
+    <canvas id="cvGrid" width="680" height="330"></canvas>
+    <div class="readout" id="rdGrid"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#7a4fa0;"></i>素数</span>
+      <span><i class="swatch" style="background:#efe6e2;"></i>素数でない</span>
+      <span><i class="swatch" style="background:#fffdf8;border:2px solid #a9791a;"></i>双子素数のペア</span>
+    </div>
+  </div>
+
+  <p>間隔はてんでバラバラ。しかも ── <em>いくらでも大きなギャップを作れる</em>ことが証明できます。たとえば \(101!+2,\ 101!+3,\ \dots,\ 101!+101\) はぜんぶ合成数（順に \(2,3,\dots,101\) で割れる）。だから「素数が100個連続で現れない砂漠」が必ずどこかにある。逆に、差が2の双子素数が無限にあるか（<strong>双子素数予想</strong>）は、いまだに未解決です。個々のふるまいは、これほど手に負えない。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>二つ目の顔：全体では、時計のように規則正しい</h2>
+
+  <p>ところが、視点を「一個ずつ」から<strong>「\(x\) までに何個あるか」</strong>に変えると、景色が一変します。この個数を <strong>\(\pi(x)\)</strong>（パイ・エックス）と書きます ── 円周率とは無関係、単に「\(x\) 以下の素数の個数」です。\(\pi(10)=4\)（2,3,5,7）、\(\pi(100)=25\)、\(\pi(1000)=168\)。</p>
+
+  <p>下の図で、<span style="color:var(--acc);font-weight:700;">紫のギザギザの階段</span>が \(\pi(x)\)。素数のところでカクッと1段上がる。個々の段はバラバラなのに、<strong>階段全体は、なめらかな曲線 \(x/\ln x\)</strong>（<span style="color:#a5622a;font-weight:700;">茶の曲線</span>）に、ぴったり寄り添って伸びていきます。スライダーで範囲を広げるほど、比が1に近づくのが見えます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">紫の階段＝π(x)</span>（素数の個数）と、<span style="color:#a5622a;font-weight:700;">茶の曲線＝x/ln x</span>。「Li(x)を表示」で、より精密な近似<span style="color:#2f7d5a;font-weight:700;">（緑）</span>も重ねられる。スライダーで上限 N を動かす。</div>
+    <canvas id="cvPi" width="680" height="360"></canvas>
+    <div class="ctrlrow no-print">
+      <label>上限 N：<input type="range" id="sldN" min="50" max="2000" value="200" step="10"><span id="nVal" style="font-weight:700;color:var(--acc);">200</span></label>
+      <button class="btn" id="btnLi">Li(x) を表示</button>
+    </div>
+    <div class="readout" id="rdPi"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#7a4fa0;"></i>π(x)（本物の個数）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>x/ln x（素数定理）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>Li(x)（より精密）</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">素数定理（1896年に証明ずみ）</div>
+    $$\pi(x)\ \sim\ \frac{x}{\ln x}\qquad\Bigl(\text{つまり }\ \frac{\pi(x)}{x/\ln x}\to 1\ \ (x\to\infty)\Bigr)$$
+    <p style="margin:8px 0 0;">「\(x\) 以下の素数の個数は、だいたい \(x/\ln x\) 個」。言いかえると、\(x\) の近くの数が素数である"確率"はおよそ \(1/\ln x\)。数が大きくなるほど素数はまばらになる ── でも、そのまばらになり方に、はっきりした法則がある。<strong>気まぐれな素数の、集団としての顔。</strong></p>
+  </div>
+
+  <p>実際の数字を並べると、寄り添い方がよく分かります。</p>
+
+  <table class="ptab">
+    <tr><th>x</th><th>π(x)（本物）</th><th>x/ln x</th><th>Li(x)</th><th>π(x)÷(x/ln x)</th></tr>
+    <tr><td>10³</td><td>168</td><td>145</td><td>178</td><td>1.16</td></tr>
+    <tr><td>10⁶</td><td>78,498</td><td>72,382</td><td>78,628</td><td>1.08</td></tr>
+    <tr><td>10⁹</td><td>50,847,534</td><td>48,254,942</td><td>50,849,235</td><td>1.05</td></tr>
+    <tr><td>→∞</td><td colspan="3">比はゆっくり 1 に近づく</td><td>1</td></tr>
+  </table>
+
+  <p>\(x/\ln x\) は本物より少し小さめ（比が1より大きい）ですが、\(x\) を大きくすると比は確実に1へ。そして表の <strong>Li(x)</strong> ── 対数積分 \(\mathrm{Li}(x)=\int_2^x \frac{dt}{\ln t}\) ── を見てください。\(\pi(x)\) に<em>けた違いに近い</em>。リーマンが素数の個数を表すのに使ったのが、この \(\mathrm{Li}(x)\) を主役にした式でした。</p>
+
+  <h2><span class="n">04</span>二つの顔をつなぐと ── リーマン予想が顔を出す</h2>
+
+  <p>ここで、二つの顔を1本の式にまとめます。<strong>本物の個数 ＝ なめらかな予想 ＋ ゆらぎ（誤差）</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">素数分布 ＝ 「平均」＋「ゆらぎ」</div>
+    $$\underbrace{\pi(x)}_{\text{本物}}\ =\ \underbrace{\mathrm{Li}(x)}_{\text{なめらかな平均}}\ +\ \underbrace{(\text{ゆらぎ})}_{\text{ここが問題}}$$
+    <p style="margin:8px 0 0;">素数定理（1896年）は「平均」の部分を確定させました。でも、階段 \(\pi(x)\) は平均のまわりで<em>ゆれて</em>いる。その<strong>ゆらぎがどこまで小さいか</strong>── これが、まだ決着していない部分です。</p>
+  </div>
+
+  <p>そして、その<strong>ゆらぎの大きさを決めているのが、次回の主役・ゼータ関数のゼロ点の位置</strong>なのです。リーマン予想が正しければ、ゆらぎは可能なかぎり小さく抑えられます：</p>
+
+  <div class="keybox">
+    <div class="lbl">リーマン予想 ＝ 「素数のゆらぎは最小」</div>
+    $$\bigl|\pi(x)-\mathrm{Li}(x)\bigr|\ \le\ C\,\sqrt{x}\,\ln x\qquad\Longleftrightarrow\qquad \text{リーマン予想}$$
+    <p style="margin:8px 0 0;">ゆらぎが \(\sqrt{x}\) 程度（＝本物の個数 \(x/\ln x\) に比べてずっと小さい）に収まる、という主張。これが<strong>リーマン予想とぴったり同値</strong>だと分かっています。つまりリーマン予想は、<em>「素数は、これ以上ないほど行儀よく散らばっている」</em>の言いかえ。第2の顔の"きれいさ"の、究極の保証書なのです。</p>
+  </div>
+
+  <p>「一個ずつは気まぐれ」なのに「全体では最高に規則正しい」── この二面性の<em>境界線</em>に、100万ドルの問いは立っています。次回は、その規則を丸ごと握っている関数、ゼータ関数の正体に踏み込みます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">素数定理 \(\pi(x)\sim x/\ln x\) は1896年にアダマールとド・ラ・ヴァレ・プーサンが独立に証明した<strong>定理</strong>（予想ではありません）。証明の鍵は「ゼータ関数が直線 Re(s)=1 の上にゼロを持たない」ことで、ここで早くもゼータのゼロ点が効いてきます。表の数値（π(10⁶)=78498 など）は既知の正確な値で、x/ln x・Li(x) は概数です。比 π(x)÷(x/ln x) が1に近づくのは事実ですが、その近づき方は非常にゆっくりです。</p>
+    <p style="margin-bottom:0;">「誤差 \(|\pi(x)-\mathrm{Li}(x)|\le C\sqrt{x}\ln x\) ⟺ リーマン予想」は正しい同値関係です（フォン・コッホ、1901年）。なお \(\mathrm{Li}(x)\) は \(x\) が現実的な範囲では常に \(\pi(x)\) より大きく見えますが、実は無限のかなたで大小が無限回入れ替わることも証明されています（リトルウッド、1914年）── "見えている範囲"だけで判断できない好例で、これも本シリーズの「有限の観察 ≠ 無限の証明」の主題そのものです。双子素数が無限にあるか、任意に大きい素数ギャップが存在すること（\(n!+2,\dots,n!+n\) は合成数）はいずれも本文どおりです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>素数の「二つの顔」とは何と何か。
+        <details><summary>答えを見る</summary><div class="ans">①一個ずつは気まぐれ（次の素数がどこに来るか式で言えない・ギャップがバラバラ・双子素数もあれば長い砂漠もある）。②集団では規則正しい（x以下の個数 π(x) は、なめらかな x/ln x や Li(x) にぴったり寄り添う＝素数定理）。この二面性がリーマン予想の舞台。</div></details>
+      </li>
+      <li>「素数がぴったり100個、連続で現れない場所」は必ずあると言える？
+        <details><summary>答えを見る</summary><div class="ans">言える。101!+2, 101!+3, …, 101!+101 はそれぞれ 2,3,…,101 で割り切れるので全部合成数。つまり長さ100の「素数の砂漠」。同じやり方でいくらでも長い砂漠が作れる ── 個々のギャップに上限はない。</div></details>
+      </li>
+      <li>リーマン予想は、素数について結局「何が小さい」と言っているのか。
+        <details><summary>答えを見る</summary><div class="ans">本物の個数 π(x) と、なめらかな予想 Li(x) との「ずれ（ゆらぎ）」が、√x 程度に収まる（|π(x)−Li(x)|≤C√x·ln x）と言っている。これはリーマン予想と同値。つまり「素数はこれ以上ないほど行儀よく散らばる」の意味。そのゆらぎを支配するのがゼータのゼロ点。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>素数の、二つの顔</h2>
+    <p>素数は数の"原子"（すべての整数は素数の積に一意分解）で、無限にある（ユークリッド）。第1の顔は<strong>気まぐれ</strong> ── ギャップはバラバラ、いくらでも長い砂漠が作れ、双子素数の無限性すら未解決。ところが第2の顔は<strong>規則正しさ</strong> ── \(x\) 以下の個数 \(\pi(x)\) は、なめらかな \(x/\ln x\) や \(\mathrm{Li}(x)\) にぴたりと寄り添う（素数定理、1896年）。</p>
+    <p>この二つをつなぐと <strong>π(x) ＝ Li(x)（平均）＋ ゆらぎ</strong>。平均は決着ずみ、残るは<em>ゆらぎの大きさ</em>。「ゆらぎ ≤ 約√x ⟺ リーマン予想」── つまりリーマン予想は「素数はこれ以上ないほど行儀よく並ぶ」の別名だった。そのゆらぎを握るのが、次回の主役ゼータ関数のゼロ点。次回は、ただの足し算がなぜ素数の暗号帳になるのか（オイラー積）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-01-millennium.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第1回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-03-zeta.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第3回：ゼータ関数って何？ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 第2回、数学好きの高校生・大学生向け読み物。素数の一意分解（算術の基本定理）、素数の無限性（ユークリッド）、任意に長い素数ギャップの存在（n!+2,…,n!+n が合成数）はいずれも初等的な事実です。素数定理 \(\pi(x)\sim x/\ln x\) は1896年にアダマールとド・ラ・ヴァレ・プーサンが独立に証明し、その証明はゼータ関数が直線 Re(s)=1 上でゼロを持たないことに依拠します。より精密な近似は対数積分 \(\mathrm{Li}(x)=\int_2^x dt/\ln t\) で与えられ、リーマンの明示公式の主要項に現れます。誤差評価 \(|\pi(x)-\mathrm{Li}(x)|=O(\sqrt{x}\log x)\) はリーマン予想と同値です（フォン・コッホ、1901年）。\(\mathrm{Li}(x)-\pi(x)\) の符号が無限回変わること（リトルウッド、1914年）、双子素数予想が未解決であることも2025年時点の事実です。表中の π(x) は正確な値、x/ln x・Li(x) は概数です。図の π(x) はブラウザ内でエラトステネスのふるいにより計算しています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではタイルや階段の図を操作できます。スライダーで上限 N を動かすと、π(x) が x/ln x に寄り添う様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+/* 共通：エラトステネスのふるい */
+function sieve(n){
+  var is=new Array(n+1).fill(true); is[0]=is[1]=false;
+  for(var p=2;p*p<=n;p++){ if(is[p]){ for(var q=p*p;q<=n;q+=p) is[q]=false; } }
+  return is;
+}
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+
+/* ===== 図1：1〜120 のタイル ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvGrid'), rd=document.getElementById('rdGrid');
+  var N=120, cols=10, rows=12, is=sieve(N);
+  var primes=[]; for(var i=2;i<=N;i++) if(is[i]) primes.push(i);
+  function nextPrime(n){ for(var k=n+1;k<=N;k++) if(is[k]) return k; return null; }
+  var twins={}; for(var t=0;t<primes.length-1;t++){ if(primes[t+1]-primes[t]===2){ twins[primes[t]]=1; twins[primes[t+1]]=1; } }
+  var cells=[], lastW=680, sel=11;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var padX=8, padY=6, gap=4;
+    var cw=(w-2*padX-(cols-1)*gap)/cols, ch=(h-2*padY-(rows-1)*gap)/rows;
+    cells=[];
+    for(var n=1;n<=N;n++){
+      var idx=n-1, r=Math.floor(idx/cols), c=idx%cols;
+      var x=padX+c*(cw+gap), y=padY+r*(ch+gap);
+      cells.push({x:x,y:y,w:cw,h:ch,n:n});
+      var prime=is[n], isSel=(n===sel);
+      ctx.fillStyle= prime? '#7a4fa0' : '#efe6e2';
+      ctx.beginPath(); ctx.rect(x,y,cw,ch); ctx.fill();
+      if(prime && twins[n]){ ctx.strokeStyle='#a9791a'; ctx.lineWidth=2.5; ctx.strokeRect(x+1,y+1,cw-2,ch-2); }
+      if(isSel){ ctx.strokeStyle='#1a1e28'; ctx.lineWidth=2.5; ctx.strokeRect(x+1,y+1,cw-2,ch-2); }
+      ctx.fillStyle= prime? '#fff' : '#a79a92';
+      ctx.font='bold 12.5px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(n, x+cw/2, y+ch/2+1);
+    }
+    ctx.textBaseline='alphabetic';
+  }
+  function say(n){
+    if(is[n]){
+      var np=nextPrime(n), gap= np? (np-n): null;
+      var tw = twins[n]? '　<b style="color:#a9791a;">双子素数！</b>（差2の相棒あり）':'';
+      rd.innerHTML='<b>'+n+' は素数</b>。次の素数は '+(np? '<b>'+np+'</b>（ギャップ '+gap+'）':'この表の外')+'。'+tw;
+    } else {
+      // 因数を一つ見せる
+      var f=2; while(n%f!==0) f++;
+      rd.innerHTML='<b>'+n+' は素数ではない</b>（例：'+f+' で割り切れる ＝ '+n+'÷'+f+'＝'+(n/f)+'）。';
+    }
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<cells.length;i++){ var b=cells[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.n; draw(); say(b.n); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();say(sel);},40); window.addEventListener('load',function(){draw();say(sel);});
+})();
+
+/* ===== 図2：π(x) 階段 vs x/ln x（と Li(x)） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvPi'), rd=document.getElementById('rdPi');
+  var sld=document.getElementById('sldN'), nVal=document.getElementById('nVal'), btnLi=document.getElementById('btnLi');
+  var NMAX=2000, is=sieve(NMAX);
+  // π の前置和
+  var piArr=new Array(NMAX+1); piArr[0]=0;
+  for(var i=1;i<=NMAX;i++) piArr[i]=piArr[i-1]+(is[i]?1:0);
+  // Li の前置和（2から台形積分）
+  var liArr=new Array(NMAX+1); liArr[0]=0; liArr[1]=0; liArr[2]=0;
+  for(var x=3;x<=NMAX;x++){ var a=1/Math.log(x-1), b=1/Math.log(x); liArr[x]=liArr[x-1]+(a+b)/2; }
+  var N=200, showLi=false, lastW=680, geom={};
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=52, mR=16, mT=16, mB=32, plotW=w-mL-mR, plotH=h-mT-mB;
+    var yMax=Math.max(piArr[N], N/Math.log(N), liArr[N])*1.08;
+    function X(x){ return mL + (x-2)/(N-2)*plotW; }
+    function Y(v){ return mT + plotH - (v/yMax)*plotH; }
+    geom={mL:mL,mT:mT,plotW:plotW,plotH:plotH,X:X,Y:Y};
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#d8ccdd'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(mL,mT); ctx.lineTo(mL,mT+plotH); ctx.lineTo(mL+plotW,mT+plotH); ctx.stroke();
+    // y メモリ
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    var yStep=niceStep(yMax);
+    for(var v=0;v<=yMax;v+=yStep){ var yy=Y(v);
+      ctx.strokeStyle='#f0e8f3'; ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+plotW,yy); ctx.stroke();
+      ctx.fillStyle='#8a7f92'; ctx.fillText(Math.round(v), mL-6, yy+4);
+    }
+    // x メモリ
+    ctx.textAlign='center';
+    var xStep=niceStep(N);
+    for(var xv=0;xv<=N;xv+=xStep){ if(xv<2) continue; var xx=X(xv);
+      ctx.fillStyle='#8a7f92'; ctx.fillText(xv, xx, mT+plotH+16);
+    }
+    ctx.fillStyle='#8a7f92'; ctx.textAlign='right'; ctx.fillText('x', mL+plotW, mT+plotH+28);
+    // x/ln x 曲線
+    ctx.strokeStyle='#a5622a'; ctx.lineWidth=2; ctx.beginPath();
+    for(var px=2;px<=N;px++){ var vv=px/Math.log(px); if(px===2) ctx.moveTo(X(px),Y(vv)); else ctx.lineTo(X(px),Y(vv)); }
+    ctx.stroke();
+    // Li 曲線
+    if(showLi){
+      ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=2; ctx.beginPath();
+      for(var lx=2;lx<=N;lx++){ if(lx===2) ctx.moveTo(X(lx),Y(liArr[lx])); else ctx.lineTo(X(lx),Y(liArr[lx])); }
+      ctx.stroke();
+    }
+    // π(x) 階段
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2.2; ctx.beginPath();
+    var cur=0; ctx.moveTo(X(2),Y(0));
+    for(var n=2;n<=N;n++){ var xx2=X(n);
+      ctx.lineTo(xx2, Y(cur));           // 横に伸ばす
+      if(is[n]){ cur++; ctx.lineTo(xx2, Y(cur)); } // 素数で段を上げる
+    }
+    ctx.stroke();
+  }
+  function niceStep(m){
+    var raw=m/6, p=Math.pow(10,Math.floor(Math.log(raw)/Math.log(10)));
+    var n=raw/p; var s= n<1.5?1: n<3?2: n<7?5:10; return Math.max(s*p,1);
+  }
+  function report(){
+    var pi=piArr[N], xl=N/Math.log(N), li=liArr[N];
+    rd.innerHTML='N='+N+' のとき ── 本物 <b>π('+N+')='+pi+'</b>個、 x/ln x ≈ <b>'+xl.toFixed(1)+'</b>、 Li ≈ <b>'+li.toFixed(1)+'</b>。 比 π/(x/ln x) = <b>'+(pi/xl).toFixed(3)+'</b>（N を大きくすると 1 に近づく）。'+(showLi?'　緑の Li(x) が階段に一番ぴったり。':'');
+  }
+  sld.addEventListener('input', function(){ N=parseInt(sld.value,10); nVal.textContent=N; draw(); report(); });
+  btnLi.addEventListener('click', function(){ showLi=!showLi; btnLi.classList.toggle('on',showLi); draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+</script>
+</body>
+</html>

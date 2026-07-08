@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>攻め方の地図 ── 5つのルートと、同じ壁 ／ ミレニアム問題を解くぞ 挑戦編①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+    --rA:#2f6d8a; --rB:#a5622a; --rC:#2c5560; --rD:#2f7d5a; --rE:#8a3550;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .route{margin:24px 0;border-left:5px solid var(--rc,#5a2a6e);background:#fffdf8;border:1px solid var(--rule);border-left-width:5px;border-radius:4px;padding:16px 20px;}
+  .route .rh{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.1em;font-weight:700;color:var(--rc,#5a2a6e);margin-bottom:4px;}
+  .route h3{margin:2px 0 8px;font-size:19px;font-weight:700;letter-spacing:.02em;}
+  .route .reach{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:#2f7d5a;font-weight:700;margin:6px 0 2px;}
+  .route .wall{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--open);font-weight:700;margin:2px 0;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.route{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編①</span></div>
+  <p class="eyebrow">入門編で正体は分かった ── では、どう攻めるのか</p>
+  <h1>攻め方の地図 ── 5つのルートと、同じ壁
+    <span class="sub">頂上は一つ ── <strong>非自明なゼロが一つ残らず Re(s)=1/2 に乗ると証明せよ</strong>。<br>ここへ、人類は少なくとも<strong>5つのルート</strong>で挑んできた。<br>だが不思議なことに、性格の違う道が<em>みな同じ形の壁</em>で止まる。まずはその地図を広げる。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：主要ルートの到達点と壁を一望する</span>
+    <span>掟：旗は立てない ── 縁の標識を立てる</span>
+  </div>
+
+  <p class="lead">入門編（全5回）で、リーマン予想の<strong>正体</strong>はほどけました ── ゼータの非自明なゼロが臨界線 \(\mathrm{Re}(s)=1/2\) に全部乗る、それは素数のゆらぎが最小という保証。ここからは<strong>挑戦編</strong>。「では、どうやって証明に挑むのか」を追います。掟は第一部ヤン=ミルズと同じ ── <em>「解けた」の旗は立てない。それぞれの道がどこまで登り、どこで止まるか（縁）を正確に指す</em>。この回はその<strong>地図</strong>。5つの主要ルートを一望し、なぜ全部が同じ壁にぶつかるのかを見ます。</p>
+
+  <h2><span class="n">01</span>頂上と、共通の敵</h2>
+
+  <p>まず頂上をはっきりさせます。証明すべきは「<em>ほとんどのゼロ</em>」でも「<em>10兆個</em>」でもなく、<strong>臨界帯にある無限個の非自明なゼロが、例外ゼロ一個も無く、全部 Re(s)=1/2 に乗る</strong>こと。この「例外0個」が、あらゆるルートの共通の敵です。</p>
+
+  <div class="keybox">
+    <div class="lbl">共通の敵 ── 平均は御せる、例外が御せない</div>
+    <p class="big" style="margin:0;">人類は、ゼロを<strong>平均・統計・大多数</strong>では驚くほど制御できる。でも「<em>ただ一個の例外も無い</em>」を強制する<strong>剛い構造</strong>（１つの作用素、１つの幾何、１つの正値性）を、まだ誰も手にしていない。5つのルートは、この一点で足踏みする。</p>
+  </div>
+
+  <h2><span class="n">02</span>登攀図 ── 5ルートと、それぞれの到達点</h2>
+
+  <p>下は攻め方の"登攀図"。ふもとが入門編で分かった問題、頂上がRHの証明。5つのルート（<span style="color:var(--rA);font-weight:700;">A</span> <span style="color:var(--rB);font-weight:700;">B</span> <span style="color:var(--rC);font-weight:700;">C</span> <span style="color:var(--rD);font-weight:700;">D</span> <span style="color:var(--rE);font-weight:700;">E</span>）が、それぞれどこまで登り、どこで壁（■）にぶつかるかを描いています。<strong>ルートのボタンを押す</strong>と、到達点と壁の説明が出ます。</p>
+
+  <div class="fig">
+    <div class="cap">図：RHへの登攀図。各ルートが到達点で壁（■）に当たる。<span style="color:var(--rC);font-weight:700;">C は点線</span>＝仕組みは頂上級だが足場（作用素）が無い。<span style="color:var(--rD);font-weight:700;">D は別の峰</span>＝有限体版は完登済みだが谷（F₁の不在）で本峰と隔たる。<span style="color:var(--rE);font-weight:700;">E は輪</span>＝ふもとへ戻る（難しさが移るだけ）。</div>
+    <canvas id="cvMap" width="680" height="400"></canvas>
+    <div class="btnrow no-print">
+      <button class="btn on" data-r="A">A 直接押す</button>
+      <button class="btn" data-r="B">B 割合を数える</button>
+      <button class="btn" data-r="C">C 音を聞く</button>
+      <button class="btn" data-r="D">D 別世界の完登</button>
+      <button class="btn" data-r="E">E 言い換え</button>
+    </div>
+    <div class="readout" id="rdMap"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>A 解析</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>B 割合</span>
+      <span><i class="swatch" style="background:#2c5560;"></i>C スペクトル</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>D 有限体</span>
+      <span><i class="swatch" style="background:#8a3550;"></i>E 言い換え</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>ルートA ── 直接押す（零点のいない領域を広げる）</h2>
+
+  <div class="route" style="--rc:var(--rA);">
+    <div class="rh">ROUTE A ／ 解析的整数論の王道</div>
+    <h3>ゼロが「いない」領域を、右から左へ押し広げる</h3>
+    <p style="margin:6px 0;">素数定理の証明（1896年）は、実は<strong>「\(\mathrm{Re}(s)=1\) の線上にゼロが無い」</strong>を示すことでした。ならば、そのゼロ不在の領域を左へ広げていけば、いつか \(\mathrm{Re}(s)>1/2\) まで届き、臨界帯の右半分にゼロが無い＝（対称性より）RH、となるはず。</p>
+    <p class="reach">到達点：古典的な零点非存在領域 \(\sigma>1-\dfrac{c}{\log|t|}\)。改良版（Vinogradov–Korobov, 1958）で少しだけ広く。</p>
+    <p class="wall">■ 壁：領域は高さ \(t\) が上がるほど<em>対数的に薄く</em>なり、1に貼りついたまま。1/2 との間に<strong>一定の幅</strong>を稼ぐ手が無い。</p>
+  </div>
+
+  <p>いちばん素直な道ですが、100年以上かけても領域は \(\mathrm{Re}(s)=1\) にへばりついたまま。臨界線 \(1/2\) までの"深さ"を一定量ぶんこじ開ける技術が、まったく足りていません。</p>
+
+  <h2><span class="n">04</span>ルートB ── 線の上を数える（「全部」でなく「割合」）</h2>
+
+  <div class="route" style="--rc:var(--rB);">
+    <div class="rh">ROUTE B ／ 割合を稼ぐ</div>
+    <h3>全ゼロは無理でも、「線上にある割合」を上げる</h3>
+    <p style="margin:6px 0;">発想の転換 ── 「全部が線上」を一気に狙わず、<em>少なくとも何％が線上か</em>を証明して積み上げる。ハーディ（1914）が「線上に<strong>無限個</strong>ある」を示し、セルバーグが「<strong>正の割合</strong>」、レヴィンソン（1974）が<strong>1/3</strong>、コンリー（1989）が<strong>2/5</strong>、その後の改良で<strong>約41〜42%</strong>まで到達。</p>
+    <p class="reach">到達点：非自明なゼロの<strong>4割超</strong>が、確かに臨界線上にあると証明済み（数える技術＝mollifier法）。</p>
+    <p class="wall">■ 壁：mollifier 法は<em>頭打ち</em>。40%台から100%までの隔たりを埋める原理が無い（"ほとんど全部"すら遠い）。</p>
+  </div>
+
+  <p>「41%乗っている」は立派な定理で、着実な前進です。でも RH が求めるのは<strong>100%</strong>。残り約6割を同じ技術で詰めるのは不可能とみられ、質的に新しい発想が要ります。</p>
+
+  <h2><span class="n">05</span>ルートC ── 音を聞く（ランダム行列・ヒルベルト=ポリア）</h2>
+
+  <div class="route" style="--rc:var(--rC);">
+    <div class="rh">ROUTE C ／ スペクトルの夢（横から）</div>
+    <h3>ゼロの高さ γ を、ある作用素の「固有値」にする</h3>
+    <p style="margin:6px 0;">ヒルベルトとポリア（20世紀初頭）の夢 ── もし、ゼロの高さ \(\gamma\) が<strong>自己共役作用素（実対称なエネルギー演算子のようなもの）の固有値</strong>だと分かれば、固有値は<em>必ず実数</em>。だから \(s=\tfrac12+i\gamma\) は自動的に臨界線上。<em>証明ではなく、構造から強制される。</em></p>
+    <p class="reach">到達点：モンゴメリー（1973）が示したゼロの間隔の統計は、<strong>ランダム行列（GUEアンサンブル）</strong>の固有値統計と一致。オドリツコの巨大数値計算が驚異的に裏づけ、Berry–Keating は量子カオスの \(H=xp\) と結びつけた。</p>
+    <p class="wall">■ 壁：その<strong>作用素そのものが、誰にも見つけられていない</strong>。仕組みは頂上級に正しそうなのに、立つべき<em>足場が空中</em>。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜこの夢は本物っぽいのか</span>
+    セルバーグの跡公式では、ある曲面の「ゼータ」の零点が<strong>本当に</strong>ラプラシアンの固有値（実数）に対応し、臨界線上に乗ることが<em>証明できている</em>。つまり「ゼロ＝実の固有値」という仕組みが成り立つ世界が現に存在する。リーマンゼータでも同じ作用素があるはず ── という強い状況証拠。ただし"あるはず"は"見つけた"ではない。
+  </div>
+
+  <h2><span class="n">06</span>ルートD ── 別世界では、もう完登している</h2>
+
+  <div class="route" style="--rc:var(--rD);">
+    <div class="rh">ROUTE D ／ 有限体版RH（証明済みの隣）</div>
+    <h3>「そっくりな問題」は、代数幾何で解けている</h3>
+    <p style="margin:6px 0;">整数の代わりに<strong>有限体上の曲線・多様体</strong>を考えると、そのゼータ関数にも「リーマン予想」があり ── <em>それは証明されている</em>。ヴェイユ（1948、曲線）、そしてドリーニュ（1974、一般）。零点は厳密に臨界線上にあり、鍵は<strong>幾何（エタール・コホモロジー、フロベニウス作用素の固有値の大きさ）</strong>。ルートCの「作用素」が、こちらの世界では<em>本当に存在する</em>。</p>
+    <p class="reach">到達点：<strong>関数体・有限体版RHは完全な定理</strong>。しかも仕組みはCの夢そのもの（幾何が生む作用素）。</p>
+    <p class="wall">■ 壁：整数（\(\mathrm{Spec}\,\mathbb{Z}\)）を"曲線"とみなす<strong>幾何が無い</strong>。俗に「一元体 \(\mathbb{F}_1\) 上の幾何」と呼ばれる、まだ存在しない土台が要る（コンヌらが挑戦中）。</p>
+  </div>
+
+  <p>これは一番の希望であり、一番の焦らし。<em>同じ形の問題が、隣の世界では完璧に解けている</em>。だが整数の世界にその幾何を持ち込む橋が、まだ架かっていません。証明済みの峰が見えているのに、間の谷が渡れない。</p>
+
+  <h2><span class="n">07</span>ルートE ── 言い換える（判定条件・正値性）</h2>
+
+  <div class="route" style="--rc:var(--rE);">
+    <div class="rh">ROUTE E ／ 別の姿へ翻訳する</div>
+    <h3>RHと同値な、まったく別の言明に化かす</h3>
+    <p style="margin:6px 0;">RHを、扱いやすそうな別の問題へ翻訳する道。<strong>Li の判定条件</strong>（ある数列 \(\lambda_n\) が全部 \(\ge0\)）、<strong>Nyman–Beurling</strong>（ある関数を階段関数で近似できるか）、<strong>ワイルの明示公式の正値性</strong>、さらには<strong>ロビンの判定条件</strong>（約数の和 \(\sigma(n)\) のごく初等的な不等式！）── どれも「成り立つ ⟺ RH」。</p>
+    <p class="reach">到達点：同値な言明が<strong>多数</strong>。中には高校生でも書ける初等的な姿もある。視点が増え、思わぬ分野と繋がる。</p>
+    <p class="wall">■ 壁：<strong>難しさは消えず、移るだけ</strong>。翻訳先の \(\lambda_n\ge0\) や近似や不等式が、結局 RH と同じだけ難しい。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">姉妹編の掟（保存的拡大）とそっくり</span>
+    第一部ヤン=ミルズの番外編で、「超準解析は<em>保存的拡大</em>だから、表現を変えても難しさが中身にある問題は解けない」と見ました。ルートEはまさに同じ ── <strong>言い換えは鍵穴の形を変えるだけで、扉は同じ</strong>。良い言い換えは新しい道具（別分野の技術）を呼び込むが、それ自体は前進ではない、という掟。<br>（※ de Branges の作用素論的アプローチのように、有力な言い換えから証明が主張されたことは何度もあるが、都度ギャップが見つかっている。）
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">08</span>なぜ、みな同じ壁で止まるのか</h2>
+
+  <p>5つを並べると、壁の"形"が同じだと分かります。</p>
+
+  <div class="keybox">
+    <div class="lbl">壁の正体（共通）</div>
+    <p style="margin:0 0 6px;">・<strong>A・B</strong>：ゼロを<em>平均的・統計的</em>に押さえるのは得意（領域・割合）。でも「例外0個」の<em>個別制御</em>に届かない。</p>
+    <p style="margin:0 0 6px;">・<strong>C・D</strong>：「例外0個」を強制する<em>正しい仕組み</em>（実の固有値／幾何）を知っている。でも整数の世界では<em>その物が無い</em>（作用素も \(\mathbb{F}_1\) 幾何も未発見）。</p>
+    <p style="margin:0;">・<strong>E</strong>：問題を<em>別の姿</em>に移せる。でも難しさは移動するだけ。</p>
+    <p style="margin:10px 0 0;">つまり縁は一点 ── <strong>「臨界帯のすべてのゼロを、一個の例外も許さず線上に固定する、整数に固有の剛い構造」</strong>。これがA・Bには足りず、C・Dには（整数の世界では）存在せず、Eでは作れない。RHの本当の難しさは、ここに凝縮している。</p>
+  </div>
+
+  <p>次回からは、このルートを一本ずつ登ります。まずルートA（零点非存在領域）── なぜ帯は"対数的に薄い"のか、その壁の内側を覗きます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">各ルートの事実：<strong>A</strong> 素数定理は \(\mathrm{Re}(s)=1\) 上の非零性と同値（アダマール／ド・ラ・ヴァレ・プーサン、1896）。古典的零点非存在領域 \(\sigma>1-c/\log|t|\)、Vinogradov–Korobov（1958）で \(\sigma>1-c/((\log|t|)^{2/3}(\log\log|t|)^{1/3})\) まで拡大。いずれも \(t\to\infty\) で 1 に漸近し、\(1/2\) に固定距離では届かない。<strong>B</strong> ハーディ（1914）＝線上に無限個。セルバーグ（1942）＝正の割合。レヴィンソン（1974）＝1/3以上。コンリー（1989）＝2/5以上。以後の改良で約41〜42%（例：Pratt–Robles–Zaharescu–Zeindler ら、2020年前後）。</p>
+    <p style="margin-bottom:0;"><strong>C</strong> ヒルベルト=ポリア予想は逸話的な出所ですが、モンゴメリーの対相関予想（1973）とダイソンによるGUEとの一致の指摘、オドリツコの高精度数値（10²⁰番目付近の零点など）、Berry–Keating の \(H=xp\)、コンヌの跡公式的アプローチはいずれも実在の研究です。<strong>D</strong> 有限体上の曲線のRH＝ヴェイユ（1948）、一般次元＝ドリーニュ（1974、ヴェイユ予想の証明）で、これらは<em>証明済みの定理</em>。整数版へ移すための \(\mathbb{F}_1\)（一元体）幾何は未確立の構想（コンヌ–コンサニ、ドニンガーら）。<strong>E</strong> Li の判定条件（1997）、Nyman（1950）–Beurling（1955）、ロビンの判定条件（1984、\(\sigma(n)<e^{\gamma}n\log\log n\) が \(n\ge5041\) で ⟺ RH）、ラガリアス（2002）はいずれも RH と同値な正しい言明。de Branges のアプローチは有力視されつつ証明としてはギャップが指摘され続けています。以上は2025年時点の状況で、リーマン予想自体は未解決です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ルートB（割合を数える）は着実に前進しているのに、なぜ「解けた」に近づかないと言える？
+        <details><summary>答えを見る</summary><div class="ans">Bが示すのは「非自明なゼロの◯%が線上」という割合（現在約41〜42%）。RHが求めるのは100%＝例外0個。mollifier法は40%台で頭打ちとみられ、残りを同じ技術で詰める原理が無い。40%と100%の間には、質的に新しい発想が要る深い隔たりがある。</div></details>
+      </li>
+      <li>ルートC（作用素）とルートD（有限体版）は、どういう関係にある？
+        <details><summary>答えを見る</summary><div class="ans">Cは「ゼロ＝ある自己共役作用素の実固有値」という仕組みを夢見る道。Dの有限体版RHでは、その仕組みが<strong>実際に成り立っている</strong>（幾何＝エタール・コホモロジーがフロベニウス作用素を生み、その固有値の大きさが零点を臨界線上に固定する）。つまりDはCの夢が現実になった別世界。問題は、整数の世界に同じ幾何（F₁）がまだ無いこと。</div></details>
+      </li>
+      <li>「言い換え（ルートE）だけでは解けない」のは、姉妹編のどの掟と同じ？
+        <details><summary>答えを見る</summary><div class="ans">第一部ヤン=ミルズ番外編の「保存的拡大」の掟。表現を変えても、難しさが問題の"中身"にあるなら解けない。RHを Li の λₙ≥0 や近似問題や σ(n) の不等式に翻訳しても、その翻訳先が RH と同じだけ難しい。言い換えは鍵穴の形を変えるだけで、扉は同じ。良い言い換えは新しい道具を呼ぶが、それ自体は前進ではない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編①まとめ</span>攻め方の地図</h2>
+    <p>RHの頂上＝<strong>臨界帯の全ゼロを、例外0個で Re(s)=1/2 に固定</strong>。主要ルートは5つ ── <strong>A 直接押す</strong>（零点非存在領域：1に貼りつき薄い）、<strong>B 割合を数える</strong>（Hardy→Levinson1/3→Conrey2/5→約41%：mollifierが頭打ち）、<strong>C 音を聞く</strong>（作用素の固有値＝実：ランダム行列と一致するが作用素が無い）、<strong>D 別世界の完登</strong>（有限体版はWeil・Deligneで証明済み：整数の幾何F₁が無い）、<strong>E 言い換え</strong>（同値な判定条件：難しさは移るだけ）。</p>
+    <p>共通の壁は一点 ── <strong>平均・統計は御せるのに、「例外0個」を強制する整数固有の剛い構造（作用素／幾何／正値性）が無い</strong>。A・Bは個別制御に届かず、C・Dは正しい仕組みを知りつつ整数の世界に物が無く、Eは難しさを移すだけ。次回はルートAを一本、深く登る（なぜ帯は対数的に薄いのか）。掟は変わらず ── 旗は立てない、縁の標識を立てる。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-05-naze.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第5回（入門編）</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-07-zerofree.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">挑戦編②：直接押す →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編①、数学好きの高校生・大学生向け読み物。リーマン予想の主要な攻略方針として、(A) 零点非存在領域の拡大（古典的領域、Vinogradov–Korobov 1958）、(B) 臨界線上の零点の割合（Hardy 1914／Selberg 1942／Levinson 1974 で 1/3／Conrey 1989 で 2/5／以後 約41〜42%）、(C) ヒルベルト=ポリア的スペクトル解釈（Montgomery の対相関 1973、Odlyzko の数値、Berry–Keating、Connes）、(D) 有限体・関数体上のリーマン予想（Weil 1948／Deligne 1974、証明済み）とその整数版への移植（F₁ 幾何、未確立）、(E) 同値な判定条件（Li 1997、Nyman–Beurling、Robin 1984、Lagarias 2002、de Branges）を挙げました。いずれも実在する研究・定理に基づきますが、リーマン予想そのものは2025年時点で未解決です。登攀図はルートの到達点と壁を模式的に示したもので、縦位置は概念的な「頂上への近さ」を表す図示であり定量値ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では登攀図のルートボタンで、各ルートの到達点と壁が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 登攀図 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvMap'), rd=document.getElementById('rdMap');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-r]'));
+  var lastW=680, sel='A';
+  var COL={A:'#2f6d8a',B:'#a5622a',C:'#2c5560',D:'#2f7d5a',E:'#8a3550'};
+  // ルート定義：plot座標 0..1（x右, y上）。path は (x,y)、wall は最終点、dashは点線
+  var routes={
+    A:{name:'A 直接押す（零点非存在領域）',
+       path:[[0.10,0.06],[0.14,0.18],[0.17,0.28]], reach:0.28, dash:false,
+       msg:'<b>A 直接押す</b>：Re(s)=1 にゼロが無い（素数定理）を起点に、領域を左へ広げる。到達＝1に貼りついた薄い帯（Vinogradov–Korobov）。<b style="color:#a5473a;">壁＝帯が対数的に薄く、1/2 に固定距離で届かない。</b>'},
+    B:{name:'B 割合を数える（線上の何％）',
+       path:[[0.24,0.06],[0.28,0.22],[0.31,0.40],[0.33,0.44]], reach:0.44, dash:false,
+       msg:'<b>B 割合を数える</b>：全ゼロでなく線上の割合を稼ぐ。Hardy(無限個)→Levinson(1/3)→Conrey(2/5)→約41〜42%。<b style="color:#a5473a;">壁＝mollifier法が頭打ち。100%まで原理が無い。</b>'},
+    C:{name:'C 音を聞く（作用素・ランダム行列）',
+       path:[[0.44,0.06],[0.47,0.30],[0.50,0.58],[0.52,0.86]], reach:0.86, dash:true,
+       msg:'<b>C 音を聞く</b>：γを自己共役作用素の固有値に＝実数だから自動で線上（ヒルベルト=ポリア）。統計はランダム行列GUEと一致（Montgomery–Odlyzko）。<b style="color:#a5473a;">壁＝肝心の作用素が見つからない（足場が空中＝点線）。</b>'},
+    E:{name:'E 言い換え（判定条件・正値性）',
+       path:[[0.86,0.06],[0.93,0.16],[0.95,0.30],[0.90,0.40],[0.82,0.34],[0.80,0.16],[0.86,0.07]], reach:0.07, dash:false, loop:true,
+       msg:'<b>E 言い換え</b>：RHを別の姿に翻訳（Li の λₙ≥0、Nyman–Beurling、Robin の σ(n) 不等式、de Branges）。<b style="color:#a5473a;">壁＝難しさは移るだけ。翻訳先も同じだけ難しい（保存的拡大の罠）。</b>'}
+  };
+  // D は別峰
+  var Dinfo={name:'D 別世界の完登（有限体版RH）',
+    msg:'<b>D 別世界の完登</b>：有限体・関数体上のRHは<b>証明済み</b>（Weil 1948・Deligne 1974）。代数幾何が生む作用素（フロベニウス）で零点が厳密に線上＝Cの夢が現実の別世界。<b style="color:#a5473a;">壁＝整数を曲線とみなす幾何（F₁）が無く、本峰へ渡れない。</b>'};
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=20,mR=20,mT=16,mB=20, pW=w-mL-mR, pH=h-mT-mB;
+    function X(x){ return mL + x*pW; }
+    function Y(y){ return mT + pH - y*pH; } // y=1 が上（頂上）
+    ctx.clearRect(0,0,w,h);
+    // 背景の山（本峰）
+    ctx.fillStyle='#f3eef6';
+    ctx.beginPath(); ctx.moveTo(X(0.02),Y(0)); ctx.lineTo(X(0.52),Y(1.0)); ctx.lineTo(X(0.72),Y(0)); ctx.closePath(); ctx.fill();
+    // 頂上ライン
+    ctx.strokeStyle='#c9bcd4'; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(mL,Y(1.0)); ctx.lineTo(mL+pW,Y(1.0)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#5a2a6e'; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('▲ 頂上：RH 証明（全零点が Re(s)=1/2）', mL+4, Y(1.0)-6);
+    // ふもと
+    ctx.strokeStyle='#c9bcd4'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+pW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#8a7f92'; ctx.font='11.5px sans-serif'; ctx.fillText('ふもと：入門編で分かった問題', mL+4, Y(0)+14);
+    // 別峰 D（右）
+    var dPeakX=0.88, dbaseL=0.78, dbaseR=0.985, dpeakY=1.0;
+    ctx.fillStyle= sel==='D'? '#dbeee3':'#e7f1ea';
+    ctx.beginPath(); ctx.moveTo(X(dbaseL),Y(0)); ctx.lineTo(X(dPeakX),Y(dpeakY)); ctx.lineTo(X(dbaseR),Y(0)); ctx.closePath(); ctx.fill();
+    // Dの旗（完登）
+    ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(X(dPeakX),Y(dpeakY)); ctx.lineTo(X(dPeakX),Y(dpeakY)-18); ctx.stroke();
+    ctx.fillStyle='#2f7d5a'; ctx.beginPath(); ctx.moveTo(X(dPeakX),Y(dpeakY)-18); ctx.lineTo(X(dPeakX)+16,Y(dpeakY)-13); ctx.lineTo(X(dPeakX),Y(dpeakY)-8); ctx.closePath(); ctx.fill();
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillStyle= sel==='D'? '#1f5a3f':'#2f7d5a';
+    ctx.fillText('D 有限体版', X(dPeakX), Y(0)-4); ctx.fillText('（完登済み）', X(dPeakX), Y(0)+10);
+    // 谷（本峰とDの間）
+    ctx.fillStyle='#e7dcc6';
+    ctx.beginPath(); ctx.moveTo(X(0.72),Y(0)); ctx.lineTo(X(0.75),Y(0.0)); ctx.lineTo(X(0.75),Y(-0.02)); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#b9a97f'; ctx.setLineDash([3,3]); ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(X(0.73),Y(0.5)); ctx.lineTo(X(0.80),Y(0.5)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#8a7a52'; ctx.font='10.5px sans-serif'; ctx.textAlign='center'; ctx.fillText('F₁の谷', X(0.765), Y(0.5)-6);
+    // ルート A,B,C,E
+    ['A','B','C','E'].forEach(function(key){
+      var rt=routes[key], on=(sel===key), col=COL[key];
+      ctx.strokeStyle=col; ctx.lineWidth=on?3.4:2; ctx.globalAlpha=on?1:0.55;
+      if(rt.dash) ctx.setLineDash([6,5]); else ctx.setLineDash([]);
+      ctx.beginPath();
+      for(var i=0;i<rt.path.length;i++){ var px=X(rt.path[i][0]), py=Y(rt.path[i][1]); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+      ctx.stroke(); ctx.setLineDash([]);
+      // 壁マーカー ■（ループでない場合、到達点に）
+      if(!rt.loop){
+        var end=rt.path[rt.path.length-1];
+        ctx.fillStyle=col; ctx.globalAlpha=on?1:0.6;
+        ctx.fillRect(X(end[0])-6,Y(end[1])-6,12,12);
+        ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.strokeRect(X(end[0])-6,Y(end[1])-6,12,12);
+      }
+      // ラベル
+      ctx.globalAlpha=1; ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+      var lp=rt.path[0]; ctx.fillText(key, X(lp[0]), Y(lp[1])-8);
+      // 到達点の％風メモ（B のみ数値、他は概念）
+      if(key==='B'){ ctx.font='10.5px sans-serif'; ctx.fillStyle=col; ctx.textAlign='left';
+        var e=rt.path[rt.path.length-1]; ctx.fillText('≈41%', X(e[0])+9, Y(e[1])+4); }
+    });
+    ctx.globalAlpha=1;
+    // E のループ注記
+    ctx.fillStyle=COL.E; ctx.font='10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('E：輪（戻る）', X(0.87), Y(0.46));
+  }
+  function pick(k){ sel=k; btns.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-r')===k); });
+    draw(); rd.innerHTML = (k==='D'? Dinfo.msg : routes[k].msg); }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(b.getAttribute('data-r')); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick('A');},40); window.addEventListener('load',function(){pick('A');});
+})();
+</script>
+</body>
+</html>

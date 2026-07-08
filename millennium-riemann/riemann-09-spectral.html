@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音を聞く ── ランダム行列とヒルベルト=ポリアの夢 ／ ミレニアム問題を解くぞ 挑戦編④</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e6eef0;
+    --warn:#8a4b2f;
+    --calc:#2c5560; --calc-bg:#e6eef0;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#2c5560;      /* ルートC：深い青緑 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+    --gue:#2c5560; --poi:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe0e3 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#1c2f33;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#1c2f33;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#e6eef0;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e6eef0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c2f33;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編④（ルートC）</span></div>
+  <p class="eyebrow">いちばん華やかな夢 ── ゼロを「固有値」にしてしまう</p>
+  <h1>音を聞く ── ランダム行列とヒルベルト=ポリアの夢
+    <span class="sub">もし、ゼロの高さ \(\gamma\) が<strong>ある作用素（量子系のエネルギー）の固有値</strong>なら ── <br>固有値は<em>必ず実数</em>だから、ゼロは<strong>自動的に</strong>臨界線に乗る。証明ではなく、構造で強制される。<br>ゼロの並び方は本当にランダム行列＝量子カオスとそっくり。でも肝心の作用素が、まだ誰にも見つからない。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：スペクトルの夢と、驚異の状況証拠、そして空中の足場</span>
+    <span>一言で：固有値＝実 ⟹ 線上。作用素は未発見</span>
+  </div>
+
+  <p class="lead">A（外から締め出す）もB（内から数える）も、ゼロを<em>解析的に一個ずつ</em>相手にする限りの壁でした。ルートCは、質をまるごと変えます ── ゼロを「なんとなく線に近い数」ではなく、<strong>ある物理系の"エネルギー準位"</strong>だと考える。エネルギー（自己共役作用素の固有値）は<em>必ず実数</em>。だからゼロの実部が \(1/2\) なのは、証明する事実ではなく<strong>構造が強制する必然</strong>になる。第5回の「素数の音楽」を、文字どおり<em>物理の音</em>として聴く回です。</p>
+
+  <h2><span class="n">01</span>ヒルベルト=ポリアの夢 ── 「実数だから、線上」</h2>
+
+  <p>20世紀の初め、ヒルベルトとポリアが（別々に）口にしたとされる着想があります。</p>
+
+  <div class="keybox">
+    <div class="lbl">ヒルベルト=ポリア予想（夢の骨格）</div>
+    <p class="big" style="margin:0;">もし、非自明なゼロ \(\tfrac12+i\gamma\) の<strong>高さ \(\gamma\) が、ある自己共役作用素 \(H\) の固有値</strong>だと分かれば ── 自己共役な作用素の固有値は<em>必ず実数</em>。ゆえに \(\gamma\in\mathbb{R}\)、すなわちゼロは \(\tfrac12+i\gamma\)（実部きっかり \(1/2\)）。<strong>RHが自動的に成立する。</strong></p>
+  </div>
+
+  <p>量子力学では、観測できるエネルギーは自己共役作用素（ハミルトニアン）の固有値で、これは必ず実数になります。だから「ゼロ＝あるハミルトニアンのエネルギー準位」だと示せれば、\(1/2\) からのズレは<em>物理的に禁止</em>される。A・Bの「一個ずつ」と違い、<strong>一発で全ゼロが線上</strong>。問題は「その \(H\) を見つけよ」に化けます。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ自己共役だと固有値が実数か（一言）</span>
+    行列でいえば「実対称行列（\(A=A^{\mathsf T}\)）の固有値はすべて実数」という線形代数の定理の、無限次元版。\(H\) が自己共役なら、その"スペクトル（固有値の集合）"は実軸に乗る。ゼロの高さがそこに並ぶなら、ゼロは一本の実軸＝臨界線に釘付けになる。
+  </div>
+
+  <h2><span class="n">02</span>状況証拠 ── ゼロの並びは「ランダム行列」そっくり</h2>
+
+  <p>ただの願望ではありません。<strong>ゼロの"並び方"が、ランダム行列の固有値の並び方と、統計的にそっくり</strong>だと分かっています。まず目で見ましょう。下は、<span style="color:var(--acc);font-weight:700;">本物のゼータのゼロ</span>と、<span style="color:var(--poi);font-weight:700;">でたらめ（ランダム＝ポアソン）に打った点</span>を、同じ平均間隔にそろえて並べたものです。</p>
+
+  <div class="fig">
+    <div class="cap">図：間隔をそろえた点列。<span style="color:var(--acc);font-weight:700;">上＝本物のゼータのゼロ</span>／<span style="color:var(--poi);font-weight:700;">下＝でたらめな点（ポアソン）</span>。ゼロは<strong>互いに避け合って（反発）均され</strong>、でたらめな点は<strong>くっついたり大穴が空いたり</strong>。「振り直す」でランダム側だけ引き直し。</div>
+    <canvas id="cvTicks" width="680" height="180"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn" id="btnShuffle">ランダム側を振り直す</button>
+    </div>
+    <div class="readout" id="rdTicks"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2c5560;"></i>ゼータのゼロ（反発＝均等）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>ランダム（くっつく・穴）</span>
+    </div>
+  </div>
+
+  <p>ゼロは<em>「近づきすぎない」</em>── まるで同じ電荷が反発するように、隣どうしが避け合う。この<strong>準位反発（level repulsion）</strong>こそ、ランダム行列（量子系のエネルギー準位）の指紋です。でたらめな点なら、ときどき二つがぴったり重なるのに、ゼロはそれをしない。</p>
+
+  <h2><span class="n">03</span>モンゴメリーとダイソン ── お茶の席の一致</h2>
+
+  <p>1973年、モンゴメリーがゼロの<strong>間隔の統計（対相関）</strong>を計算しました。プリンストンでその式を物理学者<strong>ダイソン</strong>に見せると、彼は即座に言った ── 「それは<strong>GUE（ガウス型ユニタリ・アンサンブル）</strong>、巨大なランダム行列の固有値の対相関そのものだ」。数論のゼロと、物理のランダム行列が、同じ数式で出会った瞬間です。</p>
+
+  <p>下は、隣り合うゼロの<strong>間隔の分布</strong>（このページ内で本物のゼロから計算）を、<span style="color:var(--gue);font-weight:700;">GUE（ランダム行列）の予測曲線</span>と<span style="color:var(--poi);font-weight:700;">ポアソン（でたらめ）の曲線</span>に重ねたものです。GUE曲線は<strong>間隔0での高さが0</strong>（＝反発、近づけない）。ゼロのヒストグラムは、ポアソンでなく<em>GUEに沿います</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：隣接ゼロの間隔（規格化）のヒストグラム（<span style="color:var(--acc);font-weight:700;">棒＝本物のゼロ</span>）と、<span style="color:var(--gue);font-weight:700;">GUE（ウィグナー）曲線</span>・<span style="color:var(--poi);font-weight:700;">ポアソン曲線</span>。GUEは s=0 で 0（反発）、ポアソンは s=0 で最大。ゼロは GUE 寄り。</div>
+    <canvas id="cvHist" width="680" height="300"></canvas>
+    <div class="readout" id="rdHist"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2c5560;"></i>ゼロの間隔（実測）</span>
+      <span><i class="swatch" style="background:#2c5560;border-radius:50%;"></i>GUE 曲線</span>
+      <span><i class="swatch" style="background:#a5473a;border-radius:50%;"></i>ポアソン曲線</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">二つの曲線（間隔 s の分布）</div>
+    $$\text{GUE（ランダム行列）：}\ p(s)=\frac{32}{\pi^2}s^2\,e^{-4s^2/\pi}\quad(p(0)=0,\ \text{反発})$$
+    $$\text{ポアソン（でたらめ）：}\ p(s)=e^{-s}\quad(p(0)=1,\ \text{くっつき放題})$$
+    <p style="margin:8px 0 0;">ゼロは前者。<strong>オドリツコ</strong>は \(10^{20}\) 番目あたりの膨大なゼロを計算し、GUEとの一致を<em>驚異的な精度</em>で確かめました（この図は手元の少数のゼロなので"寄っている"程度ですが、高い所ほど一致は完璧に近づく）。</p>
+  </div>
+
+  <h2><span class="n">04</span>物理の顔 ── 量子カオスと Berry–Keating</h2>
+
+  <p>GUEが出るということは、ゼロは<em>ある量子系のエネルギー準位</em>で、しかもその系の古典的な運動は<strong>カオス</strong>（規則的でなく入り乱れている）だ、と物理は読みます。ではその系のハミルトニアンは？ <strong>ベリーとキーティング</strong>（1999）は、古典ハミルトニアン \(H=xp\)（位置×運動量）の量子化ではないか、と提案しました。コンヌは、\(H\) を非可換幾何（アデール）の上で実現する跡公式的アプローチを与えています。<em>作用素の"人相書き"は、かなり具体的に描けている。</em></p>
+
+  <div class="aside">
+    <span class="tag">証拠の決定打 ── セルバーグの世界では「本当に」成り立つ</span>
+    双曲曲面という舞台では、<strong>セルバーグ・ゼータ関数</strong>の非自明なゼロが、<em>ラプラシアン（自己共役作用素）の固有値</em>に対応し、臨界線上に乗ることが<strong>証明されている</strong>。そこでは「素数」の役を<strong>閉じた測地線</strong>が、「明示公式」の役を<strong>セルバーグ跡公式</strong>が果たす ── リーマンの世界の完全な鏡像。<em>「ゼロ＝実の固有値」という仕組みが現に成り立つ世界が実在する</em>── ヒルベルト=ポリアの夢が絵空事でない、最強の状況証拠。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>壁 ── 人相書きはある、本人がいない</h2>
+
+  <p>これだけ揃っていて、なぜ解けないのか。壁は、痛いほどはっきりしています。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートC の壁</div>
+    <p style="margin:0 0 6px;">① <strong>作用素 \(H\) 本人が、まだ誰にも見つからない</strong>。統計（GUE一致）も物理の人相書き（\(H=xp\)）もセルバーグの実例も「\(H\) はあるはず」と言うが、リーマンゼータの \(\gamma\) を固有値に持つ自己共役作用素を、誰も<em>構成できていない</em>。足場が空中にある。</p>
+    <p style="margin:0;">② <strong>統計は「平均」であって「各ゼロ」ではない</strong>。仮にGUE一致が完全に証明できても、それは<em>多数のゼロの並びの平均的な性質</em>。個々のゼロが例外なく線上、を直接には言わない（モンゴメリーの定理自体、テスト関数の範囲が限られ、一部RHを仮定する）。</p>
+  </div>
+
+  <p>ルートCは、地図で見た「例外0個を強制する剛い構造」を<em>正面から狙う</em>唯一の道です。仕組みは正しそう ── 現に隣の世界（セルバーグ）では成り立っている。でも整数のゼータに対する<strong>その物（作用素）が存在しない</strong>。次回（挑戦編⑤）は、この「隣の世界では証明済み」を主役にします ── 有限体版リーマン予想（Weil・Deligne）は、なぜ解けて、なぜ整数に持ち込めないのか。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ヒルベルト=ポリア予想は出所が逸話的ですが、着想として広く共有されています。モンゴメリーの対相関予想（1973）は、ゼロの対相関関数が \(1-\big(\frac{\sin\pi u}{\pi u}\big)^2\) となるというもので、これが GUE ランダム行列の対相関と一致することをダイソンが指摘したのは有名な逸話です。ただしモンゴメリーの<em>定理</em>はテスト関数のフーリエ台が限られた範囲での結果で、完全な対相関予想は未証明（証明にRHを仮定する部分もある）。オドリツコの数値実験（\(10^{20}\)、\(10^{22}\) 番目付近の零点など）は GUE との極めて良い一致を示します。GUE の最近接間隔はウィグナー推量 \(p(s)=\frac{32}{\pi^2}s^2e^{-4s^2/\pi}\) で近似され（\(p(0)=0\)＝準位反発）、ポアソンは \(e^{-s}\)。図1・図2はいずれも本ページ内で、既知の零点（最初の約40個）から間隔を規格化して計算しており、標本が少ないため一致は"傾向"どまりです（高い高さでの厳密な一致はオドリツコらによる）。</p>
+    <p style="margin-bottom:0;">ベリー＝キーティング予想（1999、\(H=xp\) の量子化）、コンヌの非可換幾何・跡公式アプローチ（1996–99）はいずれも実在の研究です。セルバーグ・ゼータ関数の零点がラプラシアンの固有値に対応し臨界線上にあること、素数↔閉測地線・明示公式↔セルバーグ跡公式の対応は確立した事実で、ヒルベルト=ポリア機構が成り立つ実例です。しかしリーマンゼータに対する自己共役作用素は未発見で、リーマン予想は2025年時点で未解決です。図1のランダム点は毎回ブラウザ内で生成される擬似乱数です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ヒルベルト=ポリアの夢が実現すると、なぜRHが「一発で」出る？
+        <details><summary>答えを見る</summary><div class="ans">ゼロの高さ γ が自己共役作用素 H の固有値だと示せれば、自己共役作用素の固有値は必ず実数なので γ∈ℝ。するとゼロは 1/2+iγ の形（実部きっかり1/2）に釘付けになる。A・Bのように一個ずつ相手にせず、構造（自己共役性）が全ゼロを一斉に線上へ強制する。</div></details>
+      </li>
+      <li>ゼロの並びが「ランダム行列（GUE）そっくり」とは、具体的にどういう振る舞い？
+        <details><summary>答えを見る</summary><div class="ans">準位反発 ── 隣り合うゼロが近づきすぎない（間隔0の確率が0）。でたらめな点（ポアソン、e^{−s}）なら二点が重なることもあるが、ゼロは避け合って均等寄りに並ぶ。間隔分布がGUEのウィグナー曲線 (32/π²)s²e^{−4s²/π} に沿う。モンゴメリーの対相関をダイソンがGUEと同一と見抜き、オドリツコの数値が裏づけた。</div></details>
+      </li>
+      <li>これだけ状況証拠が揃うルートCの、決定的な壁は何か。
+        <details><summary>答えを見る</summary><div class="ans">①その作用素 H 本人が未発見。統計の一致も物理の人相書き(H=xp)もセルバーグの実例も「H はあるはず」と言うが、リーマンゼロを固有値に持つ自己共役作用素を誰も構成できていない。②統計は多数ゼロの平均的性質で、個々のゼロが例外なく線上を直接には言わない（対相関予想自体も部分的に未証明）。仕組みは正しそうなのに、立つべき物が無い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編④まとめ</span>音を聞く ── 人相書きはある、本人がいない</h2>
+    <p>ルートCは質を変える ── ゼロの高さ \(\gamma\) を<strong>自己共役作用素 \(H\) の固有値</strong>とみなす（ヒルベルト=ポリア）。固有値は必ず実数だから、ゼロは<em>構造的に</em>臨界線へ釘付け＝RHが一発で出る。状況証拠は圧巻：ゼロは<strong>準位反発</strong>して並び、間隔統計は<strong>ランダム行列 GUE</strong> と一致（モンゴメリー1973＝ダイソン、オドリツコの数値）。物理は量子カオスと読み、Berry–Keating は \(H=xp\) を提案、セルバーグの世界では同じ機構が<em>本当に</em>成り立つ。</p>
+    <p>だが壁は二つ ── ①その<strong>作用素本人が未発見</strong>（足場が空中）、②統計は<strong>平均であって各ゼロではない</strong>（対相関予想も部分的に未証明）。「例外0個を強制する剛い構造」を正面から狙う唯一の道なのに、整数のゼータに対する物が存在しない。次回は「隣の世界では証明済み」＝<strong>有限体版リーマン予想（Weil・Deligne）</strong>へ ── なぜ解けて、なぜ持ち込めないのか。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-08-online.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">← 挑戦編③</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-10-yugentai.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">挑戦編⑤：別世界では証明済み →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編④（ルートC）、数学好きの高校生・大学生向け読み物。ヒルベルト=ポリア予想（自己共役作用素の固有値としての零点）、モンゴメリーの対相関予想（1973、\(1-(\sin\pi u/\pi u)^2\)）とダイソンによる GUE との一致の指摘、オドリツコの数値実験、ベリー＝キーティング予想（1999、\(H=xp\)）、コンヌの非可換幾何アプローチ、セルバーグ・ゼータ関数とラプラシアン固有値の対応（ヒルベルト=ポリア機構の実例）は、いずれも実在の研究・事実です。GUE 最近接間隔のウィグナー推量 \(p(s)=\frac{32}{\pi^2}s^2e^{-4s^2/\pi}\)、ポアソン \(e^{-s}\) は標準的な近似式。図はブラウザ内で既知の零点（約40個）から間隔を規格化して描いており、標本が少ないため一致は傾向にとどまります（\(10^{20}\) 番目付近での厳密な一致はオドリツコらによる）。モンゴメリーの定理はテスト関数の台が限定され、完全な対相関予想・作用素の構成はいずれも未達で、リーマン予想は2025年時点で未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1でゼロの反発 vs でたらめ（振り直し可）、図2でゼロの間隔分布が GUE 曲線に沿う様子を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* 既知の非自明ゼロの高さ γ（約40個） */
+var GAM=[14.134725,21.022040,25.010858,30.424876,32.935062,37.586178,40.918719,43.327073,
+48.005151,49.773832,52.970321,56.446248,59.347044,60.831779,65.112544,67.079811,69.546402,
+72.067158,75.704691,77.144840,79.337375,82.910381,84.735493,87.425275,88.809111,92.491899,
+94.651344,95.870634,98.831194,101.317851,103.725538,105.446623,107.168611,111.029536,
+111.874659,114.320221,116.226680,118.790783,121.370125,122.946829];
+/* 規格化された間隔（unfold）：s = δ * log(γ/2π)/(2π) */
+function unfoldedSpacings(){
+  var s=[];
+  for(var k=0;k<GAM.length-1;k++){
+    var d=GAM[k+1]-GAM[k];
+    var mean=2*Math.PI/Math.log(GAM[k]/(2*Math.PI));
+    s.push(d/mean);
+  }
+  return s;
+}
+/* 規格化された累積位置（平均間隔1に均した並び）：ゼロを見やすく等間隔基準に */
+function unfoldedPositions(){
+  var pos=[0], acc=0;
+  var sp=unfoldedSpacings();
+  for(var i=0;i<sp.length;i++){ acc+=sp[i]; pos.push(acc); }
+  return pos; // 平均間隔 ≈ 1
+}
+
+/* ===== 図1：反発 vs でたらめ ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvTicks'), rd=document.getElementById('rdTicks'), btn=document.getElementById('btnShuffle');
+  var lastW=680, zeros=unfoldedPositions();
+  var N=zeros.length, span=zeros[zeros.length-1];
+  var rand=null;
+  function makeRandom(){ // 同じ span に N 個をでたらめ（一様）に
+    var r=[]; for(var i=0;i<N;i++) r.push(Math.random()*span); r.sort(function(a,b){return a-b;}); rand=r;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=16,mR=16, pW=w-mL-mR;
+    function X(u){ return mL + u/span*pW; }
+    ctx.clearRect(0,0,w,h);
+    // 上段：ゼロ
+    var y1=52, y2=128;
+    ctx.fillStyle='#4a4f5e'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('ゼータのゼロ（反発＝均等に散る）', mL, 24);
+    ctx.strokeStyle='#2c5560'; ctx.lineWidth=2;
+    for(var i=0;i<zeros.length;i++){ var x=X(zeros[i]); ctx.beginPath(); ctx.moveTo(x,y1-16); ctx.lineTo(x,y1+16); ctx.stroke(); }
+    // 下段：ランダム
+    ctx.fillStyle='#4a4f5e'; ctx.fillText('でたらめな点（ポアソン＝くっつき・穴）', mL, y2-26);
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=2;
+    for(var j=0;j<rand.length;j++){ var x2=X(rand[j]); ctx.beginPath(); ctx.moveTo(x2,y2-16); ctx.lineTo(x2,y2+16); ctx.stroke(); }
+  }
+  function report(){
+    // でたらめ側の最小間隔（くっつき）を測る
+    var minR=1e9; for(var i=1;i<rand.length;i++){ var g=rand[i]-rand[i-1]; if(g<minR) minR=g; }
+    var minZ=1e9, sp=unfoldedSpacings(); for(var k=0;k<sp.length;k++) if(sp[k]<minZ) minZ=sp[k];
+    rd.innerHTML='同じ個数・同じ平均間隔で比較。ゼロの最小間隔 ≈ <b>'+minZ.toFixed(2)+'</b>（近づかない＝反発）／ でたらめ側の最小間隔 ≈ <b style="color:#a5473a;">'+minR.toFixed(2)+'</b>（しばしば0近く＝くっつく）。ゼロは"ランダムより整然"。';
+  }
+  btn.addEventListener('click', function(){ makeRandom(); draw(); report(); });
+  window.addEventListener('resize',draw);
+  makeRandom(); setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：間隔ヒストグラム vs GUE / Poisson ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvHist'), rd=document.getElementById('rdHist');
+  var lastW=680;
+  function gue(s){ return (32/(Math.PI*Math.PI))*s*s*Math.exp(-4*s*s/Math.PI); }
+  function poi(s){ return Math.exp(-s); }
+  function draw(){
+    var sp=unfoldedSpacings();
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=40,mR=16,mT=16,mB=30, pW=w-mL-mR, pH=h-mT-mB;
+    var SMAX=3.2, nb=8, bw=SMAX/nb;
+    var bins=new Array(nb).fill(0);
+    sp.forEach(function(v){ var b=Math.floor(v/bw); if(b>=0&&b<nb) bins[b]++; });
+    // 密度に規格化：面積1
+    var dens=bins.map(function(c){ return c/sp.length/bw; });
+    var yMax=1.0;
+    for(var i=0;i<dens.length;i++) if(dens[i]>yMax) yMax=dens[i];
+    yMax=Math.max(yMax,1.05)*1.05;
+    function X(s){ return mL + s/SMAX*pW; }
+    function Y(v){ return mT + pH - v/yMax*pH; }
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#c9d6d8'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(mL,mT); ctx.lineTo(mL,mT+pH); ctx.lineTo(mL+pW,mT+pH); ctx.stroke();
+    ctx.fillStyle='#7a8688'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    for(var g=0;g<=1;g+=0.5){ ctx.fillText(g.toFixed(1), mL-5, Y(g)+4); ctx.strokeStyle='#eef3f3'; ctx.beginPath(); ctx.moveTo(mL,Y(g)); ctx.lineTo(mL+pW,Y(g)); ctx.stroke(); }
+    ctx.textAlign='center';
+    for(var sx=0;sx<=3;sx+=1){ ctx.fillStyle='#7a8688'; ctx.fillText('s='+sx, X(sx), mT+pH+16); }
+    // ヒストグラム棒
+    for(var b=0;b<nb;b++){ var x0=X(b*bw), x1=X((b+1)*bw), yy=Y(dens[b]);
+      ctx.fillStyle='rgba(44,85,96,0.35)'; ctx.fillRect(x0+1,yy,x1-x0-2,mT+pH-yy);
+      ctx.strokeStyle='#2c5560'; ctx.lineWidth=1; ctx.strokeRect(x0+1,yy,x1-x0-2,mT+pH-yy);
+    }
+    // GUE 曲線
+    ctx.strokeStyle='#2c5560'; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var s=0;s<=SMAX;s+=0.02){ if(s===0) ctx.moveTo(X(s),Y(gue(s))); else ctx.lineTo(X(s),Y(gue(s))); } ctx.stroke();
+    // Poisson 曲線
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=2.4; ctx.setLineDash([6,4]); ctx.beginPath();
+    for(var s2=0;s2<=SMAX;s2+=0.02){ if(s2===0) ctx.moveTo(X(s2),Y(poi(s2))); else ctx.lineTo(X(s2),Y(poi(s2))); } ctx.stroke(); ctx.setLineDash([]);
+    // ラベル
+    ctx.fillStyle='#2c5560'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('GUE（反発）', X(1.2), Y(gue(1.0))-6);
+    ctx.fillStyle='#a5473a'; ctx.fillText('ポアソン', X(0.15), Y(poi(0.15))-4);
+  }
+  var rdEl=rd;
+  function report(){
+    var sp=unfoldedSpacings();
+    var small=sp.filter(function(v){return v<0.4;}).length/sp.length;
+    rdEl.innerHTML='本物のゼロ '+ (sp.length+1) +' 個の間隔（規格化・平均≈1）。ごく小さい間隔(s&lt;0.4)の割合は <b>'+(small*100).toFixed(0)+'%</b> と少ない＝<b>反発</b>（ポアソンなら約33%）。棒は<b style="color:#2c5560;">GUE曲線</b>寄りで、s=0 付近が空く。※少数標本なので"傾向"。高い高さではオドリツコが完璧に近い一致を確認。';
+  }
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+</script>
+</body>
+</html>

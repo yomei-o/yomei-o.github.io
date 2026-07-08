@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最小の補題に還元する ── 解かずに、正しい形に ／ ミレニアム問題を解くぞ 戦略⑥（完）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#8a3550; --side-bg:#f3e6ea;
+    --warn:#8a4b2f;
+    --calc:#8a3550; --calc-bg:#f3e6ea;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#8a3550;      /* 戦略⑥：臙脂（ルートEと同系＝言い換えの掟） */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecccd6 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3a1c26;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#3a1c26;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3e6ea;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .recap{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .recap .row{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .recap .row:first-child{border-top:none;}
+  .recap .k{flex:0 0 104px;background:#f3e6ea;color:var(--acc);font-weight:700;font-size:12px;padding:12px 12px;letter-spacing:.03em;}
+  .recap .v{flex:1;min-width:220px;padding:12px 16px;font-size:13.5px;color:#3a1c26;line-height:1.7;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f3e6ea;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a1c26;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.recap{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略⑥（完）</span></div>
+  <p class="eyebrow">メタ戦略 ── 解かずに、難しさを"最も正しい一点"に集める</p>
+  <h1>最小の補題に還元する ── 解かずに、正しい形に
+    <span class="sub">RHは解けない。でも<strong>「補題 \(L\) が成り立てば RH」</strong>という定理は作れる ── 難しさを、より小さくクリーンな \(L\) へ移す。<br>第二部は、実は最初から<em>一本の還元の連鎖</em>だった。<br>ただし掟がある ── <strong>良い還元</strong>と、（言い換えの罠と同じ）<strong>循環</strong>を、きっちり分けること。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：還元というメタ戦略と、その掟。そして第二部の締め</span>
+    <span>一言で：難しさは減らせない、が"最もクリーンな一点"に集められる</span>
+  </div>
+
+  <p class="lead">戦略編もこれで最終回。ここまで A〜E と戦略①〜グレイルを辿って分かったのは、リーマン予想の難しさが<em>ただ一点（\(\infty\) 込みの幾何と正値性＝グレイル）に凝縮している</em>ことでした。この回は、その営み全体を<strong>メタに畳みます</strong> ── 「\(L\) ならば RH」という<strong>還元</strong>を積み、難しさを最小の補題 \(L\) に集める。実は第二部は、最初からこの還元の連鎖だったのです。でも危険もある ── 挑戦編⑥で見た<strong>「言い換えの罠」（難しさが移るだけ）</strong>と、還元は紙一重。良い還元と循環を分ける掟で、第二部を締めくくります。</p>
+
+  <h2><span class="n">01</span>メタ戦略 ── 「解く」でなく「還元する」</h2>
+
+  <p>超難問に対する数学の常道は、いきなり解くことではありません。<strong>「これさえ言えれば全部出る」という一点（補題 \(L\)）に、難しさを集める</strong>ことです。</p>
+
+  <div class="keybox">
+    <div class="lbl">還元とは ── 「L ⟹ RH」を定理にする</div>
+    <p style="margin:0;">補題 \(L\) について <strong>「\(L\) が成り立てば、リーマン予想が従う」</strong>という<em>含意</em>を証明する。すると、残る仕事は \(L\) 一点だけ。RH本体より \(L\) が<em>小さく・構造的・攻めやすい</em>なら、これは前進。数学の大定理の多くが、こうした還元の積み重ねで落ちてきました。</p>
+  </div>
+
+  <p>ただし ── \(L\) が RH と<em>同じだけ難しい</em>なら、あるいは \(L\) がこっそり RH を仮定しているなら、それは前進ではなく<strong>ただの言い換え（挑戦編⑥の罠）</strong>。この線引きが、この回の主題です。</p>
+
+  <h2><span class="n">02</span>第二部は、一本の「還元漏斗」だった</h2>
+
+  <p>振り返ると、第二部の戦略編は<em>最初から還元の連鎖</em>でした。原問題（RH）から始めて、段を下りるごとに難しさが<strong>より構造的で小さな一点</strong>へ集まっていく。下の図で<strong>段を選ぶ</strong>と、各還元の中身と「本物の前進か」が読めます。</p>
+
+  <div class="fig">
+    <div class="cap">図：第二部の還元漏斗。上＝原問題RH、下へ行くほど<strong>難しさが小さく構造的な一点</strong>に集まる。各段は「これが言えればRH」。段を選ぶと中身と、還元としての質が出る。</div>
+    <canvas id="cvFunnel" width="680" height="360"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-s="0">RH（原問題）</button>
+      <button class="btn" data-s="1">ワイル正値性</button>
+      <button class="btn" data-s="2">作用素の存在</button>
+      <button class="btn" data-s="3">グレイル</button>
+    </div>
+    <div class="readout" id="rdFunnel"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">還元の連鎖（第二部の骨格）</div>
+    <p style="margin:0 0 5px;">RH ⟺ <strong>ワイル正値性</strong>（\(W(f)\ge0\)）── 幾何の主張を、解析の不等式一つへ（コンヌ／戦略②）。</p>
+    <p style="margin:0 0 5px;">⟸ <strong>零点を固有値とする自己共役作用素の存在</strong> ── 不等式を、構造（実スペクトル）へ（ヒルベルト=ポリア／挑戦編④）。</p>
+    <p style="margin:0;">⟸ <strong>グレイル</strong>（\(\infty\)込みの \(\mathbb{F}_1\) 幾何＋そのコホモロジー＋反射正値性）── 作用素を、それを生む<em>一個の幾何</em>へ（ドニンガー／数論的サイト／戦略④・グレイル）。</p>
+    <p style="margin:10px 0 0;">下へ行くほど<em>やることは一個</em>に減る。だが、そのぶん<strong>各段が"より深い構造の構築"</strong>になる ── 漏斗の首は細いが、そこを通すべき物は重い。</p>
+  </div>
+
+  <h2><span class="n">03</span>掟 ── 良い還元 と 循環（言い換えの罠）を分ける</h2>
+
+  <p>還元が<em>本物の前進</em>か、<em>ただの衣替え</em>かを、はっきり見分ける必要があります。挑戦編⑥の「保存的拡大」の掟の、実践版です。</p>
+
+  <div class="keybox">
+    <div class="lbl">還元の三判定</div>
+    <p style="margin:0 0 6px;">・<strong>良い還元</strong>：\(L\) が RH より<em>小さい・構造的</em>で、しかも<strong>新しい道具を呼び込む</strong>（別分野の技術・有限体の雛形が使える）。難しさは消えないが、<em>形が良くなり、攻め口が増える</em>。</p>
+    <p style="margin:0 0 6px;">・<strong>循環（言い換えの罠）</strong>：\(L\) が RH と<em>同値なだけ</em>で、初等的に見えても新しい道具を呼ばない（ロビンの不等式・リの \(\lambda_n\ge0\)）。難しさは<em>そっくり移るだけ</em>。</p>
+    <p style="margin:0;">・<strong>反則（RHを仮定）</strong>：\(L\) が RH を<em>前提に含む</em>（「GRHを仮定すれば」など）。これは還元ではなく、<em>難しさを丸呑みしている</em>。</p>
+  </div>
+
+  <p>下の図で、いくつかの候補 \(L\) を<strong>選んで診断</strong>してみてください ── どれが良い還元で、どれが罠で、どれが反則か。同じ「⟺ RH」でも、質はまるで違います。</p>
+
+  <div class="fig">
+    <div class="cap">図：還元の質を診断する。候補を選ぶと <span style="color:var(--solved);font-weight:700;">良い還元</span>／<span style="color:var(--gold);font-weight:700;">循環（言い換えの罠）</span>／<span style="color:var(--open);font-weight:700;">反則（RHを仮定）</span> の判定と理由が出る。</div>
+    <canvas id="cvDiag" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-d="0">ワイル正値性</button>
+      <button class="btn" data-d="1">作用素の存在</button>
+      <button class="btn" data-d="2">Robinの不等式</button>
+      <button class="btn" data-d="3">Liのλₙ≥0</button>
+      <button class="btn" data-d="4">GRHを仮定</button>
+      <button class="btn" data-d="5">10兆個の数値</button>
+    </div>
+    <div class="readout" id="rdDiag"></div>
+  </div>
+
+  <h2><span class="n">04</span>最小の補題 ── 難しさは減らない、が「一番きれいな一点」に</h2>
+
+  <p>還元をどこまで進めても、<strong>RHの難しさそのものは減りません</strong>（それが挑戦編⑥の深い教訓）。還元が与えるのは<em>「難しさの、最もクリーンな置き場所」</em>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">第二部が到達した「最小の補題」</div>
+    <p class="big" style="margin:0;">リーマン予想は、<strong>ただ一つの補題</strong>に還元される ── <em>「\(\infty\) を含む \(\mathrm{Spec}\,\mathbb{Z}\) の幾何の上に、ゼータの零点を固有値とするコホモロジーがあり、そこにワイル／ホッジ型の正値性が成り立つ」</em>（＝グレイル）。これが言えれば、RHは倒れる。難しさは1mmも減っていないが、<strong>「どこを・なぜ攻めるか」が完全に定まった。</strong></p>
+  </div>
+
+  <p>これが戦略編の、そして第二部全体の到達点です。私たちは<em>解けませんでした</em>。でも、150年の難問の難しさが<strong>どの一点に、なぜ凝縮しているか</strong>を、還元の連鎖で最も鋭く指し切った ── それが、旗の代わりに立てた<strong>縁の標識</strong>です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>第二部・完 ── 一言に畳む</h2>
+
+  <div class="recap">
+    <div class="row"><div class="k">入門編1–5</div><div class="v">RHとは＝ゼータの非自明零点が Re(s)=1/2 に全部乗る。ゼータ＝素数の暗号帳（オイラー積）、明示公式で零点が素数のゆらぎを指揮。RH＝素数のゆらぎ最小。</div></div>
+    <div class="row"><div class="k">挑戦編1–6</div><div class="v">5ルート（直接押す／割合／作用素／有限体／言い換え）はみな同じ壁 ── 平均は御せるが「例外0個」を強制する剛い構造が無い。</div></div>
+    <div class="row"><div class="k">戦略①–④</div><div class="v">本命＝零点＝スペクトル。明示公式＝跡公式、コンヌの正値性、族＝ランダム行列（有限体で定理）、ドニンガーの力学系。</div></div>
+    <div class="row"><div class="k">グレイル</div><div class="v">全ルートが同じ継ぎ目＝無限素点∞で止まる。欠けは一個の物（∞込み幾何＋零点=スペクトル＋正値性）。</div></div>
+    <div class="row"><div class="k">戦略⑥</div><div class="v">第二部は一本の還元漏斗。難しさは減らないが、最小の補題（グレイルの正値性）へクリーンに集約。良い還元と循環を分ける掟。</div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">第二部を一文で</div>
+    <p class="big" style="margin:0;">リーマン予想とは<em>「素数の暗号帳ゼータの零点が一本の線に乗る＝素数が最高に行儀よく並ぶ」</em>と証明せよ。数値は兆の単位で正しく、正しい機構は隣の世界（有限体）で分かっている。だが<strong>整数だけが背負う無限素点 \(\infty\) を、素数たちと同じ幾何に乗せ、そこに正値性を立てる</strong>── その一個の物が、まだ誰の手にもない。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">姉妹編と、同じ縁で</span>
+    第一部ヤン=ミルズも、最後は「一個の物＝グレイル（RP保存∧共変∧一様な粗視化）」と「最小の補題への還元」に辿り着きました。物理の谷（質量ギャップ）と数論の谷（リーマン予想）── 入口も景色もまるで違うのに、<strong>「正しい機構は隣接領域で分かるのに、対象固有の一部品が欠け、難しさが一点に凝縮する」</strong>という<em>同じ形の縁</em>で出会う。ミレニアム問題は、そういう縁の連なりなのかもしれません。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの掟（最後に）</div>
+    <p class="big" style="margin:0;">旗は立てなかった。<strong>縁の標識を立てた。</strong>「解けた」とは一度も言わず ── 問題の正体を高校生の言葉でほどき、"数値と証明の谷"を測り、五つの道と四つの深掘りが<em>どこで止まり、なぜ止まるか</em>を、還元の一点まで指した。ゼータの零点は、今日も臨界線の上に静かに並んでいる。誰も、それが<em>永遠に</em>そうだと、まだ証明できないまま ── そこが、縁。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「\(L\)⟹RH」という含意を証明して難しさを補題 \(L\) に集める、という還元の方法論は数学の標準的な営みです。本回で挙げた還元は事実に基づきます ── <strong>RH ⟺ ワイル正値性</strong>（コンヌ／ワイル、正値性は半局所で証明済み・全体は未証明）、<strong>零点を固有値とする自己共役作用素が存在すれば RH</strong>（ヒルベルト=ポリアの含意は正しいが、そのような作用素は未発見）、<strong>グレイル</strong>（本シリーズが戦略①〜④の共通の欠落を一つの対象として整理した比喩的定式化）。<strong>ロビンの不等式</strong>（1984）・<strong>リの判定条件</strong>（1997）は RH と同値だが、より初等的・構造的な道具を新たに呼び込むものではなく、難しさは移動するのみ（挑戦編⑥）。「GRH を仮定する」は RH（の一般化）を前提に含むため、RH の還元ではありません。数値的確認（\(10^{13}\) 個超の零点）は有限の観察で証明にならないこと（第1回）も同様です。</p>
+    <p style="margin-bottom:0;">「還元は難しさを消さず、最もクリーンな一点に集める」という主張、および「良い還元／循環／反則」の三分類は、方法論を分かりやすく整理したもので、正式な定理・分類ではありません。第一部ヤン=ミルズのグレイル・還元との類比は、両問題の構造の相似を指す比喩です。図はいずれも第二部の論理構造を示す模式図で、配置に定量的意味はありません。リーマン予想は2025年時点で未解決であり、本シリーズはその証明を主張するものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「還元」とは何をすることか。RHを解くこととどう違う？
+        <details><summary>答えを見る</summary><div class="ans">「補題 L が成り立てば RH が従う（L⟹RH）」という含意を証明し、残りの仕事を L 一点に集めること。RH本体を直接解くのではなく、より小さく構造的な L に難しさを移す。L が RH より攻めやすく新しい道具を呼ぶなら前進。第二部は RH ⟺ ワイル正値性 ⟸ 作用素の存在 ⟸ グレイル、という還元の連鎖だった。</div></details>
+      </li>
+      <li>「良い還元」と「循環（言い換えの罠）」と「反則」を分ける基準は？
+        <details><summary>答えを見る</summary><div class="ans">良い還元：L が RH より小さく構造的で、新しい道具（別分野・有限体の雛形）を呼び込む（例：ワイル正値性、作用素の存在）。循環：L が RH と同値なだけで新しい道具を呼ばない（例：Robinの不等式、Liのλₙ≥0）── 難しさが移るだけ。反則：L が RH を前提に含む（例：GRHを仮定）。同じ「⟺RH」でも質がまるで違う。</div></details>
+      </li>
+      <li>還元をどこまで進めても消えないもの、それでも得られるものは？
+        <details><summary>答えを見る</summary><div class="ans">消えないもの：RHの難しさそのもの（挑戦編⑥の教訓＝難しさは保存される）。得られるもの：難しさの「最もクリーンな置き場所」＝最小の補題（グレイルの正値性）。どこを・なぜ攻めるかが完全に定まる。解けはしないが、縁を最も鋭く指し切ることができる＝旗でなく縁の標識。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略⑥まとめ ／ 第二部・完</span>解かずに、正しい形に</h2>
+    <p>メタ戦略は「解く」でなく<strong>「還元する」</strong>── 「\(L\)⟹RH」を定理にし、難しさを最小の補題 \(L\) へ集める。第二部は一本の<strong>還元漏斗</strong>だった：RH ⟺ ワイル正値性 ⟸ 零点を固有値とする作用素の存在 ⟸ グレイル（\(\infty\)込み幾何＋コホモロジー＋正値性）。下へ行くほど<em>やることは一個</em>だが、そのぶん深い構造の構築になる。</p>
+    <p>掟：<strong>良い還元</strong>（小さく構造的・新しい道具を呼ぶ）と<strong>循環＝言い換えの罠</strong>（同値なだけ・道具を呼ばない：Robin・Li）と<strong>反則</strong>（RHを仮定：GRH）を分ける。還元は<em>難しさを消さない</em>── が、最もクリーンな一点（グレイルの正値性）に集める。私たちは解けなかったが、150年の難問の難しさが<strong>どの一点に、なぜ</strong>凝縮するかを指し切った。旗でなく縁の標識を。ゼータの零点は今日も臨界線に静かに並ぶ ── まだ誰も"永遠"を証明できないまま。<strong>第二部・リーマン予想、完。</strong></p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-senryaku-grail.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f3e6ea;font-weight:700;letter-spacing:.03em;">← 戦略・グレイル</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f3e6ea;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="../millennium-yangmills/index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc2);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第一部 ヤン=ミルズへ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略⑥（完）、数学好きの高校生・大学生向け読み物。「\(L\)⟹RH」を証明して難しさを補題に集める還元の方法論は標準的です。RH ⟺ ワイル正値性（コンヌ／ワイル、半局所で証明済み・全体は未証明）、零点を固有値とする自己共役作用素の存在からの含意（ヒルベルト=ポリア、作用素は未発見）は事実に基づきます。ロビンの不等式（1984）・リの判定条件（1997）は RH と同値ですが新しい構造的道具を呼ばず、「GRH を仮定」は RH の一般化を前提に含むため還元になりません。数値的確認は有限の観察で証明にならないこと（第1回）も同様です。「グレイル」「還元漏斗」「良い還元／循環／反則」の整理・分類、および第一部ヤン=ミルズとの類比は、方法論と論理構造を分かりやすく示すための比喩・整理であり、正式な定理・分類ではありません。リーマン予想は2025年時点で未解決であり、本シリーズはその証明を主張しません。図は模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1で第二部の還元漏斗、図2で還元の質（良い還元／循環／反則）の診断を体感できます。「答えを見る」で解答が開きます。第二部・完 ── おつかれさまでした。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* ===== 図1：還元漏斗 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvFunnel'), rd=document.getElementById('rdFunnel');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-s]'));
+  var lastW=680, sel=0;
+  var stages=[
+    {t:'RH（原問題）', s:'全非自明零点が Re(s)=1/2', w:1.0,
+     msg:'<b>RH（原問題）</b>：ゼータの非自明零点が全部 Re(s)=1/2 に乗る。無限個・例外0個の主張。ここから難しさを下へ集めていく。'},
+    {t:'ワイル正値性', s:'W(f)=Σ_v W_v(f) ≥ 0', w:0.72,
+     msg:'<b>ワイル正値性</b>（RH ⟺ これ）：明示公式の二次形式が常に≥0。幾何の主張が<b>解析の不等式一つ</b>へ。<b style="color:#2f7d5a;">良い還元</b>＝非可換幾何の道具・有限体の雛形を呼ぶ（コンヌ／戦略②）。半局所で証明済み。'},
+    {t:'作用素の存在', s:'零点を固有値とする自己共役作用素', w:0.5,
+     msg:'<b>作用素の存在</b>（これ ⟹ RH）：零点を固有値に持つ自己共役作用素があれば、固有値は実＝RH。不等式を<b>構造（実スペクトル）</b>へ。<b style="color:#2f7d5a;">良い還元</b>（ヒルベルト=ポリア／挑戦編④）。作用素は未発見。'},
+    {t:'グレイル', s:'∞込み幾何＋コホモロジー＋反射正値性', w:0.3,
+     msg:'<b>グレイル</b>（これ ⟹ RH）：∞込みの 𝔽₁ 幾何に、零点を固有値とするコホモロジーと反射正値性がある、という<b>一個の物</b>。作用素を<b>それを生む幾何</b>へ還元。漏斗の首＝やることは一個、だが最も深い構造の構築（戦略④・グレイル）。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=16,mR=16,mT=16,mB=12, pW=w-mL-mR, pH=h-mT-mB;
+    var n=stages.length, rowH=pH/n, cx=mL+pW/2;
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<n;i++){
+      var st=stages[i], y=mT+i*rowH, on=(i===sel);
+      var bw=pW*st.w, bx=cx-bw/2, bh=rowH-14;
+      // 下向き矢印（次段へ）
+      if(i<n-1){ ctx.strokeStyle='#c9a9b6'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cx,y+bh+2); ctx.lineTo(cx,y+rowH+4); ctx.stroke();
+        ctx.fillStyle='#c9a9b6'; ctx.beginPath(); ctx.moveTo(cx-5,y+rowH+1); ctx.lineTo(cx+5,y+rowH+1); ctx.lineTo(cx,y+rowH+7); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#a5738a'; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillText('⟸ これが言えれば', cx+10, y+rowH); }
+      // 台形風ボックス
+      ctx.fillStyle= on? '#e6c6d2':'#f3e6ea'; roundRect(ctx,bx,y+4,bw,bh,8); ctx.fill();
+      ctx.strokeStyle= on? '#8a3550':'#d8b8c4'; ctx.lineWidth= on?2.4:1.2; roundRect(ctx,bx,y+4,bw,bh,8); ctx.stroke();
+      ctx.fillStyle='#5a2035'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(st.t, cx, y+4+bh/2-8);
+      ctx.fillStyle='#7a4a5a'; ctx.font='11px sans-serif'; ctx.fillText(st.s, cx, y+4+bh/2+9);
+    }
+    ctx.textBaseline='alphabetic';
+    // 首のラベル
+    ctx.fillStyle='#8a3550'; ctx.font='bold 10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('↓ 難しさが小さく構造的な一点へ集まる', cx, mT+pH-2);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-s'),10)===i); }); draw(); rd.innerHTML=stages[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-s'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+
+/* ===== 図2：還元の質を診断 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvDiag'), rd=document.getElementById('rdDiag');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-d]'));
+  var lastW=680, sel=0;
+  // verdict: 2=良い還元, 1=循環, 0=反則
+  var cands=[
+    {name:'ワイル正値性', v:2, msg:'<b>ワイル正値性</b> → <b style="color:#2f7d5a;">良い還元</b>。RHと同値だが、幾何を解析の不等式に変え、<b>非可換幾何・有限体の雛形という新しい道具</b>を呼ぶ。難しさは移るが形が良く攻め口が増える。'},
+    {name:'作用素の存在', v:2, msg:'<b>零点を固有値とする作用素の存在</b> → <b style="color:#2f7d5a;">良い還元</b>。これが言えれば実スペクトル＝RH。<b>構造で一斉に強制</b>し、有限体（フロベニウス）で実証済みの機構を呼ぶ。作用素は未発見。'},
+    {name:'Robinの不等式', v:1, msg:'<b>Robin の不等式 σ(n)&lt;eˠ n lnln n</b> → <b style="color:#a9791a;">循環（言い換えの罠）</b>。RHと同値で初等的だが、<b>新しい構造的道具を呼ばない</b>。難しさはそっくり移るだけ（挑戦編⑥）。'},
+    {name:'Liのλₙ≥0', v:1, msg:'<b>Li の判定条件 λₙ≥0</b> → <b style="color:#a9791a;">循環（言い換えの罠）</b>。RHと同値な正値性だが、示す難しさはRHと同じ。形は変わるが攻め口は増えない。'},
+    {name:'GRHを仮定', v:0, msg:'<b>「GRH を仮定すれば」</b> → <b style="color:#a5473a;">反則（RHを仮定）</b>。GRH は RH の一般化で、RH を前提に丸呑みしている。これは還元ではない ── 難しさを"仮定"で消したふり。'},
+    {name:'10兆個の数値', v:0, msg:'<b>「10兆個の零点が線上」</b> → <b style="color:#a5473a;">反則（証明でない）</b>。有限個の数値的確認は、無限個の主張の証明にならない（第1回）。強い状況証拠だが、還元でも証明でもない。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=20,mR=20,mT=20,mB=16, pW=w-mL-mR, pH=h-mT-mB;
+    ctx.clearRect(0,0,w,h);
+    var c=cands[sel];
+    var V={2:['良い還元','#2f7d5a','#e6f0ea','#a5473a→形が良い・道具を呼ぶ'],1:['循環（言い換えの罠）','#a9791a','#f7f0e4',''],0:['反則','#a5473a','#f7ece9','']};
+    var vv=V[c.v];
+    // 中央：候補 L
+    var cx=mL+pW*0.28, cy=mT+pH/2;
+    ctx.fillStyle='#f3e6ea'; roundRect(ctx,cx-90,cy-34,180,68,12); ctx.fill();
+    ctx.strokeStyle='#8a3550'; ctx.lineWidth=2; roundRect(ctx,cx-90,cy-34,180,68,12); ctx.stroke();
+    ctx.fillStyle='#5a2035'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('補題 L：', cx, cy-12); ctx.font='bold 14px sans-serif'; ctx.fillText(c.name, cx, cy+11);
+    ctx.textBaseline='alphabetic';
+    // 矢印
+    var ax0=cx+94, ax1=mL+pW*0.66;
+    ctx.strokeStyle=vv[1]; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(ax0,cy); ctx.lineTo(ax1,cy); ctx.stroke();
+    ctx.fillStyle=vv[1]; ctx.beginPath(); ctx.moveTo(ax1,cy-7); ctx.lineTo(ax1,cy+7); ctx.lineTo(ax1+11,cy); ctx.closePath(); ctx.fill();
+    // 判定バッジ
+    var bx=ax1+20;
+    ctx.fillStyle=vv[2]; roundRect(ctx,bx,cy-40,pW+mL-bx-4,80,12); ctx.fill();
+    ctx.strokeStyle=vv[1]; ctx.lineWidth=2; roundRect(ctx,bx,cy-40,pW+mL-bx-4,80,12); ctx.stroke();
+    ctx.fillStyle=vv[1]; ctx.font='bold 17px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    var bcx=(bx+pW+mL-4)/2;
+    var mark = c.v===2?'◯':(c.v===1?'△':'✕');
+    ctx.font='bold 30px sans-serif'; ctx.fillText(mark, bcx, cy-12);
+    ctx.font='bold 13px sans-serif'; ctx.fillText(vv[0], bcx, cy+16);
+    ctx.textBaseline='alphabetic';
+    // 上の説明
+    ctx.fillStyle='#7a4a5a'; ctx.font='11.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('「L ⟹ RH」は正しい。では L は本物の前進か？', mL+pW/2, mT-2);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-d'),10)===i); }); draw(); rd.innerHTML=cands[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-d'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゼータ関数って何？ ── 足し算が、素数の暗号になる ／ ミレニアム問題を解くぞ 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;    /* 濃紫 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+    --prod:#a5622a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:210px;accent-color:#5a2a6e;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">第 3 回</span></div>
+  <p class="eyebrow">主役その二 ── ただの足し算が、素数の暗号帳になる</p>
+  <h1>ゼータ関数って何？ ── 足し算が、素数の暗号になる
+    <span class="sub">\(\zeta(s)=1+\frac{1}{2^s}+\frac{1}{3^s}+\cdots\) ── 見た目はただの足し算。<br>ところがオイラーが見抜いた ── <em>これは全部の素数のかけ算に化ける</em>（オイラー積）。<br>だから「ゼータを調べる＝素数を調べる」。この一本の等式が、リーマン予想の土台。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：オイラー積を"動く図"で腹落ちさせる</span>
+    <span>一言で：Σ1/nˢ ＝ Π 1/(1−p⁻ˢ)</span>
+  </div>
+
+  <p class="lead">第2回で、素数には「気まぐれな顔」と「集団では規則正しい顔」があり、その規則を丸ごと握っているのがゼータ関数だ、と予告しました。この回は、そのゼータ関数を正面から見ます。式はたった一つ、素朴な足し算。でもその中に<em>全素数の情報が、一つ残らず畳み込まれている</em>。なぜそんなことが起きるのか ── オイラーの魔法「オイラー積」を、第2回の"ふるい"とつなげながら、動く図で腹に落とします。</p>
+
+  <h2><span class="n">01</span>ゼータ関数は、ただの足し算</h2>
+
+  <p>ゼータ関数の定義は、拍子抜けするほど素朴です。ある数 \(s\) を決めて、\(1,2,3,\dots\) を \(s\) 乗して逆数にし、全部足すだけ。</p>
+
+  <div class="keybox">
+    <div class="lbl">ゼータ関数（まずは s を1より大きい実数として）</div>
+    $$\zeta(s)=\frac{1}{1^{s}}+\frac{1}{2^{s}}+\frac{1}{3^{s}}+\frac{1}{4^{s}}+\cdots=\sum_{n=1}^{\infty}\frac{1}{n^{s}}$$
+    <p style="margin:8px 0 0;">\(s\) が大きいほど後ろの項がすぐ小さくなり、和は有限の値に落ち着きます（\(s>1\) で収束）。たとえば ── </p>
+    <p style="margin:8px 0 0;">\(\zeta(2)=1+\tfrac14+\tfrac19+\tfrac1{16}+\cdots=\dfrac{\pi^2}{6}\approx1.6449\)（＝有名な<strong>バーゼル問題</strong>、オイラーが解いた）。<br>\(\zeta(3)\approx1.2021,\quad \zeta(4)=\dfrac{\pi^4}{90}\approx1.0823\)。</p>
+  </div>
+
+  <p>逆に \(s=1\) だと \(1+\tfrac12+\tfrac13+\cdots\)（調和級数）で、これは<em>いくらでも大きくなって発散</em>します。\(s\) が1に近づくとゼータは無限大へ暴れ出す ── この「\(s=1\) のふち」が、あとで素数の無限性につながります。</p>
+
+  <h2><span class="n">02</span>オイラーの魔法 ── 足し算が、素数のかけ算に化ける</h2>
+
+  <p>ここからが本番。オイラーは1737年、この足し算が<strong>全部の素数にわたるかけ算に等しい</strong>ことを示しました。</p>
+
+  <div class="keybox">
+    <div class="lbl">オイラー積 ── この等式が第二部の心臓</div>
+    $$\sum_{n=1}^{\infty}\frac{1}{n^{s}}\;=\;\prod_{p:\text{素数}}\frac{1}{1-p^{-s}}\;=\;\frac{1}{1-2^{-s}}\cdot\frac{1}{1-3^{-s}}\cdot\frac{1}{1-5^{-s}}\cdots$$
+    <p style="margin:8px 0 0;">左は<strong>全部の整数</strong>を回る足し算。右は<strong>全部の素数</strong>を回るかけ算。これがぴったり等しい。<em>整数の世界と素数の世界を結ぶ、一本の橋</em>です。</p>
+  </div>
+
+  <p>なぜ、こんな不思議な等式が成り立つのでしょう？ 実はこれ、第2回で出てきた<strong>エラトステネスのふるい</strong>を"式でやっている"だけなのです。</p>
+
+  <h2><span class="n">03</span>正体は「解析版・エラトステネスのふるい」</h2>
+
+  <p>下のタイルは、ゼータの各項 \(\frac{1}{n^s}\) を \(n=1\) から並べたもの。最初は全部そろっている（＝ふつうのゼータの和）。<strong>「次の素数でふるう」</strong>を押すと、その素数の倍数がスッと消えます ── これはゼータに \((1-p^{-s})\) を掛ける操作にちょうど対応します。素数で順にふるっていくと、最後に<strong>\(n=1\) の項だけ</strong>が残る。つまり「全部の \((1-p^{-s})\) を掛けると、ゼータは 1 になる」＝オイラー積です。</p>
+
+  <div class="fig">
+    <div class="cap">図：ゼータの項 1/nˢ（n=1〜60）を素数でふるう。<strong>「次の素数でふるう」</strong>で p の倍数が消える（＝×(1−p⁻ˢ)）。<span style="color:var(--acc);font-weight:700;">紫＝生き残り</span>、薄い＝消えた項。最後は 1 だけが残る。</div>
+    <canvas id="cvSieve" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn" id="btnStep">次の素数でふるう ▶</button>
+      <button class="btn" id="btnReset">最初に戻す</button>
+    </div>
+    <div class="readout" id="rdSieve"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#7a4fa0;"></i>生き残っている項</span>
+      <span><i class="swatch" style="background:#efe6e2;"></i>ふるい落とされた項</span>
+      <span><i class="swatch" style="background:#fffdf8;border:2px solid #a9791a;"></i>いま残る先頭（1 か、その回の素数）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ ×(1−p⁻ˢ) が「p の倍数を消す」のか（一段だけ）</span>
+    \(\zeta(s)=1+\tfrac1{2^s}+\tfrac1{3^s}+\tfrac1{4^s}+\cdots\) に \(\tfrac1{2^s}\) を掛けると \(\tfrac1{2^s}+\tfrac1{4^s}+\tfrac1{6^s}+\cdots\)（＝<strong>2の倍数だけ</strong>）。元から引くと、<strong>\(\bigl(1-\tfrac1{2^s}\bigr)\zeta(s)=1+\tfrac1{3^s}+\tfrac1{5^s}+\cdots\)</strong>（2の倍数が全消し）。次に \(\times(1-\tfrac1{3^s})\) で3の倍数が消え…と続く。素数を全部使い切ると右辺は \(1\) だけ。移項すれば \(\zeta(s)=\prod_p \frac{1}{1-p^{-s}}\)。<br>裏で効いているのは、第2回の<strong>「すべての整数は素数の積にただ一通り」</strong>（一意分解）── だから各整数はちょうど一度だけ消える。
+  </div>
+
+  <h2><span class="n">04</span>数で確かめる ── 和と積は、同じ値に出会う</h2>
+
+  <p>「本当に等しいの？」を数字で見ましょう。下は、\(s\) を一つ決めて、<span style="color:var(--acc);font-weight:700;">左辺（整数の足し算をだんだん増やす）</span>と<span style="color:var(--prod);font-weight:700;">右辺（素数のかけ算をだんだん増やす）</span>を同時に走らせたレース。両方とも、同じ真の値 \(\zeta(s)\)（<span style="color:#2f7d5a;font-weight:700;">緑の点線</span>）へ吸い寄せられます。<strong>足し算とかけ算という別ルートが、ぴたり同じゴールに着く</strong> ── これがオイラー積の実感です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">紫＝Σ1/nˢ（項を増やす）</span>、<span style="color:var(--prod);font-weight:700;">茶＝Π1/(1−p⁻ˢ)（素数を増やす）</span>、<span style="color:#2f7d5a;font-weight:700;">緑点線＝真の ζ(s)</span>。横軸は使った上限。スライダーで s を変える。</div>
+    <canvas id="cvRace" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <label>s ：<input type="range" id="sldS" min="1.2" max="4" value="2" step="0.1"><span id="sVal" style="font-weight:700;color:var(--acc);">2.0</span></label>
+    </div>
+    <div class="readout" id="rdRace"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#7a4fa0;"></i>足し算（全整数）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>かけ算（全素数）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>真の ζ(s)</span>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>ここから、素数が湧いて出る</h2>
+
+  <p>オイラー積のすごさは、<em>素数についての事実がゼータから"落ちてくる"</em>ところ。一例 ── 01で見た「\(s\to1\) でゼータが無限大に発散」を、オイラー積の側から読むとこうなります。</p>
+
+  <div class="keybox">
+    <div class="lbl">素数は無限にある（オイラーの解析的証明）</div>
+    <p style="margin:0;">もし素数が有限個なら、右辺 \(\prod_p \frac{1}{1-p^{-s}}\) は \(s\to1\) でも有限のまま。でも左辺は \(s\to1\) で \(1+\tfrac12+\tfrac13+\cdots=\infty\)。<strong>有限＝無限は矛盾</strong>。だから素数は無限にある。さらに詳しく調べると \(\displaystyle\sum_{p}\frac{1}{p}=\infty\) ── <em>素数は「無限にある」だけでなく、逆数の和が発散するほど"濃く"分布している</em>。</p>
+  </div>
+
+  <p>ユークリッドの証明（第2回）とは別ルートで、同じ「素数は無限」に到達しました。しかもこちらは<strong>素数がどれくらい濃いか</strong>という量まで教えてくれる。ゼータ関数が「素数の暗号帳」と呼ばれるゆえんです。整数の足し算を調べるだけで、素数の秘密がこぼれ落ちてくる。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <p>最後に、次回への布石を一つ。オイラー積を見ると、右辺は<strong>ゼロでない factor のかけ算</strong>だから、\(s>1\) では <em>\(\zeta(s)\) は決して 0 にならない</em>。ということは ── リーマン予想が問題にする「ゼロ点」は、この足し算が収束する安全地帯（\(s>1\)）には一つも無い。ゼロは、<strong>足し算がそのままでは通用しない"向こう側"</strong>にしか無いのです。そこへ関数を延ばす手品が、次回の「解析接続」。ゼロ点が住む舞台＝複素平面と臨界線へ、いよいよ踏み込みます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">オイラー積 \(\sum n^{-s}=\prod_p (1-p^{-s})^{-1}\) が等式として成り立つのは \(\mathrm{Re}(s)>1\) の範囲です（そこでは和も積も絶対収束）。本文の「ふるい」や「×(1−p⁻ˢ)」の操作も、この収束が保証された範囲での正当な計算です。\(\zeta(2)=\pi^2/6\)（バーゼル問題、オイラー1735年ごろ）、\(\zeta(4)=\pi^4/90\)、調和級数の発散、\(\sum_p 1/p=\infty\)（オイラー）はいずれも確立した事実。オイラー積を用いた素数無限の証明はユークリッドとは独立な別証明です。</p>
+    <p style="margin-bottom:0;">「\(s>1\) で \(\zeta(s)\neq0\)」は正しく、リーマン予想のゼロ点はすべて \(0<\mathrm{Re}(s)<1\)（臨界帯）にあります。ただし \(s>1\) の足し算をそのまま複素平面全体へ使うことはできず、関数を意味のある形で延ばす「解析接続」が必要 ── これが次回の主題です。図はいずれもブラウザ内で級数・積を実際に計算して描いています（真の ζ(s) は多数項の和による高精度近似）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>オイラー積は、何と何が等しいと言っている？
+        <details><summary>答えを見る</summary><div class="ans">全整数を回る足し算 Σ1/nˢ と、全素数を回るかけ算 Π 1/(1−p⁻ˢ) が等しい（s&gt;1で）。整数の世界と素数の世界を結ぶ橋。だから「ゼータを調べる＝素数を調べる」になる。</div></details>
+      </li>
+      <li>なぜ ζ(s) に (1−1/2ˢ) を掛けると「2の倍数の項」が消えるのか。
+        <details><summary>答えを見る</summary><div class="ans">ζ(s)=1+1/2ˢ+1/3ˢ+… に 1/2ˢ を掛けると 1/2ˢ+1/4ˢ+1/6ˢ+…（＝2の倍数の項ばかり）。これを元から引くと 2の倍数が全部消えて 1+1/3ˢ+1/5ˢ+…。同じことを 3,5,7,… と続けると、一意分解のおかげで各整数がちょうど一度ずつ消え、最後に 1 だけ残る＝オイラー積。</div></details>
+      </li>
+      <li>オイラー積から「素数は無限」がどう出る？
+        <details><summary>答えを見る</summary><div class="ans">素数が有限個なら右辺の積は s→1 でも有限。しかし左辺は s→1 で調和級数となり発散（無限大）。有限＝無限は矛盾。ゆえに素数は無限。さらに Σ1/p=∞ まで言え、素数の"濃さ"も分かる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>足し算が、素数の暗号帳になる</h2>
+    <p>ゼータ関数は素朴な足し算 \(\zeta(s)=\sum 1/n^s\)（\(s>1\) で収束、\(\zeta(2)=\pi^2/6\)）。オイラーの魔法＝<strong>オイラー積</strong> \(\sum 1/n^s=\prod_p 1/(1-p^{-s})\) により、これは全素数のかけ算に等しい。正体は<strong>解析版エラトステネスのふるい</strong> ── 素数で順に \((1-p^{-s})\) を掛けると倍数が消え、一意分解ゆえ最後に 1 だけ残る。足し算とかけ算は同じ値 \(\zeta(s)\) に出会う。</p>
+    <p>だからゼータは「素数の暗号帳」。実際、\(s\to1\) の発散から素数の無限性（さらに \(\sum1/p=\infty\)）が落ちてくる。そして布石 ── オイラー積より <strong>\(s>1\) では \(\zeta(s)\neq0\)</strong>。リーマン予想のゼロ点は、足し算が通じる安全地帯には無く、"向こう側"にしか無い。次回は、そこへ関数を延ばす手品「解析接続」と、ゼロ点が住む複素平面・臨界線へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-02-sosuu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第2回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-04-icchokusen.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第4回：「一直線」の正体 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 第3回、数学好きの高校生・大学生向け読み物。ゼータ関数 \(\zeta(s)=\sum_{n\ge1}n^{-s}\) は \(\mathrm{Re}(s)>1\) で絶対収束し、そこでオイラー積 \(\prod_p(1-p^{-s})^{-1}\) に等しい（オイラー、1737年）。この一致は算術の基本定理（素因数分解の一意性）の解析的な言い換えです。\(\zeta(2)=\pi^2/6\)（バーゼル問題、オイラー1735年ごろ）、\(\zeta(4)=\pi^4/90\)、調和級数 \(\sum1/n\) の発散、素数の逆数和 \(\sum_p 1/p\) の発散はいずれも確立した事実で、後者からオイラーはユークリッドとは独立に素数の無限性を導きました。オイラー積の各因子は非零なので \(\mathrm{Re}(s)>1\) では \(\zeta(s)\neq0\) が従い、非自明なゼロはすべて臨界帯 \(0<\mathrm{Re}(s)<1\) に位置します。この領域へ関数を拡張する解析接続は次回で扱います。図中の和・積・真値はブラウザ内で数値計算しています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「次の素数でふるう」で倍数が消える様子、スライダーで和と積が同じ ζ(s) に出会う様子が見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function sieve(n){
+  var is=new Array(n+1).fill(true); is[0]=is[1]=false;
+  for(var p=2;p*p<=n;p++){ if(is[p]){ for(var q=p*p;q<=n;q+=p) is[q]=false; } }
+  return is;
+}
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+
+/* ===== 図1：解析版エラトステネスのふるい ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvSieve'), rd=document.getElementById('rdSieve');
+  var btnStep=document.getElementById('btnStep'), btnReset=document.getElementById('btnReset');
+  var N=60, cols=12, rows=5, is=sieve(N);
+  var primes=[]; for(var i=2;i<=N;i++) if(is[i]) primes.push(i);
+  var alive, usedPrimes, lastW=680;
+  function reset(){
+    alive=new Array(N+1).fill(true); alive[0]=false; usedPrimes=[]; draw(); say();
+  }
+  function step(){
+    // 次に使う素数：まだ使っていない素数で、生き残っている最小の p(>1)
+    var p=null;
+    for(var k=0;k<primes.length;k++){ if(usedPrimes.indexOf(primes[k])===-1){ p=primes[k]; break; } }
+    if(p===null){ say(true); return; }
+    usedPrimes.push(p);
+    for(var m=p;m<=N;m+=p) alive[m]=false; // p の倍数を消す（p 自身も消える＝×(1-p^{-s})後の残りは1と、まだふるってない素数）
+    draw(); say();
+  }
+  function firstAliveAbove1(){ for(var n=2;n<=N;n++) if(alive[n]) return n; return null; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var padX=8, padY=6, gap=4;
+    var cw=(w-2*padX-(cols-1)*gap)/cols, ch=(h-2*padY-(rows-1)*gap)/rows;
+    var lead=firstAliveAbove1();
+    for(var n=1;n<=N;n++){
+      var idx=n-1, r=Math.floor(idx/cols), c=idx%cols;
+      var x=padX+c*(cw+gap), y=padY+r*(ch+gap);
+      var on=alive[n];
+      ctx.fillStyle= on? '#7a4fa0' : '#efe6e2';
+      ctx.beginPath(); ctx.rect(x,y,cw,ch); ctx.fill();
+      if(on && (n===1 || n===lead)){ ctx.strokeStyle='#a9791a'; ctx.lineWidth=2.5; ctx.strokeRect(x+1,y+1,cw-2,ch-2); }
+      ctx.fillStyle= on? '#fff' : '#b3a69e';
+      ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(n, x+cw/2, y+ch/2+1);
+    }
+    ctx.textBaseline='alphabetic';
+  }
+  function say(done){
+    var eq = usedPrimes.length? ('('+usedPrimes.map(function(p){return '1−'+p+'⁻ˢ';}).join(')(')+')·ζ(s)') : 'ζ(s)';
+    var aliveList=[]; for(var n=1;n<=N&&aliveList.length<8;n++) if(alive[n]) aliveList.push(n===1?'1':('1/'+n+'ˢ'));
+    var tail = (function(){ var c=0; for(var n=1;n<=N;n++) if(alive[n]) c++; return c>8?' + …':''; })();
+    if(done || (usedPrimes.length>0 && firstAliveAbove1()===null)){
+      rd.innerHTML='<b>ふるい切った！</b> 残ったのは <b>1 だけ</b>。つまり ∏<sub>p</sub>(1−p⁻ˢ)·ζ(s) = 1、移項して <b>ζ(s) = ∏<sub>p</sub> 1/(1−p⁻ˢ)</b> ── オイラー積の完成。';
+    } else if(usedPrimes.length===0){
+      rd.innerHTML='いまは素のゼータ ── <b>ζ(s) = '+aliveList.join(' + ')+tail+'</b>。「次の素数でふるう」で 2 の倍数から消していく。';
+    } else {
+      var last=usedPrimes[usedPrimes.length-1];
+      rd.innerHTML='<b>'+last+' でふるった</b> → '+last+' の倍数が消滅。いまの式 ≒ <b>'+eq+' = '+aliveList.join(' + ')+tail+'</b>。続けると 1 だけになる。';
+    }
+  }
+  btnStep.addEventListener('click',step);
+  btnReset.addEventListener('click',reset);
+  window.addEventListener('resize',draw);
+  setTimeout(reset,40); window.addEventListener('load',reset);
+})();
+
+/* ===== 図2：和 vs 積 の収束レース ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvRace'), rd=document.getElementById('rdRace');
+  var sld=document.getElementById('sldS'), sVal=document.getElementById('sVal');
+  var NX=50, is=sieve(NX), lastW=680;
+  var primesUpto=[]; for(var i=2;i<=NX;i++) if(is[i]) primesUpto.push(i);
+  function zetaTrue(s){ var t=0; for(var n=1;n<=200000;n++) t+=Math.pow(n,-s); return t; }
+  function draw(){
+    var s=parseFloat(sld.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=52, mR=16, mT=16, mB=32, plotW=w-mL-mR, plotH=h-mT-mB;
+    var Z=zetaTrue(s);
+    // y範囲：1 .. Z*少し上（積は最初 1/(1-2^-s) から入る）
+    var p0=1/(1-Math.pow(2,-s));
+    var yTop=Math.max(Z,p0)*1.06, yBot=Math.min(1, Z*0.5);
+    if(yBot<0.8) yBot=0.8;
+    function X(k){ return mL + (k-1)/(NX-1)*plotW; }
+    function Y(v){ return mT + plotH - (v-yBot)/(yTop-yBot)*plotH; }
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#d8ccdd'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(mL,mT); ctx.lineTo(mL,mT+plotH); ctx.lineTo(mL+plotW,mT+plotH); ctx.stroke();
+    // y メモリ
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    for(var gi=0;gi<=4;gi++){ var vv=yBot+(yTop-yBot)*gi/4, yy=Y(vv);
+      ctx.strokeStyle='#f0e8f3'; ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+plotW,yy); ctx.stroke();
+      ctx.fillStyle='#8a7f92'; ctx.fillText(vv.toFixed(2), mL-6, yy+4);
+    }
+    ctx.textAlign='center';
+    for(var xv=10;xv<=NX;xv+=10){ ctx.fillStyle='#8a7f92'; ctx.fillText(xv, X(xv), mT+plotH+16); }
+    ctx.textAlign='right'; ctx.fillStyle='#8a7f92'; ctx.fillText('使った上限', mL+plotW, mT+plotH+28);
+    // 真の ζ(s)
+    ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=1.8; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(mL,Y(Z)); ctx.lineTo(mL+plotW,Y(Z)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('ζ(s)≈'+Z.toFixed(4), mL+6, Y(Z)-6);
+    // 和：Σ_{n=1}^{k}
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2.2; ctx.beginPath();
+    var run=0;
+    for(var k=1;k<=NX;k++){ run+=Math.pow(k,-s); if(k===1) ctx.moveTo(X(k),Y(run)); else ctx.lineTo(X(k),Y(run)); }
+    ctx.stroke();
+    // 積：Π_{p<=k}
+    ctx.strokeStyle='#a5622a'; ctx.lineWidth=2.2; ctx.beginPath();
+    var prod=1, started=false;
+    for(var k2=1;k2<=NX;k2++){
+      if(is[k2]) prod*=1/(1-Math.pow(k2,-s));
+      var yv=Y(prod);
+      if(!started){ ctx.moveTo(X(k2),yv); started=true; } else ctx.lineTo(X(k2),yv);
+    }
+    ctx.stroke();
+    return {Z:Z};
+  }
+  function report(){
+    var s=parseFloat(sld.value); sVal.textContent=s.toFixed(1);
+    var Z=zetaTrue(s);
+    var sum=0; for(var n=1;n<=NX;n++) sum+=Math.pow(n,-s);
+    var prod=1; for(var i=0;i<primesUpto.length;i++) prod*=1/(1-Math.pow(primesUpto[i],-s));
+    var extra = Math.abs(s-2)<0.001? '　（s=2 は ζ(2)=π²/6≈1.6449 ＝バーゼル問題！）':'';
+    rd.innerHTML='s='+s.toFixed(1)+' ── 上限50での 足し算 ≈ <b>'+sum.toFixed(4)+'</b>、素数のかけ算 ≈ <b>'+prod.toFixed(4)+'</b>、真の ζ(s) ≈ <b>'+Z.toFixed(4)+'</b>。別ルートが同じ値に出会う。'+extra;
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+</script>
+</body>
+</html>

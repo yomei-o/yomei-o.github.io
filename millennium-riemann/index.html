@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ミレニアム問題を解くぞ ── 第二部 リーマン予想 ／ 目次</title>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;    /* 濃紫（素数の色） */
+    --gold:#a9791a;   /* 金 */
+    --e1:#5a2a6e; --e2:#2f7d5a; --e3:#a5622a; --e4:#26456e; --e5:#8a3550;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:800px;margin:32px auto;background:var(--paper);
+    padding:58px 64px 78px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .kicker{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.34em;color:var(--gold);font-weight:700;margin:0 0 10px;}
+  h1{font-size:40px;line-height:1.22;margin:0 0 6px;font-weight:700;letter-spacing:.02em;}
+  .part{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:15px;color:var(--acc);font-weight:700;letter-spacing:.1em;margin:2px 0 0;}
+  .tagline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin:16px 0 0;}
+  .backbone{margin:26px 0;padding:18px 24px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;font-size:16px;line-height:1.85;}
+  .backbone .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:6px;}
+  .cards{margin:32px 0 0;display:flex;flex-direction:column;gap:15px;}
+  a.card,div.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule);border-radius:7px;
+    padding:20px 24px;background:#fffdf8;transition:transform .08s,box-shadow .12s;position:relative;overflow:hidden;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.09);}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c,#5a2a6e);}
+  .card .no{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--c,#5a2a6e);font-weight:700;margin-bottom:5px;display:flex;gap:10px;align-items:center;}
+  .badge{font-size:10px;letter-spacing:.08em;font-weight:700;padding:2px 9px;border-radius:20px;background:#efe9f3;color:var(--acc);}
+  .badge.soon{background:#efe9dc;color:#8a7a52;}
+  .badge.live{background:#e3efe8;color:#2f7d5a;}
+  .card h2{font-size:21px;margin:0 0 6px;font-weight:700;letter-spacing:.02em;line-height:1.4;}
+  .card p{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;color:var(--ink-soft);line-height:1.75;}
+  .card.soon{opacity:.62;}
+  .seclabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.22em;color:var(--gold);font-weight:700;margin:14px 0 2px;
+    padding-bottom:5px;border-bottom:1px solid var(--rule);}
+  .seclabel:first-child{margin-top:0;}
+  .oath{margin:32px 0 0;background:#f2ede1;border-left:3px solid var(--gold);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.8;color:#4a3e22;}
+  .oath .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;color:var(--gold);}
+  .sisters{margin:22px 0 0;padding:15px 22px;background:#efeaf3;border-radius:3px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:#33283b;line-height:1.8;}
+  .sisters .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;}
+  .sisters a{color:var(--acc);font-weight:600;}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;} .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} a.card,div.card{break-inside:avoid;}}
+  @media (max-width:640px){ .sheet{padding:38px 18px 54px;margin:0;} h1{font-size:30px;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <p class="kicker">100万ドルの数学 ── 高校生からの挑戦</p>
+  <h1>ミレニアム問題を解くぞ</h1>
+  <p class="part">第二部 ── リーマン予想と素数の謎</p>
+  <p class="tagline">世界に7つ、1問1億円級（100万ドル）の未解決問題がある。その一つ「リーマン予想」を、<strong>高校生でも分かる言葉</strong>で、正体から追う。数式はできるだけ少なく、たとえと動く図で。<br>タイトルは「解くぞ」── でも掟は正直に：<strong>"解けた"の旗は立てない。理解して、"まだ誰も越えていない縁"がどこかを、正確に指す。</strong></p>
+
+  <div class="backbone">
+    <div class="lbl">このシリーズの一行</div>
+    リーマン予想とは ── <strong>「素数の並び方を支配する"ゼータ関数"の、大事なゼロ（値が0になる点）が、複素平面のたった一本の直線 Re(s)=1/2 の上に、ぜんぶ乗っている」と証明せよ</strong>。150年以上、世界中の数学者が確かめても<em>反例は一つも出ない</em>のに、<em>証明はまだ誰もできていない</em> ── その谷が、100万ドル。
+  </div>
+
+  <div class="cards">
+    <div class="seclabel">入門編 ── リーマン予想とは</div>
+    <a class="card" href="riemann-01-millennium.html" style="--c:var(--e1);">
+      <div class="no">第 1 回 <span class="badge live">公開</span></div>
+      <h2>100万ドルの問題 ── リーマン予想を一言で</h2>
+      <p>7つのミレニアム問題（うち解けたのは1つだけ）。リーマン予想は一言で「素数の秘密を握るゼータ関数の"大事なゼロ"が、みな一本の直線 Re(s)=1/2 に乗る」。1859年からずっと未解決。動く図で、ゼロが一直線に積み上がる"リーマンの梯子"を体感。</p>
+    </a>
+    <a class="card" href="riemann-02-sosuu.html" style="--c:var(--e2);">
+      <div class="no">第 2 回 <span class="badge live">公開</span></div>
+      <h2>素数ってなんだ？ ── バラバラなのに、隠れた規則</h2>
+      <p>2,3,5,7,11… 割り切れない数＝素数は、次がどこに来るか予測できない。なのに"全体では"きれいな法則がある ── 素数定理 π(x)～x/ln x。「一個ずつは気まぐれ、集団では規則正しい」この二面性が、リーマン予想の主戦場。動く図で π(x) の階段が x/ln x に寄り添う様子を体感。</p>
+    </a>
+    <a class="card" href="riemann-03-zeta.html" style="--c:var(--e3);">
+      <div class="no">第 3 回 <span class="badge live">公開</span></div>
+      <h2>ゼータ関数って何？ ── 足し算が、素数の暗号になる</h2>
+      <p>ζ(s)=1+1/2ˢ+1/3ˢ+… という素朴な足し算。オイラーが発見した魔法 ── これは全素数の掛け算に化ける（オイラー積）。だから「ゼータを調べる＝素数を調べる」。正体は解析版エラトステネスのふるい。動く図で、素数でふるうと1だけ残る様子と、和と積が同じ ζ(s) に出会うレースを体感。</p>
+    </a>
+    <a class="card" href="riemann-04-icchokusen.html" style="--c:var(--e4);">
+      <div class="no">第 4 回 <span class="badge live">公開</span></div>
+      <h2>「一直線」の正体 ── 複素数・臨界線・自明でないゼロ</h2>
+      <p>ゼータを複素数まで広げると（解析接続）、値が0になる点＝ゼロが現れる。−2,−4,…の"自明なゼロ"はどうでもいい。問題は残り＝<strong>非自明なゼロ</strong>。リーマン予想は「それが全部 Re(s)=1/2 の一本線に乗る」。動く図で解析接続・矢印の打ち消し合い・「臨界線でだけ|ζ|が0に着く」を体感（複素ゼータをその場で数値計算）。</p>
+    </a>
+    <a class="card" href="riemann-05-naze.html" style="--c:var(--e5);">
+      <div class="no">第 5 回（入門編 完） <span class="badge live">公開</span></div>
+      <h2>なぜ大事？ ── ゼロが素数のゆらぎを指揮する</h2>
+      <p>明示公式 ── 素数の分布の"でこぼこ"は、ゼータのゼロ一つ一つが作る波の重ね合わせ。ゼロが一直線に乗る＝素数のゆらぎが可能な限り小さい（誤差 O(√x log x)）。リーマン予想は「素数はこれ以上ないほど行儀よく散らばる」の別名だった。動く図で「一つのゼロ＝一つの音」、そして波を積み上げると素数の階段が現れる様子を体感。</p>
+    </a>
+
+    <div class="seclabel">挑戦編 ── みんな、どう挑んでいるか</div>
+    <a class="card" href="riemann-06-semekata.html" style="--c:#2f6d8a;">
+      <div class="no">挑戦編① <span class="badge live">公開</span></div>
+      <h2>攻め方の地図 ── 5つのルートと、同じ壁</h2>
+      <p>頂上＝全零点が Re(s)=1/2 に乗ると証明。ルートは<strong>A 直接押す（零点非存在領域）／B 線の上を数える（正の割合）／C 音を聞く（ランダム行列・ヒルベルト=ポリア）／D 別世界の完登（有限体版RHは証明済み）／E 言い換え（正値性の判定条件）</strong>。どれも同じ壁で止まる ── 平均は制御できるのに「例外ゼロ0個」を強制する剛い構造が無い。動く図の登攀図で各ルートの到達点と壁を確認。</p>
+    </a>
+    <a class="card" href="riemann-07-zerofree.html" style="--c:#2f6d8a;">
+      <div class="no">挑戦編② <span class="badge live">公開</span></div>
+      <h2>直接押す ── 零点のいない領域を広げる</h2>
+      <p>ルートA。素数定理＝「Re(s)=1 に零点なし」。武器は初等的な魔法の不等式 3+4cosθ+cos2θ=2(1+cosθ)²≥0（重み3:4:1）。そこから領域を左へ広げる（古典→Vinogradov–Korobov）。だが帯は対数的に薄く、1に貼りつき1/2まで一定の距離を稼げない。動く図で不等式と、高く登るほど痩せる領域を体感。</p>
+    </a>
+    <a class="card" href="riemann-08-online.html" style="--c:#a5622a;">
+      <div class="no">挑戦編③ <span class="badge live">公開</span></div>
+      <h2>線の上を数える ── 「全部」でなく「割合」</h2>
+      <p>ルートB。全零点は無理でも、線上にある割合を稼ぐ。武器はHardyの実関数 Z(t)（符号変化＝線上の零点）とmollifier。Hardy（無限個）→Selberg（正の割合）→Levinson（1/3）→Conrey（2/5）→約41.7%。動く図でZ(t)の0交差と割合の行進を体感。mollifier法の頭打ちと、100%への果てしなさ。</p>
+    </a>
+    <a class="card" href="riemann-09-spectral.html" style="--c:#2c5560;">
+      <div class="no">挑戦編④ <span class="badge live">公開</span></div>
+      <h2>音を聞く ── ランダム行列とヒルベルト=ポリアの夢</h2>
+      <p>ルートC。γを自己共役作用素の固有値にできれば、実数だから自動で線上。Montgomery–Odlyzko の統計はランダム行列（GUE）と驚異の一致、Berry–Keating は量子カオスへ、セルバーグの世界では機構が本当に成立。動く図で零点の準位反発とGUE曲線一致を体感。だが肝心の作用素が誰にも見つけられない。</p>
+    </a>
+    <a class="card" href="riemann-10-yugentai.html" style="--c:#2f7d5a;">
+      <div class="no">挑戦編⑤ <span class="badge live">公開</span></div>
+      <h2>別世界では証明済み ── 有限体版リーマン予想</h2>
+      <p>ルートD。曲線・多様体の有限体版RHは<strong>定理</strong>（Hasse・Weil 1948・Deligne 1974）。零点はフロベニウス作用素（コホモロジー上）の固有値＝ルートCの夢の実物。動く図で点の数え上げ・ハッセ限界と、二つの世界の対応を体感。整数版に移すには「整数の幾何（F₁）」が要るが、まだ無い。証明済みの隣に、越えられない谷。</p>
+    </a>
+    <a class="card" href="riemann-11-iikae.html" style="--c:#8a3550;">
+      <div class="no">挑戦編⑥（完） <span class="badge live">公開</span></div>
+      <h2>言い換えの罠 ── 判定条件と正値性</h2>
+      <p>ルートE。RHを別の姿へ翻訳 ── Li の判定条件（λₙ≥0）、Nyman–Beurling（近似問題）、Robin（σ(n)の不等式・初等的！最後の反例5040）、de Branges（何度も主張・都度ギャップ）。同値は増えるが難しさは移るだけ ── 入門姉妹編の「保存的拡大」と同じ掟。動く図でRobinの比と同値のハブを体感。挑戦編の総括つき。</p>
+    </a>
+
+    <div class="seclabel">戦略編 ── もし本気で挑むなら（深掘り）</div>
+    <a class="card" href="riemann-senryaku1-honmei.html" style="--c:#3a4a86;">
+      <div class="no">戦略① <span class="badge live">公開</span></div>
+      <h2>本命を選ぶ ── 明示公式は「跡公式」だった</h2>
+      <p>挑戦編のC（作用素）とD（有限体）はいとこ。橋は第5回の<strong>明示公式</strong>── 「素数（＝閉軌道）の和 ＝ 零点（＝固有値）の和」という<strong>跡公式の形</strong>。Selberg（曲面・証明済）と有限体（Weil–Deligne・証明済）では同じ形が作用素から出る。リーマンでも零点は"どこかの作用素のスペクトル"のはず ── これが本命。動く図で三つの跡公式を並べる。</p>
+    </a>
+    <a class="card" href="riemann-senryaku2-connes.html" style="--c:#2c5560;">
+      <div class="no">戦略② <span class="badge live">公開</span></div>
+      <h2>コンヌの跡公式 ── RH＝正値性へ</h2>
+      <p>本命の心臓。数の物差しは一つでない（p進・∞、積公式∏|x|_v=1）。全素点を束ねた<strong>アデール類空間</strong>上でコンヌは明示公式を跡公式にし、零点を<strong>吸収スペクトル</strong>として実現、RHを<strong>ワイル正値性</strong>（ある和が常に正）に還元した。半局所は証明済。継ぎ目は無限素点∞。動く図で積公式と吸収線を体感。</p>
+    </a>
+    <a class="card" href="riemann-senryaku3-family.html" style="--c:#5a6a9c;">
+      <div class="no">戦略③ <span class="badge live">公開</span></div>
+      <h2>ランダム行列とL関数の族 ── Katz–Sarnak</h2>
+      <p>挑戦編④の定量版。ゼータ単体でなく<strong>L関数の"族"</strong>を見ると、対称性の型（ユニタリ/直交/斜交）がランダム行列と一致（Katz–Sarnak）。有限体の族では<strong>Deligneの一様分布で証明済み</strong>。Keating–Snaith はζのモーメント(logT)^{k²}の係数を予言（k=1,2は既知と一致）。動く図で三つの型とモーメントを体感。族から本体へ、の壁。</p>
+    </a>
+    <a class="card" href="riemann-senryaku4-deninger.html" style="--c:#3a6a4f;">
+      <div class="no">戦略④ <span class="badge live">公開</span></div>
+      <h2>有限体からの階段 ── Deningerの力学系コホモロジー</h2>
+      <p>有限体版の成功を整数へ。ドニンガーは、素数＝<strong>力学系の閉軌道（長さ log p）</strong>、零点＝<strong>ある流れの作用素のスペクトル</strong>となる"葉層空間"を夢見る。明示公式＝レフシェツ跡公式、RHは<strong>ホッジ型の正値性</strong>に。動く図で閉軌道の長さスペクトルと夢の辞書を体感。舞台（空間・コホモロジー）はまだ構成されていない＝設計図はある、建物が無い。</p>
+    </a>
+    <a class="card" href="riemann-senryaku-grail.html" style="--c:#8a5a2e;">
+      <div class="no">戦略・グレイル <span class="badge live">公開</span></div>
+      <h2>継ぎ目は「無限素点」 ── 欠けた一個の物</h2>
+      <p>本命を掘り切ると、①〜④が毎回同じ場所で止まる ── <strong>無限素点 ∞</strong>。欠けは4つの難問でなく、<strong>∞込みの𝔽₁幾何＋零点を固有値に生むコホモロジー＋反射正値性を同時に満たす一個の物</strong>（グレイル）。動く図で4ルートの∞への収束と対立マトリクスを体感。姉妹編のグレイルの、数論版。縁の、そのまた縁。</p>
+    </a>
+    <a class="card" href="riemann-senryaku6-hodai.html" style="--c:#8a3550;">
+      <div class="no">戦略⑥（完） <span class="badge live">公開</span></div>
+      <h2>最小の補題に還元する ── 解かずに、正しい形に</h2>
+      <p>メタ戦略。「L ⟹ RH」を定理にし、残りを最小の補題 L 一点に集める。第二部は一本の還元漏斗だった（RH ⟺ ワイル正値性 ⟸ 作用素の存在 ⟸ グレイル）。良い還元と循環（言い換えの罠）と反則（RHを仮定）を分ける掟つきで、縁を最もクリーンな一文に。動く図で還元漏斗と診断を体感。<strong>第二部・完。</strong></p>
+    </a>
+
+    <div class="seclabel">ペレルマン編 ── 熱流でRHを（フロー＋単調量のレンズ）</div>
+    <a class="card" href="riemann-perelman1-netsuryu.html" style="--c:#c05a2a;">
+      <div class="no">ペレルマン① <span class="badge live">公開</span></div>
+      <h2>零点に熱をかける ── de Bruijn–Newmanの熱流</h2>
+      <p>姉妹編ヤン=ミルズで見た「フロー＋単調量」の<strong>実物</strong>がRHにある。零点を作る関数に<strong>熱をかける</strong>と、零点は臨界線に吸い寄せられ、いったん乗れば離れない（単調・吸収）。全部そろう境目が<strong>Λ（デ・ブラン＝ニューマン定数）</strong>で、<strong>RH ⟺ Λ≤0</strong>。ニューマン曰く「正しくても、ぎりぎりで」。動く図でΛを切替え、t=0の様子＝RHの成否を体感。</p>
+    </a>
+    <a class="card" href="riemann-perelman2-tanchou.html" style="--c:#2f7d5a;">
+      <div class="no">ペレルマン② <span class="badge live">公開</span></div>
+      <h2>単調量はもうある ── Rodgers–TaoがΛ≥0を証明</h2>
+      <p>2018年、零点を<strong>反発し合う気体</strong>と見て、熱流に沿った<strong>単調なエネルギー</strong>で<strong>Λ≥0</strong>を証明（＝ペレルマンの型が実際に回った実例）。「Λ&lt;0なら零点がならされ過ぎ＝素数由来のゆらぎと矛盾」。上端も Polymath15 で <strong>Λ≤0.2</strong>。二つの錨で <strong>0≤Λ≤0.2</strong>、残るは窓を<em>ちょうど0</em>に詰めること。動く図で零点ガスとエネルギー単調を体感。</p>
+    </a>
+    <a class="card" href="riemann-perelman3-marginality.html" style="--c:#a5473a;">
+      <div class="no">ペレルマン③ <span class="badge live">公開</span></div>
+      <h2>間違った半分 ── 熱流はΛ≥0を出すが、RHはΛ≤0</h2>
+      <p>錨は近いのに詰めきれない。熱流は零点を<strong>実にする向き</strong>＝Λ≥0（下）と上界しか出さず、RHが要る<strong>Λ≤0は逆向き</strong>。しかも後退熱流は<strong>悪条件</strong>で巻き戻せない。<strong>Λ=0は臨界</strong>（ニューマン「ぎりぎり」）＝ヤン=ミルズの<strong>対数臨界</strong>と同じ壁。単調フローは臨界で鋭さが足りない。動く図で二つの錨がΛ=0の一点に迫って止まる様を体感。</p>
+    </a>
+    <a class="card" href="riemann-perelman4-loggas.html" style="--c:#5a2a6e;">
+      <div class="no">ペレルマン④ <span class="badge live">公開</span></div>
+      <h2>log-ガスとW-エントロピー ── 自由エネルギーで緩む</h2>
+      <p>零点＝反発＋閉じ込めの気体。その流れ<strong>ダイソンのブラウン運動</strong>は<strong>自由エネルギー（エネルギー−エントロピー）の勾配流</strong>＝ペレルマンのWの<em>文字どおりの親戚</em>。自由エネルギーは単調に減り平衡＝<strong>半円則</strong>（固定点）へ。GUE一致も。だが壁＝<strong>統計 ≠ 剛性</strong>（「一つも外さない」力が出ない）。動く図で零点ガスが半円則へ緩み自由エネルギーが単調減少する様を体感。</p>
+    </a>
+    <a class="card" href="riemann-perelman5-positivity.html" style="--c:#3a6a4f;">
+      <div class="no">ペレルマン⑤ <span class="badge live">公開</span></div>
+      <h2>正値性ルートとAI ── 「全部正」を証明書として探す</h2>
+      <p>剛性を正値性でつかむ。<strong>RH ⟺ λₙ≥0（Li）⟺ Weil正値性</strong>＝姉妹編の<strong>「完全平方＝SOS」</strong>の数論版。素数⇄零点のループが<em>一つの正値性</em>に凝縮（Connes）。しかも正値性は<strong>SOS/半正定値計画で機械が証明書を探せる</strong>＝AI外伝の最適地形。壁＝<strong>無限素点∞（グレイル）</strong>／SDPは有限切断。動く図でλₙの符号（全部正⟺RH）を体感。</p>
+    </a>
+    <a class="card" href="riemann-perelman6-genzaichi.html" style="--c:#8a3550;">
+      <div class="no">ペレルマン⑥（完） <span class="badge live">公開</span></div>
+      <h2>正直な現在地 ── 4ルートの壁と、縁の標識</h2>
+      <p>4ルートは別の壁で止まる：<strong>H</strong>=Λ=0の臨界／<strong>G</strong>=統計≠剛性／<strong>P</strong>=無限素点∞／<strong>D</strong>=舞台が未構成。根は一つ ── <strong>臨界で一つも外さない鋭い単調量／剛性（リーマン版W）が、まだ無い</strong>。だがRHはペレルマン型として<strong>ヤン=ミルズより先</strong>（フローも単調量も実在・錨0.2）。旗でなく「臨界Λ=0で鋭く∞で閉じる一個の量を作れ」の標識を。動く図で4ルートの到達と壁を体感。<strong>ペレルマン編・完。</strong></p>
+    </a>
+  </div>
+
+  <div class="oath">
+    <span class="tag">このシリーズの掟</span>
+    「解くぞ」は本気の入口だが、<strong>"解けた"とは言わない</strong>。リーマン予想は、世界中の天才が150年以上挑んで未解決のまま（1859年 リーマン提唱、クレイ数学研究所が2000年に賞金100万ドルを設定）。このシリーズがするのは ── 問題の正体を高校生にも分かる形にほどき、"確信の谷"（数値では兆の単位まで正しいのに証明が無い）を正確に測り、<em>どこが本当に難しいのか（縁）</em>を指すこと。姉妹シリーズ譲りの「旗でなく、縁の標識を」。
+  </div>
+
+  <div class="sisters">
+    <div class="lbl">姉妹シリーズ（同じミレニアム、別の縁へ）</div>
+    第一部 ── <a href="../millennium-yangmills/index.html">「ヤン=ミルズ問題と質量ギャップ」</a>（強い力を数学で作り、質量ギャップを証明せよ）。物理の谷と、数論の谷。入口も景色も違うが、どちらも「みんな正しいと信じているのに、証明だけが無い」同じ形の縁。
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想。数学好きの高校生・大学生のための読み物。各回はブラウザの「印刷 → PDF に保存」でA4化できます（印刷版では動く図と解答は静止・非表示）。この目次と各回HTMLは同じフォルダに置いてください（リンクが相対パスのため）。
+  </div>
+
+</div>
+</body>
+</html>

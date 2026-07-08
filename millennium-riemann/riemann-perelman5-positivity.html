@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正値性ルートとAI ── Weil・Liの「全部正」を証明書として探す ／ リーマン・ペレルマン編 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#efe9f3; --warn:#8a4b2f; --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#5a2a6e; --gold:#a9791a; --grid:#e6dcc7; --heat:#c05a2a;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d5ee 62%);padding:0 .05em;} strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2e1c38;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.03em;padding:8px 13px;border:1.5px solid var(--rule);border-radius:4px;background:#efe9f3;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#2e1c38;} .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#2e1c38;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;} details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・ペレルマン編 ── 熱流でRHを</span><span class="ep">第 5 回</span></div>
+  <p class="eyebrow">「剛性」を正値性の証明書に ── そこはAIと機械がいちばん噛み合う場所</p>
+  <h1>正値性ルートとAI ── 「全部正」を証明書として探す
+    <span class="sub">前回の壁は「統計 ≠ 剛性」。その<strong>剛性</strong>を捕まえる別ルートがある ── <em>RH ⟺ ある量が全部正</em>（Liのλₙ≥0、Weilの正値性）。<br>これは姉妹編の「完全平方＝SOS」そのもの。<strong>半正定値計画（SDP）で正値性の証明書を探す</strong>── AI外伝と直結する。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：RHを「一つの正値性」に還元し、それがAI/SOSと噛み合うことを見る</span>
+    <span>一言で：RH ⟺ 全部正、そして正値性は機械が探せる</span>
+  </div>
+
+  <p class="lead">第4回のlog-ガスは「零点が線の近くに反発しながら並ぶ」構造を説明したが、<strong>「一つも外さない」剛性</strong>までは出ませんでした。今回は、その剛性を真正面から捕まえる別ルート ── <strong>正値性</strong>です。リーマン予想は「ある量が<em>全部プラス</em>」という形に、まるごと言い換わる。そしてこれは、姉妹編ヤン=ミルズ・ペレルマン編の心臓<strong>「完全平方＝正値性」</strong>と同じ顔で、しかも<strong>AI外伝でみた SOS／半正定値計画</strong>が直接効く場所なのです。</p>
+
+  <h2><span class="n">01</span>RHは「全部正」に化ける ── Liの判定条件</h2>
+
+  <p>挑戦編⑥（言い換え）で触れた<strong>Liの判定条件</strong>を、もう一度。ゼータの零点たちから、数の列 \(\lambda_1,\lambda_2,\lambda_3,\dots\) を作ります。すると ──</p>
+
+  <div class="keybox">
+    <div class="lbl">Liの判定条件（1997年）</div>
+    $$\textbf{RH} \iff \lambda_n \ge 0 \ \text{が}\ \textbf{すべての}\ n\ \text{で成り立つ}$$
+    <p style="margin:8px 0 0;">\(\lambda_n=\sum_{\rho}\big[1-(1-\tfrac1\rho)^n\big]\)（\(\rho\)＝零点にわたる和）。<em>ひとつでも負になったら、その瞬間 RH は偽</em>。逆にぜんぶ正なら RH。<strong>零点が線から少しでも外れる剛性の破れが、λₙ の"負"として現れる</strong>のです。</p>
+  </div>
+
+  <p>これは前回の壁を突破する形をしています。log-ガスの「統計」は平均の話でしたが、Liの \(\lambda_n\ge0\) は<strong>「一つも例外なし」を一発で捕まえる</strong>── まさに剛性の言明。下の図で、RHが成り立つとき（全部正）と、もし反例があるとき（一つ負に沈む）を見比べてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>Liの数列 \(\lambda_n\)</strong>。<strong>RH成立</strong>なら棒はすべて<span style="color:#2f7d5a;font-weight:700;">プラス</span>（右肩上がり）。もし零点が一つでも線から外れると、どこかの \(\lambda_n\) が<span style="color:#a5473a;font-weight:700;">マイナス</span>に沈む＝RHは偽。「全部正か？」が RH の全て。</div>
+    <canvas id="cv" width="680" height="290"></canvas>
+    <div class="ctrlrow">
+      <button class="btn on" id="bRH">RH成立（全部正）</button>
+      <button class="btn" id="bBad">もし反例があると（一つ負）</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>λₙ ≥ 0（健全）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>λₙ &lt; 0（RH崩壊）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>正値性の親玉 ── Weilの明示公式と、素数⇄零点のループ</h2>
+
+  <p>Liの \(\lambda_n\) の背後には、もっと根源的な正値性があります。第5回（入門編）でみた<strong>明示公式</strong>── 「素数の和 ＝ 零点の和」という双対（＝跡公式、戦略①）── を、うまい重み付きで書くと、<strong>ひとつの二次形式</strong>になります。そして：</p>
+
+  <div class="keybox">
+    <div class="lbl">Weilの正値性判定</div>
+    <p class="big" style="margin:0;">\(\textbf{RH} \iff\) その二次形式（Weilの明示公式から作る）が<strong>つねに正（正定値）</strong>。</p>
+  </div>
+
+  <p>ここが美しい。第1回で言った<strong>「素数⇄零点のループ（自己言及）」</strong>── 零点を知るに素数、素数を知るに零点 ── その双対そのものが、<em>ひとつの正値性の不等式</em>に凝縮される。<strong>コンヌ（戦略②）</strong>は、これを全素点を束ねた空間（アデール類空間）の上で<strong>跡公式</strong>にし、RHを<strong>Weil正値性</strong>にきれいに還元しました。ヤン=ミルズで「4本のループが1本の不等式に潰れる」と言ったのと、<em>そっくり同じ還元</em>です。</p>
+
+  <div class="aside">
+    <span class="tag">ペレルマンの「完全平方」との対応</span>
+    姉妹編・第4回で、Wの単調性は<strong>「変化率が二乗の和＝正値性」</strong>から出ました。リーマンの正値性ルートは、その<em>数論版</em>── RHを「ある量が二乗の和のように、つねに正」に還元する。<strong>正値性＝剛性＝RH</strong>。フローの単調性（ルートH・G）が臨界で鋭さを欠いたのに対し、正値性は<em>「一つも外さない」を直接つかむ</em>。ただし、その正値性を<strong>どこで</strong>示すかに、最後の難所が残ります（後述）。
+  </div>
+
+  <h2><span class="n">03</span>ここがAIと噛み合う ── 正値性は機械が探せる</h2>
+
+  <p>正値性ルートの何が嬉しいか。<strong>「ある量がつねに正か？」は、機械が探索できる問題</strong>だからです。姉妹編AI外伝で見た<strong>SOS（二乗の和）／半正定値計画（SDP）</strong>── 「与えられた式が二乗の和で書けるか（＝つねに正の証明書があるか）」をアルゴリズムで探す技 ── が、そのまま乗ります。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">正値性ルート ＝ AI/機械の最適地形</div>
+    <p style="margin:0;font-size:16px;line-height:1.8;">RHが<strong>「一つの正値性」</strong>に還元されている（＝AIが得意な"特定の不等式を示せ"の形）。しかも正値性は<strong>SOS/SDPで証明書を探せる</strong>（＝機械が正しさを検証、ハルシネーション無害化）。実際、明示公式を使った<strong>零点の評価（1-level density など）を SDP／フーリエ最適化で詰める研究</strong>が動いている。<em>姉妹編AI外伝の「還元する人間＋探索・検証する機械」が、リーマンでも当てはまる。</em></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>でも壁 ── 正値性は「無限素点」で詰まる</h2>
+
+  <p>正直に。このルートはRHを<em>いちばんクリーンな一点</em>（一つの正値性）まで還元します ── が、その正値性を<strong>示しきる</strong>ところに、この編の姉妹シリーズ（既存の戦略編）が突き止めた壁が待っています。</p>
+
+  <div class="keybox" style="border-color:var(--open);">
+    <div class="lbl" style="color:var(--open);">ルートP（正値性）の壁</div>
+    <p class="big" style="margin:0;">Weil正値性は、有限個の素数ぶんなら（半局所で）<strong>示せている</strong>。<br>詰まるのは<strong>無限素点（アルキメデス素点 ∞）</strong>── 全部の素点を束ねたときの正値性。<br>ここが、既存の戦略編で「欠けた一個の物（グレイル）」と名指された継ぎ目。</p>
+  </div>
+
+  <p>そして機械の側にも限界があります。SDP は<strong>有限に切り詰めた</strong>問題を解く道具。だから明示公式を有限個の項で切って正値性を詰めると、<em>零点についての強い"評価"（不等式）は出る</em>が、RH そのもの（無限素点込みの完全な正値性）には届かない ── AI外伝の「数値・有限は証明を代われない」「創造的な還元は人間」と、同じ線です。<strong>正値性という"AIの最適地形"に問題を運べた。でも、無限素点という一点だけは、まだ人間の概念が要る。</strong></p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Liの判定条件（Xian-Jin Li, 1997）：\(\lambda_n=\sum_\rho[1-(1-1/\rho)^n]\) について RH ⟺ すべての \(n\) で \(\lambda_n\ge0\)、は定理（同値）です。Weilの明示公式の正値性判定（RH ⟺ Weil の二次形式が正定値）、およびConnes（1999）がアデール類空間上の跡公式でRHをWeil正値性へ還元したことも事実で、本シリーズ戦略②で扱っています。SOSの非負性判定が半正定値計画（SDP、Positivstellensatz）に帰着することは標準的で、明示公式／フーリエ最適化を用いた零点評価（1-level density の上下界など）にSDPが使われているのも事実です。</p>
+    <p style="margin-bottom:0;">ただし：Weil正値性が完全に示せているのは有限素点側（半局所）で、無限素点（アルキメデス素点）を含む全域の正値性は未解決 ── 本シリーズ戦略②・グレイルの「継ぎ目＝∞」。SDPは有限切断の問題を解くため、零点の<em>評価（不等式）</em>は与えても RH 全体（無限素点込みの正値性）は与えません。図の \(\lambda_n\) は増加・正の様子と反例時の符号反転を模した<strong>教育用の模式値</strong>で、実際の \(\lambda_n\) の数値ではありません。RHは未証明です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>Liの判定条件は、RHをどんな形に言い換えるか。前回の壁をどう突破するか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>RH ⟺ 数列 \(\lambda_n\) がすべて \(\ge0\)</strong>。ひとつでも負なら RH は偽。前回の壁「統計≠剛性」に対し、\(\lambda_n\ge0\) は<strong>「一つも例外なし」を直接捕まえる剛性の言明</strong>で、そこを突破する形をしている。</div></details>
+      </li>
+      <li>正値性ルートは、ペレルマンの何と同じ顔か。素数⇄零点のループとどう関係するか。
+        <details><summary>答えを見る</summary><div class="ans">姉妹編の<strong>「完全平方＝正値性」</strong>の数論版。明示公式（素数⇄零点の双対＝ループ）を二次形式にすると、RH ⟺ その二次形式が正。<strong>ループが一つの正値性に凝縮</strong>（Connes、ヤン=ミルズの「4ループ→1不等式」と同型）。</div></details>
+      </li>
+      <li>正値性ルートがAIと噛み合う理由と、その壁は？
+        <details><summary>答えを見る</summary><div class="ans">噛み合う理由：RHが<strong>一つの正値性</strong>に還元され（AIが得意な形）、正値性は<strong>SOS/SDPで証明書を探せる</strong>（機械が検証）。壁：完全な正値性は<strong>無限素点（∞）</strong>で詰まる（グレイル）。SDPは有限切断なので零点の評価は出せてもRH全体は出せない ── 「還元は運べた、無限素点の概念は人間が要る」。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>剛性を正値性でつかむ ── AIの最適地形、でも∞で詰まる</h2>
+    <p>前回の壁「統計≠剛性」を、<strong>正値性</strong>で突破する。<strong>Liの判定条件</strong>：RH ⟺ \(\lambda_n\ge0\)（全部正）。背後は<strong>Weilの明示公式の正値性</strong>で、素数⇄零点のループ（自己言及）が<em>一つの正値性の不等式に凝縮</em>する（Connes、ヤン=ミルズの「4ループ→1不等式」と同型）。これは姉妹編の<strong>「完全平方＝正値性」</strong>の数論版。</p>
+    <p>しかも正値性は<strong>SOS/半正定値計画で証明書を探せる</strong>── AI外伝の最適地形。だが壁は既存戦略編と同じ：完全な正値性は<strong>無限素点（∞）＝グレイル</strong>で詰まり、SDPは有限切断なので零点の評価は出せてもRH全体は出せない。<em>還元はAIの地形まで運べた。無限素点の一点だけ、まだ人間の概念が要る。</em>次回、4ルートの壁を並べて現在地を締める。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-perelman4-loggas.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第4回：log-ガス</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman6-genzaichi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第6回：正直な現在地（完）→</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・ペレルマン編・第5回。Liの判定条件（Xian-Jin Li, 1997）：\(\lambda_n=\sum_\rho[1-(1-1/\rho)^n]\)、RH ⟺ 全 \(n\) で \(\lambda_n\ge0\) は同値定理。Weilの明示公式の正値性判定（RH ⟺ Weil二次形式が正定値）、Connes（1999）によるアデール類空間上の跡公式とWeil正値性への還元は事実で、本シリーズ戦略②で詳説。SOS（sum-of-squares）非負性判定の半正定値計画（SDP、Positivstellensatz）への帰着、明示公式／フーリエ最適化を用いた零点評価（1-level density 等）へのSDPの応用も事実です。壁：Weil正値性は有限素点側（半局所）では示されているが、無限素点（アルキメデス）を含む全域の正値性は未解決（戦略②・グレイルの「継ぎ目＝∞」）。SDPは有限切断のため零点の評価は与えてもRH全体は与えません。図の \(\lambda_n\) は模式値で実際の数値ではありません。RHは未証明です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「RH成立／反例があると」を切替えて λₙ の符号を見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bRH=document.getElementById('bRH'), bBad=document.getElementById('bBad');
+  var lastW=680, mode='rh', N=16;
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function lam(n){ // illustrative: increasing positive ~ (n/2)(log(n+1)); RH-true
+    return 0.5*(n)*Math.log(n+1)/3.0;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var L=48, R=w-24, T=24, zeroY=h-70;
+    var maxV=lam(N)*1.05;
+    function Y(v){ return zeroY - (v/maxV)*(zeroY-T); }
+    // zero axis
+    ctx.strokeStyle='#b9ad8f'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(L,zeroY); ctx.lineTo(R,zeroY); ctx.stroke();
+    ctx.fillStyle='#4a4f5e'; ctx.font='12px sans-serif'; ctx.textAlign='left'; ctx.fillText('0', L-16, zeroY+4);
+    ctx.textAlign='center'; ctx.fillText('n →', R-14, zeroY+26);
+    ctx.save(); ctx.translate(16,(T+zeroY)/2); ctx.rotate(-Math.PI/2); ctx.fillText('λₙ', 0,0); ctx.restore();
+    var bw=(R-L)/N*0.66, gap=(R-L)/N;
+    var badN = mode==='bad'? 9 : -1;
+    for(var i=1;i<=N;i++){
+      var v=lam(i); var neg=false;
+      if(i===badN){ v=-lam(N)*0.22; neg=true; }
+      var x=L+gap*(i-0.5)-bw/2, y=Y(v);
+      ctx.fillStyle = neg? '#a5473a' : '#2f7d5a';
+      if(v>=0){ ctx.fillRect(x, y, bw, zeroY-y); }
+      else { ctx.fillRect(x, zeroY, bw, Y(v)-zeroY); }
+      // label a few
+      ctx.fillStyle='#4a4f5e'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+      if(i%3===1||neg) ctx.fillText('λ'+i, x+bw/2, zeroY+16);
+      if(neg){ ctx.fillStyle='#a5473a'; ctx.font='bold 11px sans-serif'; ctx.fillText('負！', x+bw/2, Y(v)+16); }
+    }
+    // verdict
+    ctx.textAlign='center'; ctx.font='bold 14px sans-serif';
+    if(mode==='bad'){ ctx.fillStyle='#a5473a'; ctx.fillText('λ₉ が負に沈む → RH は偽（零点が線から外れた証拠）', w/2, T+6); }
+    else { ctx.fillStyle='#2f7d5a'; ctx.fillText('すべての λₙ ≥ 0 ── RH 成立（剛性：一つも外れない）', w/2, T+6); }
+  }
+  function say(){
+    rd.innerHTML = mode==='bad'
+      ? '<b>もし反例があると。</b> 零点が一つでも臨界線から外れると、どこかの λₙ が<b>負</b>に沈む ── その瞬間 RH は偽。「全部正か？」だけが問題。'
+      : '<b>RH成立。</b> λₙ は<b>すべてプラス</b>（右肩上がり）。「一つも例外なし」という剛性を、正値性が一発で捕まえる ── これがルートP。SOS/SDPで"全部正の証明書"を機械が探せる。';
+  }
+  bRH.addEventListener('click',function(){ mode='rh'; bRH.classList.add('on'); bBad.classList.remove('on'); draw(); say(); });
+  bBad.addEventListener('click',function(){ mode='bad'; bBad.classList.add('on'); bRH.classList.remove('on'); draw(); say(); });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

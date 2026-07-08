@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100万ドルの問題 ── リーマン予想を一言で ／ ミレニアム問題を解くぞ 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;    /* 濃紫 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  /* 谷の図（確信 vs 証明） */
+  .valley{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:flex;flex-wrap:wrap;}
+  .valley .col{flex:1;min-width:180px;padding:18px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .valley .col.phys{background:#ece6f0;}
+  .valley .col.math{background:#f3ece1;}
+  .valley .col .h{font-size:12px;letter-spacing:.14em;font-weight:700;margin-bottom:8px;}
+  .valley .phys .h{color:var(--acc);} .valley .math .h{color:var(--warn);}
+  .valley .col .m{font-size:30px;font-weight:800;line-height:1;margin-bottom:6px;}
+  .valley .phys .m{color:var(--acc);} .valley .math .m{color:var(--warn);}
+  .valley .col .d{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.valley{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">第 1 回</span></div>
+  <p class="eyebrow">世界に7つ、1問100万ドルの未解決問題 ── その一つを、正体から</p>
+  <h1>100万ドルの問題 ── リーマン予想を一言で
+    <span class="sub">7つのうち、解けたのはたった1つ。リーマン予想は一言でいうと<strong>「素数の秘密を握る"ゼータ関数"の、大事なゼロが、みな一本の直線に乗る」と証明せよ</strong>。<br>そして最大の不思議 ── <em>コンピュータは10兆個以上のゼロを確かめてぜんぶ線上、なのに数学の証明はまだゼロ。</em>100万ドルは、その谷にある。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：問題の"正体"を一言でつかむ（式も使う）</span>
+    <span>一言で：ゼータの非自明なゼロは Re(s)=1/2 に乗る</span>
+  </div>
+
+  <p class="lead">2000年、アメリカのクレイ数学研究所が、<strong>「これが解けたら100万ドル」</strong>という数学の超難問を7つ選びました ── <strong>ミレニアム問題</strong>。どれも100年前後、世界中の天才が挑んで解けていない問題ばかり。そのうち、今のところ<em>解けたのはたった1つ</em>です。この回では、残る大問題の一つ<strong>「リーマン予想」</strong>が、そもそも何を問うているのかを、高校生でも分かる言葉でつかみます。式も遠慮なく使いますが、まずは全体像から ── 7つの問題を眺めるところから。</p>
+
+  <h2><span class="n">01</span>ミレニアム問題って？ ── 7つのうち、解けたのは1つ</h2>
+
+  <p>7つとも、分野はバラバラ（計算・幾何・素数・流体…）。共通するのは<strong>「かんたんそうに見えて、100年解けていない」</strong>こと。下のボードを<strong>クリック</strong>すると、それぞれが何の問題か分かります。<span style="color:var(--solved);font-weight:700;">緑</span>が唯一解けたもの（ポアンカレ予想、ペレルマンが2003年ごろ解決）、<span style="color:var(--acc);font-weight:700;">紫の枠</span>が私たちの主役リーマン予想です。</p>
+
+  <div class="fig">
+    <div class="cap">図：7つのミレニアム問題。タイルをクリックすると内容が出る。<span style="color:var(--solved);font-weight:700;">緑＝解決済み（1つだけ）</span>／赤＝未解決／<span style="color:var(--acc);font-weight:700;">紫枠＝リーマン予想（このシリーズの主役）</span></div>
+    <canvas id="cvBoard" width="680" height="250"></canvas>
+    <div class="readout" id="rdBoard"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>解決済み（1つ）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未解決（6つ）</span>
+      <span><i class="swatch" style="background:#fffdf8;border:2px solid #5a2a6e;"></i>リーマン予想（主役）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>まず主役を二人 ── 「素数」と「ゼータ関数」</h2>
+
+  <p>リーマン予想の登場人物は二人です。まず<strong>素数</strong>。2, 3, 5, 7, 11, 13… と続く、<em>1とその数自身でしか割り切れない数</em>。すべての整数は素数のかけ算で作れる（12=2×2×3）ので、素数は<strong>数の"原子"</strong>です。ところが ── 次の素数がどこに来るかは、いまだに誰も式で言い当てられません。バラバラで、気まぐれ。</p>
+
+  <p>もう一人が<strong>ゼータ関数</strong>。見た目はただの足し算です。</p>
+
+  <div class="keybox">
+    <div class="lbl">ゼータ関数 ── ただの足し算に見えるが…</div>
+    $$\zeta(s)=\frac{1}{1^{s}}+\frac{1}{2^{s}}+\frac{1}{3^{s}}+\frac{1}{4^{s}}+\cdots=\sum_{n=1}^{\infty}\frac{1}{n^{s}}$$
+    <p style="margin:10px 0 0;">オイラーが発見した魔法 ── この足し算は、<strong>全部の素数のかけ算に化けます</strong>（オイラー積）：</p>
+    $$\sum_{n=1}^{\infty}\frac{1}{n^{s}}=\prod_{p:\text{素数}}\frac{1}{1-p^{-s}}=\frac{1}{1-2^{-s}}\cdot\frac{1}{1-3^{-s}}\cdot\frac{1}{1-5^{-s}}\cdots$$
+    <p style="margin:10px 0 0;">左は<strong>ぜんぶの整数</strong>の足し算、右は<strong>ぜんぶの素数</strong>のかけ算。これが等しい。だから<em>「ゼータ関数を調べること」＝「素数を調べること」</em>になる ── ゼータは素数の暗号帳なのです。</p>
+  </div>
+
+  <p>気まぐれな素数の秘密が、この一本の関数に丸ごと畳み込まれている。リーマンは1859年、たった一本の論文で「ゼータ関数のふるまいを調べれば、素数の並び方が分かる」と見抜きました。その論文の中に、さらりと書かれた"まだ証明していない予想"が ── リーマン予想です。</p>
+
+  <h2><span class="n">03</span>リーマン予想を、一言で</h2>
+
+  <p>ゼータ関数を、実数だけでなく<strong>複素数</strong>まで広げて考えます（次回以降でていねいに）。すると、あちこちで<strong>値がちょうど 0 になる点</strong>＝「ゼロ点」が現れます。リーマン予想は、この<em>ゼロ点の居場所</em>についての予想です。</p>
+
+  <div class="keybox">
+    <div class="lbl">一言でいうと</div>
+    <p class="big" style="margin:0;">ゼータ関数の「大事なゼロ点（非自明なゼロ）」は、<strong>複素平面のたった一本の直線 ── 実部が 1/2 の縦線</strong>の上に、<em>一つ残らず乗っている</em>。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">もう少し数式で（マニア向け）</div>
+    <p style="margin:0 0 8px;">ゼロ点には2種類あります。<br>・<strong>自明なゼロ</strong>：\(s=-2,-4,-6,\dots\)（負の偶数）── 場所も理由も分かっていて、どうでもいい。<br>・<strong>非自明なゼロ</strong>：\(0<\mathrm{Re}(s)<1\) の帯（＝<em>臨界帯</em>）の中にある、本命のゼロたち。</p>
+    <p style="margin:0 0 4px;">リーマン予想（RH）は、その非自明なゼロがすべて<em>臨界線</em> \(\mathrm{Re}(s)=\tfrac12\) の上にある、という主張：</p>
+    $$\zeta(s)=0,\ \ 0<\mathrm{Re}(s)<1 \ \ \Longrightarrow\ \ \mathrm{Re}(s)=\frac12$$
+    <p style="margin:8px 0 0;">言いかえれば、ゼロは \(s=\tfrac12+it\) の形（\(t\) は実数）しかない。最初のゼロは \(t\approx14.13\)、次が \(t\approx21.02\)、\(25.01\)… と縦にどんどん続きます。</p>
+  </div>
+
+  <p>「たった一本の線に、全部そろって乗る」── これだけ聞くと地味ですが、次の図を見ると、その"そろい方"の不気味な美しさが分かります。</p>
+
+  <h2><span class="n">04</span>これが主役の図 ── ゼロが一直線に積み上がる</h2>
+
+  <p>下は複素平面です。横が実部 \(\mathrm{Re}(s)\)、縦が虚部 \(t\)。<span style="color:var(--acc);font-weight:700;">紫の帯</span>が臨界帯（\(0\)〜\(1\)）、<span style="color:var(--acc);font-weight:700;">太い紫の縦線</span>が臨界線 \(\mathrm{Re}(s)=1/2\)。<strong>丸</strong>が実際に計算で見つかったゼロ点です。クリックすると、そのゼロの高さ \(t\) が読めます。</p>
+
+  <div class="fig">
+    <div class="cap">図：ゼータ関数の非自明なゼロ（最初の10個）。<strong>丸をクリック</strong>すると高さ \(t\) が出る。ぜんぶ 1/2 の線に串刺し。「反例モード」を押すと、<span style="color:var(--open);font-weight:700;">もしRHが偽なら</span>あるはずの"線から外れたゼロ"（赤）を仮に置いてみる ── 実際にはこんなものは一つも見つかっていない。</div>
+    <canvas id="cvLine" width="680" height="380"></canvas>
+    <div class="readout" id="rdLine"></div>
+    <div class="btnrow no-print">
+      <button class="btn" id="btnCex">反例モード（もしRHが偽なら）</button>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#5a2a6e;"></i>臨界線 Re(s)=1/2</span>
+      <span><i class="swatch" style="background:#7a4fa0;border-radius:50%;"></i>見つかったゼロ（線上）</span>
+      <span><i class="swatch" style="background:#a5473a;border-radius:50%;"></i>反例（仮・見つかっていない）</span>
+    </div>
+  </div>
+
+  <p>リーマン予想は、この<em>「ぜんぶ真ん中の線に串刺しになっている」</em>が、これから上へ無限に続いても<strong>絶対に崩れない</strong>と言っています。今わかっているぶんを"確かめた"のではなく、無限に対して"証明する"── そこが谷です。</p>
+
+  <div class="aside">
+    <span class="tag">名前の由来（豆知識）</span>
+    「リーマン」は人の名前。<strong>ベルンハルト・リーマン（Bernhard Riemann）</strong>、19世紀ドイツの数学者。1859年の論文「与えられた数より小さい素数の個数について」で、素数の分布をゼータ関数のゼロ点で表す方法を打ち立て、その途中で「ゼロは Re(s)=1/2 に乗ると思われる」と書きました。本人は証明を付けず、以来160年以上 ── 誰も証明できていません。
+  </div>
+
+  <h2><span class="n">05</span>なぜ、そんなに大事なの？ ── ゼロが素数を"指揮"する</h2>
+
+  <p>ゼロ点の居場所なんて、細かい話に聞こえます。でも、02で見たとおり<strong>ゼータ＝素数の暗号帳</strong>。そのゼロ点は、<em>素数の並び方の"ゆらぎ"を直接コントロールしている</em>のです。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2;">
+    <li><strong>素数は、全体では規則正しく散らばる。</strong>「\(x\) 以下の素数の個数」はおよそ \(x/\ln x\)（＝素数定理）。ざっくりの本数は分かっている。</li>
+    <li><strong>でも一個ずつはデコボコ。</strong>その"予想からのズレ（誤差）"の大きさを決めているのが、ゼータのゼロ点の位置。</li>
+    <li><strong>ゼロが Re(s)=1/2 に乗る＝ズレが可能なかぎり小さい。</strong>リーマン予想が正しければ、素数は<em>「これ以上ないほど行儀よく」</em>散らばっている、と保証される（誤差は \(\sqrt{x}\) 程度に収まる）。</li>
+  </ul>
+
+  <p>だからリーマン予想は、ただのゼロ探しではありません。<em>「素数という、数学の一番基本的な原子が、どこまで規則正しく並んでいるか」</em>という、数論の心臓部の問いなのです。しかも、暗号（インターネットのセキュリティ）から物理まで、素数の分布に頼る話は山ほどある。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>いちばんの不思議 ── 数値は"知ってる"、数学が"追いつかない"</h2>
+
+  <p>ここが、この問題の一番おもしろいところ。<strong>コンピュータは、これまでに10兆個をゆうに超えるゼロ点を計算し、そのすべてがきっちり Re(s)=1/2 に乗っている</strong>ことを確かめてきました。反例（線から外れたゼロ）は、ただの一つも見つかっていません。</p>
+
+  <p>なのに ── <strong>数学として"証明"した人は、まだ誰もいない。</strong>「10兆個そろっていた」は、<em>無限個ぜんぶがそうである証明</em>にはなりません。次の一個が外れないと、誰も保証できていない。この<strong>「数値の確信」と「証明」の谷</strong>こそが、100万ドルの正体です。</p>
+
+  <div class="valley">
+    <div class="col phys">
+      <div class="h">数値の目（コンピュータ計算）</div>
+      <div class="m">10兆個超</div>
+      <div class="d">確かめたゼロは全部きっちり Re(s)=1/2 の線上。反例はゼロ。誰も疑っていない。</div>
+    </div>
+    <div class="col math">
+      <div class="h">数学の目（厳密な証明）</div>
+      <div class="m">まだ 0</div>
+      <div class="d">「無限個すべてが線上」と<em>証明</em>できた人はゼロ。100万ドルは、この谷を埋めた人へ。</div>
+    </div>
+  </div>
+
+  <p>「10兆個そろった」と「無限個すべてそうだ」は、数学では天と地ほど違います。<em>みんなが正しいと信じ、これだけ証拠がそろっていることを、一点の隙もなく証明する</em> ── それがどれほど難しいか。この谷の深さと、なぜそんなに深いのかを、これから何回かかけてほどいていきます。</p>
+
+  <h2><span class="n">07</span>このシリーズの約束</h2>
+
+  <p>タイトルは「解くぞ」。本気で正体に迫ります。でも ── <strong>最後に「解けた！」の旗を立てることはしません。</strong>リーマン予想は今も未解決で、それを"チャットで解けた"と言い出すのは、いちばんやってはいけないこと。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの掟</div>
+    <p class="big" style="margin:0;">旗ではなく、<strong>縁の標識</strong>を立てる。<br>問題の正体を分かる形にほどき、"数値と証明の谷"を正確に測り、<em>本当に難しいのはどこか（縁）</em>を指す。分かったふりも、解けたふりも、しない。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「10兆個以上のゼロを確認」は事実に基づく表現です。2004年までに最初の \(10^{13}\)（10兆）個の非自明なゼロがすべて臨界線上にあることが数値的に確認され、その後も飛び飛びの高い領域までさらに多くのゼロが調べられています。ただしこれは<strong>数値的確認</strong>で、クレイ問題が求める<strong>無限個すべてに対する数学的証明</strong>とは別もの ── この違いが、まさに後の回の主役。7問のうち解決済みはポアンカレ予想のみ（ペレルマン、2002–03年）というのも2025年時点の事実です。</p>
+    <p style="margin-bottom:0;">「ゼータ＝整数の和＝素数の積（オイラー積）」が成り立つのは \(\mathrm{Re}(s)>1\) の範囲で、ゼロ点や臨界帯の話は関数を複素平面全体に広げた（解析接続した）あとの姿です。この"広げる"手続きと、素数分布とのつながり（素数定理・明示公式）は、第2〜5回でていねいに扱います。「誤差は \(\sqrt{x}\) 程度」はより正確には \(O(\sqrt{x}\,\log x)\) で、リーマン予想と同値であることが知られています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>リーマン予想は、何が「どこにある」と言っている？
+        <details><summary>答えを見る</summary><div class="ans">ゼータ関数の「非自明なゼロ点」（臨界帯 0&lt;Re(s)&lt;1 の中にあるゼロ）が、すべて臨界線 Re(s)=1/2 の一本の直線の上にある、と言っている。自明なゼロ（−2,−4,…）は別で、問題にしていない。</div></details>
+      </li>
+      <li>「コンピュータが10兆個以上のゼロを確かめて全部線上だった。なら、もう解けたのでは？」── どこが違う？
+        <details><summary>答えを見る</summary><div class="ans">違う。10兆個は<strong>有限個</strong>。リーマン予想は<strong>無限個すべて</strong>についての主張なので、いくら確かめても「次の一個」が外れない保証にはならない。数値の確信と数学の証明は別もの ── その谷が100万ドル。</div></details>
+      </li>
+      <li>ゼータ関数を調べることが、なぜ素数を調べることになる？（この回の範囲で一言）
+        <details><summary>答えを見る</summary><div class="ans">オイラー積のおかげ。ゼータは「全整数の足し算」であると同時に「全素数のかけ算」に等しい。だからゼータのふるまい（とくにゼロ点の位置）が、素数の並び方の"ゆらぎ"を決めている。ゼータは素数の暗号帳。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>リーマン予想を、一言で</h2>
+    <p>ミレニアム問題は、1問100万ドルの数学の超難問7つ（解けたのはポアンカレ予想の1つだけ）。リーマン予想は一言で ──<strong>「素数の暗号帳＝ゼータ関数の、非自明なゼロ点が、すべて臨界線 Re(s)=1/2 の一本に乗ると証明せよ」</strong>。ゼータは足し算（全整数）であり同時にかけ算（全素数）でもある（オイラー積）から、ゼロの位置が素数の並び方のゆらぎを直接支配する。</p>
+    <p>最大の不思議は、<strong>コンピュータが10兆個以上のゼロを確かめて全部線上、なのに数学の証明はまだゼロ</strong>という"谷"。有限の確認は無限の証明にならない。100万ドルはそこにある。このシリーズは「解くぞ」の気持ちで正体に迫るが、<em>旗は立てない ── 縁の標識を立てる</em>。次回は、そもそも素数とは何で、なぜ「バラバラなのに規則正しい」のかへ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-02-sosuu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第2回：素数ってなんだ？ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 第1回、数学好きの高校生・大学生向け読み物。クレイ数学研究所のミレニアム懸賞問題（2000年設定、各100万ドル、7問）、リーマン予想（1859年、B. リーマンが論文中で提唱）、解決済みはポアンカレ予想のみ（ペレルマン、2002–03年）は、いずれも事実です（2025年時点）。ゼータ関数 \(\zeta(s)=\sum n^{-s}\) とオイラー積 \(\prod_p(1-p^{-s})^{-1}\) の一致は \(\mathrm{Re}(s)>1\) で成立し、非自明なゼロや臨界帯は解析接続後の関数についての概念です。非自明なゼロの実部が 1/2 に等しいという主張がリーマン予想で、2004年までに最初の \(10^{13}\) 個のゼロが臨界線上にあることが数値的に確認されていますが、全ゼロに対する厳密証明は未解決です。素数定理（\(x\) 以下の素数はおよそ \(x/\ln x\)）は1896年に証明済みで、リーマン予想はその誤差項が \(O(\sqrt{x}\,\log x)\) であることと同値です。数値的確認と数学的証明は別種の確からしさで、本シリーズはその区別を軸にします。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボードのタイルや、ゼロの丸をクリックすると内容が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+/* ===== 図1：7つのミレニアム問題ボード ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvBoard'), rd=document.getElementById('rdBoard');
+  var probs=[
+    {label:"P vs NP", solved:false, ours:false, desc:"答えの確認が速い問題は、答え探しも速い？ ── 計算の難しさをめぐる大問題。"},
+    {label:"ホッジ予想", solved:false, ours:false, desc:"図形（多様体）の“かたち”を、方程式でどこまで書けるか。幾何と代数の橋。"},
+    {label:"ポアンカレ予想", solved:true, ours:false, desc:"「穴のない3次元の形は、丸められる」── 7問で唯一の解決（ペレルマン、2003年ごろ）。"},
+    {label:"リーマン予想", solved:false, ours:true, desc:"素数の暗号帳＝ゼータ関数の“非自明なゼロ”が、みな一本の直線 Re(s)=1/2 に乗ると証明せよ ── このシリーズの主役。"},
+    {label:"ヤン=ミルズと質量ギャップ", solved:false, ours:false, desc:"強い力の理論を数学でちゃんと作り、“質量ギャップ”があると証明せよ（＝第一部の主役）。"},
+    {label:"ナビエ–ストークス", solved:false, ours:false, desc:"水や空気の流れの方程式は、いつも滑らかな解を持つ？ 途中で破綻しない？"},
+    {label:"BSD予想", solved:false, ours:false, desc:"方程式の“有理数の答え”の個数を、ゼータ的な量が予言する？"}
+  ];
+  var boxes=[], lastW=680, sel=3;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function wrapLabel(ctx, text, maxw){
+    var lines=[], cur='';
+    for(var i=0;i<text.length;i++){
+      var t=cur+text[i];
+      if(ctx.measureText(t).width>maxw && cur.length>0){ lines.push(cur); cur=text[i]; }
+      else cur=t;
+    }
+    if(cur) lines.push(cur);
+    return lines.slice(0,3);
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var padX=14, gap=11, cols=4, tileH=92, topY=10, row2Y=topY+tileH+14;
+    var tileW=(w-2*padX-(cols-1)*gap)/cols;
+    boxes=[];
+    for(var i=0;i<probs.length;i++){
+      var row=i<4?0:1, col=i<4?i:(i-4);
+      var x, y;
+      if(row===0){ x=padX+col*(tileW+gap); y=topY; }
+      else { var n2=3, tot=n2*tileW+(n2-1)*gap, sx=(w-tot)/2; x=sx+col*(tileW+gap); y=row2Y; }
+      boxes.push({x:x,y:y,w:tileW,h:tileH,i:i});
+      var p=probs[i], isSel=(i===sel);
+      var fill = p.solved? '#e4f0ea' : (p.ours? '#fffdf8':'#f6e9e4');
+      ctx.fillStyle=fill; roundRect(ctx,x,y,tileW,tileH,7); ctx.fill();
+      if(p.ours){ ctx.strokeStyle='#5a2a6e'; ctx.lineWidth=isSel?4:3; }
+      else { ctx.strokeStyle= p.solved? '#2f7d5a':'#c99b90'; ctx.lineWidth=isSel?3.5:1.4; }
+      roundRect(ctx,x,y,tileW,tileH,7); ctx.stroke();
+      if(isSel){ ctx.save(); ctx.shadowColor='rgba(90,42,110,.25)'; ctx.shadowBlur=10; roundRect(ctx,x,y,tileW,tileH,7); ctx.stroke(); ctx.restore(); }
+      ctx.fillStyle= p.solved? '#2f7d5a':'#a5473a';
+      ctx.beginPath(); ctx.arc(x+14, y+16, 5, 0, 7); ctx.fill();
+      if(p.solved){ ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(x+11.5,y+16); ctx.lineTo(x+13.5,y+18.5); ctx.lineTo(x+16.5,y+13); ctx.stroke(); }
+      ctx.fillStyle='#22262e'; ctx.font='bold 13.5px sans-serif'; ctx.textAlign='center';
+      var lines=wrapLabel(ctx, p.label, tileW-16);
+      var ly=y+tileH/2 - (lines.length-1)*9 + 4;
+      for(var k=0;k<lines.length;k++){ ctx.fillText(lines[k], x+tileW/2, ly+k*18); }
+      ctx.textAlign='left';
+    }
+    var s=probs[sel];
+    rd.innerHTML='<b>'+s.label+'</b>'+(s.ours?'（★このシリーズの主役）':(s.solved?'（唯一の解決済み）':'（未解決）'))+' ── '+s.desc;
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(draw,40); window.addEventListener('load',draw);
+})();
+
+/* ===== 図2：ゼロが臨界線に積み上がる ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvLine'), rd=document.getElementById('rdLine'), btn=document.getElementById('btnCex');
+  // 非自明なゼロの高さ t（最初の10個・既知の値）
+  var zeros=[14.134725,21.022040,25.010858,30.424876,32.935062,37.586178,40.918719,43.327073,48.005151,49.773832];
+  var tMax=54, lastW=680, sel=-1, cexMode=false;
+  // 反例（仮）：もしRHが偽なら、線からずれた場所に対で現れるはずのゼロ（実際は未発見）
+  var cex={re:0.72, t:38.5};
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var geom={};
+  function computeGeom(w,h){
+    var mL=64, mR=20, mT=18, mB=34;
+    var plotW=w-mL-mR, plotH=h-mT-mB;
+    // x: Re(s) 範囲 -0.15 .. 1.15 、 y: t 0(下) .. tMax(上)
+    var reMin=-0.15, reMax=1.15;
+    function X(re){ return mL + (re-reMin)/(reMax-reMin)*plotW; }
+    function Y(t){ return mT + plotH - (t/tMax)*plotH; }
+    geom={mL:mL,mR:mR,mT:mT,mB:mB,plotW:plotW,plotH:plotH,X:X,Y:Y,w:w,h:h};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    computeGeom(w,h);
+    var X=geom.X, Y=geom.Y;
+    ctx.clearRect(0,0,w,h);
+    // 臨界帯 0..1 の帯
+    ctx.fillStyle='#efe9f3';
+    ctx.fillRect(X(0), geom.mT, X(1)-X(0), geom.plotH);
+    // 縦グリッド Re=0,1/2,1
+    var reTicks=[{v:0,lab:'0'},{v:0.5,lab:'1/2'},{v:1,lab:'1'}];
+    ctx.font='12px sans-serif'; ctx.textAlign='center';
+    for(var i=0;i<reTicks.length;i++){
+      var rx=X(reTicks[i].v);
+      ctx.strokeStyle= reTicks[i].v===0.5? '#5a2a6e' : '#cdbfd6';
+      ctx.lineWidth= reTicks[i].v===0.5? 3 : 1;
+      ctx.beginPath(); ctx.moveTo(rx, geom.mT); ctx.lineTo(rx, geom.mT+geom.plotH); ctx.stroke();
+      ctx.fillStyle= reTicks[i].v===0.5? '#5a2a6e' : '#8a7f92';
+      ctx.font= reTicks[i].v===0.5? 'bold 12.5px sans-serif':'12px sans-serif';
+      ctx.fillText(reTicks[i].lab, rx, geom.mT+geom.plotH+18);
+    }
+    // 臨界線ラベル
+    ctx.fillStyle='#5a2a6e'; ctx.font='bold 11.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('臨界線', X(0.5), geom.mT-4);
+    // x軸ラベル
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('Re(s)', geom.mL+geom.plotW, geom.mT+geom.plotH+30);
+    // y軸メモリ t
+    ctx.textAlign='right'; ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif';
+    for(var t=10;t<=50;t+=10){
+      var yy=Y(t);
+      ctx.strokeStyle='#eadff0'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(geom.mL, yy); ctx.lineTo(geom.mL+geom.plotW, yy); ctx.stroke();
+      ctx.fillText('t='+t, geom.mL-8, yy+4);
+    }
+    // ゼロ点（線上）
+    for(var k=0;k<zeros.length;k++){
+      var zx=X(0.5), zy=Y(zeros[k]);
+      var isSel=(sel===k);
+      ctx.beginPath(); ctx.arc(zx,zy, isSel?8:6, 0, 7);
+      ctx.fillStyle= isSel? '#5a2a6e' : '#7a4fa0'; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+    // 反例（仮）
+    if(cexMode){
+      // 対で現れる：Re=cex.re と Re=1-cex.re
+      var pts=[{re:cex.re,t:cex.t},{re:1-cex.re,t:cex.t}];
+      for(var m=0;m<pts.length;m++){
+        var cx=X(pts[m].re), cy=Y(pts[m].t);
+        ctx.beginPath(); ctx.arc(cx,cy,6,0,7); ctx.fillStyle='#a5473a'; ctx.fill();
+        ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+        // 破線で線からのズレ
+        ctx.strokeStyle='#a5473a'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+        ctx.beginPath(); ctx.moveTo(X(0.5),cy); ctx.lineTo(cx,cy); ctx.stroke(); ctx.setLineDash([]);
+      }
+      ctx.fillStyle='#a5473a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('線から外れたゼロ（仮）', X(cex.re), Y(cex.t)-12);
+    }
+  }
+  function readoutDefault(){
+    rd.innerHTML='丸をクリックすると、そのゼロの高さ <b>t</b> が出ます。ぜんぶ Re(s)=1/2 の線に串刺し。'+(cexMode?'　<b style="color:#a5473a;">反例モードON</b>：もしRHが偽なら、こんな"線から外れたゼロ"が対で現れるはず ── だが実際には一つも見つかっていない。':'');
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    var X=geom.X, Y=geom.Y, best=-1, bd=1e9;
+    for(var k=0;k<zeros.length;k++){
+      var dx=mx-X(0.5), dy=my-Y(zeros[k]); var dd=dx*dx+dy*dy;
+      if(dd<bd){ bd=dd; best=k; }
+    }
+    if(bd<=200){
+      sel=best; draw();
+      rd.innerHTML='<b>'+(best+1)+'番目のゼロ</b>：ζ(s)=0 になるのは s = <b>1/2 + '+zeros[best].toFixed(6)+' i</b>（と、その鏡像 1/2 − '+zeros[best].toFixed(6)+' i）。実部はきっちり <b>1/2</b> ── リーマン予想どおり線上。';
+    } else {
+      sel=-1; draw(); readoutDefault();
+    }
+  });
+  btn.addEventListener('click', function(){
+    cexMode=!cexMode; btn.classList.toggle('on',cexMode); draw(); readoutDefault();
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();readoutDefault();},40); window.addEventListener('load',function(){draw();readoutDefault();});
+})();
+</script>
+</body>
+</html>

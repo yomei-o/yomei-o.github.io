@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有限体からの階段 ── Deningerの力学系コホモロジー ／ ミレニアム問題を解くぞ 戦略④</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#3a6a4f; --side-bg:#e6efe9;
+    --warn:#8a4b2f;
+    --calc:#3a6a4f; --calc-bg:#e6efe9;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#3a6a4f;      /* 戦略④：深緑（有限体の系譜） */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe4d8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#1f3328;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#1f3328;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#e6efe9;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e6efe9;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1f3328;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略④（深掘り）</span></div>
+  <p class="eyebrow">有限体の成功を、整数へ運ぶ ── 「流れる空間」の夢</p>
+  <h1>有限体からの階段 ── Deningerの力学系コホモロジー
+    <span class="sub">もし整数 \(\mathrm{Spec}\,\mathbb{Z}\) が、こっそり<strong>流れる空間</strong>だったら ── <br>素数＝<em>閉じた渦（長さ log p の周期軌道）</em>、零点＝<em>流れの共鳴音（作用素のスペクトル）</em>、明示公式＝<em>レフシェツ跡公式</em>。<br>そしてRHは、その流れの幾何に潜む<strong>正値性（エネルギー ≥ 0 のような）</strong>から出る。ドニンガーの、最も具体的なグレイルの設計図。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：有限体の機構を整数へ移す"夢の辞書"を掴む</span>
+    <span>一言で：整数を力学系に。RH＝ホッジ型正値性（未構成）</span>
+  </div>
+
+  <p class="lead">戦略①〜③で、本命は「零点＝作用素のスペクトル」、その心臓はコンヌの正値性、そして有限体の族では機構が定理になる ── と見てきました。共通するのは<em>「有限体（幾何）では動く機械が、整数には無い」</em>という一点。ドニンガー（1998〜）は、その<strong>欠けた機械の設計図を、これ以上ないほど具体的に描いた</strong>人です。鍵は大胆な比喩 ── <strong>整数を"流れる空間（力学系）"だと思え</strong>。素数は流れの閉じた渦、零点は流れの共鳴音、明示公式は跡公式。RHは流れの幾何の正値性。この回は、その夢の辞書を骨格で読みます。</p>
+
+  <h2><span class="n">01</span>発想 ── 整数を「流れる空間」とみなす</h2>
+
+  <p>有限体の世界（挑戦編⑤）では、<strong>フロベニウス</strong>という自然な操作が図形に作用し、零点をその固有値にしていました。整数にはフロベニウスに当たる物が無い ── では、それを<em>「時間発展（流れ）」</em>で代用できないか。物理でいう<strong>力学系</strong>（時間とともに動く点の集まり）です。</p>
+
+  <div class="keybox">
+    <div class="lbl">ドニンガーの発想 ── Spec ℤ ＝ 葉層空間（流れる空間）</div>
+    <p style="margin:0;">整数 \(\mathrm{Spec}\,\mathbb{Z}\)（と無限素点 \(\infty\) を込めた"完備化"）を、<strong>3次元の葉層空間（薄い層が積み重なった空間）＋時間の流れ \(\phi_t\)</strong> とみなす。フロベニウスの役を<em>流れの生成（時間発展の芽）</em>が演じる。有限体の"離散的な \(q\)乗"を、整数では"連続的な流れ"に置き換える発想。</p>
+  </div>
+
+  <p>すると、素数・零点・明示公式が、力学系の言葉に鮮やかに翻訳されます ── しかも、その翻訳は<strong>有限体で証明済みの構造と一行ずつ対応</strong>する。</p>
+
+  <h2><span class="n">02</span>素数 ＝ 閉じた軌道（長さ log p）</h2>
+
+  <p>力学系で最も基本的な対象は<strong>閉軌道（周期軌道）</strong> ── 流れに乗った点が、一周して戻ってくる道。ドニンガーの辞書では ──</p>
+
+  <div class="keybox">
+    <div class="lbl">辞書の一行目 ── 素数 ＝ 閉軌道、長さ ＝ log p</div>
+    <p style="margin:0;">各素数 \(p\) が、流れの<strong>閉じた軌道</strong>に対応し、その<strong>長さ（周期）が \(\log p\)</strong>。素数のべき \(p^k\) は、その軌道を \(k\) 周したもの（長さ \(k\log p\)）。第5回の明示公式で、素数べきに重み \(\log p\)（＝\(\Lambda(n)\)）が付いていたのは、まさに<em>「閉軌道の長さ」</em>だったのです。</p>
+  </div>
+
+  <p>下は、その<strong>閉軌道の長さの並び（長さスペクトル）</strong>。各目盛が \(p^k\) の軌道で、位置が長さ \(\log(p^k)\)、高さが重み \(\log p\)。<strong>クリック</strong>すると素数べきと長さが出ます。これは第5回で ψ(x) が段を上げた場所（＝素数べき）と、ぴったり同じ列です ── <em>あの階段の段は、閉軌道だった。</em></p>
+
+  <div class="fig">
+    <div class="cap">図：流れの<strong>閉軌道の長さスペクトル</strong>。各目盛＝素数べき \(p^k\)、位置＝長さ \(\log(p^k)\)、高さ＝重み \(\log p\)。クリックで \(p^k\)・長さを表示。第5回の ψ(x) の段と同じ列。</div>
+    <canvas id="cvLen" width="680" height="240"></canvas>
+    <div class="readout" id="rdLen"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#3a6a4f;"></i>素数 p の軌道（k=1）</span>
+      <span><i class="swatch" style="background:#8aa87a;"></i>べき p^k の軌道（k周）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>零点 ＝ 流れの「共鳴音」、明示公式 ＝ 跡公式</h2>
+
+  <p>力学系には、閉軌道と対をなすもう一つの主役があります ── <strong>流れの生成作用素 \(\Theta\) のスペクトル（固有値）</strong>。太鼓の固有振動（挑戦編④・戦略①）と同じ、流れの<em>共鳴音</em>です。ドニンガーの辞書の核心：</p>
+
+  <div class="keybox">
+    <div class="lbl">辞書の核心 ── 零点 ＝ 流れの作用素のスペクトル</div>
+    <p style="margin:0 0 6px;">ゼータの零点 \(\tfrac12+i\gamma\) ＝ 流れの生成作用素 \(\Theta\) が<strong>コホモロジー \(H^1\)</strong> に作用したときの<strong>固有値（共鳴音）</strong>。式で書けば、完備化ゼータ \(\xi(s)\) が \(\Theta\) の<strong>正規化行列式</strong>として</p>
+    $$\xi(s)\ \overset{\text{夢}}{=}\ \frac{\det\big(\tfrac{s-\Theta}{2\pi}\,\big|\,H^1\big)}{\det(\cdots|H^0)\,\det(\cdots|H^2)}$$
+    <p style="margin:8px 0 0;">なら、\(\xi(s)=0\) はちょうど \(\Theta\) の固有値。<strong>零点＝スペクトル</strong>が、行列式（＝特性多項式の連続版）として実現する。</p>
+  </div>
+
+  <p>そして<strong>明示公式は、この流れの<em>レフシェツ跡公式</em></strong>になります ── 「閉軌道（素数）を渡る和 ＝ コホモロジー上の作用素の跡（零点を渡る和）」。有限体のレフシェツ跡公式（挑戦編⑤）の、連続な流れ版。戦略①で「明示公式は跡公式の形」と言ったのが、ここで<em>力学系の本物の跡公式</em>として具体化します。</p>
+
+  <div class="aside">
+    <span class="tag">無限素点 ∞ の居場所も、辞書に書いてある</span>
+    有限体に無く整数にだけある<strong>無限素点 \(\infty\)（アルキメデス素点）</strong>── これはドニンガーの辞書では、流れの<strong>固定点（動かない特別な層）</strong>や、跡公式の<em>アルキメデス項</em>に対応する。ゼータのガンマ因子（\(\infty\) の局所因子）が、無限次元の正規化行列式として幾何的に解釈できる。①②で「継ぎ目は ∞」と言った縁が、力学系では<em>「流れの固定点をどう扱うか」</em>という具体的な形をとる。
+  </div>
+
+  <h2><span class="n">04</span>RH ＝ 流れの幾何の「正値性」（ホッジ型）</h2>
+
+  <p>では、この夢が実現したとして、なぜ<em>零点が線上（\(\mathrm{Re}=1/2\)）</em>になるのか。ここで有限体の証明の"最後の一手"が効きます。</p>
+
+  <div class="keybox">
+    <div class="lbl">RH の根拠 ＝ ホッジ型の正値性</div>
+    <p style="margin:0 0 6px;">有限体（とくに曲面）では、RHは<strong>ホッジ指数定理</strong>という<em>正値性</em>（ある交差形式の符号が決まっている）から出ます（グロタンディークの"標準予想"の世界）。ドニンガーの夢では、流れのコホモロジー \(H^1\) に同じ型の<strong>ホッジ／レフシェツ正値性</strong>があり、それが作用素 \(\Theta\) の固有値を臨界線に釘付けにする。</p>
+    <p style="margin:0;">つまり <strong>RH ⟺ 流れの幾何の正値性</strong>。コンヌの「ワイル正値性」（戦略②）と、同じ正値性を<em>幾何・力学系の側から</em>見た姿。</p>
+  </div>
+
+  <p>ここまでの辞書を、有限体（証明済み）と並べて一望しましょう。下の図で<strong>行をクリック</strong>。左（有限体）は全部<span style="color:var(--solved);font-weight:700;">実在・証明済み</span>、右（整数の力学系）は<span style="color:var(--gold);font-weight:700;">夢として一行ずつ書けている</span>のに、<span style="color:var(--open);font-weight:700;">舞台（空間）そのものが未構成</span>だと分かります。</p>
+
+  <div class="fig">
+    <div class="cap">図：ドニンガーの辞書。<span style="color:var(--solved);font-weight:700;">左＝有限体（証明済みの機構）</span>／<span style="color:var(--gold);font-weight:700;">右＝整数の力学系（夢の設計図）</span>。行を選ぶと対応。右は"何が対応するか"は書けるが、<strong>肝心の空間・コホモロジーが未構成</strong>。</div>
+    <canvas id="cvDict" width="680" height="340"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-r="0">舞台</button>
+      <button class="btn" data-r="1">素数の役</button>
+      <button class="btn" data-r="2">フロベニウスの役</button>
+      <button class="btn" data-r="3">零点＝スペクトル</button>
+      <button class="btn" data-r="4">跡公式</button>
+      <button class="btn" data-r="5">RHの根拠</button>
+    </div>
+    <div class="readout" id="rdDict"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>壁 ── 設計図はある、建物が無い</h2>
+
+  <p>ドニンガーの仕事の値打ちは、<em>グレイル（欠けた一個の物）を、これ以上ないほど詳細な設計図にした</em>ことです。「コホモロジーが要る」という漠然とした願いが、「<strong>この性質を持つ葉層空間と流れと \(H^1\) を作れ</strong>」という具体的な仕様書になった。でも ──</p>
+
+  <div class="keybox">
+    <div class="lbl">戦略④の壁</div>
+    <p style="margin:0 0 6px;">① <strong>舞台が未構成</strong>：素数を閉軌道、零点をスペクトルに持つ<em>その葉層空間・流れ・コホモロジーを、誰も作れていない</em>。辞書（対応表）は書けるが、対応先の<strong>実体が存在しない</strong>。設計図はある、建物が無い。</p>
+    <p style="margin:0;">② <strong>正値性は同じだけ難しい</strong>：仮に空間ができても、RHを出す<strong>ホッジ型正値性</strong>は、有限体の標準予想の数論版で、それ自体が未証明の難問。しかも継ぎ目は例によって<strong>無限素点 \(\infty\)（流れの固定点）</strong>。</p>
+  </div>
+
+  <p>コンヌ＝コンサニの<strong>数論的サイト</strong>や、葉層空間上の跡公式の部分的成果（Álvarez López–Kordyukov ら）は、この設計図に沿って<em>建物の基礎を打とうとする</em>試みです。方向は驚くほど明晰。でも、素数を閉軌道とする<strong>その空間</strong>と、RHを出す<strong>その正値性</strong>は、まだ手の中にない。次回（戦略・グレイル）は、①〜④で何度も同じ場所に現れたこの継ぎ目 ── <strong>無限素点 \(\infty\)</strong> ── を正面から掘り、欠けた一個の物を一文にします。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この回で述べたドニンガーの枠組みは、<strong>証明された定理ではなく、数論と力学系の間の"予想的な類似（プログラム）"</strong>です（C. Deninger, ICM 1998 "Some analogies between number theory and dynamical systems on foliated spaces" ほか）。素数 ↔ 長さ \(\log p\) の閉軌道、ゼータの零点 ↔ 葉層空間のコホモロジー \(H^1\) 上の流れの生成作用素のスペクトル、明示公式 ↔ 流れのレフシェツ（Guillemin–Patterson 型）跡公式、完備化ゼータ ↔ 正規化（ゼータ正規化）行列式、という対応は、有限体・関数体で<em>証明済みの</em>フロベニウス＝エタール・コホモロジーの機構（挑戦編⑤）の類似として提唱されたものです。RH ↔ ホッジ／レフシェツ型正値性は、有限体の曲面に対する RH がホッジ指数定理（およびグロタンディークの標準予想）から従うことの類似です。</p>
+    <p style="margin-bottom:0;">しかし、素数を閉軌道に持つ<strong>その葉層空間・流れ・コホモロジーは構成されておらず</strong>、RH を導く正値性も未証明です。無限素点（アルキメデス素点）の扱いは流れの固定点／アルキメデス項に対応するとされますが、これも未確立。関連して、コンヌ＝コンサニの数論的サイト、葉層空間上の跡公式（Álvarez López–Kordyukov、Leichtnam ら）などの部分的研究がありますが、リーマン予想を導く実現には至っていません。リーマン予想は2025年時点で未解決です。図1は素数べきの長さ \(\log(p^k)\) をブラウザ内で計算した長さスペクトル、図2は対応関係の模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ドニンガーの辞書で、素数・素数べき・零点は、力学系の何に対応する？
+        <details><summary>答えを見る</summary><div class="ans">素数 p ＝ 流れの閉軌道（長さ log p）、素数べき p^k ＝ その軌道を k 周したもの（長さ k log p）、零点 1/2+iγ ＝ 流れの生成作用素 Θ がコホモロジー H¹ に作用したときの固有値（共鳴音）。第5回の明示公式の重み log p は「閉軌道の長さ」、ψ(x) の段の位置は閉軌道の長さスペクトルに対応する。</div></details>
+      </li>
+      <li>この夢が実現したとして、RH はどこから出る？
+        <details><summary>答えを見る</summary><div class="ans">流れのコホモロジー H¹ に、有限体のホッジ指数定理に当たる「ホッジ／レフシェツ型の正値性」があれば、それが作用素 Θ の固有値を臨界線 Re=1/2 に釘付けにする。つまり RH ⟺ 流れの幾何の正値性。コンヌのワイル正値性（戦略②）を幾何・力学系の側から見た姿。</div></details>
+      </li>
+      <li>ドニンガーの仕事の値打ちと、決定的な壁は？
+        <details><summary>答えを見る</summary><div class="ans">値打ち：「コホモロジーが要る」という漠然とした願いを、「この性質を持つ葉層空間・流れ・H¹ を作れ」という詳細な設計図（グレイルの仕様書）にしたこと。壁：①その空間・流れ・コホモロジーが未構成（設計図はある、建物が無い）、②RHを出すホッジ型正値性も未証明で、継ぎ目は無限素点∞（流れの固定点）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略④まとめ</span>設計図はある、建物が無い</h2>
+    <p>有限体の機構（フロベニウス＝コホモロジー）を整数へ運ぶ最前線が、ドニンガーの夢 ── <strong>\(\mathrm{Spec}\,\mathbb{Z}\)（＋∞）を"流れる空間（葉層空間）"とみなす</strong>。辞書：<strong>素数＝閉軌道（長さ \(\log p\)）</strong>、\(p^k\)＝k周、<strong>零点＝流れの作用素 \(\Theta\) のコホモロジー \(H^1\) 上のスペクトル</strong>（完備化ゼータ＝正規化行列式）、<strong>明示公式＝流れのレフシェツ跡公式</strong>、そして<strong>RH＝ホッジ型正値性</strong>（有限体のホッジ指数定理の類似、コンヌのワイル正値性の幾何版）。無限素点∞は流れの固定点。</p>
+    <p>この仕事は、グレイル（欠けた一個の物）を<em>詳細な設計図</em>にした。だが壁は ── ①素数を閉軌道に持つ<strong>その空間・流れ・コホモロジーが未構成</strong>（設計図はある、建物が無い）、②RHを出す<strong>正値性も未証明</strong>で、継ぎ目は例によって∞。コンヌ＝コンサニの数論的サイト等が基礎を打とうとしている。次回（戦略・グレイル）は、①〜④で繰り返し現れたこの継ぎ目＝<strong>無限素点∞</strong>を掘り、欠けた一個の物を一文にする。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-senryaku3-family.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6efe9;font-weight:700;letter-spacing:.03em;">← 戦略③</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6efe9;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku-grail.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6efe9;font-weight:700;letter-spacing:.03em;">戦略・グレイル：継ぎ目は「無限素点」 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略④（深掘り）、数学好きの高校生・大学生向け読み物。本回のドニンガーの枠組み（C. Deninger, ICM 1998 ほか）は、証明された定理ではなく数論と力学系の予想的な類似（プログラム）です。素数↔長さ log p の閉軌道、ゼータの零点↔葉層空間のコホモロジー H¹ 上の流れの生成作用素のスペクトル、明示公式↔流れのレフシェツ（Guillemin–Patterson 型）跡公式、完備化ゼータ↔ゼータ正規化行列式、RH↔ホッジ／レフシェツ型正値性（有限体の曲面に対する RH がホッジ指数定理・標準予想から従うことの類似）という対応が提唱されています。しかし素数を閉軌道に持つ葉層空間・流れ・コホモロジーは未構成、RH を導く正値性も未証明で、無限素点（アルキメデス素点、流れの固定点）の扱いも未確立です。関連してコンヌ＝コンサニの数論的サイト、葉層空間上の跡公式（Álvarez López–Kordyukov ら）などの部分的研究があります。リーマン予想は2025年時点で未解決です。図1は log(p^k) の長さスペクトルをブラウザ内で計算、図2は模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1の長さスペクトル（素数＝閉軌道）をクリック、図2の行ボタンでドニンガーの辞書を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* ===== 図1：閉軌道の長さスペクトル（素数べき） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvLen'), rd=document.getElementById('rdLen');
+  var lastW=680, sel=-1;
+  // 素数べき p^k ≤ 54 を列挙
+  function primes(mx){var s=[],is=new Array(mx+1).fill(true);for(var i=2;i<=mx;i++){if(is[i]){s.push(i);for(var j=2*i;j<=mx;j+=i)is[j]=false;}}return s;}
+  var P=primes(54), items=[];
+  P.forEach(function(p){ var v=p,k=1; while(v<=54){ items.push({p:p,k:k,n:v,len:Math.log(v),wt:Math.log(p)}); k++; v=Math.pow(p,k);} });
+  items.sort(function(a,b){return a.len-b.len;});
+  var LMAX=Math.log(54)*1.02, WMAX=Math.log(53);
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=20,mR=16,mT=16,mB=34, pW=w-mL-mR, pH=h-mT-mB;
+    function X(l){ return mL + l/LMAX*pW; }
+    function Y(wt){ return mT+pH - wt/WMAX*pH; }
+    ctx.clearRect(0,0,w,h);
+    // 基線
+    ctx.strokeStyle='#c3d3c8'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(mL,mT+pH); ctx.lineTo(mL+pW,mT+pH); ctx.stroke();
+    // 目盛（長さ）
+    ctx.fillStyle='#7a8a80'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var l=0;l<=4;l+=1){ ctx.fillText('ℓ='+l, X(l), mT+pH+16); }
+    ctx.textAlign='right'; ctx.fillText('軌道の長さ ℓ=log(pᵏ) →', mL+pW, mT+pH+30);
+    // 目盛（重み）
+    ctx.textAlign='left'; ctx.fillStyle='#7a8a80'; ctx.fillText('高さ＝重み log p', mL+2, mT+10);
+    // 軌道
+    for(var i=0;i<items.length;i++){ var it=items[i], x=X(it.len), y=Y(it.wt), on=(i===sel);
+      ctx.strokeStyle= on? '#1a1e28' : (it.k===1? '#3a6a4f':'#8aa87a'); ctx.lineWidth= on?3:2;
+      ctx.beginPath(); ctx.moveTo(x,mT+pH); ctx.lineTo(x,y); ctx.stroke();
+      ctx.fillStyle= on? '#1a1e28' : (it.k===1? '#3a6a4f':'#8aa87a');
+      ctx.beginPath(); ctx.arc(x,y,on?5:3,0,7); ctx.fill();
+      if(it.k===1 && it.p<=19){ ctx.fillStyle='#3a6a4f'; ctx.font='10.5px sans-serif'; ctx.textAlign='center'; ctx.fillText(it.p, x, y-7); }
+    }
+  }
+  function report(){
+    if(sel<0){ rd.innerHTML='各目盛が流れの<b>閉軌道</b>＝素数べき \(p^k\)。位置＝長さ log(pᵏ)、高さ＝重み log p。クリックで詳細。第5回の ψ(x) が段を上げた場所と同じ列 ── 段は閉軌道だった。'; if(window.MathJax&&MathJax.typeset)MathJax.typeset([rd]); return; }
+    var it=items[sel];
+    rd.innerHTML='<b>'+it.p+(it.k>1?('^'+it.k+' = '+it.n):'')+'</b> の閉軌道'+(it.k>1?('（素数 '+it.p+' の軌道を '+it.k+' 周）'):'')+' ── 長さ ℓ=log('+it.n+')=<b>'+it.len.toFixed(3)+'</b>、重み log '+it.p+'=<b>'+it.wt.toFixed(3)+'</b>。明示公式ではこの重みで和に効く。';
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width, mx=(e.clientX-rect.left)*sx;
+    var mL=20,pW=lastW-36, best=-1,bd=1e9;
+    for(var i=0;i<items.length;i++){ var x=mL+items[i].len/LMAX*pW; var dd=Math.abs(mx-x); if(dd<bd){bd=dd;best=i;} }
+    if(bd<10){ sel=best; } else sel=-1; draw(); report();
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：ドニンガーの辞書 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvDict'), rd=document.getElementById('rdDict');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-r]'));
+  var lastW=680, sel=0;
+  var rows=[
+    {k:'舞台', L:'𝔽_q 上の曲線', R:'流れる空間（葉層空間）＋流れ φ_t', miss:true,
+     msg:'<b>舞台</b>：有限体では 𝔽_q 上の曲線（実在）。整数では Spec ℤ(＋∞) を「3次元の葉層空間＋時間の流れ」とみなす ── <b style="color:#a5473a;">この空間そのものが未構成</b>。設計図はあるが建物が無い。'},
+    {k:'素数の役', L:'点／フロベニウス軌道', R:'閉軌道（長さ log p）', miss:false,
+     msg:'<b>素数の役</b>：有限体では点（フロベニウスの周期軌道）。整数では流れの<b>閉軌道</b>で、長さが log p。素数べき p^k は k 周。対応は明快。'},
+    {k:'フロベニウスの役', L:'フロベニウス x↦x^q（離散）', R:'流れの生成 Θ（連続）', miss:false,
+     msg:'<b>フロベニウスの役</b>：有限体の離散的な「q乗」フロベニウスを、整数では連続的な<b>時間の流れの生成作用素 Θ</b>が代役。離散→連続の置き換えが発想の核。'},
+    {k:'零点＝スペクトル', L:'フロベニウス固有値（コホモロジー）', R:'Θ の H¹ 上のスペクトル（＝正規化行列式の零点）', miss:false,
+     msg:'<b>零点＝スペクトル</b>：有限体では零点＝フロベニウスのコホモロジー固有値（証明済み）。整数では零点＝流れの作用素 Θ の H¹ 上の固有値で、完備化ゼータ ξ(s)＝Θ の正規化行列式。'},
+    {k:'跡公式', L:'レフシェツ跡公式', R:'流れのレフシェツ跡公式（＝明示公式）', miss:false,
+     msg:'<b>跡公式</b>：有限体はレフシェツ跡公式（点の数＝コホモロジーの跡）。整数では流れのレフシェツ跡公式＝<b>明示公式</b>（閉軌道の和＝零点の和）。戦略①の「明示公式＝跡公式」の具体形。'},
+    {k:'RHの根拠', L:'ホッジ指数定理（正値性・証明済み）', R:'ホッジ／レフシェツ型正値性（未証明）', miss:true,
+     msg:'<b>RHの根拠</b>：有限体（曲面）ではRHは<b style="color:#2f7d5a;">ホッジ指数定理（正値性）から従う（証明済み）</b>。整数では同型の正値性が Θ の固有値を線上に固定するはずだが<b style="color:#a5473a;">未証明</b>＝コンヌのワイル正値性の幾何版。継ぎ目は∞。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=90,mR=12,mT=34,mB=10, pW=w-mL-mR, pH=h-mT-mB, colGap=26;
+    var colW=(pW-colGap)/2, xL=mL, xR=mL+colW+colGap, n=rows.length, rowH=pH/n;
+    ctx.clearRect(0,0,w,h);
+    ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle='#2f7d5a'; ctx.fillText('有限体（証明済み）', xL+colW/2, 20);
+    ctx.fillStyle='#a5473a'; ctx.fillText('整数の力学系（夢）', xR+colW/2, 20);
+    for(var i=0;i<n;i++){
+      var y=mT+i*rowH, on=(i===sel), rw=rows[i];
+      // 行ラベル
+      ctx.fillStyle='#6a7a70'; ctx.font='bold 11px sans-serif'; ctx.textAlign='right'; ctx.fillText(rw.k, mL-8, y+rowH/2+4);
+      // 左（有限体）
+      ctx.fillStyle= on? '#cfe6da':'#eaf2ec'; roundRect(ctx,xL,y+3,colW,rowH-6,6); ctx.fill();
+      ctx.strokeStyle= on? '#2f7d5a':'#cddcd4'; ctx.lineWidth= on?2:1; roundRect(ctx,xL,y+3,colW,rowH-6,6); ctx.stroke();
+      ctx.fillStyle='#1f4a37'; ctx.font='11.5px sans-serif'; ctx.textAlign='center'; wrap(ctx,rw.L,xL+colW/2,y+rowH/2,colW-12,13);
+      // 右（夢）
+      ctx.fillStyle= rw.miss? (on?'#f3d9d4':'#f7ece9') : (on?'#f3e7d4':'#f7f0e4');
+      roundRect(ctx,xR,y+3,colW,rowH-6,6); ctx.fill();
+      ctx.strokeStyle= on? (rw.miss?'#a5473a':'#a9791a'):'#e0cdb8'; ctx.lineWidth= on?2:1; roundRect(ctx,xR,y+3,colW,rowH-6,6); ctx.stroke();
+      ctx.fillStyle= rw.miss?'#a5473a':'#8a6a1a'; ctx.font='11.5px sans-serif'; ctx.textAlign='center'; wrap(ctx,rw.R,xR+colW/2,y+rowH/2,colW-12,13);
+      // 橋
+      var by=y+rowH/2, bx0=xL+colW, bx1=xR;
+      if(rw.miss){ ctx.strokeStyle='#a5473a'; ctx.setLineDash([3,3]); ctx.lineWidth=1.4;
+        ctx.beginPath(); ctx.moveTo(bx0+2,by); ctx.lineTo((bx0+bx1)/2-5,by); ctx.moveTo((bx0+bx1)/2+5,by); ctx.lineTo(bx1-2,by); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#a5473a'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center'; ctx.fillText('✕',(bx0+bx1)/2,by+4);
+      } else { ctx.strokeStyle='#b7a86a'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(bx0+2,by); ctx.lineTo(bx1-2,by); ctx.stroke();
+        ctx.fillStyle='#b7a86a'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText('≈',(bx0+bx1)/2,by-3); }
+    }
+  }
+  function wrap(ctx,text,cx,cy,maxw,lh){var lines=[],cur='';for(var i=0;i<text.length;i++){var t=cur+text[i];if(ctx.measureText(t).width>maxw&&cur){lines.push(cur);cur=text[i];}else cur=t;}if(cur)lines.push(cur);lines=lines.slice(0,3);var y0=cy-(lines.length-1)*lh/2;for(var k=0;k<lines.length;k++)ctx.fillText(lines[k],cx,y0+k*lh+4);}
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-r'),10)===i); }); draw(); rd.innerHTML=rows[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-r'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

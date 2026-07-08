@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直接押す ── 零点のいない領域を広げる ／ ミレニアム問題を解くぞ 挑戦編②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2f6d8a; --side-bg:#e7f0f4;
+    --warn:#8a4b2f;
+    --calc:#2f6d8a; --calc-bg:#e7f0f4;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#2f6d8a;      /* ルートA：藍 */
+    --acc2:#5a2a6e;     /* 第二部の紫 */
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6ef 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#1f333c;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#1f333c;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#2f6d8a;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#e7f0f4;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e7f0f4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1f333c;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編②（ルートA）</span></div>
+  <p class="eyebrow">王道 ── ゼロが「いない」領域を、右から左へ押していく</p>
+  <h1>直接押す ── 零点のいない領域を広げる
+    <span class="sub">素数定理の証明は、実は<strong>「Re(s)=1 の線上にゼロが無い」</strong>を示すことだった。<br>ならば、そのゼロ不在の領域を<em>左へ左へ</em>広げて、いつか 1/2 まで届かせればRH。<br>この最も素直な道は、100年かけても<strong>「1」に貼りついたまま</strong> ── なぜ剥がれないのか。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：ルートAの武器（魔法の不等式）と、薄い壁</span>
+    <span>一言で：領域は 1 に漸近し、1/2 に固定距離で届かない</span>
+  </div>
+
+  <p class="lead">地図（挑戦編①）で見た5ルートのうち、いちばん素直な<strong>ルートA</strong>を一本、深く登ります。作戦はシンプル ── ゼロが<em>存在しない</em>領域を、複素平面の右（\(\mathrm{Re}(s)\) が大きいほう）から左へ押し広げる。もし \(\mathrm{Re}(s)=1/2\) の線まで「右側にゼロ無し」を証明できれば、関数等式の対称性（第4回）と合わせて<strong>全ゼロが線上＝RH</strong>。この道には、高校数学で味わえる<em>美しい武器</em>があります。まずそれを見て、それでもなぜ壁を越えられないのかを測ります。</p>
+
+  <h2><span class="n">01</span>出発点 ── なぜ「Re(s)=1」が最初の壁だったのか</h2>
+
+  <p>第2回で「素数定理は1896年に証明ずみ」と言いました。その証明の心臓は、実は<strong>ゼータのゼロについての一文</strong>でした。</p>
+
+  <div class="keybox">
+    <div class="lbl">素数定理 ⟺ 「Re(s)=1 上にゼロが無い」</div>
+    <p style="margin:0;">\(\zeta(s)\) が直線 \(\mathrm{Re}(s)=1\) の上でゼロにならないこと ── これを示せば素数定理 \(\pi(x)\sim x/\ln x\) が出る（アダマール、ド・ラ・ヴァレ・プーサン、1896）。第5回の明示公式を思い出すと当然で、<strong>ゼロの実部 \(\beta\) が波の音量 \(x^\beta\) を決める</strong>から。もし \(\beta=1\) のゼロがあれば、音量 \(x^1\) の波が主項 \(x\) と同じ大きさで暴れ、素数定理すら壊れる。</p>
+  </div>
+
+  <p>だから最初の関門は「\(\mathrm{Re}(s)=1\) に乗ったゼロは無い」。これは越えられた。次は<em>その一歩内側</em>、\(\mathrm{Re}(s)=1\) の<strong>すぐ左</strong>にもゼロが無い領域を作る ── そうやって壁を \(1/2\) まで押し込むのがルートAです。</p>
+
+  <h2><span class="n">02</span>武器は「魔法の不等式」 ── 3 + 4cosθ + cos2θ ≥ 0</h2>
+
+  <p>「Re(s)=1 に乗ったゼロは無い」を示す鍵は、拍子抜けするほど初等的な、<strong>ある三角不等式</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">魔法の不等式（メルテンス）</div>
+    $$3+4\cos\theta+\cos 2\theta \;=\; 2\,(1+\cos\theta)^2 \;\ge\; 0\qquad(\text{どんな }\theta\text{ でも})$$
+    <p style="margin:8px 0 0;">右辺は<em>二乗</em>だから、当たり前に \(\ge0\)。等号は \(\theta=\pi\)（\(\cos\theta=-1\)）のときだけ。この「\(3,4,1\)」という重みが、あとで効きます。</p>
+  </div>
+
+  <p>下の図で確かめてください。<span style="color:var(--acc);font-weight:700;">3本のコサイン波を \(3:4:1\) で足す</span>と、上下に暴れそうなのに、<strong>一度も0を下回らない</strong>（\(\theta=\pi\) でギリギリ触れるだけ）。この"ゼロを下回らない"が、素数の世界で「ゼロが1の線に乗れない」に化けます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">紫＝3+4cosθ+cos2θ</span> と、その正体 <span style="color:#2f7d5a;font-weight:700;">緑＝2(1+cosθ)²</span>（重なる）。スライダーで θ を動かし、値が常に ≥0（θ=π でだけ 0）を確認。</div>
+    <canvas id="cvIneq" width="680" height="290"></canvas>
+    <div class="ctrlrow no-print">
+      <label>θ ：<input type="range" id="sldTh" min="0" max="6.283" value="1.0" step="0.02"><span id="thVal" style="font-weight:700;color:var(--acc);">1.00</span></label>
+    </div>
+    <div class="readout" id="rdIneq"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ不等式でゼロが締め出せるのか（筋だけ）</span>
+    第3回のオイラー積の対数をとると、\(\log\zeta(s)\) は \(\sum_{p,k}\frac{1}{k}\,p^{-k\sigma}\cos(kt\ln p)\) の形（\(s=\sigma+it\)）。ここで \(\big|\zeta(\sigma)^{3}\,\zeta(\sigma+it)^{4}\,\zeta(\sigma+2it)\big|\) を考えると、指数に <strong>\(3+4\cos\theta+\cos2\theta\ge0\)</strong> がちょうど現れて \(\ge1\) が言える。ところが、もし \(\mathrm{Re}(s)=1\) にゼロがあると、\(\sigma\to1\) で \(\zeta(\sigma)^3\)（極の3乗）と \(\zeta(\sigma+it)^4\)（ゼロの4乗）が<em>釣り合わず</em>積が \(0\) に落ちて \(\ge1\) と矛盾。だからゼロは1の線に乗れない。<strong>「4乗の消え」より「3乗の極」が強い</strong>── これが \(3:4:1\) の重みの正体。
+  </div>
+
+  <h2><span class="n">03</span>壁を左へ ── 「零点非存在領域」を広げる</h2>
+
+  <p>同じ論法を \(\mathrm{Re}(s)=1\) の<em>すぐ左</em>にも効かせると、ゼロが存在しない領域（<strong>零点非存在領域 zero-free region</strong>）が、線から少しだけ内側に確保できます。古典的な形はこう：</p>
+
+  <div class="keybox">
+    <div class="lbl">古典的な零点非存在領域（ド・ラ・ヴァレ・プーサン）</div>
+    $$\zeta(\sigma+it)\neq0\qquad\text{for}\qquad \sigma \;>\; 1-\frac{c}{\log|t|}$$
+    <p style="margin:8px 0 0;">「高さ \(t\) のところでは、\(1-\dfrac{c}{\log|t|}\) より右にはゼロが無い」。つまり境界の壁が \(1\) から <strong>\(\dfrac{c}{\log|t|}\) だけ</strong>左に食い込む。改良版（<strong>ヴィノグラードフ–コロボフ、1958</strong>）でも \(\sigma>1-\dfrac{c}{(\log|t|)^{2/3}(\log\log|t|)^{1/3}}\) と、ほんの少し深いだけ。</p>
+  </div>
+
+  <p>下の図は臨界帯です（横＝\(\mathrm{Re}(s)\)、縦＝高さ \(t\)）。<span style="color:#2f7d5a;font-weight:700;">緑＝「ゼロが無い」と証明できた領域</span>、<span style="color:#a5473a;font-weight:700;">灰＝まだ何も言えない領域</span>、<span style="color:var(--acc2);font-weight:700;">紫の線＝臨界線 1/2</span>。スライダーで<strong>見る高さ \(T\) を上げて</strong>みてください。高く行くほど緑の壁が<em>右端（\(=1\)）に吸い寄せられ</em>、証明できる範囲がやせ細っていきます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:#2f7d5a;font-weight:700;">緑＝零点非存在（証明済み）</span>、灰＝未制御、<span style="color:var(--acc2);font-weight:700;">紫＝臨界線1/2</span>、<span style="color:#a5473a;font-weight:700;">赤破線＝境界 σ=1−c/log t</span>。スライダーで高さ上限 T を上げると壁が 1 に貼りつく。「RHが要求」で本来ほしい領域（σ&gt;1/2 全部）を表示。</div>
+    <canvas id="cvRegion" width="680" height="360"></canvas>
+    <div class="ctrlrow no-print">
+      <label>見る高さ T ：<input type="range" id="sldT" min="1" max="12" value="2" step="0.1"><span id="tShow" style="font-weight:700;color:var(--acc);">10²</span></label>
+      <button class="btn" id="btnRH">RHが要求する領域</button>
+    </div>
+    <div class="readout" id="rdRegion"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#cfe8d8;"></i>ゼロなし（証明済み）</span>
+      <span><i class="swatch" style="background:#e9e2d6;"></i>未制御</span>
+      <span><i class="swatch" style="background:#5a2a6e;"></i>臨界線 1/2</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>なぜ「薄い」のか ── 壁は 1 に漸近する</h2>
+
+  <p>壁の左への食い込みは \(\dfrac{c}{\log|t|}\)。ここが急所です ── <strong>\(t\) が大きくなると \(\log|t|\) が増え、食い込みは \(0\) に近づく</strong>。高さ \(10^6\) では、証明できる境界は \(\sigma\approx0.985\) あたり。つまり「\(0.985\) より右にはゼロ無し」しか言えず、\(0.5\) から \(0.985\) までの<em>広大な帯は手つかず</em>。高く登るほど、勝ち取れる幅はやせていく。</p>
+
+  <div class="keybox">
+    <div class="lbl">壁の食い込み（1 からの距離）</div>
+    <p style="margin:0;">高さ \(t\)：\(\quad 10^2\) で ≈0.043、\(\;10^6\) で ≈0.014、\(\;10^{12}\) で ≈0.007 …（\(c\) は定数）。<br><strong>いくら \(t\) を上げても、この距離は \(0\) へ縮む一方</strong>。ヴィノグラードフ–コロボフでも縮み方が少し遅いだけで、\(0\) に向かうのは同じ。<em>1/2 との間に「一定の幅」を永久に稼げない。</em></p>
+  </div>
+
+  <h2><span class="n">05</span>それでも、ちゃんと役に立っている</h2>
+
+  <p>「1に貼りつくだけ」でも、この領域はムダではありません。<strong>零点非存在領域の広さは、そのまま素数定理の"誤差の小ささ"に直結</strong>します（第5回：ゼロの位置が波の音量を決める、の定量版）。</p>
+
+  <div class="keybox">
+    <div class="lbl">領域の広さ → 素数の誤差</div>
+    <p style="margin:0 0 6px;">・古典領域 → \(\big|\psi(x)-x\big|\ll x\,\exp\!\big(-c\sqrt{\log x}\big)\)</p>
+    <p style="margin:0 0 6px;">・ヴィノグラードフ–コロボフ → \(\big|\psi(x)-x\big|\ll x\,\exp\!\big(-c(\log x)^{3/5}(\log\log x)^{-1/5}\big)\)</p>
+    <p style="margin:0;">・<strong>もしRH</strong> → \(\big|\psi(x)-x\big|\ll \sqrt{x}\,(\log x)^2\)（＝ゆらぎ最小）</p>
+    <p style="margin:10px 0 0;">現状の誤差は「\(x\) より少しだけ小さい」程度で、RHが約束する \(\sqrt{x}\) には遠く及ばない。だが素数の数え上げ・解析数論の無数の結果が、この領域の広さに支えられています。<em>頂上には届かなくても、確かな標高を稼いでいる。</em></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>壁 ── 「幅」を一定量こじ開ける手が無い</h2>
+
+  <p>ルートAの壁を、正直に言葉にします。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートA の壁</div>
+    <p style="margin:0 0 6px;">RHに到達するには、境界を \(\sigma>1/2\) まで、つまり \(1\) から<strong>「\(0.5\) という一定の幅」</strong>ぶんこじ開けねばならない。だが魔法の不等式に始まる手法が生む幅は \(\dfrac{c}{\log|t|}\to0\) ── <em>高さとともに消える</em>。</p>
+    <p style="margin:0;">根っこの理由：この方法は「\(\zeta\) が大きくなりすぎない」というオイラー積側の穏やかさに頼るが、<strong>臨界線に近づくとその制御が丸ごと失われる</strong>。ゼロを一個ずつ締め出すのに使う"てこ"が、\(1/2\) の付近では効かない。</p>
+  </div>
+
+  <p>直接押す道は、素数定理という金字塔を生み、誤差評価を今も改善し続ける本道です。でも「壁を \(1\) から剥がして \(1/2\) まで運ぶ」には、いまの武器では原理的に幅が足りない。次回（挑戦編③）は発想を変えて、<em>全ゼロを締め出す</em>のではなく<strong>「線の上に何％乗っているか」を数える</strong>ルートBへ向かいます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">素数定理 \(\pi(x)\sim x/\ln x\) は \(\zeta(1+it)\neq0\)（\(t\neq0\)）と結びついて証明されます（アダマール／ド・ラ・ヴァレ・プーサン、1896）。恒等式 \(3+4\cos\theta+\cos2\theta=2(1+\cos\theta)^2\ge0\) は正しく、これを用いた \(|\zeta(\sigma)^3\zeta(\sigma+it)^4\zeta(\sigma+2it)|\ge1\) から \(\mathrm{Re}(s)=1\) 上の非零性が従うのは標準的な証明です。古典的零点非存在領域 \(\sigma>1-c/\log|t|\)、ヴィノグラードフ–コロボフ（1958）\(\sigma>1-c/((\log|t|)^{2/3}(\log\log|t|)^{1/3})\) はいずれも既知の結果で、\(t\to\infty\) で境界は \(\sigma=1\) に漸近します。</p>
+    <p style="margin-bottom:0;">対応する誤差項 \(\psi(x)-x\ll x\exp(-c\sqrt{\log x})\)（古典）、\(\ll x\exp(-c(\log x)^{3/5}(\log\log x)^{-1/5})\)（VK）、RH の下で \(\ll\sqrt{x}(\log x)^2\) も確立した事実です。図2の境界曲線と「1からの距離」の数値（0.043, 0.014, 0.007…）は、\(c=0.2\) とした<strong>模式的な図示</strong>で、実際の最良定数 \(c\) を主張するものではありません（形＝\(1/\log t\) に比例して縮む、が本質）。図1の恒等式・図2の漸近的な振る舞いはいずれも正しく、リーマン予想は2025年時点で未解決です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ルートAは、結局どこまで壁を押せば RH になる？ なぜ届かない？
+        <details><summary>答えを見る</summary><div class="ans">境界を σ&gt;1/2 まで、つまり 1 から「0.5 という一定の幅」ぶん左へ押せば（対称性と合わせて）RH。だが手法が生む幅は c/log|t| で、高さ t とともに 0 へ縮む。1 に貼りついたまま、1/2 との間に一定の距離を永久に稼げない。</div></details>
+      </li>
+      <li>「3+4cosθ+cos2θ≥0」は、なぜ ≥0 だと即座に分かる？ 素数の話にどう効く？
+        <details><summary>答えを見る</summary><div class="ans">2(1+cosθ)² と因数分解でき、二乗だから ≥0（θ=π でだけ 0）。これを重み 3:4:1 で |ζ(σ)³ζ(σ+it)⁴ζ(σ+2it)|≥1 に使うと、Re(s)=1 にゼロがある場合「極の3乗」と「ゼロの4乗」が釣り合わず積が0に落ちて矛盾。ゆえにゼロは1の線に乗れない。</div></details>
+      </li>
+      <li>頂上に届かないルートAが、それでも重要な理由は？
+        <details><summary>答えを見る</summary><div class="ans">零点非存在領域の広さが、素数定理の誤差 |ψ(x)−x| の小ささに直結するから。領域を広げるほど誤差評価が良くなり、解析数論の多くの結果を支える。RH の √x には遠いが、確かな標高（PNTの証明と誤差改善）を稼いでいる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編②まとめ</span>直接押す ── 1 から剥がれない壁</h2>
+    <p>ルートAは王道 ── 素数定理は「\(\mathrm{Re}(s)=1\) 上に零点なし」と同値で（1896）、その左へ<strong>零点非存在領域</strong>を広げれば、いつか \(1/2\) に届いてRH。武器は初等的な<strong>魔法の不等式 \(3+4\cos\theta+\cos2\theta=2(1+\cos\theta)^2\ge0\)</strong>で、重み \(3:4:1\)（極3乗＞ゼロ4乗）が \(\mathrm{Re}(s)=1\) からゼロを締め出す。</p>
+    <p>だが境界の食い込みは \(c/\log|t|\)。<strong>高さ \(t\) とともに \(0\) に縮み、壁は \(1\) に貼りついたまま</strong>。ヴィノグラードフ–コロボフでも縮み方が遅いだけ。\(1/2\) との間に一定の幅を稼ぐ原理が無い ── 臨界線付近でオイラー積側の制御が失われるのが根。それでも領域の広さは素数定理の誤差に直結し、確かな前進。次回は「全ゼロ締め出し」でなく<strong>「線上の割合を数える」ルートB</strong>へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-06-semekata.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e7f0f4;font-weight:700;letter-spacing:.03em;">← 挑戦編①（地図）</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e7f0f4;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-08-online.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e7f0f4;font-weight:700;letter-spacing:.03em;">挑戦編③：線の上を数える →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編②（ルートA）、数学好きの高校生・大学生向け読み物。素数定理と \(\zeta(1+it)\neq0\) の同値、恒等式 \(3+4\cos\theta+\cos2\theta=2(1+\cos\theta)^2\)、およびそれによる \(\mathrm{Re}(s)=1\) 上の非零性証明は標準的です。古典的零点非存在領域 \(\sigma>1-c/\log|t|\)（ド・ラ・ヴァレ・プーサン）、ヴィノグラードフ–コロボフ（1958）による改良、対応する素数定理の誤差項、および RH 下での \(\ll\sqrt{x}(\log x)^2\) はいずれも確立した事実で、境界は \(t\to\infty\) で \(\sigma=1\) に漸近します（1/2 に固定距離では到達しない）。図はブラウザ内で計算した模式図で、境界の定数 \(c\) は図示用（0.2）です。リーマン予想は2025年時点で未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーで魔法の不等式が常に≥0、図2のスライダーで高く登るほど「ゼロなし領域」がやせ細る様子を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 図1：魔法の不等式 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvIneq'), rd=document.getElementById('rdIneq');
+  var sld=document.getElementById('sldTh'), thVal=document.getElementById('thVal');
+  var lastW=680, TAU=2*Math.PI;
+  function f(t){ return 3+4*Math.cos(t)+Math.cos(2*t); }
+  function draw(){
+    var th=parseFloat(sld.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=40,mR=16,mT=16,mB=30, pW=w-mL-mR, pH=h-mT-mB;
+    var yMax=8.4, yMin=-0.6;
+    function X(t){ return mL + t/TAU*pW; }
+    function Y(v){ return mT + pH - (v-yMin)/(yMax-yMin)*pH; }
+    ctx.clearRect(0,0,w,h);
+    // 0 の帯（負を強調）
+    ctx.fillStyle='#f8ecec'; ctx.fillRect(mL,Y(0),pW,pH-(Y(0)-mT));
+    // 0線
+    ctx.strokeStyle='#e0a9a9'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+pW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#a5473a'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('0（この下は禁止）', mL+pW-2, Y(0)+14);
+    // y メモリ
+    ctx.fillStyle='#8a7f92'; ctx.textAlign='right';
+    for(var v=2;v<=8;v+=2){ ctx.fillText(v, mL-5, Y(v)+4); }
+    // 曲線 f
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var t=0;t<=TAU;t+=0.01){ if(t===0) ctx.moveTo(X(t),Y(f(t))); else ctx.lineTo(X(t),Y(f(t))); }
+    ctx.stroke();
+    // x メモリ
+    ctx.fillStyle='#8a7f92'; ctx.textAlign='center';
+    [[0,'0'],[Math.PI,'π'],[TAU,'2π']].forEach(function(p){ ctx.fillText(p[1], X(p[0]), mT+pH+16); });
+    // マーカー
+    var yy=Y(f(th)), xx=X(th);
+    ctx.strokeStyle='#2f7d5a'; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(xx,mT); ctx.lineTo(xx,mT+pH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(xx,yy,5,0,7); ctx.fillStyle='#2f7d5a'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.stroke();
+  }
+  function report(){
+    var th=parseFloat(sld.value); thVal.textContent=th.toFixed(2);
+    var v=f(th), c1=3, c2=4*Math.cos(th), c3=Math.cos(2*th);
+    rd.innerHTML='θ='+th.toFixed(2)+' ── 3 + (4cosθ='+c2.toFixed(2)+') + (cos2θ='+c3.toFixed(2)+') = <b>'+v.toFixed(3)+'</b> = 2(1+cosθ)²。'+(v<0.001?'<b style="color:#a5473a;">←θ=π でだけ 0 に触れる</b>':' 常に ≥0（一度も負にならない）。');
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：零点非存在領域が薄い ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvRegion'), rd=document.getElementById('rdRegion');
+  var sld=document.getElementById('sldT'), tShow=document.getElementById('tShow'), btnRH=document.getElementById('btnRH');
+  var lastW=680, C=0.2, showRH=false;
+  function boundary(t){ if(t<Math.E) t=Math.E; return 1-C/Math.log(t); } // σ境界
+  function draw(){
+    var expT=parseFloat(sld.value);      // T = 10^expT
+    var T=Math.pow(10,expT);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=44,mR=16,mT=14,mB=30, pW=w-mL-mR, pH=h-mT-mB;
+    // x: σ 0..1、 y: t 0(下)..T(上)  ※ t は対数目盛
+    function X(s){ return mL + s*pW; }
+    var tBot=1; // log10(t) 表示は 0..expT
+    function Y(logt){ return mT + pH - (logt/expT)*pH; } // logt: 0..expT
+    ctx.clearRect(0,0,w,h);
+    // 全体＝未制御（灰）
+    ctx.fillStyle='#e9e2d6'; ctx.fillRect(mL,mT,pW,pH);
+    // RH が要求：σ>1/2 を薄緑（下敷き）
+    if(showRH){ ctx.fillStyle='rgba(47,125,90,0.16)'; ctx.fillRect(X(0.5),mT,pW-(X(0.5)-mL),pH); }
+    // 証明済み零点非存在（緑）：各高さで σ>boundary(t)
+    ctx.fillStyle='#cfe8d8';
+    var rows=160;
+    for(var i=0;i<rows;i++){
+      var logt = expT*(1 - i/rows); // 上ほど大きい logt
+      var tt=Math.pow(10, Math.max(logt,0.05));
+      var bx=boundary(tt);
+      var yTop=mT + pH*(i/rows), yh=pH/rows+1;
+      ctx.fillRect(X(bx), yTop, X(1)-X(bx), yh);
+    }
+    // 境界曲線（赤破線）
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.beginPath();
+    for(var j=0;j<=rows;j++){ var lg=expT*(1-j/rows), t2=Math.pow(10,Math.max(lg,0.05)), b2=boundary(t2);
+      var yy=mT+pH*(j/rows); if(j===0) ctx.moveTo(X(b2),yy); else ctx.lineTo(X(b2),yy); }
+    ctx.stroke(); ctx.setLineDash([]);
+    // 臨界線 1/2
+    ctx.strokeStyle='#5a2a6e'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(X(0.5),mT); ctx.lineTo(X(0.5),mT+pH); ctx.stroke();
+    ctx.fillStyle='#5a2a6e'; ctx.font='bold 11.5px sans-serif'; ctx.textAlign='center'; ctx.fillText('1/2', X(0.5), mT+pH+16);
+    // σ メモリ
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    [[0,'0'],[1,'1']].forEach(function(p){ ctx.fillText(p[1], X(p[0]), mT+pH+16); });
+    ctx.fillText('Re(s)=σ', X(0.82), mT+pH+16);
+    // t メモリ（対数）
+    ctx.textAlign='right';
+    for(var e=0;e<=expT+0.001;e+=Math.max(1,Math.round(expT/6))){ var yy2=Y(e); ctx.fillStyle='#8a7f92'; ctx.fillText('t=10^'+e, mL-4, yy2+4);
+      ctx.strokeStyle='rgba(150,140,120,.25)'; ctx.beginPath(); ctx.moveTo(mL,yy2); ctx.lineTo(mL+pW,yy2); ctx.stroke(); }
+    // ラベル
+    ctx.fillStyle='#2f7d5a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('ゼロなし', X(0.9)-4, mT+16);
+    ctx.fillStyle='#8a7a52'; ctx.fillText('未制御', X(0.6), mT+pH-10);
+    return {T:T, bTop:boundary(T)};
+  }
+  function report(info){
+    var expT=parseFloat(sld.value); tShow.textContent='10'+sup(expT);
+    var gap=info.bTop-0.5;
+    rd.innerHTML='高さ T≈10<sup>'+expT.toFixed(1)+'</sup> の付近では、証明できる境界は σ≈<b>'+info.bTop.toFixed(3)+'</b>。「0.5〜'+info.bTop.toFixed(3)+'」の幅 <b>'+gap.toFixed(3)+'</b> は<b style="color:#a5473a;">丸ごと未制御</b>。'+(showRH?' 薄緑＝RHが本来ほしい領域（σ&gt;1/2 全部）── 緑（証明済み）との差が壁。':' T を上げるほど緑の壁は 1 に貼りつく。')+'';
+  }
+  function sup(x){ return x.toFixed(0); }
+  sld.addEventListener('input', function(){ report(draw()); });
+  btnRH.addEventListener('click', function(){ showRH=!showRH; btnRH.classList.toggle('on',showRH); report(draw()); });
+  window.addEventListener('resize',function(){draw();});
+  setTimeout(function(){report(draw());},40); window.addEventListener('load',function(){report(draw());});
+})();
+</script>
+</body>
+</html>

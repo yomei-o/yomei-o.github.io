@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「一直線」の正体 ── 複素数・臨界線・自明でないゼロ ／ ミレニアム問題を解くぞ 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#f0eaf3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcf0 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2f2337;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#33283b;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:210px;accent-color:#5a2a6e;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.04em;padding:8px 15px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3ecf5;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2337;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">第 4 回</span></div>
+  <p class="eyebrow">入門編の山場 ── ゼロ点が住む舞台へ</p>
+  <h1>「一直線」の正体 ── 複素数・臨界線・自明でないゼロ
+    <span class="sub">前回の宿題 ── ゼロ点は、足し算が届かない"向こう側"にしか無い。<br>そこへ関数を延ばす手品が<strong>解析接続</strong>。舞台は<strong>複素平面</strong>。<br>ゼロには2種類あり、本命は臨界帯の<em>非自明なゼロ</em>。それが一本の線 Re(s)=1/2 に乗る ── これがリーマン予想。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：解析接続・複素数・臨界線を、動く図でつかむ</span>
+    <span>一言で：非自明なゼロは Re(s)=1/2 に乗る</span>
+  </div>
+
+  <p class="lead">第3回の最後で、こう予告しました ── オイラー積より \(s>1\) では \(\zeta(s)\neq0\) だから、リーマン予想の<strong>ゼロ点は、足し算が収束する安全地帯には一つも無い</strong>と。ではゼロ点はどこに？ 答えは、足し算がそのままでは通用しない<em>向こう側</em>。まずそこへ関数を意味あるまま延ばす手品「解析接続」を、拍子抜けするほど身近な例でつかみ、それから複素平面という舞台と、二種類のゼロ、そして「一直線」の正体に迫ります。入門編いちばんの山場です。</p>
+
+  <h2><span class="n">01</span>まず、身近な"解析接続" ── 等比級数</h2>
+
+  <p>「収束する範囲の外へ関数を延ばす」なんて魔法に聞こえますが、実は高校で習う<strong>等比級数</strong>がまさにそれです。</p>
+
+  <div class="keybox">
+    <div class="lbl">等比級数 ── 足し算とその「正体の式」</div>
+    $$1+x+x^2+x^3+\cdots=\frac{1}{1-x}$$
+    <p style="margin:8px 0 0;">左の足し算が成り立つのは <strong>\(|x|<1\) のときだけ</strong>（\(x=2\) なら \(1+2+4+8+\cdots=\infty\) で無意味）。ところが右の式 \(\dfrac{1}{1-x}\) は、\(x=1\) を除けば<em>どんな \(x\) でも値を持つ</em>。たとえば \(x=2\) で \(\dfrac{1}{1-2}=-1\)。</p>
+  </div>
+
+  <p>足し算は \(|x|<1\) という"窓"からしか関数を見られない。でもその奥には、もっと広い場所まで生きている<strong>一つの関数 \(1/(1-x)\)</strong> がある。下の図で、\(x\) を動かしてみてください。窓の中（\(|x|<1\)）では足し算がちゃんと \(1/(1-x)\) に着地し、窓の外では足し算は暴れて発散するのに、<em>式のほうは平然と値を持ち続ける</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">紫の階段＝部分和</span> 1+x+…+xᴺ（項を増やす）、<span style="color:#2f7d5a;font-weight:700;">緑の点線＝1/(1−x)</span>。スライダーで x を動かす。|x|&lt;1 では階段が緑に着地、|x|&gt;1 では階段が発散するのに緑は値を持つ ── これが「解析接続」の芯。</div>
+    <canvas id="cvGeo" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <label>x ：<input type="range" id="sldX" min="-2.5" max="2.5" value="0.6" step="0.05"><span id="xVal" style="font-weight:700;color:var(--acc);">0.60</span></label>
+    </div>
+    <div class="readout" id="rdGeo"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">解析接続とは（一言）</div>
+    <p class="big" style="margin:0;">「なめらかさ（微分可能）」を保ったまま関数を広げる方法は、<strong>あっても一通りしかない</strong>。だから \(1/(1-x)\) が \(1+x+x^2+\cdots\) の"唯一の正体"。ゼータも同じ ── \(s>1\) の足し算は窓で、その奥に<em>複素平面ほぼ全体で生きる一つの関数 \(\zeta(s)\)</em> がいる。</p>
+  </div>
+
+  <p>ゼータでこれをやると、足し算では発散していた場所にも、ちゃんと値が現れます。有名なのがこの二つ ── <em>足し算としてはあり得ない</em>のに、延ばした関数の値としては正しい：</p>
+
+  <div class="keybox">
+    <div class="lbl">延ばした先の、驚きの値（このページの図3で数値的に確認できます）</div>
+    $$\zeta(-1)=-\frac{1}{12},\qquad \zeta(0)=-\frac12,\qquad \zeta(-2)=0$$
+    <p style="margin:8px 0 0;">「\(1+2+3+\cdots=-\tfrac1{12}\)」という有名なアレは、<em>足し算そのもの</em>ではなく<strong>解析接続した \(\zeta(-1)\) の値</strong>のこと。そして \(\zeta(-2)=0\) ── これがさっそく<strong>最初のゼロ点</strong>です（種類は後述）。なお唯一 \(s=1\) だけは値を持てず無限大（＝第3回の調和級数の発散）。ゼータは \(s=1\) を1点だけ避けて、複素平面全体に広がります。</p>
+  </div>
+
+  <h2><span class="n">02</span>舞台は「複素平面」 ── s＝σ＋it</h2>
+
+  <p>ゼロ点の話をするには、\(s\) を実数から<strong>複素数</strong>へ広げる必要があります。複素数 \(s=\sigma+it\) は、横に実部 \(\sigma\)、縦に虚部 \(t\) をとった<em>平面上の点</em>だと思ってください（\(i=\sqrt{-1}\)）。ゼータ \(\zeta(s)\) は「平面上の点 \(s\) を入れると、複素数の値が出てくる」関数になります。</p>
+
+  <div class="aside">
+    <span class="tag">\(n^s\) が複素数だと「回る」── ゼロ点＝打ち消し合い</span>
+    各項 \(\dfrac{1}{n^s}=\dfrac{1}{n^{\sigma}}\cdot\dfrac{1}{n^{it}}\)。前半 \(1/n^\sigma\) は<strong>長さ</strong>、後半 \(1/n^{it}=e^{-it\ln n}\) は<strong>向き（回転）</strong>。つまり各項は「長さ \(1/n^\sigma\)・角度 \(-t\ln n\) の小さな矢印」。ゼータの値は、その矢印を全部<strong>つなげて足したベクトル</strong>。\(\zeta(s)=0\) とは ── <em>無数の矢印が、ぐるぐる回りながら完全に打ち消し合って、原点に戻ってくる</em>という奇跡的な釣り合いのこと。
+  </div>
+
+  <p>下の図は、その矢印を実際につないだ渦巻きです（見やすいよう符号を交互にした形＝ゼロ点は同じ）。ボタンで場所を切り替えて、渦の<strong>行き先</strong>を見てください。<span style="color:var(--open);font-weight:700;">非自明なゼロ（0.5+14.13i）</span>では渦が<em>原点に吸い込まれ</em>、ふつうの点や線を外した点では、原点<em>ではない</em>ところに落ち着きます。</p>
+
+  <div class="fig">
+    <div class="cap">図：ゼータ（交代形）の項の矢印を順につないだ渦。<span style="color:#7a4fa0;font-weight:700;">紫の曲線＝矢印の足し上げ</span>、<span style="color:var(--open);font-weight:700;">赤丸＝到達点</span>、＋が原点。ボタンで s を切替。到達点が原点に来る＝ゼロ点。</div>
+    <canvas id="cvSpiral" width="680" height="340"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" id="bz1">第1ゼロ 0.5+14.13i</button>
+      <button class="btn" id="bz2">線の外 0.7+14.13i</button>
+      <button class="btn" id="bz3">ふつうの点 2+0i</button>
+    </div>
+    <div class="readout" id="rdSpiral"></div>
+  </div>
+
+  <h2><span class="n">03</span>二種類のゼロ ── 「自明」と「非自明」</h2>
+
+  <p>ゼータのゼロ点（\(\zeta(s)=0\) になる \(s\)）は、性格の違う二種類に分かれます。</p>
+
+  <div class="keybox">
+    <div class="lbl">ゼロは2種類</div>
+    <p style="margin:0 0 6px;">・<strong>自明なゼロ</strong>：\(s=-2,-4,-6,\dots\)（負の偶数）。<em>場所も理由も完全に分かっている</em>ので「自明」。リーマン予想は<strong>これは対象にしない</strong>。</p>
+    <p style="margin:0;">・<strong>非自明なゼロ</strong>：帯 \(0<\mathrm{Re}(s)<1\)（＝<em>臨界帯</em>）の中にある本命のゼロ。最初は \(s=\tfrac12+14.13\,i\)、次が \(\tfrac12+21.02\,i\)… と縦に無限に続く。リーマン予想は<strong>この居場所</strong>についての予想。</p>
+  </div>
+
+  <p>なぜ \(1/2\) という半端な数が主役なのか？ 鍵は、リーマンが見つけた<strong>関数等式</strong>という"鏡"です。</p>
+
+  <div class="keybox">
+    <div class="lbl">関数等式 ── Re(s)=1/2 を軸にした鏡</div>
+    $$\zeta(s)=2^{s}\pi^{s-1}\sin\!\Big(\frac{\pi s}{2}\Big)\,\Gamma(1-s)\,\zeta(1-s)$$
+    <p style="margin:8px 0 0;">この式は \(\zeta(s)\) と \(\zeta(1-s)\) を結びます。\(s\) と \(1-s\) は、ちょうど<strong>直線 \(\mathrm{Re}(s)=1/2\) をはさんで左右対称</strong>な点（\(s=0.3\) の相手は \(0.7\)、\(s=0.5\) は自分自身）。つまりゼータは \(1/2\) の線を<em>鏡の軸</em>にした対称性を持つ。だから非自明なゼロも、この軸について対称に並ぶしかない。<strong>リーマン予想は「対称なだけでなく、全部その軸の"真上"に乗っている"」</strong>という、最も美しい可能性を主張しているのです。</p>
+    <p style="margin:8px 0 0;">おまけに、右辺の \(\sin(\pi s/2)\) は \(s=\pm2,\pm4,\dots\) でゼロ。負の偶数ではこれが \(\zeta(s)=0\) を生む ── これが<strong>自明なゼロの正体</strong>です。</p>
+  </div>
+
+  <h2><span class="n">04</span>これが核心の図 ── 臨界線でだけ、底が「0」に着く</h2>
+
+  <p>いよいよ核心。下の図は、縦の直線 \(\mathrm{Re}(s)=\sigma\) 上を高さ \(t\) にそって進みながら、ゼータの<strong>大きさ \(|\zeta(\sigma+it)|\)</strong> を測ったもの。谷（へこみ）が深いほどゼロに近い。スライダーで \(\sigma\)（線の左右位置）を動かしてください。</p>
+
+  <p><strong>\(\sigma=1/2\)（臨界線）に合わせたときだけ</strong>、谷の底が<em>ぴったり 0 に着地</em>します ── そこが非自明なゼロ。少しでも線を外す（\(\sigma\neq1/2\)）と、谷は浅くなり、<strong>底は 0 に届きません</strong>。「ゼロは臨界線の上にしか無い」を、自分の手で確かめられます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:#7a4fa0;font-weight:700;">紫＝|ζ(σ+it)|</span> を高さ t（横軸）にそって。<span style="color:var(--open);font-weight:700;">赤▼＝谷が0に着いた点（ゼロ）</span>。スライダーで σ を動かす。σ=0.5 でだけ底が0に着く。「臨界線に合わせる」で σ=0.5 に一発。</div>
+    <canvas id="cvZeta" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <label>σ（線の位置 Re(s)）：<input type="range" id="sldSig" min="0.1" max="0.9" value="0.5" step="0.02"><span id="sigVal" style="font-weight:700;color:var(--acc);">0.50</span></label>
+      <button class="btn" id="btnHalf">臨界線に合わせる（σ=0.5）</button>
+    </div>
+    <div class="readout" id="rdZeta"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#7a4fa0;"></i>|ζ(σ+it)|</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>ゼロ（底が0）</span>
+      <span>横軸 t＝0〜40（最初の5つのゼロ）</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">リーマン予想（正確な言明）</div>
+    <p class="big" style="margin:0;">ゼータ関数 \(\zeta(s)\) の<strong>非自明なゼロ</strong>（臨界帯 \(0<\mathrm{Re}(s)<1\) にあるゼロ）は、<em>一つ残らず</em>臨界線 \(\mathrm{Re}(s)=\dfrac12\) の上にある。</p>
+    <p style="margin:10px 0 0;font-size:15px;">図で「\(\sigma=0.5\) のときだけ底が0に着く」ように見えたことを、<strong>臨界帯のすべての非自明なゼロについて、無限のかなたまで</strong>成り立つと証明せよ ── それが100万ドル。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">解析接続で得た \(\zeta(s)\) は複素平面全体で定義され（\(s=1\) だけ極＝無限大）、そこは元の足し算 \(\sum n^{-s}\) の値とは<strong>一致しません</strong>（足し算は \(\mathrm{Re}(s)>1\) でのみ意味を持つ）。「\(1+2+3+\cdots=-1/12\)」は足し算の等式ではなく、解析接続した \(\zeta(-1)=-1/12\) の値を俗にそう書いたものです。\(\zeta(0)=-1/2\)、負の偶数での自明なゼロ \(\zeta(-2)=\zeta(-4)=\cdots=0\) はいずれも正しい事実。</p>
+    <p style="margin-bottom:0;">図2の渦は、\(\mathrm{Re}(s)>0\) で収束する交代級数（ディリクレのイータ関数 \(\eta(s)=(1-2^{1-s})\zeta(s)\)）の部分和で描いており、臨界帯でも意味を持つ正直な図です（\(\eta\) と \(\zeta\) のゼロは臨界帯で一致）。有限項なので到達点はゼロ点でも完全な原点ではなく「原点へ近づく」ことに注意。図3の \(|\zeta|\) はこのページ内で複素ゼータを数値計算（ボーウェンのアルゴリズム）して描いており、\(\zeta(2)=\pi^2/6\) などの既知値・零点位置と一致することを確認済みです。関数等式・自明なゼロ・臨界線対称性はすべて確立した事実。ただし「非自明なゼロがすべて臨界線上」は未証明（＝リーマン予想）です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「1+x+x²+…＝1/(1−x)」は、解析接続の何のたとえになっている？
+        <details><summary>答えを見る</summary><div class="ans">左の足し算は |x|&lt;1 でしか成り立たない（狭い窓）が、右の式 1/(1−x) は x=1 以外どこでも値を持つ（広い舞台）。同じように、ゼータの足し算 Σ1/nˢ は Re(s)&gt;1 の窓でしか通じないが、その奥に複素平面ほぼ全体で生きる一つの関数 ζ(s) がいる。なめらかさを保つ延ばし方は一通りしかないので、それが"正体"。</div></details>
+      </li>
+      <li>自明なゼロと非自明なゼロの違いは？
+        <details><summary>答えを見る</summary><div class="ans">自明なゼロは s=−2,−4,−6,…（負の偶数）で、場所も理由（関数等式の sin(πs/2) が消える）も完全に分かっているので問題にしない。非自明なゼロは臨界帯 0&lt;Re(s)&lt;1 の中にある本命のゼロ（最初は 1/2+14.13i）。リーマン予想はこの非自明なゼロが全部 Re(s)=1/2 に乗ると主張する。</div></details>
+      </li>
+      <li>なぜ「1/2」という数が特別なのか。
+        <details><summary>答えを見る</summary><div class="ans">関数等式が ζ(s) と ζ(1−s) を結ぶから。s と 1−s は直線 Re(s)=1/2 について左右対称な点で、1/2 はその鏡の軸（自分自身と対称）。だからゼロもこの軸について対称に並ぶ。リーマン予想は「対称なだけでなく、全部その軸の真上に乗る」という最も整った可能性を主張している。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>「一直線」の正体</h2>
+    <p>ゼロ点は足し算が届かない"向こう側"にある。そこへ関数を延ばすのが<strong>解析接続</strong> ── 身近な例は \(1+x+x^2+\cdots=1/(1-x)\)（窓は \(|x|<1\)、でも式は広く生きる）。なめらかさを保つ延ばし方は一通りだけなので、それが唯一の正体。こうして \(\zeta\) は複素平面全体（\(s=1\) を除く）に広がり、\(\zeta(-1)=-1/12\)、\(\zeta(-2)=0\) といった値まで現れる。</p>
+    <p>舞台は複素平面 \(s=\sigma+it\)。各項は回る矢印で、<strong>ゼロ点＝無数の矢印が打ち消し合って原点に戻る</strong>釣り合い。ゼロは2種類 ── 自明（負の偶数、関数等式の \(\sin\) 由来）と、本命の<strong>非自明</strong>（臨界帯）。関数等式は \(\mathrm{Re}(s)=1/2\) を鏡の軸にする。<strong>リーマン予想＝非自明なゼロは全部その軸 Re(s)=1/2 の上に乗る</strong>。図で「\(\sigma=1/2\) のときだけ底が0に着く」を、無限のかなたまで証明せよ。次回（入門編・完）は、そのゼロが素数の"ゆらぎ"をどう指揮するか（明示公式）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-03-zeta.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第3回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-05-naze.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第5回：なぜ大事？ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 第4回、数学好きの高校生・大学生向け読み物。等比級数 \(\sum x^n=1/(1-x)\)（\(|x|<1\)）はその右辺が解析接続を与える最も初等的な例です。ゼータ関数は \(s=1\) を単純極として複素平面全体へ一意に解析接続され、そこでの値は \(\mathrm{Re}(s)>1\) の級数値とは一般に一致しません。\(\zeta(-1)=-1/12\)、\(\zeta(0)=-1/2\)、負の偶数での自明なゼロ、関数等式 \(\zeta(s)=2^s\pi^{s-1}\sin(\pi s/2)\Gamma(1-s)\zeta(1-s)\)、および \(s\leftrightarrow1-s\) の対称性（軸 \(\mathrm{Re}(s)=1/2\)）はいずれも確立した事実です。非自明なゼロは臨界帯 \(0<\mathrm{Re}(s)<1\) にあり、最初の数個は \(1/2+14.1347i,\ 1/2+21.0220i,\dots\)。リーマン予想はこれらがすべて \(\mathrm{Re}(s)=1/2\) 上にあると主張しますが未証明です。図2はディリクレのイータ関数 \(\eta(s)=(1-2^{1-s})\zeta(s)\)（\(\mathrm{Re}(s)>0\) で収束）の部分和、図3は複素ゼータの数値計算（ボーウェンのアルゴリズム）で、既知値・零点位置との一致を確認しています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーで解析接続、図2のボタンでゼロ点の"打ち消し合い"、図3のσスライダーで「臨界線でだけ底が0に着く」を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* 検証済み：複素ゼータ（ボーウェンのアルゴリズム, n=28） */
+function zetaC(sigma, t){
+  var n=28, d=new Array(n+1), si=1.0, acc=si; d[0]=acc;
+  for(var i=1;i<=n;i++){ si = si*(4*(n+i-1)*(n-i+1))/((2*i)*(2*i-1)); acc+=si; d[i]=acc; }
+  var dn=d[n], reSum=0, imSum=0;
+  for(var k=0;k<n;k++){
+    var coef=(d[k]-dn)*((k%2===0)?1:-1);
+    var base=k+1, mag=Math.pow(base,-sigma), ang=-t*Math.log(base);
+    reSum+=coef*mag*Math.cos(ang); imSum+=coef*mag*Math.sin(ang);
+  }
+  var etaRe=-reSum/dn, etaIm=-imSum/dn;
+  var m=Math.pow(2,1-sigma), a=-t*Math.log(2);
+  var wRe=1-m*Math.cos(a), wIm=-m*Math.sin(a), den=wRe*wRe+wIm*wIm;
+  return [(etaRe*wRe+etaIm*wIm)/den, (etaIm*wRe-etaRe*wIm)/den];
+}
+function cabs(z){return Math.hypot(z[0],z[1]);}
+
+/* ===== 図1：等比級数の解析接続 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvGeo'), rd=document.getElementById('rdGeo');
+  var sld=document.getElementById('sldX'), xVal=document.getElementById('xVal');
+  var NT=14, lastW=680;
+  function draw(){
+    var x=parseFloat(sld.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=46,mR=16,mT=16,mB=30, plotW=w-mL-mR, plotH=h-mT-mB;
+    var target = Math.abs(x-1)<1e-9? null : 1/(1-x);
+    // 部分和の値域を集める
+    var vals=[], run=0;
+    for(var k=0;k<=NT;k++){ if(k===0) run=1; else run+=Math.pow(x,k); vals.push(run); }
+    var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
+    if(target!==null){ lo=Math.min(lo,target); hi=Math.max(hi,target); }
+    lo=Math.min(lo,0); hi=Math.max(hi,1);
+    var pad=(hi-lo)*0.12+0.5; lo-=pad; hi+=pad;
+    // クランプ（発散時に潰れないよう）
+    if(hi-lo>60){ var mid=(target!==null&&isFinite(target))?target:1; lo=mid-30; hi=mid+30; }
+    function X(k){ return mL + k/NT*plotW; }
+    function Y(v){ return mT + plotH - (v-lo)/(hi-lo)*plotH; }
+    ctx.clearRect(0,0,w,h);
+    // 0線
+    ctx.strokeStyle='#e6dcea'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+plotW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('0', mL-6, Y(0)+4);
+    // 目標線 1/(1-x)
+    if(target!==null && isFinite(target) && target>=lo && target<=hi){
+      ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=1.8; ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.moveTo(mL,Y(target)); ctx.lineTo(mL+plotW,Y(target)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#2f7d5a'; ctx.font='bold 11.5px sans-serif'; ctx.textAlign='left';
+      ctx.fillText('1/(1−x) = '+target.toFixed(3), mL+6, Y(target)-6);
+    }
+    // 部分和の階段
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2.2; ctx.beginPath();
+    for(var k=0;k<=NT;k++){ var yy=Y(vals[k]); if(k===0) ctx.moveTo(X(k),yy); else { ctx.lineTo(X(k),Y(vals[k-1])); ctx.lineTo(X(k),yy);} }
+    ctx.stroke();
+    for(var k2=0;k2<=NT;k2++){ ctx.beginPath(); ctx.arc(X(k2),Y(vals[k2]),3,0,7); ctx.fillStyle='#7a4fa0'; ctx.fill(); }
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('項数 N →', mL+plotW-30, mT+plotH+20);
+  }
+  function report(){
+    var x=parseFloat(sld.value); xVal.textContent=x.toFixed(2);
+    var conv=Math.abs(x)<1;
+    var run=0; for(var k=0;k<=NT;k++){ if(k===0) run=1; else run+=Math.pow(x,k); }
+    var f = Math.abs(x-1)<1e-9? '∞（x=1 は極）' : (1/(1-x)).toFixed(3);
+    if(conv){
+      rd.innerHTML='x='+x.toFixed(2)+'（|x|&lt;1・<b>窓の中</b>）── 部分和は <b>1/(1−x)='+f+'</b> にきれいに着地。足し算と式が一致。';
+    } else if(Math.abs(x-1)<1e-9){
+      rd.innerHTML='x=1 ── ここだけ関数が<b>無限大（極）</b>。ゼータでいう s=1（調和級数の発散）に対応。';
+    } else {
+      rd.innerHTML='x='+x.toFixed(2)+'（|x|&gt;1・<b>窓の外</b>）── 部分和は発散して暴れる（N=14 で '+run.toFixed(1)+'）。でも式 <b>1/(1−x)='+f+'</b> は平然と値を持つ ＝ これが解析接続。';
+    }
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：矢印の渦（イータ部分和） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvSpiral'), rd=document.getElementById('rdSpiral');
+  var b1=document.getElementById('bz1'), b2=document.getElementById('bz2'), b3=document.getElementById('bz3');
+  var M=500, lastW=680;
+  var presets={ z1:{sig:0.5,t:14.134725,name:'第1ゼロ 0.5+14.13i',zero:true},
+                z2:{sig:0.7,t:14.134725,name:'線の外 0.7+14.13i',zero:false},
+                z3:{sig:2.0,t:0.0,name:'ふつうの点 2+0i',zero:false} };
+  var cur='z1';
+  function etaPath(sig,t){
+    // 部分和 T_m = Σ_{n=1}^m (-1)^{n-1} n^{-s}
+    var pts=[], re=0, im=0;
+    pts.push([0,0]);
+    for(var nn=1;nn<=M;nn++){
+      var mag=Math.pow(nn,-sig), ang=-t*Math.log(nn), sgn=(nn%2===1)?1:-1;
+      re+=sgn*mag*Math.cos(ang); im+=sgn*mag*Math.sin(ang);
+      pts.push([re,im]);
+    }
+    return pts;
+  }
+  function draw(){
+    var p=presets[cur], pts=etaPath(p.sig,p.t);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    // 範囲
+    var minx=0,maxx=0,miny=0,maxy=0;
+    for(var i=0;i<pts.length;i++){ minx=Math.min(minx,pts[i][0]); maxx=Math.max(maxx,pts[i][0]); miny=Math.min(miny,pts[i][1]); maxy=Math.max(maxy,pts[i][1]); }
+    var cx=(minx+maxx)/2, cy=(miny+maxy)/2, span=Math.max(maxx-minx,maxy-miny)*1.15+0.4;
+    var mT=14, size=Math.min(w, h-24);
+    var ox=w/2, oy=(h)/2;
+    function X(re){ return ox + (re-cx)/span*size; }
+    function Y(im){ return oy - (im-cy)/span*size; }
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#eadff0'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(X(cx-span/2),Y(0)); ctx.lineTo(X(cx+span/2),Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),Y(cy-span/2)); ctx.lineTo(X(0),Y(cy+span/2)); ctx.stroke();
+    // 原点 +
+    ctx.strokeStyle='#1a1e28'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(X(0)-7,Y(0)); ctx.lineTo(X(0)+7,Y(0)); ctx.moveTo(X(0),Y(0)-7); ctx.lineTo(X(0),Y(0)+7); ctx.stroke();
+    ctx.fillStyle='#1a1e28'; ctx.font='11px sans-serif'; ctx.textAlign='left'; ctx.fillText('原点', X(0)+9, Y(0)-9);
+    // 渦
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=1.6; ctx.beginPath();
+    for(var j=0;j<pts.length;j++){ var xx=X(pts[j][0]), yy=Y(pts[j][1]); if(j===0) ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy); }
+    ctx.stroke();
+    // 到達点
+    var end=pts[pts.length-1];
+    ctx.beginPath(); ctx.arc(X(end[0]),Y(end[1]),6,0,7); ctx.fillStyle='#a5473a'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  function report(){
+    var p=presets[cur];
+    var z=zetaC(p.sig,p.t), za=cabs(z);
+    var eta=(function(){ // 収束値 η=(1-2^{1-s})ζ の大きさ
+      var m=Math.pow(2,1-p.sig), a=-p.t*Math.log(2);
+      var wRe=1-m*Math.cos(a), wIm=-m*Math.sin(a);
+      return Math.hypot(z[0]*wRe-z[1]*wIm, z[0]*wIm+z[1]*wRe);
+    })();
+    if(p.zero){
+      rd.innerHTML='<b>'+p.name+'</b>：ここは非自明なゼロ。渦は <b>原点へ吸い込まれる</b>（|ζ|≈'+za.toExponential(1)+'≈0）。無数の矢印が完全に打ち消し合う釣り合い。';
+    } else if(p.t===0){
+      rd.innerHTML='<b>'+p.name+'</b>：ふつうの点。回転しないので矢印はジグザグに縮み、原点<b>ではない</b>実数値 ζ(2)=π²/6≈1.645 に着地（|ζ|='+za.toFixed(3)+'）。';
+    } else {
+      rd.innerHTML='<b>'+p.name+'</b>：臨界線を外した点。渦は原点<b>ではない</b>ところへ落ち着く（|ζ|='+za.toFixed(3)+'&gt;0 ＝ゼロではない）。';
+    }
+  }
+  function setCur(c){ cur=c; b1.classList.toggle('on',c==='z1'); b2.classList.toggle('on',c==='z2'); b3.classList.toggle('on',c==='z3'); draw(); report(); }
+  b1.addEventListener('click',function(){setCur('z1');});
+  b2.addEventListener('click',function(){setCur('z2');});
+  b3.addEventListener('click',function(){setCur('z3');});
+  window.addEventListener('resize',draw);
+  setTimeout(function(){setCur('z1');},40); window.addEventListener('load',function(){setCur('z1');});
+})();
+
+/* ===== 図3：|ζ(σ+it)| の谷（核心） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvZeta'), rd=document.getElementById('rdZeta');
+  var sld=document.getElementById('sldSig'), sigVal=document.getElementById('sigVal'), btnHalf=document.getElementById('btnHalf');
+  var TMAX=40, NP=520, lastW=680;
+  function draw(){
+    var sig=parseFloat(sld.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=44,mR=16,mT=16,mB=30, plotW=w-mL-mR, plotH=h-mT-mB;
+    // サンプル
+    var xs=[], ys=[], ymax=0.001;
+    for(var i=0;i<=NP;i++){ var t=TMAX*i/NP; var v=cabs(zetaC(sig,t)); xs.push(t); ys.push(v); if(v>ymax) ymax=v; }
+    ymax=Math.min(ymax,3.2); ymax*=1.05;
+    function X(t){ return mL + t/TMAX*plotW; }
+    function Y(v){ return mT + plotH - Math.min(v,ymax)/ymax*plotH; }
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#d8ccdd'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(mL,mT); ctx.lineTo(mL,mT+plotH); ctx.lineTo(mL+plotW,mT+plotH); ctx.stroke();
+    // y メモリ
+    ctx.fillStyle='#8a7f92'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    for(var gi=0;gi<=3;gi++){ var vv=ymax*gi/3, yy=Y(vv);
+      ctx.strokeStyle='#f0e8f3'; ctx.beginPath(); ctx.moveTo(mL,yy); ctx.lineTo(mL+plotW,yy); ctx.stroke();
+      ctx.fillStyle='#8a7f92'; ctx.fillText(vv.toFixed(1), mL-5, yy+4);
+    }
+    // x メモリ
+    ctx.textAlign='center';
+    for(var tv=10;tv<=TMAX;tv+=10){ ctx.fillStyle='#8a7f92'; ctx.fillText('t='+tv, X(tv), mT+plotH+16); }
+    // |ζ| 曲線
+    ctx.strokeStyle='#7a4fa0'; ctx.lineWidth=2; ctx.beginPath();
+    for(var j=0;j<xs.length;j++){ var px=X(xs[j]), py=Y(ys[j]); if(j===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+    ctx.stroke();
+    // ゼロ（局所最小かつ小さい）をマーク ── 臨界線ぴったりのときだけ（線の外にゼロは無い）
+    var zeroCount=0, minList=[], isOn=Math.abs(sig-0.5)<0.011;
+    for(var k=2;isOn&&k<ys.length-2;k++){
+      if(ys[k]<ys[k-1]&&ys[k]<ys[k+1]&&ys[k]<0.08){
+        var px2=X(xs[k]);
+        ctx.beginPath(); ctx.moveTo(px2,Y(0)-2); ctx.lineTo(px2-5,Y(0)-12); ctx.lineTo(px2+5,Y(0)-12); ctx.closePath();
+        ctx.fillStyle='#a5473a'; ctx.fill();
+        zeroCount++; minList.push(xs[k].toFixed(1));
+      }
+    }
+    // 最小の谷の深さ（着地度）
+    var gmin=Math.min.apply(null,ys);
+    return {sig:sig, zeroCount:zeroCount, minList:minList, gmin:gmin};
+  }
+  function report(info){
+    var sig=info.sig; sigVal.textContent=sig.toFixed(2);
+    if(Math.abs(sig-0.5)<0.011){
+      rd.innerHTML='σ='+sig.toFixed(2)+'（<b style="color:#2f7d5a;">臨界線ぴったり</b>）── 谷の底が <b>0 に着地</b>！ 見えているゼロ：t≈'+info.minList.join(', ')+'。これが非自明なゼロ。';
+    } else {
+      rd.innerHTML='σ='+sig.toFixed(2)+'（臨界線を外している）── どの谷も底が <b>0 に届かない</b>（最小でも |ζ|≈'+info.gmin.toFixed(2)+'）。この線上にはゼロが無い。σ=0.5 に戻すと底が0に着く。';
+    }
+  }
+  sld.addEventListener('input', function(){ report(draw()); });
+  btnHalf.addEventListener('click', function(){ sld.value=0.5; report(draw()); });
+  window.addEventListener('resize',function(){draw();});
+  setTimeout(function(){report(draw());},40); window.addEventListener('load',function(){report(draw());});
+})();
+</script>
+</body>
+</html>

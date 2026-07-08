@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>間違った半分 ── 熱流はΛ≥0を出すが、RHはΛ≤0 ／ リーマン・ペレルマン編 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#efe9f3; --warn:#8a4b2f; --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#5a2a6e; --gold:#a9791a; --grid:#e6dcc7; --heat:#c05a2a;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);
+    margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;
+    margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d5ee 62%);padding:0 .05em;} strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2e1c38;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  input[type=range]{width:250px;accent-color:#5a2a6e;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#2e1c38;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .map{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .map .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);} .map .row:last-child{border-bottom:none;}
+  .map .row>div{flex:1;min-width:190px;padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.65;}
+  .map .row .l{background:#efe9f3;color:#2e1c38;border-right:1px solid var(--rule);} .map .row .r{background:#e9f0ec;color:#22343a;}
+  .map .row.head>div{font-weight:700;font-size:12px;letter-spacing:.1em;} .map .row.head .l{color:var(--side);} .map .row.head .r{color:var(--solved);}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#2e1c38;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.map{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;} details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・ペレルマン編 ── 熱流でRHを</span><span class="ep">第 3 回</span></div>
+  <p class="eyebrow">錨は0.2まで来た ── なのに最後の一押しが、構造的に効かない</p>
+  <h1>間違った半分 ── 熱流はΛ≥0を出すが、RHはΛ≤0
+    <span class="sub">熱流の単調性は、零点を実軸へ<em>押し上げる</em>。だからそれが証明するのは <strong>Λ≥0</strong> ── RHが要る <strong>Λ≤0</strong> とは<em>逆向き</em>だ。<br>二つの錨は Λ=0 に迫るが、最後の一点は<strong>臨界（marginal）</strong>。ここがヤン=ミルズの「対数臨界」と同じ壁になる。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：なぜ「錨が近い」のに詰めきれないかを、向きの問題として理解する</span>
+    <span>一言で：単調フローは"間違った半分"を証明する</span>
+  </div>
+
+  <p class="lead">前回、\(0\le\Lambda\le0.2\) まで来ました。錨はRHの主張 \(\Lambda=0\) にとても近い。「あと少しで詰まる」と思いたくなります ── ところが、ここに残酷なひねりがあります。<strong>熱流の単調性は、RHが欲しい向きと"逆"</strong>を証明するのです。今回はこの「間違った半分」を正面から見ます。そして、その壁が姉妹編ヤン=ミルズの<strong>「対数的にぎりぎり」</strong>と、同じ臨界の顔をしていることを確かめます。</p>
+
+  <h2><span class="n">01</span>熱流は「実にする」向き ── だから証明できるのは Λ≥0</h2>
+
+  <p>思い出してください。熱流は時間 \(t\) を<em>進める</em>ほど、零点を実軸へ<strong>押し上げます</strong>（＝実にする、吸収する）。つまり熱流が得意なのは「\(t\) を増やせば実になる」方向。この向きから自然に出るのは ── </p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2;">
+    <li><strong>上の錨</strong>：\(t\) を十分大きくすれば全部実（de Bruijn → Polymath で \(\Lambda\le0.2\)）。<em>これは熱流の"進める向き"にぴったり乗る</em>。</li>
+    <li><strong>下の錨</strong>：\(\Lambda\ge0\)（Rodgers–Tao）。「ならし過ぎは矛盾」＝<em>熱流の単調性が押し上げる限界</em>。</li>
+  </ul>
+
+  <p>でも、RHが本当に欲しいのは <strong>\(\Lambda\le0\)</strong> ── すなわち「\(t=0\)（熱をかける前）で<em>もう</em>全部実」。これは<strong>熱を進める向きの逆</strong>です。零点を実にしてくれる熱流は、\(t=0\) より<em>手前</em>には手を貸してくれない。</p>
+
+  <div class="keybox">
+    <div class="lbl">向きの食い違い（この回の核心）</div>
+    <p class="big" style="margin:0;">熱流が押す向き：<strong>t を増やす → 実になる</strong>（＝上から、Λ≥0側）。<br>RHが要る向き：<strong>t=0 で既に実</strong>（＝Λ≤0側）。<br>単調フローは<em>間違った半分</em>を証明する ── 最後の一押し（Λ≤0）に、力を貸さない。</p>
+  </div>
+
+  <h2><span class="n">02</span>「逆回し」はできないのか ── 後退熱流は悪条件</h2>
+
+  <p>「だったら熱を<em>逆に</em>かけて、\(t\) を大きい所（全部実）から \(t=0\) まで巻き戻せばいい」── 自然な発想ですが、これが効きません。<strong>熱方程式を逆向きに回すのは、数学的に"悪条件（ill-posed）"</strong>だからです。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ逆回しはダメか</span>
+    熱の広がりは<em>情報をならして消す</em>方向。だから逆回しは「消えた情報を復元する」ことになり、ほんの少しの誤差が<strong>爆発的に増幅</strong>する（インクが水に広がった後、元の一滴に戻せないのと同じ）。零点でいえば、逆に回すと零点が<em>実軸から複素へ飛び出しかねない</em>。だから「全部実だった状態から \(t=0\) まで安全に巻き戻す」ことが保証できない。上の錨から下へは、素直に降りられないのです。
+  </div>
+
+  <p>下の図で、この挟み撃ちを体感してください。<strong>上の錨を左へドラッグ</strong>して \(\Lambda\) の上界を 0 に近づけると、<em>0 の直前で抵抗が生まれ、最後の一点 \(\Lambda=0\) に届かない</em> ── これが臨界の壁です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>Λ の数直線と、二つの錨</strong>。緑＝下の錨 \(\Lambda\ge0\)（Rodgers–Tao、熱流が押し上げる限界）。青＝上の錨（スライダーで詰める、Polymathで0.2）。<strong>RHの標的は Λ=0 の一点</strong>。上界を0へ近づけると<span style="color:#a5473a;font-weight:700;">臨界の抵抗</span>で止まる。矢印＝熱流の向き（実にする＝上側にしか力が働かない）。</div>
+    <canvas id="cv" width="680" height="270"></canvas>
+    <div class="ctrlrow">
+      <label>上界を詰める（→左へ）：<input type="range" id="sl" min="4" max="52" value="20"></label>
+      <span id="uval" style="font-weight:700;color:var(--acc);"></span>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>Λ≥0（下の錨・証明済）</span>
+      <span><i class="swatch" style="background:#3a6a9c;"></i>Λ≤上界（上の錨）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>臨界の壁（Λ=0）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>Λ=0 は「臨界」── ヤン=ミルズの対数臨界と同じ顔</h2>
+
+  <p>なぜ最後の一点だけ、こんなに硬いのか。答えは<strong>Λ=0 が"臨界の値"だから</strong>です。ニューマンの「ぎりぎり正しい」を思い出してください ── RHが成り立つのは \(\Lambda\) が<em>ちょうど</em> 0 のときだけ。少しでもズレたら偽。この「境界ぴったりに立っている」性質は、姉妹編で何度も出てきた壁と同じ形です。</p>
+
+  <div class="map">
+    <div class="row head"><div class="l">リーマン（この編）</div><div class="r">ヤン=ミルズ（姉妹編）</div></div>
+    <div class="row"><div class="l">フロー＝熱流（零点を実に）</div><div class="r">フロー＝くりこみ群（目盛りを粗く）</div></div>
+    <div class="row"><div class="l">単調量が押す向き＝Λ≥0（上側）</div><div class="r">端点の単調量（a定理）＝端だけ</div></div>
+    <div class="row"><div class="l">標的＝<strong>Λ=0 の臨界点</strong></div><div class="r">標的＝<strong>4次元の対数臨界</strong></div></div>
+    <div class="row"><div class="l">"ぎりぎり正しい"（Newman）</div><div class="r">"対数的にぎりぎり"（対数補正）</div></div>
+    <div class="row"><div class="l">単調性が境界で<em>鋭くない</em></div><div class="r">端点評価が中間を<em>素通り</em></div></div>
+  </div>
+
+  <p>どちらも、<strong>単調フロー／端点の道具は"あと一歩手前"まで連れて行くが、臨界の一点そのものには鋭さが足りない</strong>。ヤン=ミルズで「欲しいのは各点で鋭い単調量（YM版W）」と言ったのと同じ ── リーマンでも、<em>Λ=0 の境界でこそ効く、より鋭い単調量／剛性</em>が要る。それが、この編の残りの探索対象です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">連続性の方法として書くと</div>
+    <p style="margin:0;font-size:16px;line-height:1.8;">「\(t\) より右で全零点が実」という区間を、<strong>\(t=0\) まで延ばせ</strong>。上界（右端）は Polymath が 0.2 まで押した。だが評価は <strong>\(t\to0\)（臨界）で甘くなる</strong> ── ヤン=ミルズの「強結合から連続極限へ延ばすが、臨界で評価が甘くなる」と同型。<em>残るのは、臨界で鋭い一様評価。</em></p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">熱流 \(H_t\) は \(t\) の増加とともに零点を実軸へ移す（実になれば以後も実）ため、単調性から自然に出るのは上界（Λ≤…）と下界 Λ≥0 で、いずれも \(t\ge0\) 側の情報です。RHが要求する Λ≤0（\(t=0\) で既に全零点が実）は、この単調性が直接後押しする向きではありません。後退熱方程式が悪条件（ill-posed）で、既知の実零点状態から \(t=0\) へ安定に巻き戻せないことも、逆向きが使えない理由の標準的な説明です。Λ=0 が臨界（RHは Λ=0 ちょうどで成立、Newman「barely so」）である点も第1回の通り。</p>
+    <p style="margin-bottom:0;">ヤン=ミルズとの対応表は<em>アナロジー</em>であって、二問が数学的に同一という主張ではありません。図の「上界を詰める」抵抗・臨界の壁は、marginality（Λ=0での評価の甘さ）を模した教育用モデルで、Polymath15の実際の上界の推移や具体的評価そのものではありません。RH（Λ=0）は未証明です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>なぜ熱流の単調性は「間違った半分」を証明するのか。
+        <details><summary>答えを見る</summary><div class="ans">熱流は \(t\) を進めると零点を<strong>実にする</strong>方向。だから自然に出るのは Λ≥0（下端）と上界 Λ≤…で、いずれも \(t\ge0\) 側。RHが要る <strong>Λ≤0</strong>（t=0で既に実）は<em>逆向き</em>で、単調性が後押ししない。</div></details>
+      </li>
+      <li>「逆回し（後退熱流）」で巻き戻せないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">熱方程式の逆向きは<strong>悪条件（ill-posed）</strong>。ならして消えた情報の復元になり、微小誤差が爆発的に増幅し、零点が実軸から複素へ飛びかねない。全部実の状態から \(t=0\) へ安全に巻き戻せない。</div></details>
+      </li>
+      <li>Λ=0 の壁は、ヤン=ミルズの何と同型か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>4次元の対数臨界</strong>。どちらも単調フロー／端点の道具は"あと一歩手前"まで連れて行くが、<strong>臨界の一点で鋭さが足りない</strong>。RHでは Λ=0 の境界で効く、より鋭い単調量／剛性が要る（YM版Wに相当）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>錨は近い、でも向きが逆</h2>
+    <p>熱流は零点を<strong>実にする（押し上げる）</strong>向き。だからそれが証明するのは <strong>Λ≥0</strong>（下端）と上界 ── いずれも \(t\ge0\) 側。RHが要る <strong>Λ≤0</strong>（t=0で既に実）は<em>逆向き</em>で、単調性が後押ししない＝<strong>間違った半分</strong>。「逆回し」も後退熱流が<strong>悪条件</strong>で使えない。</p>
+    <p>二つの錨 \(0\le\Lambda\le0.2\) は近いが、最後の一点 <strong>Λ=0 は臨界</strong>（ニューマン「ぎりぎり正しい」）。これはヤン=ミルズの<strong>対数臨界</strong>と同じ顔で、<em>単調フロー／端点の道具は臨界で鋭さが足りない</em>。残るのは「Λ=0 の境界で効く、より鋭い単調量／剛性」── 次回、その候補として<strong>log-ガスの自由エネルギー（Wの文字どおり版）</strong>を見る。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-perelman2-tanchou.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">← 第2回：単調量はもうある</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman4-loggas.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第4回：log-ガスとW-エントロピー →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・ペレルマン編・第3回。de Bruijn–Newman の熱流 \(H_t\) は \(t\) の増加で零点を実軸へ移し（吸収）、この単調性から自然に得られるのは上界（Λ≤…、de Bruijn 1/2 → Polymath15 0.2）と下界 Λ≥0（Rodgers–Tao）で、いずれも \(t\ge0\) 側の情報です。RHが要求する Λ≤0（\(t=0\) で全零点が実）はこの単調性が直接後押しする向きではなく、後退熱方程式が悪条件（ill-posed）であるため既知の実零点状態から巻き戻す議論も使えない、という点が本文の「間違った半分」です。Λ=0 が臨界（RHは Λ=0 で成立、Newman「if true, only barely so」）。ヤン=ミルズ（対数臨界）との対応表はアナロジーで、両問の数学的同一性を主張するものではありません。図はmarginalityを模した教育用モデルで、実際の上界推移・評価ではありません。RHは未証明です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とスライダー・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では上界スライダーを左へ動かすと、Λ=0直前の臨界の壁が現れます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var sl=document.getElementById('sl'), uval=document.getElementById('uval');
+  var lastW=680;
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function upper(){ return (+sl.value)/100; }   // 0.04 .. 0.52
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var L=54, R=w-40, axisY=150;
+    var lo=-0.18, hi=0.55;
+    function X(v){ return L+(R-L)*(v-lo)/(hi-lo); }
+    var up=upper();
+
+    // green region Λ>=0 (proven lower anchor)
+    ctx.fillStyle='rgba(47,125,90,0.13)'; ctx.fillRect(X(0), axisY-46, X(hi)-X(0), 92);
+    // blue region Λ<=upper (upper anchor)
+    ctx.fillStyle='rgba(58,106,156,0.14)'; ctx.fillRect(X(lo), axisY-46, X(up)-X(lo), 92);
+    // overlap = still-possible Λ window [0, up]
+    ctx.fillStyle='rgba(90,42,110,0.10)'; ctx.fillRect(X(0), axisY-30, X(up)-X(0), 60);
+
+    // axis
+    ctx.strokeStyle='#b9ad8f'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(L,axisY); ctx.lineTo(R,axisY); ctx.stroke();
+    // ticks
+    ctx.fillStyle='#4a4f5e'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    [ -0.1,0,0.1,0.2,0.3,0.4,0.5].forEach(function(v){ var x=X(v);
+      ctx.strokeStyle='#c9bfa6'; ctx.beginPath(); ctx.moveTo(x,axisY-4); ctx.lineTo(x,axisY+4); ctx.stroke();
+      ctx.fillText(v.toFixed(1), x, axisY+20); });
+    ctx.fillStyle='#4a4f5e'; ctx.fillText('Λ', R+0, axisY+4); ctx.textAlign='right'; ctx.fillText('Λ →', R, axisY+34);
+
+    // lower anchor marker at 0
+    ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=2.6; ctx.beginPath(); ctx.moveTo(X(0),axisY-46); ctx.lineTo(X(0),axisY+46); ctx.stroke();
+    ctx.fillStyle='#2f7d5a'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('Λ≥0（Rodgers–Tao）', X(0)+6, axisY-52);
+    // upper anchor marker
+    ctx.strokeStyle='#3a6a9c'; ctx.lineWidth=2.4; ctx.beginPath(); ctx.moveTo(X(up),axisY-40); ctx.lineTo(X(up),axisY+40); ctx.stroke();
+    ctx.fillStyle='#3a6a9c'; ctx.textAlign='center'; ctx.fillText('上界 Λ≤'+up.toFixed(2), X(up), axisY+40+16);
+
+    // RH target point Λ=0 highlighted, with wall if upper near 0
+    var resist = up<0.06;
+    ctx.fillStyle= resist? '#a5473a' : '#5a2a6e';
+    ctx.beginPath(); ctx.arc(X(0),axisY,7,0,7); ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle= resist? '#a5473a':'#5a2a6e'; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('RH ⟺ Λ=0', X(0), axisY-58);
+
+    // heat flow direction arrow (points from t=0 toward larger Λ side = "makes real" only helps upper)
+    var ay=axisY+62;
+    ctx.strokeStyle='#c05a2a'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(X(0.05),ay); ctx.lineTo(X(0.42),ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0.42),ay); ctx.lineTo(X(0.42)-8,ay-4); ctx.lineTo(X(0.42)-8,ay+4); ctx.closePath(); ctx.fillStyle='#c05a2a'; ctx.fill();
+    ctx.fillStyle='#c05a2a'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('熱流が力を貸す向き（実にする＝上側だけ）', X(0.05), ay+18);
+    // wrong-way marker toward Λ<0
+    ctx.strokeStyle='#a5473a'; ctx.setLineDash([4,3]); ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(X(-0.02),ay-24); ctx.lineTo(X(-0.14),ay-24); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#a5473a'; ctx.textAlign='right'; ctx.fillText('RHが要る向き（力が働かない）', X(-0.02), ay-28);
+
+    if(resist){
+      ctx.fillStyle='#a5473a'; ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('臨界の壁：上界は 0 の直前で止まる', (X(0)+X(0.3))/2, 26);
+    }
+  }
+  function say(){
+    var up=upper();
+    uval.textContent='上界 = '+up.toFixed(2);
+    var msg = up<0.06
+      ? '<b>臨界の壁。</b> 上界を 0 の直前まで詰めても、Λ=0 の一点には届かない ── そこは臨界で、単調フローの評価が甘くなる。ヤン=ミルズの対数臨界と同型。'
+      : (up<0.25
+        ? '<b>Polymath 圏内。</b> 上から Λ≤'+up.toFixed(2)+' まで詰められる。だが 0 に近づくほど抵抗が増す ── 最後の一点 Λ=0 が臨界。'
+        : '<b>まだ余裕あり。</b> 上界 Λ≤'+up.toFixed(2)+'。ここまでは熱流の「実にする向き」に素直に乗る。さらに左（0）へ詰めてみて。');
+    rd.innerHTML = msg + ' 緑＝Λ≥0（証明済・下の錨）。RHの標的は Λ=0 の一点。';
+  }
+  sl.addEventListener('input',function(){ draw(); say(); });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

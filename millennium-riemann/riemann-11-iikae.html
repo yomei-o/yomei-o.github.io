@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>言い換えの罠 ── 判定条件と正値性 ／ ミレニアム問題を解くぞ 挑戦編⑥（完）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#8a3550; --side-bg:#f3e6ea;
+    --warn:#8a4b2f;
+    --calc:#8a3550; --calc-bg:#f3e6ea;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#8a3550;      /* ルートE：臙脂 */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecccd6 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3a1c26;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#3a1c26;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#8a3550;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#f3e6ea;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .recap{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .recap .row{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .recap .row:first-child{border-top:none;}
+  .recap .k{flex:0 0 92px;background:#f3e6ea;color:var(--acc);font-weight:700;font-size:12.5px;padding:12px 14px;letter-spacing:.04em;}
+  .recap .v{flex:1;min-width:220px;padding:12px 16px;font-size:13.5px;color:#3a1c26;line-height:1.7;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f3e6ea;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a1c26;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.recap{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編⑥（ルートE・完）</span></div>
+  <p class="eyebrow">最後のルート ── 正面から登らず、別の姿に翻訳する</p>
+  <h1>言い換えの罠 ── 判定条件と正値性
+    <span class="sub">リーマン予想は、まるで別物の言明に<strong>化ける</strong>。<br>約数の和の初等的な不等式、無限個の数がぜんぶ正、ある関数の近似 ── どれも「成り立つ ⟺ RH」。<br>視点は増える。でも<em>難しさは、消えずに移るだけ</em>。姉妹編の「保存的拡大」の掟で、挑戦編を締める。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：言い換えの力と限界、そして挑戦編の総括</span>
+    <span>一言で：同値は増える、難しさは減らない</span>
+  </div>
+
+  <p class="lead">挑戦編もこれで最終回。ルートA（外から締め出す）B（内から数える）C（作用素の夢）D（隣の世界の完登）は、いずれも<em>正面からRHの頂上を目指す</em>道でした。ルートEは毛色が違います ── RHを<strong>まったく別の姿の問題に翻訳する</strong>。驚くことに、リーマン予想は<em>高校生でも書ける初等的な不等式</em>にすら化けます。新しい視点は本物の価値がある。でも、翻訳した先が<em>同じだけ難しい</em>のはなぜか ── 第一部ヤン=ミルズ姉妹編の「保存的拡大」の掟で、この長い挑戦編を締めくくります。</p>
+
+  <h2><span class="n">01</span>リーマン予想は、化ける</h2>
+
+  <p>「\(\zeta\) のゼロが全部 \(\mathrm{Re}(s)=1/2\) に乗る」── この一文は、見た目まるで無関係な、たくさんの言明と<strong>完全に同値（⟺）</strong>だと分かっています。つまり、そのうち<em>どれか一つでも証明すれば、RHが証明できる</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">RH と同値な言明たち（ほんの一部）</div>
+    <p style="margin:0 0 5px;">・<strong>ロビンの不等式</strong>：約数の和 \(\sigma(n)\) がある初等的な上限を超えない（初等的！）</p>
+    <p style="margin:0 0 5px;">・<strong>リの判定条件</strong>：ある無限個の数 \(\lambda_n\) が、すべて \(\ge0\)（正値性）</p>
+    <p style="margin:0 0 5px;">・<strong>ナイマン＝ブルリング</strong>：ある関数を、単純な部品で<em>いくらでも近く近似できる</em>（近似問題）</p>
+    <p style="margin:0;">・<strong>ワイルの明示公式の正値性</strong>：ある二次形式が正定値（正値性の親玉）</p>
+  </div>
+
+  <p>順に、いちばん親しみやすい"顔"から見ていきましょう。</p>
+
+  <h2><span class="n">02</span>いちばん初等的な顔 ── ロビンの約数不等式</h2>
+
+  <p>整数 \(n\) の<strong>約数の総和</strong>を \(\sigma(n)\) と書きます（例：\(\sigma(6)=1+2+3+6=12\)）。ロビン（1984）は、リーマン予想が<em>この \(\sigma(n)\) のたった一つの不等式</em>と同値だと示しました。</p>
+
+  <div class="keybox">
+    <div class="lbl">ロビンの判定条件（1984）── これがRHと同値</div>
+    $$\sigma(n)\ <\ e^{\gamma}\,n\,\ln\ln n\qquad(\text{すべての }n\ge 5041)$$
+    <p style="margin:8px 0 0;">\(\gamma\approx0.5772\)（オイラー定数）、\(e^\gamma\approx1.781\)。<strong>「この初等的な不等式が \(n\ge5041\) で永久に成り立つ」⟺「リーマン予想」</strong>。約数を足すだけの、高校生でも計算できる式が、160年の難問と<em>寸分たがわず同じ</em>。</p>
+  </div>
+
+  <p>下の図は、比 <strong>\(R(n)=\sigma(n)/(e^\gamma\,n\,\ln\ln n)\)</strong> を実際に計算してプロットしたもの（ブラウザ内で約数を合計）。<span style="color:var(--open);font-weight:700;">赤の 1.0 の線</span>を超えるかどうかが勝負。小さい \(n\)（約数の多い数）では超えることがあり、<strong>最後の反例が \(n=5040\)</strong>。RHは「<em>5040 を最後に、二度と超えない</em>」と言っています。</p>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:var(--acc);font-weight:700;">比 R(n)=σ(n)/(eˠ·n·lnln n)</span>（点）と<span style="color:var(--acc);font-weight:700;">その上包絡</span>、<span style="color:var(--open);font-weight:700;">赤＝1.0 の壁</span>。<strong>n=5040 が最後の反例</strong>（マーク）。RH ⟺「n≥5041 で R(n)&lt;1 が永久に成り立つ」。スライダーで見る範囲を変える。</div>
+    <canvas id="cvRobin" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <label>見る範囲 n ≤ <input type="range" id="sldN" min="200" max="10000" value="6000" step="100"><span id="nVal" style="font-weight:700;color:var(--acc);">6000</span></label>
+    </div>
+    <div class="readout" id="rdRobin"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#8a3550;"></i>R(n)</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>1.0 の壁</span>
+      <span><i class="swatch" style="background:#c98fa3;"></i>上包絡（記録更新）</span>
+    </div>
+  </div>
+
+  <p>「約数を足す」なんて小学校の計算が、リーマン予想の全重量を背負っている ── この意外さがルートEの魅力です。でも、だまされてはいけません。<em>この不等式を \(n\ge5041\) の無限個すべてで証明すること</em>は、RHそのものと同じだけ難しい。式が初等的でも、<strong>難しさは 1mm も減っていない</strong>。</p>
+
+  <h2><span class="n">03</span>正値性の顔 ── リの判定条件</h2>
+
+  <p>もう一つ有名なのが、無限個の数の<strong>正値性</strong>への翻訳です。</p>
+
+  <div class="keybox">
+    <div class="lbl">リの判定条件（1997）</div>
+    $$\text{RH}\ \Longleftrightarrow\ \lambda_n\ge 0\ \ (\text{すべての }n\ge1),\qquad \lambda_n=\sum_{\rho}\Big[1-\big(1-\tfrac1\rho\big)^{n}\Big]$$
+    <p style="margin:8px 0 0;">\(\lambda_n\) はゼータのゼロ \(\rho\) から作れる具体的な数列。<strong>この数列が一つも負にならない ⟺ RH</strong>。「ゼロが線上」という<em>幾何</em>の問題が、「数列がすべて非負」という<em>正値性</em>の問題に化けた。ワイルの明示公式の正値性、コンヌの跡公式も、根っこは同じ「ある量が正」。</p>
+  </div>
+
+  <p>正値性は扱いやすそうに見えます。でも \(\lambda_n\ge0\) を<em>全ての \(n\) で</em>示すことは、やはりRHと等価 ── 一個でも負なら反例ゼロがある。難しさは「幾何」から「正値性」へ<strong>衣替えしただけ</strong>です。</p>
+
+  <h2><span class="n">04</span>近似の顔 ── ナイマン＝ブルリング</h2>
+
+  <p>三つ目は、関数の<strong>近似</strong>への翻訳。</p>
+
+  <div class="aside">
+    <span class="tag">ナイマン＝ブルリングの判定条件（1950年代）</span>
+    区間 \((0,1)\) の上で、定数関数 \(1\) を、<strong>「小数部分の関数 \(\{\theta/x\}\)」の足し合わせ</strong>でいくらでも精密に近似できる ── これが成り立つ ⟺ RH（ベズ＝デュアルテ 2003 が精密化）。「ゼロが線上」が、関数空間 \(L^2(0,1)\) での<em>「ある関数に届くか」という近似問題</em>に化ける。届く距離が \(0\) に落ちれば RH、落ちなければ反例。<br>ここでも ── 近似が"届く"ことの証明が、RHと同じだけ難しい。
+  </div>
+
+  <h2><span class="n">05</span>落とし穴 ── 「解けそう」に見える罠（de Branges）</h2>
+
+  <p>言い換えには、魅力と同じだけ<strong>危険</strong>があります。翻訳先が易しく<em>見える</em>ぶん、「解けた」と早合点しやすい。</p>
+
+  <div class="keybox">
+    <div class="lbl">ド・ブランジュの物語 ── 有力な言い換えと、繰り返すギャップ</div>
+    <p style="margin:0;">ド・ブランジュは、整関数のヒルベルト空間論という強力な言い換えでRHに挑み、<strong>何度か証明を主張</strong>しました。だが検証のたびに<em>ギャップ</em>が見つかっている（コンリー＝リらが、ある正値性条件が期待どおりに働かないことを指摘）。言い換えの枠組み自体は正当で示唆に富むのに、<strong>「同値だから易しい」ではなかった</strong>。名手でも、翻訳先の難しさに足をすくわれる。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>なぜ言い換えでは解けないのか ── 難しさは保存される</h2>
+
+  <p>ここまでの言い換えを一枚にすると、壁の正体が見えます。下の図は、中心のRHから<strong>同値な言明</strong>が放射状に伸びたもの。<strong>スポークをクリック</strong>すると各言明が出ます ── どれも「⟺ RH」で結ばれ、<em>難しさはどれも同じ</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：中心＝RH、周り＝同値な言明。全部「⟺」で結ばれ<strong>難しさは等しい</strong>（同じ扉・違う鍵穴）。外向きの矢印＝言い換えが呼び込む「新しい道具」。スポークを選ぶと説明。</div>
+    <canvas id="cvHub" width="680" height="360"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-s="0">ロビン</button>
+      <button class="btn" data-s="1">リ</button>
+      <button class="btn" data-s="2">ナイマン=ブルリング</button>
+      <button class="btn" data-s="3">ワイル正値性</button>
+      <button class="btn" data-s="4">de Branges</button>
+    </div>
+    <div class="readout" id="rdHub"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">ルートE の壁 ── 保存的拡大の掟（姉妹編より）</div>
+    <p style="margin:0 0 6px;">第一部ヤン=ミルズの番外編で、「超準解析は ZFC の<strong>保存的拡大</strong>だから、表現を変えても<em>中身にある難しさ</em>は解けない」と見ました。ルートEはまさにそれ ── <strong>同値な言い換えは、難しさを消さず<em>別の衣</em>に移すだけ</strong>。鍵穴の形を変えても、扉は同じ。</p>
+    <p style="margin:0;">ただし言い換えは<em>無価値ではない</em>。良い翻訳は、まったく別の分野の<strong>道具（解析・組合せ論・関数解析・幾何）を呼び込む</strong>入口になる（ワイル正値性→コンヌの幾何、など）。<em>道具を運ぶ橋としては価値がある。だが翻訳それ自体は、頂上への一歩ではない。</em></p>
+  </div>
+
+  <h2><span class="n">07</span>挑戦編の総括 ── 五つの道と、一つの縁</h2>
+
+  <div class="recap">
+    <div class="row"><div class="k">A 直接押す</div><div class="v">零点非存在領域を左へ。武器は魔法の不等式 3+4cosθ+cos2θ≥0。だが帯は c/log t で<strong>1に貼りつき</strong>、1/2 に一定の幅で届かない。</div></div>
+    <div class="row"><div class="k">B 割合</div><div class="v">線上の割合を数える。Z(t)の符号変化＋mollifier。Hardy→Levinson(1/3)→Conrey(2/5)→約41.7%。<strong>40%台で頭打ち</strong>、100%＝例外0個に届かない。</div></div>
+    <div class="row"><div class="k">C 作用素</div><div class="v">ゼロ＝自己共役作用素の固有値なら実数で自動的に線上。GUEと驚異の一致（Montgomery–Odlyzko）。だが<strong>作用素が未発見</strong>（足場が空中）。</div></div>
+    <div class="row"><div class="k">D 有限体</div><div class="v">有限体版RHは<strong>定理</strong>（Weil・Deligne）。ゼロ＝フロベニウス固有値＝Cの夢の実物。だが整数に移す<strong>土台の体（𝔽₁）が無い</strong>。</div></div>
+    <div class="row"><div class="k">E 言い換え</div><div class="v">RHを初等的不等式・正値性・近似に翻訳。同値は多数。だが<strong>難しさは移るだけ</strong>（保存的拡大）。道具を運ぶ橋。</div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">五つの道が指す、一つの縁</div>
+    <p class="big" style="margin:0;">A・B は<strong>平均・統計</strong>では御せても<em>例外0個</em>に届かない。C・D は<strong>例外0個を強制する正しい仕組み</strong>（実の固有値／幾何）を知っているのに、整数の世界に<em>その物（作用素・体・コホモロジー）が無い</em>。E は<strong>難しさを移すだけ</strong>。<br>欠けているのはただ一つ ── <em>「整数に固有の、全ゼロを一斉に線上へ固定する剛い構造」</em>。それが在るのか、どんな姿なのかが、リーマン予想の<strong>縁</strong>。</p>
+  </div>
+
+  <p>「解くぞ」で始めたこのシリーズの、挑戦編もここで一区切り。私たちは旗を立てませんでした。代わりに、五つの道がどこまで登り、どこで止まり、<em>その先の縁がどんな形をしているか</em>を、できるだけ正確に指しました。ゼロは今日も、臨界線の上に静かに並んでいます ── 誰も、それが<em>永遠に</em>そうだと、まだ証明できないまま。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">挙げた同値はいずれも確立した定理です。<strong>ロビンの判定条件</strong>（1984）：RH ⟺ \(\sigma(n)<e^\gamma n\ln\ln n\)（\(n\ge5041\)）。\(n\le5040\) には有限個の例外があり、最大が \(n=5040\)。<strong>ラガリアス</strong>（2002）：RH ⟺ \(\sigma(n)\le H_n+e^{H_n}\ln H_n\)（\(H_n\)＝調和数、等号は \(n=1\) のみ）。<strong>リの判定条件</strong>（1997）：RH ⟺ \(\lambda_n\ge0\ (\forall n)\)。<strong>ナイマン</strong>（1950）＝<strong>ブルリング</strong>（1955）、ベズ＝デュアルテ（2003）による近似判定条件。<strong>ワイル</strong>の明示公式の正値性による判定も標準的。ド・ブランジュのアプローチは整関数のヒルベルト空間論に基づき、証明の主張とギャップの指摘（コンリー＝リ 2000 ほか）が繰り返されています。</p>
+    <p style="margin-bottom:0;">図1は本ページ内で \(\sigma(n)\)（約数の総和）を実際に計算しており、\(R(n)=\sigma(n)/(e^\gamma n\ln\ln n)\) が 1 を超える最後の \(n\) は 5040 です（既知の事実）。「保存的拡大」は数理論理の概念で、第一部ヤン=ミルズ番外編の超準解析の議論に対応します（言い換え・表現の変更それ自体は、内容に宿る難しさを除かない、という趣旨の比喩として用いています）。挑戦編で扱った各ルートの到達点・壁はいずれも2025年時点の状況に基づき、リーマン予想は未解決です。図2は同値関係の模式図で、放射状の配置や距離に定量的意味はありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ロビンの判定条件は、リーマン予想を何に翻訳した？ どこがすごくて、どこが罠？
+        <details><summary>答えを見る</summary><div class="ans">RHを「約数の和の初等的な不等式 σ(n)&lt;eˠ·n·lnln n が n≥5041 で永久に成り立つ」に翻訳した。すごいのは、小学校の計算（約数を足す）で書けるほど初等的なこと。罠は、初等的でも<strong>無限個の n すべてで証明することはRHと同じだけ難しい</strong>こと。見た目の易しさは難しさを減らさない。</div></details>
+      </li>
+      <li>「言い換えでは解けない」理由を、姉妹編の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">「保存的拡大」の掟。表現・言語を変えても、難しさが問題の"中身"に宿るなら解けない（第一部の超準解析の議論と同じ）。RHを初等不等式・正値性・近似に翻訳しても、翻訳先が同じだけ難しい＝同じ扉の違う鍵穴。ただし良い言い換えは新しい道具（別分野の技術）を呼び込む橋にはなる。</div></details>
+      </li>
+      <li>挑戦編の五つの道（A〜E）が共通して指す「一つの縁」とは？
+        <details><summary>答えを見る</summary><div class="ans">「整数に固有の、全ゼロを一斉に（例外0個で）臨界線へ固定する剛い構造」が在るかどうか、そしてその姿。A・Bは平均・統計で御せても例外0個に届かず、C・Dは正しい仕組み（実の固有値／幾何）を知りつつ整数世界にその物が無く、Eは難しさを移すだけ。欠けているこの一点が、リーマン予想の縁。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編⑥まとめ ／ 挑戦編・完</span>言い換えの罠、そして縁</h2>
+    <p>ルートEは、RHを<strong>別の姿に翻訳</strong>する道。ロビンの初等的な約数不等式 \(\sigma(n)<e^\gamma n\ln\ln n\)（\(n\ge5041\)、最後の反例5040）、リの正値性 \(\lambda_n\ge0\)、ナイマン＝ブルリングの近似、ワイル正値性 ── どれも「⟺ RH」。だが<strong>難しさは消えず移るだけ</strong>（保存的拡大の掟）。ド・ブランジュの繰り返すギャップが、その罠を物語る。良い言い換えは<em>新しい道具を運ぶ橋</em>としては価値がある。</p>
+    <p>五つの道の総括 ── A・B は平均で御せても例外0個に届かず、C・D は正しい仕組みを知るのに整数世界にその物（作用素・体）が無く、E は難しさを移すだけ。欠けるのは<strong>「整数に固有の、全ゼロを一斉に線上へ固定する剛い構造」</strong>ただ一つ。これがリーマン予想の縁。私たちは旗を立てず、縁の形を正確に指した ── ゼロは今日も臨界線に静かに並ぶ、まだ誰も"永遠"を証明できないまま。挑戦編・完。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-10-yugentai.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f3e6ea;font-weight:700;letter-spacing:.03em;">← 挑戦編⑤</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f3e6ea;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku1-honmei.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f3e6ea;font-weight:700;letter-spacing:.03em;">戦略①：本命を選ぶ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編⑥（ルートE・完）、数学好きの高校生・大学生向け読み物。リーマン予想と同値な判定条件として、ロビンの不等式（Robin 1984、\(\sigma(n)<e^\gamma n\ln\ln n\)、\(n\ge5041\)、最大例外 \(n=5040\)）、ラガリアスの判定条件（Lagarias 2002）、リの判定条件（Li 1997、\(\lambda_n\ge0\)）、ナイマン＝ブルリングの判定条件（Nyman 1950／Beurling 1955／Báez-Duarte 2003）、ワイルの明示公式の正値性を紹介しました。いずれも確立した同値関係です。ド・ブランジュの整関数ヒルベルト空間によるアプローチは有力視されつつ、証明の主張に対しギャップの指摘（Conrey–Li 2000 ほか）が続いています。図1はブラウザ内で \(\sigma(n)\) を計算しており、\(R(n)=\sigma(n)/(e^\gamma n\ln\ln n)\) が 1 を超える最後は \(n=5040\)（既知）。「保存的拡大」は数理論理の概念で、第一部ヤン=ミルズ番外編の超準解析の議論に対応する比喩として用いています。リーマン予想は2025年時点で未解決です。図2は同値関係の模式図で配置に定量的意味はありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーでロビンの比 R(n) と 5040 の壁、図2のスポークで同値な言明たちを体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 図1：ロビンの判定条件 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvRobin'), rd=document.getElementById('rdRobin');
+  var sld=document.getElementById('sldN'), nVal=document.getElementById('nVal');
+  var NMAX=10000, lastW=680, EG=Math.exp(0.5772156649);
+  // σ(n) を篩で
+  var sig=new Array(NMAX+1).fill(0);
+  for(var d=1;d<=NMAX;d++){ for(var m=d;m<=NMAX;m+=d) sig[m]+=d; }
+  function R(n){ if(n<3) return 0; var ll=Math.log(Math.log(n)); if(ll<=0) return 0; return sig[n]/(EG*n*ll); }
+  function draw(){
+    var N=parseInt(sld.value,10);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=42,mR=16,mT=16,mB=30, pW=w-mL-mR, pH=h-mT-mB;
+    var yMin=0.55, yMax=1.12;
+    function X(n){ return mL + (n-20)/(N-20)*pW; }
+    function Y(v){ return mT + pH - (v-yMin)/(yMax-yMin)*pH; }
+    ctx.clearRect(0,0,w,h);
+    // 1.0 の壁
+    ctx.fillStyle='#f8ecec'; ctx.fillRect(mL,mT,pW,Y(1.0)-mT);
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(mL,Y(1.0)); ctx.lineTo(mL+pW,Y(1.0)); ctx.stroke();
+    ctx.fillStyle='#a5473a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('R=1.0（超えたら反例）', mL+4, Y(1.0)-5);
+    // y メモリ
+    ctx.fillStyle='#8a7280'; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    [0.6,0.8,1.0].forEach(function(v){ ctx.fillText(v.toFixed(1), mL-5, Y(v)+4); });
+    // 点＋上包絡
+    ctx.fillStyle='#8a3550';
+    var envMax=-1, envPts=[];
+    for(var n=20;n<=N;n++){ var r=R(n); if(r<=0) continue;
+      // 点（間引き）
+      if(N<=1500 || n%2===0){ var yy=Y(Math.min(Math.max(r,yMin),yMax)); ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(X(n),yy,1.6,0,7); ctx.fill(); ctx.globalAlpha=1; }
+      if(r>envMax){ envMax=r; envPts.push([n,r]); }
+    }
+    // 上包絡（記録更新）
+    ctx.strokeStyle='#c98fa3'; ctx.lineWidth=2; ctx.beginPath();
+    for(var i=0;i<envPts.length;i++){ var xx=X(envPts[i][0]), yv=Y(Math.min(envPts[i][1],yMax)); if(i===0) ctx.moveTo(xx,yv); else { ctx.lineTo(xx,Y(Math.min(envPts[i][1],yMax))); } }
+    ctx.stroke();
+    for(var j=0;j<envPts.length;j++){ ctx.fillStyle='#c98fa3'; ctx.beginPath(); ctx.arc(X(envPts[j][0]),Y(Math.min(envPts[j][1],yMax)),2.5,0,7); ctx.fill(); }
+    // 5040 マーク
+    if(N>=5040){ var x5=X(5040), r5=R(5040);
+      ctx.strokeStyle='#1a1e28'; ctx.setLineDash([3,3]); ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x5,mT); ctx.lineTo(x5,mT+pH); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#1a1e28'; ctx.beginPath(); ctx.arc(x5,Y(Math.min(r5,yMax)),4,0,7); ctx.fill();
+      ctx.font='bold 10.5px sans-serif'; ctx.textAlign='center'; ctx.fillText('n=5040（最後の反例）', x5, mT+12);
+    }
+    // x メモリ
+    ctx.fillStyle='#8a7280'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    var step = N<=2000?500:2000;
+    for(var xv=step;xv<=N;xv+=step) ctx.fillText(''+xv, X(xv), mT+pH+16);
+    ctx.textAlign='right'; ctx.fillText('n', mL+pW, mT+pH+26);
+  }
+  function report(){
+    var N=parseInt(sld.value,10); nVal.textContent=N;
+    // 現在範囲での最大 R とその n（>=41 まで見る）
+    var mx=-1,at=0; for(var n=20;n<=N;n++){ var r=R(n); if(r>mx){mx=r;at=n;} }
+    var over5040=false, over5040n=0; for(var n2=5041;n2<=N;n2++){ if(R(n2)>=1){over5040=true;over5040n=n2;break;} }
+    rd.innerHTML='n≤'+N+' での最大 R(n) は <b>'+mx.toFixed(4)+'</b>（n='+at+'）。'+
+      (N>=5040?'n=5040 で R=<b>'+R(5040).toFixed(4)+'</b>（&gt;1 の<b>最後の反例</b>）。':'')+
+      ' n≥5041 に R≥1 は '+(over5040?('<b style="color:#a5473a;">見つかった！（n='+over5040n+'）→ もし本当なら RH は偽</b>':''):'<b style="color:#2f7d5a;">この範囲では無し</b>')+
+      '。<b>この&lt;1が n≥5041 で永久に続く ⟺ リーマン予想</b>。';
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：同値のハブ ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvHub'), rd=document.getElementById('rdHub');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-s]'));
+  var lastW=680, sel=0;
+  var spokes=[
+    {name:'ロビンの不等式', short:'約数和の初等不等式', tool:'解析的整数論',
+     msg:'<b>ロビン</b>：σ(n)&lt;eˠ·n·lnln n（n≥5041）⟺ RH。初等的だが、無限個で示すのはRHと同難度。'},
+    {name:'リの判定条件', short:'数列 λₙ≥0（正値性）', tool:'複素解析',
+     msg:'<b>リ</b>：λₙ≥0（∀n）⟺ RH。幾何（ゼロが線上）が正値性に化けた。全nで示すのはRHと同難度。'},
+    {name:'ナイマン=ブルリング', short:'関数の近似（Hilbert空間）', tool:'関数解析',
+     msg:'<b>ナイマン=ブルリング</b>：(0,1)上で1を{θ/x}の小数部で近似できる ⟺ RH。近似が届く証明がRHと同難度。'},
+    {name:'ワイル正値性', short:'二次形式が正定値', tool:'跡公式・非可換幾何（Connes）',
+     msg:'<b>ワイル正値性</b>：明示公式のある二次形式が正定値 ⟺ RH。正値性の親玉。コンヌの幾何アプローチの土台。'},
+    {name:'de Branges', short:'整関数のHilbert空間', tool:'作用素論',
+     msg:'<b>de Branges</b>：整関数のヒルベルト空間論による枠組み。何度も証明が主張されたが都度ギャップ（Conrey–Li ほか）。「同値だから易しい」ではない罠の象徴。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var cx=w/2, cy=h/2, Rr=Math.min(w,h)/2-70;
+    ctx.clearRect(0,0,w,h);
+    var n=spokes.length;
+    // スポーク＋外向き道具
+    for(var i=0;i<n;i++){
+      var ang=-Math.PI/2 + i*2*Math.PI/n;
+      var x=cx+Rr*Math.cos(ang), y=cy+Rr*Math.sin(ang), on=(i===sel);
+      // 線（⟺）
+      ctx.strokeStyle= on? '#8a3550':'#d3b8c2'; ctx.lineWidth= on?2.6:1.6;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+      // ⟺ ラベル
+      var mx=cx+(Rr*0.5)*Math.cos(ang), my=cy+(Rr*0.5)*Math.sin(ang);
+      ctx.fillStyle= on? '#8a3550':'#b892a0'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('⟺', mx, my-2);
+      // 外向き道具の矢印
+      var ox=cx+(Rr+34)*Math.cos(ang), oy=cy+(Rr+34)*Math.sin(ang);
+      if(on){ ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=1.4; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ox,oy); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#2f7d5a'; ctx.font='10.5px sans-serif';
+        ctx.textAlign = Math.cos(ang)>=0?'left':'right';
+        ctx.fillText('→ '+spokes[i].tool, ox+ (Math.cos(ang)>=0?4:-4), oy+3);
+      }
+      // ノード
+      ctx.beginPath(); ctx.arc(x,y, on?26:20, 0,7);
+      ctx.fillStyle= on? '#8a3550':'#f3e6ea'; ctx.fill();
+      ctx.strokeStyle= on? '#5a2035':'#c98fa3'; ctx.lineWidth= on?2:1.4; ctx.stroke();
+      ctx.fillStyle= on? '#fff':'#8a3550'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      // 名前を2行に
+      var nm=spokes[i].name; ctx.fillText(nm.length>7?nm.slice(0,6):nm, x, y-1);
+      if(nm.length>7){ ctx.font='9px sans-serif'; ctx.fillText(nm.slice(6), x, y+11); }
+    }
+    // 中心 RH
+    ctx.beginPath(); ctx.arc(cx,cy,34,0,7); ctx.fillStyle='#5a2a6e'; ctx.fill();
+    ctx.strokeStyle='#3a1a4a'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 17px sans-serif'; ctx.textAlign='center'; ctx.fillText('RH', cx, cy-2);
+    ctx.font='9px sans-serif'; ctx.fillText('（未証明）', cx, cy+13);
+  }
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-s'),10)===i); }); draw(); rd.innerHTML=spokes[i].msg + ' <span style="color:#2f7d5a;">呼び込む道具：'+spokes[i].tool+'</span>'; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-s'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

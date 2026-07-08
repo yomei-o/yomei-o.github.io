@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>零点に熱をかける ── de Bruijn–Newmanの熱流とΛ ／ リーマン・ペレルマン編 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#5a2a6e; --side-bg:#efe9f3;
+    --warn:#8a4b2f;
+    --calc:#5a2a6e; --calc-bg:#efe9f3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#5a2a6e;      /* 紫（素数／臨界線の色） */
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --heat:#c05a2a;     /* 熱の色 */
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d5ee 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#2e1c38;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#5a2a6e;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;
+    font-weight:700;letter-spacing:.03em;padding:8px 13px;border:1.5px solid var(--rule);border-radius:4px;
+    background:#efe9f3;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#2e1c38;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#efe9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2e1c38;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・ペレルマン編 ── 熱流でRHを</span><span class="ep">第 1 回</span></div>
+  <p class="eyebrow">ヤン=ミルズで見た「フロー＋単調量」── リーマン予想には、その実物がある</p>
+  <h1>零点に熱をかける ── de Bruijn–Newmanの熱流
+    <span class="sub">リーマン予想の零点に<strong>熱をかける</strong>と、零点はだんだん一直線（臨界線）に吸い寄せられる。「いつ全部そろうか」を表す数が<strong>Λ（デ・ブラン＝ニューマン定数）</strong>。<br>そして ── <em>リーマン予想 ⟺ Λ ≤ 0</em>。しかもニューマン曰く「もし正しくても、ぎりぎりで正しい」。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：RHを「熱流＋Λ」というペレルマン型の姿に描き直す</span>
+    <span>一言で：零点に熱をかける流れがあり、RH ⟺ Λ≤0</span>
+  </div>
+
+  <p class="lead">姉妹編（ヤン=ミルズ・ペレルマン編）で、難問を断ち切る鍵は<strong>「フローに沿った単調量」</strong>だと見ました。ヤン=ミルズでは、その単調量を<em>探すしかなかった</em>。ところがリーマン予想には ── <strong>フローも、単調性の定理も、すでに実在します</strong>。それが<strong>デ・ブラン＝ニューマンの熱流</strong>。零点に文字どおり「熱」をかけると何が起きるのか。今回はRHを、ペレルマンとそっくりの姿に描き直すところから始めます。</p>
+
+  <h2><span class="n">01</span>おさらい ── リーマン予想は「零点が一直線に乗る」</h2>
+
+  <p>入門編の復習です。ゼータ関数 \(\zeta(s)\) の<strong>非自明なゼロ</strong>（値が0になる大事な点）が、複素平面のたった一本の直線 \(\mathrm{Re}(s)=\tfrac12\)(<strong>臨界線</strong>)の上に、<em>ぜんぶ</em>乗っている ── これがリーマン予想（RH）です。零点は素数の分布を指揮する「音」でした（第5回）。</p>
+
+  <p>ここで、扱いやすいように舞台を少し整えます。零点を表す変数を \(x\) にとって、<strong>「\(x\) が実数 ⟺ その零点が臨界線の上」</strong>となるようにします（\(\zeta(\tfrac12+ix)=0\) の \(x\)）。すると RH は、こう言い換わります。</p>
+
+  <div class="keybox">
+    <div class="lbl">RH ── 変数 x での言い方</div>
+    <p class="big" style="margin:0;">ゼータの零点を表す \(x\) が、<strong>ぜんぶ実数</strong>である（一つも複素数がない）。<br><span style="font-size:15px;font-weight:400;color:var(--ink-soft);">＝ 零点が、一本の実軸（臨界線）から一つもはみ出していない。</span></p>
+  </div>
+
+  <h2><span class="n">02</span>零点に「熱」をかける ── de Bruijn–Newmanの流れ</h2>
+
+  <p>ここからが新しい話。零点を作っている関数（リーマンの \(\Xi\) 関数）に、<strong>熱方程式</strong>をかけて時間 \(t\) で流します。熱方程式は、温度差をならして一様にする、あの<em>「熱の広がり」</em>── 姉妹編のリッチフローの兄弟です。この流れを \(H_t\) と書き、出発点を \(H_0=\Xi\)（＝本物のゼータ）にとります。</p>
+
+  <p>すると、驚くことが起きます。<strong>時間 \(t\) を進めるほど、零点は実軸（臨界線）に吸い寄せられていく</strong>。複素平面に浮いていた零点のペアが、上下から降りてきて実軸でぶつかり、<em>いったん実軸に乗ったら二度と離れない</em>（＝吸収）。これは姉妹編で見た<strong>「単調・片道・戻れない」</strong>そのものです。</p>
+
+  <div class="keybox">
+    <div class="lbl">Λ（デ・ブラン＝ニューマン定数）の定義</div>
+    <p class="big" style="margin:0;">\(t\) をある値<strong> Λ 以上</strong>にすると、零点は<em>全部</em>実軸に乗る。<br>\(t<\Lambda\) だと、まだ複素に浮いた零点が残る。<br>この<strong>境目の時刻が Λ</strong>。</p>
+  </div>
+
+  <p>そして本題。私たちが欲しいのは「熱をかける前（\(t=0\)、本物のゼータ）で、既に全部実軸に乗っている」こと ── それが RH でした。だから：</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">この編の背骨</div>
+    <p class="big" style="margin:0;">$$\textbf{リーマン予想} \iff \Lambda \le 0$$<span style="font-size:15px;font-weight:400;color:var(--ink-soft);">＝「熱を<em>1秒もかけないうち</em>に、零点はもう全部そろっている」。もし \(\Lambda>0\) なら、熱をかけないと実軸に乗らない零点がある＝RHは偽。</span></p>
+  </div>
+
+  <p>下の図で、\(\Lambda\) を三つの場合に切り替えて、時間 \(t\) を動かしてみてください。<strong>\(t=0\)（本物のゼータ）で零点が線上にそろっているか</strong>が、そのまま \(\Lambda\le0\) かどうか＝RHの成否です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>零点に熱をかける</strong>。横軸＝臨界線に沿った位置、縦軸＝<strong>線からのズレ</strong>（0＝臨界線上）。時間 \(t\) を進めると、複素に浮いた零点ペア（<span style="color:#c05a2a;font-weight:700;">オレンジ</span>）が実軸に降りて<span style="color:#5a2a6e;font-weight:700;">紫の線上</span>に吸収される。\(\Lambda\) を切替えて \(t=0\) の様子を見る ── <strong>\(t=0\)で線上 ⟺ Λ≤0 ⟺ RH成立</strong>。</div>
+    <canvas id="cv" width="680" height="290"></canvas>
+    <div class="ctrlrow">
+      <span>Λの場合：</span>
+      <button class="btn" id="bNeg">Λ&lt;0（RH成立）</button>
+      <button class="btn on" id="bZero">Λ=0（ぎりぎり）</button>
+      <button class="btn" id="bPos">Λ&gt;0（RH不成立）</button>
+    </div>
+    <div class="ctrlrow">
+      <label>熱の時間 t：<input type="range" id="sl" min="-30" max="50" value="-30"></label>
+      <span id="tval" style="font-weight:700;color:var(--acc);"></span>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#5a2a6e;"></i>臨界線上の零点（実）</span>
+      <span><i class="swatch" style="background:#c05a2a;"></i>浮いた零点（複素・共役ペア）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>ニューマンの一言 ── 「もし正しくても、ぎりぎりで」</h2>
+
+  <p>この \(\Lambda\) には、長い歴史があります。<strong>デ・ブラン（1950年）</strong>が「\(t\ge\tfrac12\) なら零点は全部実」＝<strong>\(\Lambda\le\tfrac12\)</strong> を示し、上から抑えました。逆に<strong>ニューマン（1976年）</strong>は「<strong>\(\Lambda\ge0\)</strong> だろう」と予想し、こう言い添えました ── </p>
+
+  <div class="aside">
+    <span class="tag">ニューマンの予言（1976）</span>
+    <strong>「リーマン予想は、たとえ正しくても、ぎりぎりで正しいにすぎない（only barely so）」</strong>。<br>意味はこうです。もし \(\Lambda\ge0\) が本当なら、RH（\(\Lambda\le0\)）が成り立つのは <strong>\(\Lambda\) がちょうど 0</strong> のとき<em>だけ</em>。つまりRHは、成立と不成立の<strong>境界線上（臨界）</strong>にかろうじて立っている ── これは姉妹編ヤン=ミルズの「4次元は<em>対数的にぎりぎり</em>」と、驚くほど同じ気配です。
+  </div>
+
+  <p>そして ── ニューマンの \(\Lambda\ge0\) は、<strong>2018年に定理として証明されました</strong>（ロジャース＝タオ）。しかもその証明が、まさにペレルマン型の<em>「フロー＋単調量」</em>で回っている。次回、その中身に入ります。いま押さえるべきは一点：<strong>RHは、\(0\le\Lambda\le0.2\) のどこかにある \(\Lambda\) を、\(\Lambda=0\) だと決めきる問題になった</strong>ということです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(\Xi\) はリーマンの完備化ゼータ \(\xi(\tfrac12+ix)\) を実変数 \(x\) の偶な整関数として見たもので、その零点が実 ⟺ 対応する \(\zeta\) の非自明零点が臨界線上、というのは標準的な定式化です。熱流 \(H_t\)（de Bruijn 1950, Newman 1976）は \(\Xi\) の表現核に \(e^{tu^2}\) をかけて \(H_0=\Xi\) とするもので、\(t\) を増やすと零点は実軸へ、いったん実になれば以後も実（本文の「吸収」）。\(\Lambda\)＝全零点が実になる境目の時刻で、<strong>RH ⟺ Λ≤0</strong>。de Bruijn: Λ≤1/2、Newman予想: Λ≥0、そして「if true, only barely so」はNewmanの原論文の言葉です。</p>
+    <p style="margin-bottom:0;">図は、共役ペアの零点のズレを \(\sqrt{(\Lambda-t)_+}\) 型で模した<em>教育用モデル</em>で（実際の零点運動は多体で複雑）、臨界線上の零点の位置も模式です。本物の \(\Lambda\) の値は未確定で、証明済みの範囲は \(0\le\Lambda\le0.2\)（下端Λ≥0はRodgers–Tao 2018、上端はPolymath15 2019、次回詳説）。RHはΛ=0を主張しますが未証明です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>零点に熱をかけると、零点はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">時間 \(t\) を進めるほど<strong>実軸（臨界線）に吸い寄せられ</strong>、いったん乗ったら二度と離れない（吸収＝単調・片道）。姉妹編の「単調量がループを螺旋に変える」と同じ構造。</div></details>
+      </li>
+      <li>\(\Lambda\)（デ・ブラン＝ニューマン定数）とは何で、RHとどう関係するか。
+        <details><summary>答えを見る</summary><div class="ans">\(\Lambda\)＝零点が<strong>全部</strong>実軸に乗る境目の時刻。<strong>RH ⟺ Λ≤0</strong>（＝熱をかける前の \(t=0\) で既に全部そろっている）。もし \(\Lambda>0\) なら、熱をかけないと乗らない零点があり RH は偽。</div></details>
+      </li>
+      <li>ニューマンの「ぎりぎり正しい」とはどういう意味か。
+        <details><summary>答えを見る</summary><div class="ans">\(\Lambda\ge0\)（2018年に証明）が本当なら、RH（\(\Lambda\le0\)）が成り立つのは <strong>\(\Lambda=0\) ちょうど</strong>のとき<em>だけ</em>。RHは成立／不成立の<strong>境界（臨界）にかろうじて立つ</strong>。ヤン=ミルズの対数臨界と同型の"ぎりぎり性"。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>RHは「熱流＋Λ」に描き直せる</h2>
+    <p>ヤン=ミルズでは探すしかなかった<strong>「フロー＋単調量」</strong>が、リーマン予想には<em>実在</em>する ── <strong>デ・ブラン＝ニューマンの熱流</strong>。零点に熱をかけると、零点は臨界線に吸い寄せられ、いったん乗れば離れない（単調・片道・吸収）。全部そろう境目の時刻が <strong>Λ</strong>。</p>
+    <p>背骨は <strong>RH ⟺ Λ≤0</strong>。デ・ブランが \(\Lambda\le\tfrac12\)、ニューマンが \(\Lambda\ge0\) を予想し「ぎりぎり正しい」と言い添えた ── その \(\Lambda\ge0\) は<strong>2018年に証明</strong>（次回）。RHは、\(0\le\Lambda\le0.2\) の \(\Lambda\) を<strong>ちょうど0</strong>だと決めきる問題になった。次回は、その証明を回した<em>ペレルマン型の単調量</em>へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman2-tanchou.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#efe9f3;font-weight:700;letter-spacing:.03em;">第2回：単調量はもうある（Rodgers–Tao）→</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・ペレルマン編・第1回。リーマンの \(\Xi\) 関数（完備化ゼータ \(\xi(\tfrac12+ix)\) を実変数 \(x\) の偶整関数として見たもの）の零点が実 ⟺ 対応する非自明零点が臨界線 \(\mathrm{Re}(s)=1/2\) 上、という定式化に基づきます。de Bruijn–Newman の熱流 \(H_t\)（\(H_0=\Xi\)、核に \(e^{tu^2}\)）は \(t\) を増やすと零点を実軸へ移し、いったん実になれば以後も実。\(\Lambda\)＝全零点が実になる境目の時刻で、RH ⟺ Λ≤0。de Bruijn（1950）Λ≤1/2、Newman（1976）Λ≥0 予想および「the Riemann hypothesis, if true, is only barely so」、Rodgers–Tao（2018、Forum of Mathematics Pi 2020）による Λ≥0 の証明、Polymath15（2019）による上界 Λ≤0.2 は、いずれも事実です。図は共役零点ペアのズレを \(\sqrt{(\Lambda-t)_+}\) で模した教育用モデルで、実際の零点運動・零点位置ではありません。RH（Λ=0）は未証明です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とスライダー・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではΛの場合を切替え、スライダーで熱の時間 t を動かせます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var sl=document.getElementById('sl'), tval=document.getElementById('tval');
+  var bNeg=document.getElementById('bNeg'), bZero=document.getElementById('bZero'), bPos=document.getElementById('bPos');
+  var lastW=680;
+  var Lambda=0.0;                 // 0 by default
+  // fixed real zeros along the line (positions in "height along critical line")
+  var reals=[-0.72,-0.5,-0.28,0.06,0.34,0.6,0.86];
+  var pairX=-0.11;                // the special conjugate pair sits here
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function tNow(){ return (+sl.value)/100; }         // -0.30 .. 0.50
+  function dev(t){ return Math.sqrt(Math.max(0, Lambda - t)); }  // off-axis deviation of the pair
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var midY=h/2, L=54, R=w-30;
+    function X(u){ return L+(R-L)*(u+1)/2; }          // u in [-1,1]
+    function Y(v){ return midY - v*90; }              // v = deviation
+
+    var t=tNow();
+    // heat glow background (warmer when t large)
+    var warm=Math.max(0,Math.min(1,(t+0.3)/0.8));
+    ctx.fillStyle='rgba(192,90,42,'+(0.05*warm)+')'; ctx.fillRect(L,20,R-L,h-56);
+
+    // critical line (real axis)
+    ctx.strokeStyle='#5a2a6e'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(L,midY); ctx.lineTo(R,midY); ctx.stroke();
+    ctx.fillStyle='#5a2a6e'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('臨界線（この上に乗る＝実）', L+2, midY+18);
+    // zero deviation guide
+    ctx.strokeStyle='#d8cdb4'; ctx.setLineDash([3,4]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(L,Y(0.55)); ctx.lineTo(R,Y(0.55)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(L,Y(-0.55)); ctx.lineTo(R,Y(-0.55)); ctx.stroke(); ctx.setLineDash([]);
+
+    // real zeros
+    for(var i=0;i<reals.length;i++){
+      ctx.fillStyle='#5a2a6e'; ctx.beginPath(); ctx.arc(X(reals[i]),Y(0),6,0,7); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+    // special conjugate pair
+    var dv=dev(t);
+    var onLine = dv<1e-6;
+    var col = onLine? '#5a2a6e':'#c05a2a';
+    var px=X(pairX);
+    if(onLine){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(px,Y(0),6.5,0,7); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.6; ctx.stroke();
+    } else {
+      // draw a faint spring connecting the pair
+      ctx.strokeStyle='rgba(192,90,42,0.35)'; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(px,Y(dv)); ctx.lineTo(px,Y(-dv)); ctx.stroke();
+      ctx.fillStyle=col;
+      ctx.beginPath(); ctx.arc(px,Y(dv),6.5,0,7); ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.6; ctx.stroke();
+      ctx.beginPath(); ctx.arc(px,Y(-dv),6.5,0,7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#c05a2a'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('複素ペア', px, Y(dv)-10);
+    }
+
+    // t marker & Lambda marker on a mini timeline (top)
+    var tlY=16, tl0=L, tl1=R;
+    function TX(tt){ return tl0+(tl1-tl0)*((tt+0.3)/0.8); }
+    ctx.strokeStyle='#c9bfa6'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(tl0,tlY); ctx.lineTo(tl1,tlY); ctx.stroke();
+    // zero tick
+    ctx.strokeStyle='#8a8'; ctx.beginPath(); ctx.moveTo(TX(0),tlY-4); ctx.lineTo(TX(0),tlY+4); ctx.stroke();
+    ctx.fillStyle='#4a4f5e'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText('t=0', TX(0), tlY-7);
+    // Lambda
+    ctx.fillStyle='#c05a2a'; ctx.beginPath(); ctx.moveTo(TX(Lambda),tlY-6); ctx.lineTo(TX(Lambda)-4,tlY-13); ctx.lineTo(TX(Lambda)+4,tlY-13); ctx.closePath(); ctx.fill();
+    ctx.fillText('Λ', TX(Lambda), tlY-15);
+    // t pointer
+    ctx.fillStyle='#5a2a6e'; ctx.beginPath(); ctx.arc(TX(t),tlY,4,0,7); ctx.fill();
+
+    // verdict at t=0
+    var atZero = dev(0)<1e-6;
+    ctx.textAlign='center'; ctx.font='bold 13px sans-serif';
+    ctx.fillStyle = atZero? '#2f7d5a':'#a5473a';
+    ctx.fillText(atZero? 't=0 で全部が線上 ✓ ⟺ Λ≤0 ⟺ RH成立'
+                       : 't=0 で線から浮く零点あり ✗ ⟺ Λ>0 ⟺ RH不成立', (L+R)/2, h-16);
+  }
+  function say(){
+    var t=tNow(), dv=dev(t);
+    tval.textContent='t = '+t.toFixed(2);
+    var state = dv<1e-6? 'いま線上':'いま線から浮いている（ズレ '+dv.toFixed(2)+'）';
+    rd.innerHTML='<b>Λ='+Lambda.toFixed(2)+'。</b> 熱の時間 t='+t.toFixed(2)+' ── オレンジのペアは'+state+
+      '。t を Λ 以上にすると線上に吸収（片道）。<b>t=0 の様子</b>が、そのまま Λ≤0 か＝RHの成否です。';
+  }
+  function setLam(v,btn){ Lambda=v; [bNeg,bZero,bPos].forEach(function(b){b.classList.remove('on');}); btn.classList.add('on'); draw(); say(); }
+  bNeg.addEventListener('click',function(){ setLam(-0.10,bNeg); });
+  bZero.addEventListener('click',function(){ setLam(0.0,bZero); });
+  bPos.addEventListener('click',function(){ setLam(0.12,bPos); });
+  sl.addEventListener('input',function(){ draw(); say(); });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

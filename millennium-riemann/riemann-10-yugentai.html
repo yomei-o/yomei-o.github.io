@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>別世界では証明済み ── 有限体版リーマン予想 ／ ミレニアム問題を解くぞ 挑戦編⑤</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2f7d5a; --side-bg:#e6f0ea;
+    --warn:#8a4b2f;
+    --calc:#2f7d5a; --calc-bg:#e6f0ea;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#2f7d5a;      /* ルートD：緑（＝証明済みの色） */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6da 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#1c3329;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#1c3329;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#2f7d5a;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#e6f0ea;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e6f0ea;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c3329;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">挑戦編⑤（ルートD）</span></div>
+  <p class="eyebrow">いちばんの希望と、いちばんの焦らし ── 隣の世界では、もう解けている</p>
+  <h1>別世界では証明済み ── 有限体版リーマン予想
+    <span class="sub">リーマンのゼータは<strong>整数</strong>の関数。でも「そっくりなゼータ」が他にもある ── <strong>有限体の上の図形</strong>のゼータ。<br>そのリーマン予想は<em>証明されている</em>（Weil・Deligne）。しかも仕組みは、前回ルートCが夢見た<strong>作用素そのもの</strong>。<br>なのに整数には持ち込めない ── 間に「渡れない谷」がある。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：なぜ隣では解け、なぜ整数に来られないか</span>
+    <span>一言で：幾何が作用素をくれる。整数にはその幾何が無い</span>
+  </div>
+
+  <p class="lead">前回ルートC（作用素の夢）の最後に、こう言いました ── 「同じ機構が現に成り立つ世界が実在する」。この回はその世界を主役にします。リーマンのゼータは<strong>整数</strong>にひもづく関数ですが、ゼータ関数は<em>それ一つではありません</em>。数学のいろんな対象が、それぞれ自分のゼータを持つ。中でも<strong>有限体の上の図形（曲線）</strong>のゼータでは、リーマン予想が<strong>定理として証明済み</strong>。しかも、その証明の心臓は前回の"作用素"そのもの。<em>いちばん希望が見えるルート</em>── そして、いちばん焦らされるルートです。</p>
+
+  <h2><span class="n">01</span>ゼータは、ひとつじゃない</h2>
+
+  <p>リーマンのゼータ \(\zeta(s)=\prod_p (1-p^{-s})^{-1}\) は、素数＝整数の"原子"を束ねた関数でした（第3回）。実は数学には<strong>ゼータ関数の一族</strong>があり、対象ごとに一つずつ存在します。整数の代わりに置けるのが ──</p>
+
+  <div class="keybox">
+    <div class="lbl">整数の"いとこ"── 有限体とその上の図形</div>
+    <p style="margin:0 0 6px;"><strong>有限体 \(\mathbb{F}_p\)</strong>：\(\{0,1,2,\dots,p-1\}\) を「\(p\) で割った余り」で計算する世界（時計算数）。たとえば \(\mathbb{F}_5\) では \(3+4=2\)、\(2\times3=1\)。要素が有限個なので、<em>「数え上げ」が完全にできる</em>。</p>
+    <p style="margin:0;"><strong>その上の曲線</strong>：\(y^2=x^3+x+1\) のような式の解 \((x,y)\) の集まり。\(\mathbb{F}_p\) の中に解が何個あるか（<strong>点の数 \(N_p\)</strong>）を数えられる。この点の数が、整数の世界の"素数"に当たる役を演じます。</p>
+  </div>
+
+  <p>整数の世界は無限で数えきれないのに対し、有限体の世界は<em>すべて数え上げられる</em> ── ここが決定的な違いで、あとで効いてきます。</p>
+
+  <h2><span class="n">02</span>数えてみる ── そして「ハッセの限界」</h2>
+
+  <p>楕円曲線 \(y^2=x^3+x+1\) を、素数 \(p\) ごとの世界 \(\mathbb{F}_p\) で見て、点の数 \(N_p\) を数えます。だいたい \(p+1\) 個くらいになるはずですが、そこから<strong>どれだけズレるか</strong>（\(a_p=p+1-N_p\)、"ゆらぎ"）が主役。下の図は、そのズレ \(a_p\) を素数ごとにプロットしたもの。</p>
+
+  <div class="fig">
+    <div class="cap">図：曲線 \(y^2=x^3+x+1\) の点の数のズレ <span style="color:var(--acc);font-weight:700;">a<sub>p</sub>=p+1−N<sub>p</sub></span>（点）と、<span style="color:#a5473a;font-weight:700;">±2√p の帯</span>。スライダーで素数 p を選ぶ。ズレは<strong>必ず帯の中</strong>＝これが有限体版RH（ハッセの定理）の見える化。すべてブラウザ内で数え上げ。</div>
+    <canvas id="cvHasse" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <label>素数 p ：<input type="range" id="sldP" min="0" max="1" value="0" step="1"><span id="pVal" style="font-weight:700;color:var(--acc);">5</span></label>
+    </div>
+    <div class="readout" id="rdHasse"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;border-radius:50%;"></i>ズレ a_p</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>±2√p（ハッセの限界）</span>
+    </div>
+  </div>
+
+  <p>点が一つも帯からはみ出さないのが見えますか。<strong>\(|a_p|\le 2\sqrt{p}\)</strong> ── このズレが \(\sqrt{p}\) 程度に必ず収まる、という定理を<strong>ハッセ</strong>が1930年代に証明しました（楕円曲線の場合）。\(\sqrt{p}\) 程度の"ゆらぎ最小"── どこかで聞いた響きです（第2回・第5回の「リーマン予想＝素数のゆらぎ最小」）。それもそのはず ──</p>
+
+  <h2><span class="n">03</span>これが「有限体版リーマン予想」── しかも定理</h2>
+
+  <p>曲線のゼータ関数の<strong>ゼロの位置</strong>を調べると、この \(\sqrt{p}\) の限界は、まさに<em>「ゼロが臨界線に乗る」</em>と同じことだと分かります。</p>
+
+  <div class="keybox">
+    <div class="lbl">有限体版リーマン予想（ヴェイユ・ドリーニュ）</div>
+    <p style="margin:0 0 8px;">曲線のゼータ \(Z(T)=\dfrac{P(T)}{(1-T)(1-qT)}\)（\(P\) は整数係数の多項式）の"逆根" \(\alpha_i\) は、すべて</p>
+    $$|\alpha_i|=\sqrt{q}\qquad\Longleftrightarrow\qquad \text{零点は }\mathrm{Re}(s)=\tfrac12\text{ の上}$$
+    <p style="margin:8px 0 0;">これが<strong>リーマン予想の完全な"いとこ"</strong>。点の数のズレ \(|N_n-(q^n+1)|\le 2g\,q^{n/2}\)（ハッセの限界の一般形）と同値。そして ── <strong>これは証明されている</strong>：曲線は<strong>ハッセ（1930年代）＋ヴェイユ（1948）</strong>、高次元の一般の図形は<strong>ドリーニュ（1974）</strong>。整数版が160年未解決なのに、こちらは<em>完全な定理</em>。</p>
+  </div>
+
+  <h2><span class="n">04</span>なぜ、こちらは解けたのか ── 幾何が「作用素」をくれる</h2>
+
+  <p>ここが今回の核心。<em>なぜ有限体版だけ解けたのか。</em>答えは ── <strong>前回ルートCが夢見た「作用素」が、この世界には本当に存在する</strong>から。</p>
+
+  <div class="keybox">
+    <div class="lbl">フロベニウス作用素 ── ヒルベルト=ポリアの夢の"実物"</div>
+    <p style="margin:0 0 6px;">有限体には<strong>フロベニウス写像</strong>（\(x\mapsto x^q\)、\(q\)乗する操作）という<em>自然な幾何的作用</em>がある。図形の<strong>コホモロジー</strong>（図形から作った線型空間）に、このフロベニウスが作用する ── つまり<em>本物の作用素</em>になる。</p>
+    <p style="margin:0;">ゼータのゼロ \(\alpha_i\) は、この<strong>フロベニウス作用素の固有値</strong>。ドリーニュは、その固有値の大きさが必ず \(\sqrt{q}\) だと証明した ── これが有限体版RH。<em>ルートCの「ゼロ＝作用素の固有値」が、幾何のおかげで現実になっている</em>。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つまり ルートC と ルートD はいとこ</span>
+    ルートC（前回）は「ゼロを作用素の固有値にできれば…」という<em>夢</em>だった。ルートDの有限体世界では、その作用素が<strong>フロベニウス（コホモロジー上）</strong>として<em>実在</em>し、固有値の大きさが \(\sqrt q\) に固定される＝RHが出る。D は C の夢が<strong>幾何によって叶った</strong>世界。だから両者は同じ縁を、別の側から照らしている。
+  </div>
+
+  <h2><span class="n">05</span>二つの世界 ── そっくりなのに、橋が架からない</h2>
+
+  <p>整数の世界と、有限体の世界は、驚くほど平行しています。下の対応表で、<strong>行をクリック</strong>してみてください。左（有限体）はすべて揃っていて<span style="color:var(--acc);font-weight:700;">証明済み</span>、右（整数）は<span style="color:#a5473a;font-weight:700;">肝心の2つが欠けている</span>のが分かります。</p>
+
+  <div class="fig">
+    <div class="cap">図：二つの世界の対応。<span style="color:var(--acc);font-weight:700;">左＝有限体（証明済み）</span>／<span style="color:#a5473a;font-weight:700;">右＝整数（未解決）</span>。行を選ぶと対応の説明。整数側は「土台の体」と「作用素」が<strong>欠けている（?）</strong>── そこが渡れない谷。</div>
+    <canvas id="cvWorlds" width="680" height="330"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-r="0">土台</button>
+      <button class="btn" data-r="1">舞台</button>
+      <button class="btn" data-r="2">素数の役</button>
+      <button class="btn" data-r="3">作用素</button>
+      <button class="btn" data-r="4">RH</button>
+    </div>
+    <div class="readout" id="rdWorlds"></div>
+  </div>
+
+  <h2><span class="n">06</span>壁 ── 整数の「下」に、体が無い</h2>
+
+  <p>なぜ橋が架からないのか。決定的な違いは<strong>「土台」</strong>です。有限体上の曲線には、その下に<em>本物の体 \(\mathbb{F}_q\)</em> が敷いてある。だから「図形×フロベニウス×コホモロジー」の機械が動く。ところが整数 \(\mathbb{Z}\)（正確には \(\mathrm{Spec}\,\mathbb{Z}\)）の下には ── <strong>何も無い</strong>。整数は"いちばん底"なのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートD の壁 ── 一元体 \(\mathbb{F}_1\) という幻</div>
+    <p style="margin:0 0 6px;">有限体版の機械を整数に移すには、整数を「ある体の上の曲線」とみなす<strong>幾何</strong>が要る。その土台は俗に<strong>「一元体 \(\mathbb{F}_1\)（要素が1つの体）」</strong>と呼ばれる ── が、<em>ふつうの意味の体は要素が最低2つ（0と1）必要</em>で、\(\mathbb{F}_1\) は<strong>まだ存在しない・作れていない</strong>。</p>
+    <p style="margin:0;">同じく、整数のゼロを<em>フロベニウスの固有値</em>として生む<strong>コホモロジー（＝作用素の舞台）も未発見</strong>。コンヌ＝コンサニ（数論的サイト・非可換幾何）、ドニンガー（力学系的コホモロジー）らが挑むが、RHを出す土台は未完成。</p>
+  </div>
+
+  <p>これがルートDの、希望と焦らしの正体です。<em>同じ形の定理が、隣の世界には確かにある。仕組み（フロベニウス＝作用素）も見えている。</em>でも、整数の世界にその<strong>土台（体）と舞台（コホモロジー）</strong>が無い。証明済みの峰がくっきり見えているのに、間の谷 ── \(\mathbb{F}_1\) の谷 ── に橋が架からない。地図（挑戦編①）で「例外0個を強制する剛い構造は、整数の世界では<em>存在しない</em>」と言ったのは、この意味でした。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <p>A（外から）、B（内から数える）、C（作用素の夢）、D（隣の世界の完登）── ここまでは<em>正面から登る</em>道でした。次回（挑戦編⑥・完）は毛色を変え、RHを<strong>別の姿に翻訳する</strong>ルートEへ。初等的な不等式にすら化けるその言い換えが、なぜ「難しさを移すだけ」なのか ── 入門姉妹編の「保存的拡大」の掟で締めます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">有限体 \(\mathbb{F}_q\)（\(q=p^k\)）上の（非特異射影）曲線のゼータ \(Z(T)=P(T)/((1-T)(1-qT))\) は有理関数で、\(P(T)=\prod(1-\alpha_i T)\)（\(\deg P=2g\)、\(g\)＝種数）。<strong>有限体版リーマン予想 \(|\alpha_i|=\sqrt q\)</strong> は、曲線についてはハッセ（楕円曲線、1930年代）とヴェイユ（一般の曲線、1948）が証明。高次元の（ヴェイユ予想の）リーマン予想部分はドリーニュ（1974、「ヴェイユ予想I」）がエタール・コホモロジーとフロベニウス固有値の評価により証明。いずれも確立した<strong>定理</strong>です。点の数の評価 \(|N_n-(q^n+1)|\le 2g\,q^{n/2}\)、楕円曲線でのハッセ限界 \(|a_p|\le2\sqrt p\)（\(a_p=p+1-\#E(\mathbb{F}_p)\)）も定理です。図1は本ページ内で \(y^2=x^3+x+1\) の点を実際に数え上げており（不良還元の \(p=2,3,31\) は除外）、\(a_p\) はすべて \(\pm2\sqrt p\) の帯に収まります。</p>
+    <p style="margin-bottom:0;">ゼロが臨界線 \(\mathrm{Re}(s)=1/2\) 上にあること（\(T=q^{-s}\) で \(|\alpha_i|=q^{1/2}\)）が、この世界の「リーマン予想」です。零点がフロベニウス作用素（コホモロジー上）の固有値であるという描像は、ヴェイユ予想の枠組みの核心で、ヒルベルト=ポリア機構が実現した実例と言えます。整数（\(\mathrm{Spec}\,\mathbb{Z}\)）へ移すための「一元体 \(\mathbb{F}_1\)」は Tits（1957）に遡る構想で、Manin, Soulé, Deninger, Connes–Consani, Lorscheid らにより研究されていますが、リーマン予想を導く理論は未完成です（\(\mathbb{F}_1\) は通常の意味の体ではなく、比喩的・構想的な対象）。ドニンガーの力学系的コホモロジー、コンヌの跡公式アプローチも同様に未完。リーマン予想は2025年時点で未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「有限体版リーマン予想」は、点の数え上げで言うと何を主張している？
+        <details><summary>答えを見る</summary><div class="ans">曲線の \(\mathbb{F}_{q^n}\) 上の点の数 \(N_n\) が主項 \(q^n+1\) からずれる量が \(\sqrt{q^n}\) 程度（|N_n−(q^n+1)|≤2g·q^{n/2}）に必ず収まる、という主張。楕円曲線ならハッセ限界 |a_p|≤2√p。これはゼータのゼロが臨界線 Re(s)=1/2 上にあることと同値で、"ゆらぎ最小"＝整数版RHの完全な類似。</div></details>
+      </li>
+      <li>なぜ有限体版は解けて、整数版は解けないのか（核心の違い）。
+        <details><summary>答えを見る</summary><div class="ans">有限体の世界には、図形に自然に作用する「フロベニウス作用素」がコホモロジー上に実在し、ゼロはその固有値になる。ドリーニュは固有値の大きさが√qだと証明（＝RH）。前回ルートCの「作用素の夢」が幾何で現実になっている。整数の世界にはこの作用素を生む幾何（土台の体・コホモロジー）が無いので、同じ機械が動かせない。</div></details>
+      </li>
+      <li>整数版に移せない「壁」を一言で。
+        <details><summary>答えを見る</summary><div class="ans">整数 Spec ℤ の「下」に敷くべき体が無いこと。有限体上の曲線は下に本物の 𝔽_q があるが、整数はいちばん底で、その土台となる「一元体 𝔽₁」はまだ存在しない（体は要素が最低2つ必要で 𝔽₁ は構想段階）。ゼロをフロベニウス固有値として生むコホモロジーも未発見。証明済みの峰は見えるのに、𝔽₁の谷に橋が架からない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">挑戦編⑤まとめ</span>別世界では証明済み</h2>
+    <p>ゼータは一族。整数のリーマンζの"いとこ"に、<strong>有限体上の曲線のゼータ</strong>がある。その<strong>リーマン予想は定理</strong>── 点の数のズレが \(\sqrt q\) に収まる（ハッセ限界 \(|a_p|\le2\sqrt p\)）＝ゼロが \(\mathrm{Re}(s)=1/2\) 上。曲線はハッセ＋ヴェイユ（1948）、高次元はドリーニュ（1974）。<em>整数版が160年未解決なのに、隣は完登済み。</em></p>
+    <p>なぜ解けた？ ── <strong>幾何が作用素をくれる</strong>から。ゼロは<strong>フロベニウス作用素（コホモロジー上）の固有値</strong>で、その大きさが \(\sqrt q\) に固定される＝前回ルートCの夢の実物。だが整数には持ち込めない ── \(\mathrm{Spec}\,\mathbb{Z}\) の下に敷く<strong>土台の体（一元体 \(\mathbb{F}_1\)）も、ゼロを生むコホモロジーも無い</strong>（コンヌ・ドニンガーが挑戦中）。証明済みの峰は見えるのに、\(\mathbb{F}_1\) の谷が渡れない。次回（完）は、正面から登らず<strong>RHを別の姿に翻訳する</strong>ルートEへ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-09-spectral.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6f0ea;font-weight:700;letter-spacing:.03em;">← 挑戦編④</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6f0ea;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-11-iikae.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6f0ea;font-weight:700;letter-spacing:.03em;">挑戦編⑥：言い換えの罠 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 挑戦編⑤（ルートD）、数学好きの高校生・大学生向け読み物。有限体 \(\mathbb{F}_q\) 上の非特異射影曲線のゼータ関数、有理性・関数等式、および有限体版リーマン予想 \(|\alpha_i|=\sqrt q\)（零点が \(\mathrm{Re}(s)=1/2\) 上）は、曲線についてハッセ（1930年代、楕円曲線）とヴェイユ（1948）、一般のヴェイユ予想はドヴォーク（有理性、1960）、グロタンディーク学派（エタール・コホモロジー）、ドリーニュ（リーマン予想部分、1974）により証明された定理です。点の数の評価 \(|N_n-(q^n+1)|\le2g\,q^{n/2}\)、ハッセ限界 \(|a_p|\le2\sqrt p\) も定理。零点はフロベニウス作用素のエタール・コホモロジー上の固有値です。図1はブラウザ内で \(y^2=x^3+x+1\) の点を数え上げ（不良還元 \(p=2,3,31\) を除外）、\(a_p\) は常に \(\pm2\sqrt p\) 内に収まります。整数版への移植に要する「一元体 \(\mathbb{F}_1\)」（Tits 1957 以降、Manin・Soulé・Deninger・Connes–Consani・Lorscheid ら）や、リーマン零点をフロベニウス固有値として生むコホモロジーは未確立で、リーマン予想は2025年時点で未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のスライダーで「点のズレが必ず±2√pの帯に収まる（有限体版RH）」、図2の行ボタンで二つの世界の対応と欠けた橋を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 図1：点の数え上げとハッセ限界 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvHasse'), rd=document.getElementById('rdHasse');
+  var sld=document.getElementById('sldP'), pVal=document.getElementById('pVal');
+  var lastW=680;
+  // 素数リスト（不良還元 2,3,31 を除外）: 5..250
+  function primes(mx){ var s=[],is=new Array(mx+1).fill(true); for(var i=2;i<=mx;i++){ if(is[i]){ s.push(i); for(var j=2*i;j<=mx;j+=i) is[j]=false; } } return s; }
+  var P=primes(250).filter(function(p){ return p>=5 && p!==31; });
+  // 曲線 y^2 = x^3 + x + 1 上のアフィン点数 → a_p = p - A_p
+  function ap(p){
+    var A=0;
+    // 平方剰余の数え上げ：各 x で f=x^3+x+1、y^2=f の解の個数
+    // 事前に平方の集合
+    var isSq=new Array(p).fill(0), yc=new Array(p).fill(0);
+    for(var y=0;y<p;y++){ var v=(y*y)%p; yc[v]++; }
+    for(var x=0;x<p;x++){ var f=(((x*x%p)*x%p) + x + 1)%p; f=((f%p)+p)%p; A+=yc[f]; }
+    return p - A; // = p+1 - (#affine+1) = p - #affine
+  }
+  sld.max = P.length-1;
+  var apCache = P.map(ap);
+  function draw(){
+    var idx=parseInt(sld.value,10), p=P[idx];
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=40,mR=16,mT=16,mB=30, pW=w-mL-mR, pH=h-mT-mB;
+    var pMax=P[P.length-1];
+    var yMax=2*Math.sqrt(pMax)*1.12;
+    function X(pp){ return mL + pp/pMax*pW; }
+    function Y(v){ return mT + pH/2 - v/yMax*(pH/2); }
+    ctx.clearRect(0,0,w,h);
+    // 0線
+    ctx.strokeStyle='#cddcd4'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(mL+pW,Y(0)); ctx.stroke();
+    ctx.fillStyle='#7a8b82'; ctx.font='11px sans-serif'; ctx.textAlign='right'; ctx.fillText('0', mL-5, Y(0)+4);
+    // ハッセ帯 ±2√p
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); for(var pp=5;pp<=pMax;pp+=1){ var e=2*Math.sqrt(pp); if(pp===5) ctx.moveTo(X(pp),Y(e)); else ctx.lineTo(X(pp),Y(e)); } ctx.stroke();
+    ctx.beginPath(); for(var pp2=5;pp2<=pMax;pp2+=1){ var e2=2*Math.sqrt(pp2); if(pp2===5) ctx.moveTo(X(pp2),Y(-e2)); else ctx.lineTo(X(pp2),Y(-e2)); } ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#a5473a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('+2√p', X(pMax)-40, Y(2*Math.sqrt(pMax))-4); ctx.fillText('−2√p', X(pMax)-40, Y(-2*Math.sqrt(pMax))+14);
+    // 点
+    for(var i=0;i<P.length;i++){ var on=(i===idx);
+      ctx.beginPath(); ctx.arc(X(P[i]),Y(apCache[i]), on?6:3, 0,7);
+      ctx.fillStyle= on? '#1a1e28':'#2f7d5a'; ctx.fill();
+      if(on){ ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); }
+    }
+    // x メモリ
+    ctx.fillStyle='#7a8b82'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var xv=50;xv<=pMax;xv+=50) ctx.fillText('p='+xv, X(xv), mT+pH+16);
+  }
+  function report(){
+    var idx=parseInt(sld.value,10), p=P[idx], a=apCache[idx]; pVal.textContent=p;
+    var N=p+1-a, bound=2*Math.sqrt(p);
+    rd.innerHTML='p=<b>'+p+'</b> ── 曲線 y²=x³+x+1 の点の数 #E(𝔽<sub>'+p+'</sub>)=<b>'+N+'</b>（≈p+1='+(p+1)+'）。ズレ a_p=<b>'+a+'</b>、限界 2√p≈<b>'+bound.toFixed(2)+'</b>。|a_p|≤2√p は <b style="color:#2f7d5a;">'+(Math.abs(a)<=bound+1e-9?'成立（帯の中）':'?')+'</b> ── これが有限体版RH（ハッセの定理）。';
+  }
+  sld.addEventListener('input', function(){ draw(); report(); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+
+/* ===== 図2：二つの世界の対応 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvWorlds'), rd=document.getElementById('rdWorlds');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-r]'));
+  var lastW=680, sel=0;
+  var rows=[
+    {k:'土台（下に敷く体）', L:'有限体 𝔽_q', R:'？（一元体 𝔽₁）', Rmiss:true,
+     msg:'<b>土台</b>：有限体上の曲線には、下に<b>本物の体 𝔽_q</b> が敷いてある。整数 Spec ℤ の下には<b style="color:#a5473a;">何も無い</b>（＝いちばん底）。移すには「一元体 𝔽₁」という土台が要るが、通常の体は要素が最低2つ必要で、𝔽₁ はまだ存在しない。'},
+    {k:'舞台（対象）', L:'𝔽_q 上の曲線', R:'整数 Spec ℤ', Rmiss:false,
+     msg:'<b>舞台</b>：有限体では方程式の解の集まり＝曲線（幾何的な図形）。整数側は Spec ℤ ── これを「曲線」とみなしたいが、土台の体が無いので幾何が回らない。'},
+    {k:'素数の役', L:'点の数 N_n（閉点）', R:'素数 p', Rmiss:false,
+     msg:'<b>素数の役</b>：有限体では各拡大 𝔽_{qⁿ} 上の<b>点の数 N_n</b> が素数の役。整数では<b>素数 p</b> そのもの。どちらもゼータに畳み込まれ、ゼロが分布を支配する（明示公式の類似あり）。'},
+    {k:'作用素', L:'フロベニウス（コホモロジー上）実在', R:'？（未発見）', Rmiss:true,
+     msg:'<b>作用素</b>：有限体では x↦x^q の<b>フロベニウスがコホモロジーに作用</b>し、ゼロはその固有値（＝ルートCの夢の実物）。整数側で零点を固有値として生む<b style="color:#a5473a;">作用素・コホモロジーは未発見</b>。コンヌ・ドニンガーが挑戦中。'},
+    {k:'リーマン予想', L:'|α|=√q＝Re(s)=1/2【証明済み】', R:'Re(s)=1/2【未証明】', Rmiss:false, Ropen:true,
+     msg:'<b>RH</b>：有限体版は <b style="color:#2f7d5a;">|α_i|=√q（ゼロが臨界線上）＝定理</b>（Weil 1948／Deligne 1974）。整数版は同じ形の主張だが<b style="color:#a5473a;">未証明</b>。左が右の完全な"いとこ"── なのに橋（土台・作用素）が欠けている。'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=14,mR=14,mT=40,mB=14, pW=w-mL-mR, colGap=40;
+    var colW=(pW-colGap)/2, xL=mL, xR=mL+colW+colGap;
+    var rowH=(h-mT-mB)/rows.length;
+    ctx.clearRect(0,0,w,h);
+    // ヘッダ
+    ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle='#2f7d5a'; ctx.fillText('有限体の世界（証明済み）', xL+colW/2, 22);
+    ctx.fillStyle='#a5473a'; ctx.fillText('整数の世界（未解決）', xR+colW/2, 22);
+    for(var i=0;i<rows.length;i++){
+      var y=mT+i*rowH, on=(i===sel), rw=rows[i];
+      // 行ラベル（中央の帯）
+      // 左セル
+      ctx.fillStyle= on? '#cfe6da':'#eef4f0';
+      roundRect(ctx,xL,y+4,colW,rowH-8,6); ctx.fill();
+      ctx.strokeStyle= on? '#2f7d5a':'#cddcd4'; ctx.lineWidth= on?2:1; roundRect(ctx,xL,y+4,colW,rowH-8,6); ctx.stroke();
+      // 右セル
+      ctx.fillStyle= rw.Rmiss? (on?'#f3d9d4':'#f7ece9') : (rw.Ropen? (on?'#f3e7d4':'#f7f0e4') : (on?'#e7dcc6':'#f2ece0'));
+      roundRect(ctx,xR,y+4,colW,rowH-8,6); ctx.fill();
+      ctx.strokeStyle= on? (rw.Rmiss?'#a5473a':'#a9791a'):'#d8ccb8'; ctx.lineWidth= on?2:1; roundRect(ctx,xR,y+4,colW,rowH-8,6); ctx.stroke();
+      // テキスト
+      ctx.textAlign='left'; ctx.font='bold 10.5px sans-serif'; ctx.fillStyle='#6a7a70';
+      ctx.fillText(rw.k, xL+10, y+18);
+      ctx.font='bold 13px sans-serif'; ctx.fillStyle='#1c3329'; ctx.textAlign='center';
+      ctx.fillText(rw.L, xL+colW/2, y+rowH/2+8);
+      ctx.fillStyle= rw.Rmiss?'#a5473a':(rw.Ropen?'#8a6a1a':'#5a4a2a');
+      ctx.fillText(rw.R, xR+colW/2, y+rowH/2+8);
+      // 橋（中央）
+      var by=y+rowH/2, bx0=xL+colW, bx1=xR;
+      if(rw.Rmiss){ ctx.strokeStyle='#a5473a'; ctx.lineWidth=1.6; ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.moveTo(bx0+3,by); ctx.lineTo((bx0+bx1)/2-6,by); ctx.moveTo((bx0+bx1)/2+6,by); ctx.lineTo(bx1-3,by); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#a5473a'; ctx.font='bold 13px sans-serif'; ctx.textAlign='center'; ctx.fillText('✕', (bx0+bx1)/2, by+5);
+      } else { ctx.strokeStyle='#9db8ac'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(bx0+3,by); ctx.lineTo(bx1-3,by); ctx.stroke();
+        ctx.fillStyle='#9db8ac'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.fillText('≈', (bx0+bx1)/2, by-4); }
+    }
+  }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function pick(i){ sel=i; btns.forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-r'),10)===i); }); draw(); rd.innerHTML=rows[i].msg; }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(parseInt(b.getAttribute('data-r'),10)); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick(0);},40); window.addEventListener('load',function(){pick(0);});
+})();
+</script>
+</body>
+</html>

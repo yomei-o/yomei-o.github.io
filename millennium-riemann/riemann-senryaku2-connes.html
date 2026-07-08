@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コンヌの跡公式 ── RH＝正値性へ ／ ミレニアム問題を解くぞ 戦略②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e6eef0;
+    --warn:#8a4b2f;
+    --calc:#2c5560; --calc-bg:#e6eef0;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#2c5560;      /* 戦略②：深い青緑（コンヌ・スペクトル） */
+    --acc2:#5a2a6e;
+    --gold:#a9791a;
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a; --line:#5a2a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe0e3 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#1c2f33;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:var(--calc-bg);color:#1c2f33;}
+  .readout b{color:var(--acc);}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    font-weight:700;letter-spacing:.03em;padding:7px 12px;border:1px solid var(--rule);border-radius:4px;
+    background:#e6eef0;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e6eef0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c2f33;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第二部 リーマン予想</span><span class="ep">戦略②（深掘り）</span></div>
+  <p class="eyebrow">本命の心臓 ── 「証明せよ」を「正であることを示せ」に変える</p>
+  <h1>コンヌの跡公式 ── RH＝正値性へ
+    <span class="sub">本命は「零点＝作用素のスペクトル」。その舞台をコンヌは<strong>アデール類空間</strong>に据えた。<br>鍵は、\(\mathbb{Q}\) の<em>すべての素点</em>（各素数 \(p\) と 無限素点 \(\infty\)）を一つに束ねること。<br>すると明示公式は本物の跡公式になり、リーマン予想は<strong>「ある和が常に正」</strong>という一点に還元される。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：アデール・跡公式・ワイル正値性を骨格で掴む</span>
+    <span>一言で：RH ⟺ ワイル正値性（∞ が継ぎ目）</span>
+  </div>
+
+  <p class="lead">戦略①で、本命ルートは<strong>「零点＝どこかの作用素のスペクトル」</strong>だと定め、コンヌがそれをアデール類空間上の跡公式にして、RHを<strong>ワイル正値性</strong>という一点に還元したと述べました。この回は、その心臓部を一段深く覗きます。難しく聞こえますが、入口は素朴な問い ── <em>「数の"大きさ"の測り方は、一つじゃない」</em>。この、素数ごとの物差し（\(p\)進）と無限遠の物差し（\(\infty\)）を<strong>全部束ねる</strong>のがアデールで、それが「全ての素数を同時に扱う跡公式」の自然な舞台になります。そして到達点は、証明すべきことが<strong>たった一つの正値性</strong>にまで絞られる、その景色です。</p>
+
+  <h2><span class="n">01</span>数の「大きさ」は一つじゃない ── 素点という物差し</h2>
+
+  <p>整数 \(50\) の「大きさ」は？ ふつうは \(50\)。でも数論には、<strong>素数ごとの別の物差し</strong>があります。<strong>\(p\)進絶対値</strong> ── <em>「\(p\) で何回割れるか」で小ささを測る</em>。\(p\) で割れるほど \(p\)進的には<strong>小さい</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">\(p\)進絶対値 ── 素数 p の物差し</div>
+    <p style="margin:0 0 6px;">\(x\) が \(p\) で \(k\) 回割れるなら \(\;|x|_p=p^{-k}\)。例：\(|50|_2=\tfrac12\)（50は2で1回割れる）、\(|50|_5=\tfrac1{25}\)（5で2回）、\(|50|_3=1\)（3で割れない）。ふつうの大きさ \(|50|_\infty=50\) は<strong>無限素点 \(\infty\)</strong> の物差し。</p>
+    <p style="margin:0;">オストロフスキーの定理：\(\mathbb{Q}\) 上の物差しは、この<strong>\(\infty\) と 各素数 \(p\) で全部</strong>。素数たちと \(\infty\) が、数の世界の"全ての場所（素点）"。</p>
+  </div>
+
+  <p>驚くのはここから。一つの数を<em>全ての物差しで測って掛け合わせる</em>と、いつも<strong>ぴったり 1</strong> になります（<strong>積公式</strong>）。下の図で、数を選んで確かめてください ── \(\infty\) の大きさと、素数たちの小ささが、過不足なく釣り合う。</p>
+
+  <div class="fig">
+    <div class="cap">図：数 x を各素点で測る。<span style="color:var(--acc);font-weight:700;">∞＝ふつうの大きさ</span>、<span style="color:#a5622a;font-weight:700;">p＝p進の大きさ</span>。棒は log|x|_v（上＝大、下＝小）。全部掛けると <strong>∏|x|_v=1</strong>（積公式）。ボタンで数を選ぶ。</div>
+    <canvas id="cvPlaces" width="680" height="300"></canvas>
+    <div class="ctrlrow no-print">
+      <button class="btn on" data-x="50">50</button>
+      <button class="btn" data-x="12">12</button>
+      <button class="btn" data-x="700">700</button>
+      <button class="btn" data-x="0.75">3/4</button>
+      <button class="btn" data-x="0.2222">2/9</button>
+      <button class="btn" data-x="0.91">91/100</button>
+    </div>
+    <div class="readout" id="rdPlaces"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2c5560;"></i>∞（実の大きさ）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>各素数 p（p進）</span>
+      <span>積 = 1</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>アデール ── 全ての素点を、一つに束ねる</h2>
+
+  <p>積公式が示すのは、<strong>「素数たちと \(\infty\) は、切り離せない一つの家族」</strong>だということ。ならば、それらを<em>全部まとめて一度に扱う</em>数の世界を作ればいい ── それが<strong>アデール</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">アデールとアデール類空間</div>
+    <p style="margin:0 0 6px;"><strong>アデール \(\mathbb{A}_\mathbb{Q}\)</strong>：実数 \(\mathbb{R}\)（＝\(\infty\) の世界）と、全ての \(p\)進数 \(\mathbb{Q}_p\) を<em>まとめて一本に束ねた</em>数の世界。全素点を同時に持つ。</p>
+    <p style="margin:0;">これを \(\mathbb{Q}^\times\) の作用で割った<strong>アデール類空間 \(X=\mathbb{A}_\mathbb{Q}/\mathbb{Q}^\times\)</strong> の上で、"拡大・縮小（スケーリング）"の作用を考える。<em>全ての素数を同時に渡る和＝跡公式</em>の、自然な舞台がこれ。</p>
+  </div>
+
+  <p>第3回のオイラー積 \(\prod_p\) が「全素数の掛け算」だったように、アデールは「全素点の舞台」。<strong>明示公式が"全素数を渡る和"だったのは、裏でこのアデールが働いていたから</strong>だと分かります。</p>
+
+  <h2><span class="n">03</span>コンヌの跡公式 ── 零点は「吸収スペクトル」</h2>
+
+  <p>コンヌ（1990年代）は、このアデール類空間の上でスケーリング作用の<strong>跡（トレース）</strong>を取ると、それがちょうど<em>明示公式そのもの</em>になることを示しました。戦略①の「明示公式＝跡公式」が、比喩でなく<strong>本物の等式</strong>になったのです。</p>
+
+  <p>このとき零点は、思いがけない姿で現れます ── <strong>吸収スペクトル</strong>。連続した光（スペクトル）の中で、特定の色だけが<em>抜け落ちて黒い線</em>になる、あの物理現象と同じ。下の図で、連続スペクトルの中の<span style="color:#1a1e28;font-weight:700;">黒い抜け（吸収線）</span>が、ゼータの零点 \(\tfrac12+i\gamma\) にちょうど対応します。<strong>クリック</strong>で確認を。</p>
+
+  <div class="fig">
+    <div class="cap">図：コンヌの描像 ── 連続スペクトル（帯）の中で、<span style="color:#1a1e28;font-weight:700;">黒い抜け（吸収線）＝ゼータの零点</span>。高さ t にそって、零点 t≈14.13, 21.02, 25.01… の位置が抜ける。<strong>抜けをクリック</strong>すると対応する零点が出る。</div>
+    <canvas id="cvAbs" width="680" height="200"></canvas>
+    <div class="readout" id="rdAbs"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#cfe0e3;"></i>連続スペクトル</span>
+      <span><i class="swatch" style="background:#1a1e28;"></i>吸収線＝零点 1/2+iγ</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">「固有値」でなく「吸収」なのはなぜ（一言）</span>
+    ふつうの作用素なら零点は<em>明るい固有値の線</em>として出てほしい。でもコンヌの実現では、まず<strong>連続スペクトル</strong>があり、零点は<em>そこから抜けた影（吸収）</em>として現れる。これを<strong>「明るい線（本物の自己共役作用素のスペクトル）」に昇格させ、しかも抜けが全て \(1/2\) の高さに揃うことを示す</strong>のが、RHへの詰め。影を実体に変える一手が要る。
+  </div>
+
+  <h2><span class="n">04</span>RH ＝ ワイル正値性 ── 「証明せよ」が「正だと示せ」に</h2>
+
+  <p>コンヌの跡公式の最大の収穫は、リーマン予想が<strong>たった一つの不等式（正値性）</strong>に姿を変えることです。</p>
+
+  <div class="keybox">
+    <div class="lbl">RH ⟺ ワイル正値性</div>
+    $$\text{RH}\quad\Longleftrightarrow\quad W(f)\;=\;\sum_{v}\,W_v(f)\ \ge\ 0\quad(\text{全ての試験関数 }f\text{ で})$$
+    <p style="margin:8px 0 0;">明示公式が定める量 \(W(f)\)（ワイルの二次形式）が、<strong>どんな \(f\) に対しても \(\ge0\)</strong> ── これがRHと完全に同値（ワイル、1952）。しかも \(W\) は<strong>各素点 \(v\) の寄与 \(W_v\) の足し算</strong>に分かれる。もし零点が \(1/2\) を外れたら、この和が<em>負に転じる \(f\)</em> が作れてしまう。だから<strong>「正であり続ける」＝「零点は線上」</strong>。</p>
+  </div>
+
+  <p>これは大きな一歩です。「無限個の零点が全部ある直線に乗る」という<em>幾何の主張</em>が、「ある量が常に正」という<strong>解析の不等式</strong>に翻訳された ── しかも今度は<em>本物の跡公式に裏打ちされた</em>、確かな足場の上の正値性。証明のゴールが、くっきり一点に定まりました。</p>
+
+  <h2><span class="n">05</span>進んだところ ── 有限体では、この機構で証明できる</h2>
+
+  <p>この設計が絵空事でない証拠 ── <strong>有限体の世界（挑戦編⑤）では、まさにこの跡公式＋正値性でRHが証明できる</strong>。コンヌ＝コンサニは近年、整数を"曲線"のように扱う<strong>数論的サイト</strong>という幾何を作り、有限体版のRHをこの言葉で再証明し、さらに<strong>正値性を有限個の素点（半局所）の範囲で証明</strong>してみせました。方向は、正しい。</p>
+
+  <div class="keybox">
+    <div class="lbl">戦略②の壁 ── 継ぎ目は「無限素点 ∞」</div>
+    <p style="margin:0 0 6px;">跡公式は<strong>半局所（有限個の素点）では証明済み</strong>。だが<strong>全素点を込めた完全版</strong>と、RHに等しい<strong>正値性の全体</strong>は未達。難所は決まって<strong>無限素点 \(\infty\)（アルキメデス素点）</strong>の項 \(W_\infty\)。</p>
+    <p style="margin:0;">有限体の世界には \(\infty\) が無い ── だからそこでは機構が軽やかに完結する。整数には \(\infty\) があり、その<em>曲率のような寄与</em>を飼いならし、吸収スペクトルを本物の自己共役スペクトルに昇格させることが、最後の継ぎ目。戦略①で名指した<strong>グレイル（\(\infty\) 込みの幾何＋コホモロジー＋正値性）</strong>が、そのまま立ちはだかる。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <p>コンヌの道は、リーマン予想を<em>「ある正値性を示せ」</em>という最もクリーンな一点にまで磨き上げました。残るのは \(\infty\) の項の制御 ── 有限体には無い、整数だけが背負う継ぎ目です。次回（戦略③）は角度を変え、ゼータ<em>単体</em>でなく<strong>L関数の"族"</strong>を見ます。ランダム行列との一致（挑戦編④）が、族の世界では<strong>定理になる</strong>（Katz–Sarnak）── その橋を渡ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(p\)進絶対値 \(|x|_p=p^{-v_p(x)}\)、無限素点 \(|x|_\infty\)、オストロフスキーの定理（\(\mathbb{Q}\) の非自明な絶対値は \(\infty\) と各 \(p\) で尽きる）、積公式 \(\prod_v|x|_v=1\)（\(x\in\mathbb{Q}^\times\)）はいずれも標準的な事実です。アデール \(\mathbb{A}_\mathbb{Q}\)（\(\mathbb{R}\) と全 \(\mathbb{Q}_p\) の制限直積）、アデール類空間 \(\mathbb{A}_\mathbb{Q}/\mathbb{Q}^\times\) も標準概念。コンヌ（1996–99、Selecta Math.）はイデール類群のスケーリング作用の跡公式として明示公式を定式化し、零点を吸収スペクトル（spectral realization）として得て、リーマン予想を<strong>ワイル正値性</strong>（明示公式の二次形式 \(W(f)=\sum_v W_v(f)\ge0\)）に対応づけました。ワイルの正値性判定は 1952 年に遡ります。</p>
+    <p style="margin-bottom:0;">跡公式は半局所的（有限個の素点）な場合に証明されており、コンヌ＝コンサニ（2010年代〜、数論的サイト・スケーリングサイト）は有限体版RHをこの枠組みで再導出し、半局所的な正値性を証明しています。しかし全素点を込めた完全な跡公式と、RH に等しい正値性の全体、とりわけ無限素点（アルキメデス素点）の項の制御、および吸収スペクトルを真の自己共役作用素のスペクトルへ昇格させることは未達で、リーマン予想は2025年時点で未解決です。図1はブラウザ内で \(|x|_v\) と積を実際に計算しています。図2はコンヌの吸収スペクトルの描像を、既知の零点 \(\gamma\) の位置に模式的に描いたものです（縦位置は概念的で、スペクトルの微細構造を定量再現するものではありません）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「50」を全ての素点で測って掛けると 1 になる（積公式）。∞ の大きさ50を、素数側はどう打ち消す？
+        <details><summary>答えを見る</summary><div class="ans">50=2·5² なので |50|_2=1/2、|50|_5=1/25、他の素数では|50|_p=1。∞ では|50|_∞=50。積は 50·(1/2)·(1/25)=1。∞の「大きさ50」を、素数2と5の「小ささ 1/2, 1/25」がちょうど打ち消す。だから∞と素数たちは切り離せない一家族＝アデールで束ねる理由。</div></details>
+      </li>
+      <li>コンヌの跡公式で、零点はどんな姿で現れる？ それがRHにどう関わる？
+        <details><summary>答えを見る</summary><div class="ans">連続スペクトルの中の「吸収線（黒い抜け）」として現れる（spectral realization）。明示公式がアデール類空間上の作用の跡公式になり、零点＝抜けの位置。これを本物の自己共役スペクトルに昇格させ、抜けが全て高さ方向（Re=1/2）に揃うことを示すのがRH。影を実体に変える一手が要る。</div></details>
+      </li>
+      <li>コンヌの道でRHは何に還元され、最後の壁はどこか。
+        <details><summary>答えを見る</summary><div class="ans">RH ⟺ ワイル正値性：明示公式が定める二次形式 W(f)=Σ_v W_v(f) が全ての試験関数fで≥0。零点が線を外れると和が負に転じるfが作れる。跡公式・正値性は半局所（有限個の素点）で証明済みだが、完全版と、とくに無限素点∞の項 W_∞ の制御が未達＝継ぎ目。戦略①のグレイル（∞込みの幾何＋コホモロジー＋正値性）が壁。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略②まとめ</span>RHは「正値性」になった</h2>
+    <p>数の大きさの物差しは一つでない ── \(\infty\) と各素数 \(p\)（\(p\)進 \(|x|_p=p^{-k}\)）で、掛けると必ず1（積公式）。全素点を束ねた<strong>アデール類空間</strong>が、「全素数を渡る和＝跡公式」の自然な舞台。コンヌはそこで明示公式を<em>本物の跡公式</em>にし、零点を<strong>吸収スペクトル</strong>として実現、リーマン予想を<strong>ワイル正値性 \(W(f)=\sum_v W_v(f)\ge0\)</strong>という一点に還元した。</p>
+    <p>幾何の主張（零点が線上）が、解析の不等式（ある量が常に正）に化けた ── しかも本物の跡公式に裏打ちされて。方向の正しさは<strong>有限体で実証済み</strong>（コンヌ＝コンサニの数論的サイト、半局所正値性の証明）。残る壁は決まって<strong>無限素点 \(\infty\) の項</strong>と、吸収を本物のスペクトルに昇格させること＝戦略①のグレイル。次回はゼータ単体を離れ、<strong>L関数の族</strong>とランダム行列（Katz–Sarnak）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-senryaku1-honmei.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">← 戦略①</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku3-family.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e6eef0;font-weight:700;letter-spacing:.03em;">戦略③：ランダム行列とL関数の族 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第二部・リーマン予想 戦略②（深掘り）、数学好きの高校生・大学生向け読み物。\(p\)進絶対値、オストロフスキーの定理、積公式 \(\prod_v|x|_v=1\)、アデール環 \(\mathbb{A}_\mathbb{Q}\)・アデール類空間 \(\mathbb{A}_\mathbb{Q}/\mathbb{Q}^\times\) はいずれも標準的な数論の概念です。コンヌ（1996–99）はイデール類群のスケーリング作用に対する跡公式として明示公式を定式化し、ゼータの零点を吸収スペクトルとして実現、リーマン予想をワイル正値性 \(W(f)=\sum_v W_v(f)\ge0\)（Weil 1952 の正値性判定）に対応づけました。跡公式は半局所的な場合に証明され、コンヌ＝コンサニ（数論的サイト等）は有限体版RHの再導出と半局所正値性を得ていますが、全素点版・完全な正値性・無限素点項の制御・自己共役スペクトルへの昇格は未達で、リーマン予想は2025年時点で未解決です。図1は \(|x|_v\) と積公式をブラウザ内で計算、図2は吸収スペクトルの模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1のボタンで積公式 ∏|x|_v=1、図2の吸収線クリックで零点＝スペクトルの抜けを体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+function setupHiDPI(c){
+  var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+  c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+  var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+  return {ctx:ctx,w:cssW,h:cssH};
+}
+/* ===== 図1：素点の物差しと積公式 ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvPlaces'), rd=document.getElementById('rdPlaces');
+  var btns=[].slice.call(document.querySelectorAll('.btn[data-x]'));
+  var lastW=680;
+  var PR=[2,3,5,7,11,13];
+  // 有理数を num/den で保持
+  var samples={ '50':[50,1],'12':[12,1],'700':[700,1],'0.75':[3,4],'0.2222':[2,9],'0.91':[91,100] };
+  var cur='50';
+  function vp(n,p){ var k=0; n=Math.abs(n); while(n%p===0){n/=p;k++;} return k; }
+  function absP(num,den,p){ return Math.pow(p, -(vp(num,p)-vp(den,p))); }
+  function draw(){
+    var s=samples[cur], num=s[0], den=s[1];
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var places=['∞'].concat(PR);
+    var vals=[num/den].concat(PR.map(function(p){return absP(num,den,p);}));
+    var mL=20,mR=16,mT=20,mB=40, pW=w-mL-mR, pH=h-mT-mB;
+    var n=places.length, cw=pW/n;
+    // logスケール（0中心）
+    var maxL=1; for(var i=0;i<vals.length;i++){ var l=Math.abs(Math.log(vals[i])/Math.log(10)); if(l>maxL)maxL=l; }
+    maxL=Math.max(maxL,1)*1.15;
+    var midY=mT+pH/2;
+    function BarY(v){ var l=Math.log(v)/Math.log(10); return midY - l/maxL*(pH/2); }
+    ctx.clearRect(0,0,w,h);
+    // 0線（|x|=1）
+    ctx.strokeStyle='#c9d6d8'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(mL,midY); ctx.lineTo(mL+pW,midY); ctx.stroke();
+    ctx.fillStyle='#8a9498'; ctx.font='10.5px sans-serif'; ctx.textAlign='left'; ctx.fillText('|x|=1', mL+2, midY-4);
+    ctx.fillStyle='#8a9498'; ctx.textAlign='right'; ctx.fillText('大 ↑', mL+pW, mT+10); ctx.fillText('↓ 小', mL+pW, mT+pH-2);
+    var prod=1;
+    for(var j=0;j<n;j++){
+      var cx=mL+j*cw+cw/2, v=vals[j]; prod*=v;
+      var col = j===0? '#2c5560':'#a5622a';
+      var y=BarY(v);
+      // 棒
+      ctx.fillStyle=col; ctx.globalAlpha=(v===1)?0.28:0.85;
+      var bw=Math.min(cw*0.5,34);
+      if(y<midY) ctx.fillRect(cx-bw/2,y,bw,midY-y); else ctx.fillRect(cx-bw/2,midY,bw,y-midY);
+      ctx.globalAlpha=1;
+      // 素点ラベル
+      ctx.fillStyle='#3a3a44'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(places[j], cx, mT+pH+16);
+      // 値
+      ctx.fillStyle=col; ctx.font='11px sans-serif';
+      var vs = v===1?'1': (v>=1? (Number.isInteger(v)?v:v.toFixed(2)) : ('1/'+Math.round(1/v)));
+      ctx.fillText('|x|='+vs, cx, mT+pH+30);
+    }
+    // 他素数は1の注記
+    ctx.fillStyle='#8a9498'; ctx.font='10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('…（他の素数では |x|=1）', mL+pW-70, mT+10);
+  }
+  function report(){
+    var s=samples[cur], num=s[0], den=s[1];
+    var terms=['|x|_∞='+(num/den)];
+    var prod=num/den;
+    PR.forEach(function(p){ var a=absP(num,den,p); if(a!==1){ terms.push('|x|_'+p+'='+(a>1?a:('1/'+Math.round(1/a)))); prod*=a; } });
+    rd.innerHTML='x = '+(den===1?num:num+'/'+den)+' ── '+terms.join(' × ')+' × (他は1) = <b>'+Math.round(prod*1e6)/1e6+'</b>。<b>∏|x|_v = 1</b>（積公式）── ∞ の大きさと素数たちの小ささが過不足なく釣り合う。';
+  }
+  function pick(x){ cur=x; btns.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-x')===x); }); draw(); report(); }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ pick(b.getAttribute('data-x')); }); });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){pick('50');},40); window.addEventListener('load',function(){pick('50');});
+})();
+
+/* ===== 図2：吸収スペクトル（零点＝抜け） ===== */
+(function(){
+  "use strict";
+  var cv=document.getElementById('cvAbs'), rd=document.getElementById('rdAbs');
+  var lastW=680, sel=-1;
+  var GAM=[14.134725,21.022040,25.010858,30.424876,32.935062,37.586178,40.918719,43.327073,48.005151,49.773832,52.970321,56.446248,59.347044,60.831779,65.112544];
+  var T0=8, T1=68;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var mL=16,mR=16,mT=30,mB=34, pW=w-mL-mR, bandY=mT, bandH=h-mT-mB;
+    function X(t){ return mL + (t-T0)/(T1-T0)*pW; }
+    ctx.clearRect(0,0,w,h);
+    // 連続スペクトル（グラデ帯）
+    var g=ctx.createLinearGradient(0,bandY,0,bandY+bandH);
+    g.addColorStop(0,'#dfeaec'); g.addColorStop(0.5,'#bcd2d6'); g.addColorStop(1,'#dfeaec');
+    ctx.fillStyle=g; ctx.fillRect(mL,bandY,pW,bandH);
+    ctx.strokeStyle='#9db4b8'; ctx.lineWidth=1; ctx.strokeRect(mL,bandY,pW,bandH);
+    // 吸収線（零点）
+    for(var i=0;i<GAM.length;i++){ var g0=GAM[i]; if(g0<T0||g0>T1) continue;
+      var x=X(g0), on=(i===sel);
+      ctx.fillStyle= on? '#5a2a6e':'#1a1e28';
+      ctx.fillRect(x-(on?2.2:1.4),bandY,(on?4.4:2.8),bandH);
+    }
+    // 見出し
+    ctx.fillStyle='#2c5560'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('連続スペクトル（アデール類空間上の作用）', mL, mT-10);
+    // t メモリ
+    ctx.fillStyle='#8a9498'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(var tv=10;tv<=T1;tv+=10) ctx.fillText('t='+tv, X(tv), bandY+bandH+18);
+    ctx.textAlign='right'; ctx.fillText('高さ t →', mL+pW, bandY+bandH+30);
+  }
+  function report(){
+    if(sel<0){ rd.innerHTML='連続スペクトルの中の<b>黒い抜け（吸収線）</b>が、ゼータの零点 1/2+iγ に対応（コンヌの spectral realization）。抜けをクリックすると零点が出る。'; return; }
+    rd.innerHTML='この吸収線＝零点 <b>1/2 + '+GAM[sel].toFixed(3)+' i</b>（'+(sel+1)+'番目）。連続スペクトルから<b>抜け落ちた影</b>として現れる。RHは「全ての抜けを本物のスペクトルに昇格させ、かつ Re=1/2 に揃う」を示すこと。';
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width, mx=(e.clientX-rect.left)*sx;
+    var pW=lastW-32, best=-1,bd=1e9;
+    for(var i=0;i<GAM.length;i++){ var x=16+(GAM[i]-T0)/(T1-T0)*pW; var dd=Math.abs(mx-x); if(dd<bd){bd=dd;best=i;} }
+    if(bd<12){ sel=best; } else sel=-1; draw(); report();
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(function(){draw();report();},40); window.addEventListener('load',function(){draw();report();});
+})();
+</script>
+</body>
+</html>
