@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>質量ギャップは「丸め誤差」か ── わかる質量 番外①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f4; --paper-edge:#e6ddd5;   /* 番外①：赤錆の紙（惜しい説の診断） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a3b2e; --calc-bg:#f3e8e3;
+    --rule:#d9cec5; --hair:#c8bcb2;
+    --acc:#9a4230;    /* 番外①アクセント＝赤錆 */
+    --grid:#e0d5cc;
+    --ir:#1f7a6e; --uv:#b06a12; --good:#2f7d5a; --bad:#b03a2e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 86px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd9d2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #e0d0c8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .twocol{display:flex;gap:16px;flex-wrap:wrap;margin:26px 0;}
+  .opt{flex:1;min-width:240px;border-radius:5px;padding:18px 20px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.72;}
+  .optA{background:#eaf1ec;border:1px solid #bcd6c6;}
+  .optB{background:#f6e9e6;border:1px solid #e0c0b8;}
+  .opt .h{font-weight:700;font-size:15px;margin-bottom:6px;letter-spacing:.03em;}
+  .optA .h{color:#1f6b45;} .optB .h{color:#a5311f;}
+  .opt .verdict{margin-top:10px;font-weight:700;font-size:13px;}
+  .optA .verdict{color:#1f6b45;} .optB .verdict{color:#a5311f;}
+
+  .diag{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .diag .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .diag .row:last-child{border-bottom:none;}
+  .diag .mk{flex-shrink:0;width:22px;font-weight:700;font-size:16px;}
+  .diag .ok{color:#2f7d5a;} .diag .no{color:#b03a2e;}
+  .diag .txt strong{display:block;margin-bottom:2px;color:#2a231f;}
+  .diag .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf4f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5a2a1e;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbf9,#f3ebe6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e8e3;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5a2a1e;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.twocol,.diag{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">番外 ① ／ 惜しい説の、正直な診断（改訂版）</span></div>
+  <p class="eyebrow">本編で何度も「これは丸め誤差ではない」と言ってきた。今回は、その惜しい説を正面から診断する</p>
+  <h1>質量ギャップは<br>「丸め誤差」か
+    <span class="sub">「宇宙は有限計算機で、丸め誤差が質量ギャップになる」── 惜しい説。<br>動機は鋭かった。つまずいたのは "どのスケールの解像度か" の取り違えだった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の次元的移行、第6回のIRフロア、最終回のCKN境界</span>
+    <span>実装すべきは丸め誤差でなく "対称性と無次元量"</span>
+  </div>
+
+  <p class="lead">本編（特に第4回・第6回）で、私たちは繰り返し「これは<em>丸め誤差ではない</em>」と線を引いてきました。今回はその惜しい説を、犯人捜しではなく、<strong>このシリーズで積んだ道具で正確に診断</strong>します。姉妹シリーズ番外③が「光速可変理論（VSL）は動機は正しく実装で足を踏み外した」と診断したのと、同じ構造です。結論を先に言えば ── <strong>発想の核（有限リソース＝情報の上限）は本物、でも "解像度" の UV と IR を取り違えた</strong>。この回は、その取り違えを丁寧にほどきます。</p>
+
+  <h2><span class="n">01</span>その説は、こう語る ── そして、どこが鋭いか</h2>
+
+  <p>惜しい説はこう主張します。「宇宙は有限ビットの計算機。非可換なヤン=ミルズ場を有限ビットで計算すると、丸め誤差（マシンイプシロン \(\epsilon\)）が自己ループで増幅し、ゼロに収束できない最小フットプリントが残る ── それが質量ギャップ \(\Delta>0\)」。ここは正当に評価すべきで、<strong>鋭い核</strong>を持っています。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>有限リソース／ホログラフィーは本物の発想</strong>。最終回で見た CKN境界（\(\rho\lesssim M_{\rm Pl}^2/L^2\)）の土台そのもの。</li>
+    <li><strong>「離散化すれば発散が消える」は本当</strong>。格子ゲージ理論（第4回）で実証済み、実用でも大成功。</li>
+    <li><strong>「無から有（質量）が湧く」直感</strong>は、第4回の次元的移行と正しく響き合う。</li>
+  </ul>
+
+  <h2><span class="n">02</span>まず誤解を正す ── この説は、格子を「固定」していない</h2>
+
+  <p>丸め誤差説への安直な批判はこうです ──「格子を固定するとローレンツ対称性を破る」。でも<strong>この説は格子を固定していません</strong>。解像度（格子の細かさ）は \(c\cdot t\)、つまり<em>宇宙の年齢に応じて動く</em>。だからこの批判は、そのままではフェアではない。ここは、はっきり認めます。</p>
+
+  <p>ただし ── <strong>格子を時間変化させても、局所ローレンツは自動では守られません</strong>。ここは丁寧な区別が要ります。</p>
+
+  <div class="keybox">
+    <div class="lbl">二つの「フレーム」を混同しない</div>
+    <p style="margin:6px 0 0;">宇宙には<strong>CMB静止系（共動系）という優先フレームが既にある</strong> ── これは物質分布が選んだもので、法則のローレンツ不変性は壊していない（無害）。<br>問題は別。<strong>規則的な空間格子を宇宙時間 \(t\) に紐づけると、"局所ブースト" で格子が異方に見える</strong>。時間変化は「静的な絶対格子」への反論にはなるが、「局所ブースト」への反論にはならない。</p>
+  </div>
+
+  <p>面白いのは、<strong>ローレンツ不変な離散化は本当に可能</strong>なこと。ただしそれは規則格子ではなく、<em>ランダムな散布（コーザルセット理論）</em>。ランダムなら平均として方向もフレームも選ばず、不変になる。でもその瞬間、「グリッドの各点で場を計算して丸め誤差が出る」という<strong>計算機の絵は成り立たなくなります</strong>（規則格子ではないから）。これが、あなたの直感の<em>生き残る版</em>です ── 有限・離散は救えるが、"丸め誤差" ではなくなる。</p>
+
+  <h2><span class="n">03</span>本当のつまずき ── UV と IR の取り違え</h2>
+
+  <p>ここが改訂版の核心です。時間変化を認めたうえで、なお残る問題 ── それは<strong>"解像度" と呼んでいるスケールが、二つある</strong>ことです。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>IR側</strong>：\(c\cdot t\) で動いて<em>ローレンツ安全</em>な解像度は、実は第6回の<strong>IRフロア \(\hbar H/c^2\sim10^{-33}\) eV</strong>。\(H\) は膨張のスカラーなので局所ローレンツを壊さず、\(1/t\) で動く。<em>ここは完全に正しい。</em></li>
+    <li><strong>UV側</strong>：一方、ヤン=ミルズの丸め誤差を計算するのに要る格子は、グルーオンを各点で刻む<strong>UVの短距離格子（フェルミ〜プランク、\(10^9\)〜\(10^{28}\) eV）</strong>。こちらが規則空間格子なら、局所ローレンツを破る。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">一つの格子が、両方を兼ねられない</div>
+    <p style="margin:6px 0 0;">ローレンツ安全で \(c\cdot t\) で動く解像度 ＝ <strong>IRフロア（\(10^{-33}\) eV）</strong>。<br>質量ギャップ（グルーオン）を生む格子 ＝ <strong>UV短距離（GeV〜プランク）</strong>。<br>両者は<strong>40桁以上</strong>離れている ── 「\(c\cdot t\) で動くからローレンツOK」は IR を使い、「丸め誤差＝ギャップ」は UV を要る。<em>別のスケールをすり替えている。</em></p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：質量・エネルギーの軸（対数）。「解像度」と呼ぶスケールをスライダーで動かすと、IR側（ローレンツ安全・c·tで動く＝第6回のフロア）か、UV側（グルーオン＝質量ギャップを刻めるが局所ローレンツを破る）か、どちらか一方しか取れない。40桁のあいだで、両立しない</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>この説が「解像度」と呼ぶスケール（対数・eV）<span class="val" id="vk">10⁻³³ eV</span>
+        <input type="range" id="sk" min="-34" max="28" step="0.5" value="-33">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--ir);"></i>IR：ローレンツ安全（第6回のフロア）</span>
+      <span><i class="swatch" style="background:var(--uv);"></i>UV：ギャップを刻むが局所ローレンツ破れ</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>だから、gap ≠ ニュートリノ は残る</h2>
+
+  <p>この取り違えの帰結が、\(\Delta\) の正体の混同です。惜しい説は「質量ギャップ＝最小の素粒子＝ニュートリノ質量」としました。ここには<strong>三つの別の量</strong>が押し込められています。</p>
+
+  <div class="diag">
+    <div class="row"><span class="mk">・</span><div class="txt"><strong>ヤン=ミルズの質量ギャップ ～ 1.5 GeV</strong><span>純ゲージのグルーボール（強い力セクター、第4回の \(\Lambda\)）。クレイ問題の \(\Delta\)。</span></div></div>
+    <div class="row"><span class="mk">・</span><div class="txt"><strong>ニュートリノ ～ 0.05 eV</strong><span>実在で最軽量の "粒子"。レプトンセクター、起源は第5回のシーソー（\(v^2/M\)）。</span></div></div>
+    <div class="row"><span class="mk">・</span><div class="txt"><strong>IRフロア ～ 10⁻³³ eV</strong><span>"測れる最小"（第6回）。ニュートリノより30桁下。</span></div></div>
+  </div>
+
+  <p>「観測された最軽量の<em>粒子</em>はニュートリノ」── これは正しい。でもそれは<strong>IRフロアではない</strong>（30桁上）し、<strong>ヤン=ミルズのギャップでもない</strong>（10桁下、しかも別セクター）。さらに、\(c\cdot t\) の解像度から床を計算すると \(10^{-33}\) eV になって、<strong>ニュートリノの \(0.05\) eV には届きません</strong>。\(0.05\) eV の出どころは、解像度ではなく第5回のシーソーです。三つは、別分野・別起源・別スケール。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>ジレンマと、第三の道</h2>
+
+  <p>VSL番外③と同型の、避けられない二択が現れます。</p>
+
+  <div class="twocol">
+    <div class="opt optA">
+      <div class="h">道A：離散を「計算の便法」に留める</div>
+      連続極限 \(a\to0\) をきちんと取る。ローレンツは無事、観測とも両立。<br>でも ── それは<strong>既存の格子ゲージ理論そのもの</strong>で、"新発見" ではない。
+      <div class="verdict">→ 無害だが、新しくない</div>
+    </div>
+    <div class="opt optB">
+      <div class="h">道B：規則格子の離散を「実在」と主張</div>
+      連続極限を取らず「宇宙は本当に離散、丸め誤差が質量」と押す。"解けた" と言える。<br>でも ── UVの規則空間格子は<strong>局所ローレンツを破り</strong>、実験に衝突。
+      <div class="verdict">→ 大胆だが、有害</div>
+    </div>
+  </div>
+
+  <p>惜しい説は実質、道Bを選んで（あるいはAとBの区別に無頓着なまま）Bの罰を受けました。でも、<strong>第三の道</strong>は本編にありました ── 同じ「有限」でも、実装しだいで生き残ります。</p>
+
+  <div class="keybox">
+    <div class="lbl">有限を「壊さずに」使う二つの道</div>
+    <p style="margin:6px 0 0;">① <strong>CKN／ホログラフィー（最終回）</strong>：有限を "ブラックホール＝情報の上限" として使う → ローレンツも対称性も壊さず、UV と IR を meV で結ぶ。<br>② <strong>コーザルセット</strong>：離散を "ランダム散布" にする → ローレンツ不変を保つ（ただし規則格子でないので "丸め誤差" の絵は消える）。</p>
+  </div>
+
+  <p>あなたが最初に握った「宇宙は有限の情報しか持てない」という直感は、<strong>正しかった</strong>。ただ、それを<em>規則格子の丸め誤差</em>で実装すると足を踏み外し、<em>情報の上限（ホログラフィー）やランダム離散（コーザルセット）</em>で実装すると生き残る。<strong>守るべきは、離散の実装ではなく、対称性（ローレンツ）と無次元の走り</strong> ── 番外③「守るべきは \(c\) でなく \(\alpha\)」の、質量版の教訓です。</p>
+
+  <div class="diag">
+    <div class="row"><span class="mk ok">✓</span><div class="txt"><strong>核の発想：有限リソース／情報の上限</strong><span>本物。最終回のCKN境界の土台。ホログラフィー／コーザルセットとして生きる。</span></div></div>
+    <div class="row"><span class="mk ok">✓</span><div class="txt"><strong>解像度が c·t で動く（時間変化）</strong><span>正しい。それは第6回のIRフロア \(\hbar H/c^2\)。ローレンツ安全。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>その IR解像度で、UVのグルーオン（ギャップ）を刻む</strong><span>UV/IR取り違え。40桁離れた二つを一つの格子と見なしている。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>ギャップ＝ニュートリノ質量＝丸め誤差</strong><span>三つの別量の混同。機構は実装依存の \(\epsilon\) でなく、第4回の次元的移行（無次元の走りから一意）。</span></div></div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 勝ち誇らないために</span>
+    <p style="margin-top:0;">この診断は、丸め誤差説を蹴落とすためではありません。VSLが本物の研究だったように、この説も「宇宙を有限情報で捉える」という現代物理最前線（ホログラフィー・スワンプランド・コーザルセット）と同じ核を持っています。学べた教訓 ── <strong>守るべきは実装でなく対称性と無次元量</strong>、そして<strong>"解像度" の UV と IR を混同しない</strong> ── が価値です。</p>
+    <p style="margin-bottom:0;">そして最終回で見た通り、"正しい実装" のCKN／ホログラフィックDEにも、まだ払っていない宿題（状態方程式 \(w\) の問題）があります。どちらが完璧、という話ではありません。どの筋も、どこかに未払いの宿題を抱えています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>「格子を時間変化させれば局所ローレンツは守られる」は正しいか。
+        <details><summary>答えを見る</summary><div class="ans">正しくない。宇宙のCMB静止系は無害な優先フレームだが、規則的な空間格子を宇宙時間 \(t\) に紐づけても、局所ブーストで格子が異方に見えて局所ローレンツを破る。時間変化は「静的絶対格子」への反論であって「局所ブースト」への反論にならない。ローレンツ不変な離散はランダム散布（コーザルセット）なら可能だが、それは規則格子ではなく "丸め誤差" の絵は成り立たない。</div></details>
+      </li>
+      <li>「UVとIRの取り違え」とは何か。
+        <details><summary>答えを見る</summary><div class="ans">\(c\cdot t\) で動いてローレンツ安全な解像度は、IRフロア \(\hbar H/c^2\sim10^{-33}\) eV（第6回）。一方、丸め誤差でグルーオン＝質量ギャップを計算するのに要る格子は、UVの短距離（GeV〜プランク）。両者は40桁以上離れ、一つの格子が両方を兼ねられない。「c·t でローレンツOK」は IR を使い、「丸め誤差＝ギャップ」は UV を要る、というすり替え。</div></details>
+      </li>
+      <li>有限リソースの発想を「壊さずに」使う道を挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">(1) 最終回のCKN／ホログラフィー（有限を "ブラックホール＝情報の上限" として使う → ローレンツを保つ）。(2) コーザルセット（離散をランダム散布にして Lorentz 不変を保つ）。いずれも "規則格子＋丸め誤差" ではない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外①まとめ</span>守るべきは、実装でなく「対称性と無次元量」</h2>
+    <p>丸め誤差説の核（有限リソース＝情報の上限）は本物で、最前線と同じ。格子を \(c\cdot t\) で動かす点も正しい ── それは第6回のIRフロアだ。つまずいたのは、その<strong>IR解像度（\(10^{-33}\) eV、ローレンツ安全）で、UVのグルーオン（GeV〜プランク）を刻もうとした</strong>こと（UV/IR取り違え）。だから、規則格子で押せば局所ローレンツを破り（有害）、連続極限に留めれば既存の格子ゲージ理論（無害だが新しくない）。そして三つの別量（ギャップ \(\sim\)1.5 GeV／ニュートリノ \(\sim\)0.05 eV／IRフロア \(\sim10^{-33}\) eV）を一つに混同していた。</p>
+    <p>本物の質量ギャップは第4回の<strong>次元的移行</strong>（無次元の走りから一意）、有限情報の正しい使い方は最終回の<strong>CKN／ホログラフィー</strong>やコーザルセット（対称性を壊さない）。<em>実装依存の値に固執せず、守るべき対称性と無次元量を守り、UV と IR を混同しない</em> ── VSLの教訓が、そのまま質量ギャップでも成り立ちました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外②</span>
+    「質量は保存しない」。今度は、もっと身近な誤解を解きます。「速く動くと重くなる（相対論的質量）」は、なぜいま使わないのか。増えるのはエネルギーで、質量そのものは速度によらない ── 第1回の \(E^2=(mc^2)^2+(pc)^2\) に戻って、"不変質量" の意味を確かめます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ番外①（改訂版）、物理好きの高校生・大学生向け読み物です。ヤン=ミルズの質量ギャップ（クレイ・ミレニアム問題）が純粋ゲージ理論のグルーボール質量（\(\sim1.5\) GeV スケール、強い力セクター）に関わること、ニュートリノ質量（\(\sim0.05\) eV、レプトンセクター、シーソー起源）およびIRフロア（\(\sim10^{-33}\) eV、宇宙論的下限）とは別物であること、規則的な空間格子が（時間変化させても）局所ローレンツ不変性を破る一方、ランダム散布に基づくコーザルセットは統計的にローレンツ不変であること、宇宙論的な共動（CMB）静止系は優先フレームだが基礎法則のローレンツ不変性を破らないこと、次元的移行が無次元結合の走りからスケールを一意に与えるのに対し離散化の丸め誤差は実装依存であること、CKN／ホログラフィックな有限情報の扱いが対称性を保つ枠組みであることは、いずれも確立した物理／標準的な理解です。本稿は特定の個人説を貶める意図はなく、発想の核（有限情報）を評価しつつ、"解像度" の UV／IR の取り違えという実装上の問題点を診断するものです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで「解像度」を動かすと、IR（ローレンツ安全）と UV（ギャップを刻む）が両立しないのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var XL=-34, XR=28;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=30;
+    var S=parseFloat(sk.value);
+    vk.innerHTML='10<sup>'+S.toFixed(1)+'</sup> eV';
+    ctx.clearRect(0,0,w,h);
+    function X(L){return pad+(L-XL)/(XR-XL)*(w-pad-14);}
+    var yAx=h*0.60;
+    // zones
+    ctx.fillStyle='rgba(31,122,110,0.13)';ctx.fillRect(X(-34),20,X(-30)-X(-34),h-pad-20);
+    ctx.fillStyle='rgba(176,106,18,0.13)';ctx.fillRect(X(9),20,X(28)-X(9),h-pad-20);
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#1f7a6e';ctx.fillText('IR：ローレンツ安全', X(-34)+2, 34);
+    ctx.fillStyle='#8a5a1e';ctx.fillText('UV：ギャップを刻む（ローレンツ破れ）', X(9)+2, 34);
+    // axis
+    ctx.strokeStyle='#c8bcb2';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,yAx);ctx.lineTo(w-8,yAx);ctx.stroke();
+    // ticks
+    ctx.font='10px sans-serif';
+    for(var L=-33;L<=27;L+=6){var x=X(L);
+      ctx.strokeStyle='#e0d5cc';ctx.beginPath();ctx.moveTo(x,yAx-4);ctx.lineTo(x,yAx+4);ctx.stroke();
+      ctx.fillStyle='#a99a8c';ctx.fillText('10^'+L, x-11, yAx+16);}
+    // semantic markers
+    function mk(L,label,color,up){var x=X(L);ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,yAx,4,0,7);ctx.fill();
+      ctx.fillStyle=color;ctx.font='11px sans-serif';ctx.fillText(label, x-6, up?yAx-10:yAx+28);}
+    mk(-33,'IRフロア','#1f7a6e',true);
+    mk(-1.3,'ニュートリノ','#8a7f74',false);
+    mk(9.2,'グルーボール~GeV','#8a5a1e',true);
+    mk(28,'プランク','#8a7f74',false);
+    // slider marker
+    var xs=X(S);
+    ctx.strokeStyle='#9a4230';ctx.setLineDash([4,3]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(xs,20);ctx.lineTo(xs,yAx);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#9a4230';ctx.beginPath();ctx.arc(xs,yAx,6,0,7);ctx.fill();
+    ctx.fillStyle='#9a4230';ctx.font='12px sans-serif';ctx.fillText('この説の「解像度」', xs-40, yAx-40);
+    // readout
+    if(S<=-20){
+      rd.style.background='#e4f1ed';rd.style.color='#165a4e';
+      rd.textContent='IR側：c·t で動きローレンツ安全（＝第6回のIRフロア）。でも 10⁻³³ eV 級 ── ニュートリノより30桁下、グルーオン＝質量ギャップとは無関係。';
+    } else if(S>=6){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='UV側：グルーオン＝質量ギャップ（~GeV以上）を刻める短距離格子。でも規則空間格子なので局所ローレンツを破る ── 実験（~10⁻¹⁸）に反する。';
+    } else {
+      rd.style.background='#f3e8e3';rd.style.color='#7a3b2e';
+      rd.textContent='どっちつかず：ローレンツ安全な IR でも、ギャップを生む UV でもない。一つの格子で両方は兼ねられない（40桁のすき間）。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

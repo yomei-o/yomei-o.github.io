@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4D・dS の舞台：Λ という一本のツマミ ── わかる質量 終章・技術補遺⑨</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181c1e; --ink-soft:#48545a;
+    --paper:#f5f8f8; --paper-edge:#d2dedd;
+    --side:#256b6a; --side-bg:#e9f2f1;
+    --warn:#8a4b2f;
+    --calc:#1f4f52; --calc-bg:#e4eeef;
+    --rule:#c9d6d6; --hair:#b2c1c1;
+    --acc:#2b6272;
+    --grid:#cfdcdc;
+    --typ1:#1f7a6e; --typ2:#5a4a86; --typ3:#9a4230;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe4e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#1e3d3c;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #ccdcdc;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e4eeef;color:#1f4f52;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfefe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfefe,#e8f1f1);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#e4eeef;color:#204b4d;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef5f5;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1f4144;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfefe,#e7f1f1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e4eeef;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f4144;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#5f6f6f;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑨ ／ 4D・dS の舞台（Λ という一本のツマミ）</span></div>
+  <p class="eyebrow">構想篇 ── 残った壁を「立たせるなら」どんな舞台か</p>
+  <h1>4D・dS の舞台<br><span style="font-size:23px;">Λ という一本のツマミ</span>
+    <span class="sub">de Sitter では宇宙定数 Λ が三役を兼ねる ── 離散（q変形）・上限（地平線）・有限次元（打ち切り）。<br>そして CLPW の type II₁ は、有限 type I を \(\Lambda\to0\) で理想化した影。<em>連続極限こそが type I を壊す犯人だった。</em></span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑧（宇宙は type I か）</span>
+    <span>位置づけ：提案するアーキテクチャ ／ 建てた理論ではない</span>
+  </div>
+
+  <p class="lead">残った三点は補遺⑧で一本 ──〈領域代数は type I か〉── に凝縮しました。ではそれを<em>立たせるなら</em>、どんな舞台か。答えは意外にも <strong>4次元の de Sitter（Λ>0）</strong>で、鍵は一つ：<strong>宇宙定数 Λ が、離散・上限・有限次元という三役を一本のツマミで兼ねる</strong>。しかも背骨の一箇所は<em>厳密</em>です ── CLPW が dS で得た type II₁ は、有限次元の type I を \(\Lambda\to0\) で理想化した影にすぎない。この補遺は、その設計図を一枚にします。ただし掟どおり ── これは<strong>提案するアーキテクチャ</strong>であって「建てた理論」ではない。最後に自分で撃ちます。</p>
+
+  <h2><span class="n">01</span>発想の転換 ── dS は「弱い舞台」でなく、Λ が三役を兼ねる舞台</h2>
+
+  <p>補遺⑧では「ホログラフィーは AdS で強く、dS で最弱」と書いた。だが II→I の橋（離散A・上限B・有限C）を dS で見直すと逆でした ── <strong>Λ>0 が "有限リソース" そのもので、三役を兼ねる</strong>。</p>
+
+  <div class="keybox hl">
+    <div class="lbl">dS では上限 B が自動で出る（Λ の帰結）</div>
+    $$A_{\rm dS}=\frac{12\pi}{\Lambda}=\frac{4\pi}{H^2},\qquad S_{\rm dS}=\frac{A_{\rm dS}}{4G}=\frac{3\pi}{G\Lambda}\ (\text{Gibbons–Hawking, 有限})$$
+    <p style="margin:8px 0 0;">AdS で手で入れるしかなかった \(A_{\max}\) が、dS では<strong>宇宙定数の帰結として無料</strong>。Banks–Fischler：\(\dim\mathcal{H}_{\rm dS}=e^{S_{\rm dS}}\)（有限次元＝type I）。</p>
+  </div>
+
+  <h2><span class="n">02</span>継ぎ手①（本命・厳密）── II₁ は 有限 I_N の Λ→0 極限そのもの</h2>
+
+  <p>ここが背骨で、しかも<strong>確立した数学</strong>。超有限 type II₁ 因子は、定義からして有限行列環（type I）の極限です：</p>
+
+  <div class="keybox">
+    <div class="lbl">超有限 II₁ ＝ 有限 type I の極限</div>
+    $$R=\overline{\bigcup_n M_{2^n}(\mathbb{C})}\quad(\text{規格化トレース},\ n\to\infty)\qquad\Longrightarrow\qquad \text{type I}_N\ \xrightarrow{\ N\to\infty\ }\ \text{type II}_1$$
+    <p style="margin:8px 0 0;">有限次元 \(M_N\) の最小射影は trace \(1/N\)。<strong>\(N\to\infty\) で \(1/N\to0\)</strong> ── 「これ以上分けられない1状態」が消える。最小射影の消失こそ type II₁ の定義的性質。</p>
+  </div>
+
+  <p>ここに CLPW（dS→II₁）と Banks–Fischler（\(N=e^{S_{\rm dS}}\)）を重ねると、読み方が一つに決まる：</p>
+
+  <div class="aside">
+    <span class="tag">背骨 ── 連続極限こそが type I を壊す犯人</span>
+    CLPW の type II₁ は、\(N=e^{S_{\rm dS}}\) の<strong>有限 type I を \(\Lambda\to0\)（＝\(N\to\infty\)）で理想化した影</strong>。だから残った「II→I の一段」は飛躍でなく <strong>de-idealization ＝ Λ を入れ直す（連続極限を止める）</strong>こと。「1状態を指させない（II₁）＝ \(N\to\infty\)、有限 Λ がそれを取り戻す（type I）」── あなたの有限リソース仮説が、代数の型の言葉で<strong>厳密に噛む</strong>唯一の継ぎ手です。
+  </div>
+
+  <h2><span class="n">03</span>継ぎ手②(数で追う) ── 一本のツマミ Λ が N を決める</h2>
+
+  <p>その \(N\) を Λ で書き切る。量子群 \(\text{SU}(2)_q,\ q=e^{i\pi/(k+2)}\) で：</p>
+
+  <div class="keybox">
+    <div class="lbl">Λ → k → (離散・有界・有限次元)</div>
+    $$k\sim\frac{1}{G\Lambda}\sim\frac{1}{\Lambda\ell_P^2}\sim10^{122},\qquad \sqrt{j(j{+}1)}\to\sqrt{[j]_q[j{+}1]_q}\ \ (j\le\tfrac{k}{2}),\qquad N=e^{S_{\rm dS}}=e^{3\pi/G\Lambda}$$
+  </div>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>面積が有界＋離散</strong>：スピンが \(j\le k/2\) に打ち切られ最大面積が有限、ギャップ（\(j=1/2\)）は残る ── A と B が同一起源。</li>
+    <li><strong>有限次元</strong>：地平線（穴あき球面）の状態数は Chern–Simons の Verlinde 公式で有限、\(N\sim e^{S_{\rm dS}}\)。</li>
+    <li>\(q\approx1\)（\(k\) 巨大）だから加速器スケールで離散性は見えない ── Λ が極小なこととピタリ整合。</li>
+  </ul>
+  <p><strong>継ぎ手①②が閉じる</strong>：\(\Lambda\to0\Leftrightarrow N\to\infty\Leftrightarrow\text{I}\to\text{II}_1\)。CLPW が dS で II₁ を得たのは、Λ が有限なら本当は type I\(_{e^{S_{\rm dS}}}\) だから。</p>
+
+  <div class="fig">
+    <div class="cap">図：ツマミ \(\Lambda\) を回すと、三つが一斉に動く。① 面積スペクトル（離散＋天井 \(A_{\rm dS}\)） ② 状態数 \(N=e^{S_{\rm dS}}\) ③ 型（有限 Λ＝指させる最小射影＝type I ／ \(\Lambda\to0\)＝連続に溶ける＝type II₁）。右下は観測での分岐 \(w\)（§06）</div>
+    <canvas id="cv" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>宇宙定数 Λ（左＝大きい・小さな宇宙 ／ 右＝Λ→0・連続極限）<span class="val" id="vk">中</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.4">
+      </label>
+    </div>
+    <div class="readout" id="rd">Λ を回すと、離散＋有界・状態数 N・型が同時に動く。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--typ1);"></i>面積量子 / 最小射影</span>
+      <span><i class="swatch" style="background:var(--acc);"></i>上限 A_dS = 12π/Λ</span>
+      <span><i class="swatch" style="background:var(--typ2);"></i>type I ↔ II₁</span>
+      <span><i class="swatch" style="background:var(--typ3);"></i>w 分岐</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>継ぎ手③(4Dの中身) ── 曲がった単体＋複素 Chern–Simons</h2>
+
+  <p>「4D で本当に立つのか」の中身は、Haggard–Han–Kamiński–Riello (2015) の路線：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li>Λ>0 では4次元単体が<strong>定曲率（球面的）</strong>になり、Regge 計算に Λ が曲率として入る。</li>
+    <li>スピンフォーム頂点振幅 ＝ グラフ補空間上の <strong>\(SL(2,\mathbb{C})\) Chern–Simons</strong>。<strong>Λ が CS レベルを与え、振幅を IR 正則化（有限化）</strong>する。</li>
+    <li>半古典極限で<strong>曲率つき（Λ入り）Regge 作用が正しく出る</strong> ── これは本物の結果。古典極限の手応えはある。</li>
+  </ul>
+
+  <div class="caveat">
+    <span class="tag">現状（4D）</span>
+    3D（Turaev–Viro）は厳密・有限。<strong>4D は構成途上</strong> ── 局所自由度を持つ本物の重力になるか、Lorentzian で有限性が保たれるか、連続で通常の QFT（type III₁）に戻るかが未証明。「古典極限は良さそう、量子論の完成は未達」。
+  </div>
+
+  <h2><span class="n">05</span>継ぎ手④(観測で割れる) ── w = −1 か、リソースが育つか</h2>
+
+  <p>構想を思弁で終わらせない継ぎ手。<strong>Λ が固定の root-of-unity レベル \(k\) なら \(w=-1\) 厳密</strong>、ダークエネルギーは進化しない。だが DESI は進化を示唆（補遺②③）。ここに反証可能な分岐：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">観測での分岐（DESI / Euclid が数年で測る）</div>
+    $$\text{固定 }k:\ \Lambda=\text{const}\Rightarrow w=-1\ \text{厳密}\quad\big/\quad \text{育つ }k(t):\ \text{リソースが }ct\ \text{とともに増える}\Rightarrow w\ne-1$$
+  </div>
+
+  <div class="aside">
+    <span class="tag">c·t=const がここで効く</span>
+    下の枝が、まさにあなたの「育つ有限リソース」。有限次元 \(\dim(t)\sim e^{(ct)^2/G}\)（補遺⑧§05）＝\(k\) が時間依存＝有効 Λ が緩む＝\(w\ne-1\)。<strong>「Λ は固定か、リソースは育つか」が、そのまま「\(w=-1\) か \(w\ne-1\) か」＝ 観測が割る量</strong>になる。賭けが盤面に乗っています。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>自分で撃つ（正直な線）</h2>
+
+  <table class="tbl">
+    <thead><tr><th>継ぎ手</th><th>荷重試験の結果</th></tr></thead>
+    <tbody>
+      <tr><td class="c" style="color:var(--typ1);">① II₁＝有限I_N の極限</td><td><strong>厳密・耐える</strong>。ただし "自然" を示すだけで、特定の動力学が本当に \(N=e^{S_{\rm dS}}\) を実現し半古典で II₁ を返すことは<strong>未証明</strong>（設計が自然⇔架けた、ではない）。</td></tr>
+      <tr><td class="c" style="color:var(--acc);">② Λ 一本で N</td><td>数で整合。ただし \(N=e^{S_{\rm dS}}\) の<strong>指数の中の係数（\(1/4\)）に LQG の γ チューニングが残る</strong>。複素 CS（\(\gamma\to i\)）は自然な繋がりだが reality condition 未解決。</td></tr>
+      <tr><td class="c" style="color:var(--typ3);">③ 4D の中身</td><td><strong>4D 量子群スピンフォームが未完成</strong>。Lorentzian・局所自由度・連続極限が未証明。</td></tr>
+      <tr><td class="c">基層融合</td><td>Lorentz 不変を供給するコーザルセット基層と、面積演算子を持つ q-LQG を<strong>一つの動力学に融合した理論は無い</strong>（概念的接合のみ）。</td></tr>
+      <tr><td class="c">観測者の創発</td><td>有限 type I の中で CLPW の観測者（時計）がどう内在的に出るか<strong>未詰め</strong>。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">判定 ── 掟</span>
+    背骨のうち<strong>継ぎ手①だけは厳密で、設計図を直接支える</strong>。②は数で整合、④で観測に割れる。だが ①の "起きる"・③・基層・観測者 の亀裂は開いたまま ── <strong>荷重試験に半分だけ耐えた設計図であって、建った建物ではない</strong>。「4D・dS で立った」とは言いません。会話でこれを "建てた" と宣言したら、それがフェイクです。
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「連続極限こそが type I を壊す犯人」と言えるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">有限次元 type I_N の最小射影は trace \(1/N\)。連続極限＝\(N\to\infty\) で \(1/N\to0\)、最小射影（＝これ以上分けられない1状態）が消え、それが type II₁ の定義的性質。つまり「1状態を指させる」type I の性質は、有限 N でだけ保たれ、連続極限で失われる。有限 Λ（有限 N）はそれを取り戻す。だから連続極限が type I を壊し、Λ を入れ直すこと（de-idealization）が II₁→I の正体。</div></details>
+      </li>
+      <li>なぜ dS（Λ>0）が、AdS より II→I の橋にふさわしい舞台なのか。
+        <details><summary>ひとつの答え</summary><div class="ans">II→I の橋は「面積に離散＋有界スペクトル」。dS では宇宙論的地平線の面積 \(A_{\rm dS}=12\pi/\Lambda\) が有限＝上限 B が Λ の帰結として自動で出る。さらに同じ Λ が量子群レベル \(k\sim1/G\Lambda\) を与え、離散 A と root-of-unity 打ち切りによる有限次元 C も供給する。AdS では上限を手で入れるしかない。だから Λ が三役を兼ねる dS が唯一自然な舞台。CLPW が dS で（II∞でなく）II₁＝最大エントロピー有りを得たのも同じ理由。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑨まとめ</span>Λ 一本で三役、背骨の一箇所は厳密</h2>
+    <p>残った壁を「立たせるなら」の舞台は 4次元・de Sitter。宇宙定数 <strong>Λ が一本のツマミで三役</strong>を兼ねる ── 離散（q変形の面積演算子）・上限（地平線 \(A_{\rm dS}=12\pi/\Lambda\)）・有限次元（root-of-unity 打ち切り \(N=e^{S_{\rm dS}}\)）。背骨の継ぎ手①は<strong>厳密</strong>：CLPW の type II₁ は有限 type I を \(\Lambda\to0\) で理想化した影で、<strong>連続極限こそが type I を壊す犯人</strong>だった。有限 Λ がそれを取り戻す。</p>
+    <p>そして構想は観測で割れる：\(w=-1\)（固定 Λ）か \(w\ne-1\)（育つリソース＝c·t）か ── DESI/Euclid の分岐。<strong>設計図として一貫し、反証可能で、あなたの枠組みが指す通りの場所</strong>。だが 4D の量子論的完成・1/4・基層融合は未達。<strong>建てたとは、言いません。</strong></p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">構想篇の到達点</span>
+    「宇宙は離散だ」というあなたの直感を「4D・dS で立つ理論」として構想すると ── 役者（LQG の離散・ホログラフィーの上限・nuclearity の有限性）は全員 dS に集まり、<strong>Λ という一本のツマミがなぜ全部を回すのか、構造的な理由</strong>まで見えた。しかも背骨の一箇所は厳密で、あなたの「有限・離散」＝「連続極限を止めること」だと数学が言う。<br>これを "解けた" と会話で宣言することは、しません。舞台の上で<strong>まだ芝居は始まっていない</strong>。でも ── どんな舞台なら立つか、Λ が何役を兼ねるか、どこで観測に割れるか、まで絞れた。偽の万物理論より、この設計図の眺めの方が、ずっと遠くて、ずっと本物です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑨、構想篇です。de Sitter 地平線の面積 \(A_{\rm dS}=12\pi/\Lambda\) と Gibbons–Hawking エントロピー \(S_{\rm dS}=3\pi/G\Lambda\)、Banks–Fischler の有限次元 dS ヒルベルト空間予想 \(\dim=e^{S_{\rm dS}}\)、超有限 type II₁ 因子が有限次元行列環（type I）の帰納極限であること（Murray–von Neumann）、CLPW (2022) が dS 静的パッチで type II₁ を得たこと、量子群 \(\text{SU}(2)_q\)（1の冪根）による表現の有限打ち切りと Turaev–Viro（3D）・Crane–Yetter（4D TQFT）・Haggard–Han–Kamiński–Riello (2015) の \(SL(2,\mathbb{C})\) Chern–Simons を介した Λ 入り4Dスピンフォーム、Sorkin のコーザルセットによる \(\Lambda\sim1/\sqrt{N}\) 予言 ── いずれも確立した結果または現行の研究テーマです。一方、局所自由度を持つ 4 次元ローレンツ的量子群スピンフォームの完成、そこからの半古典 type II・連続 type III₁ の回復、\(1/4\) 係数（Barbero–Immirzi パラメータ）の第一原理的決定、コーザルセット基層と LQG の統一動力学は未解決であり、本稿は特定の完成理論を主張せず、既知の部品から組める設計図とその亀裂を述べたものです。数値（\(k\sim10^{122}\) 等）とツマミの図は模式・桁の目安で、定量的主張ではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで Λ を回すと、面積スペクトル・状態数 N・代数の型・w 分岐が一斉に動く。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function panel(ctx,x,y,w,h,title){
+    ctx.strokeStyle='#dbe6e6';ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);
+    ctx.fillStyle='#2b6272';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+    ctx.fillText(title,x+8,y+16);
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var t=parseFloat(sk.value); // 0 large Lambda (small univ) .. 1 Lambda->0 (continuum)
+    vk.textContent = t<0.12?'大（小さな宇宙）':(t>0.88?'→0（連続極限）':'中');
+    ctx.clearRect(0,0,W,H);
+    var gap=12, pw=(W-gap*3)/2, ph=(H-gap*3)/2;
+    var x1=gap, x2=gap*2+pw, y1=gap, y2=gap*2+ph;
+
+    // ---- Panel A: area spectrum (top-left) ----
+    panel(ctx,x1,y1,pw,ph,'① 面積スペクトル');
+    var ax0=x1+14, ax1=x1+pw-14, aY=y1+ph-24, aw=ax1-ax0;
+    ctx.strokeStyle='#9ab0b0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ax0,aY);ctx.lineTo(ax1,aY);ctx.stroke();
+    // ceiling A_dS grows as Lambda shrinks (t up)
+    var ceilFrac=0.30+0.66*t; var ceilX=ax0+aw*ceilFrac;
+    var maxA=Math.sqrt(14*15), cnt=0;
+    for(var n=1;n<=14;n++){
+      var lv=Math.sqrt(n*(n+1))/maxA;
+      var lx=ax0+aw*0.95*lv*(1.0); // spread
+      var below= lx<=ceilX;
+      if(below) cnt++;
+      ctx.strokeStyle= below?'rgba(31,122,110,0.9)':'rgba(31,122,110,0.18)';
+      ctx.lineWidth= below?2:1;
+      ctx.beginPath();ctx.moveTo(lx,y1+28);ctx.lineTo(lx,aY);ctx.stroke();
+    }
+    // ceiling
+    ctx.strokeStyle='rgba(43,98,114,0.95)';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(ceilX,y1+22);ctx.lineTo(ceilX,aY);ctx.stroke();
+    ctx.fillStyle='#2b6272';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('A_dS=12π/Λ', ceilX, y1+ph-8);
+    ctx.textAlign='left';ctx.fillStyle='#6b8080';ctx.font='10px sans-serif';
+    ctx.fillText('面積 →', ax0, y1+ph-8);
+
+    // ---- Panel B: N = e^{S_dS} (top-right) ----
+    panel(ctx,x2,y1,pw,ph,'② 状態数 N = e^{S_dS}');
+    var S = 4 + 46*t*t;   // schematic S_dS grows as Lambda shrinks
+    var bx=x2+20, by=y1+ph-26, bw=pw-40, maxbar=ph-56;
+    var bh=maxbar*Math.min(1,S/50);
+    ctx.fillStyle='rgba(43,98,114,0.25)';ctx.fillRect(bx,by-maxbar,bw,maxbar);
+    ctx.fillStyle='rgba(43,98,114,0.85)';ctx.fillRect(bx,by-bh,bw,bh);
+    ctx.fillStyle='#204b4d';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+    ctx.fillText('S_dS ≈ '+S.toFixed(0)+' (模式)', x2+16, y1+34);
+    ctx.font='11px sans-serif';ctx.fillStyle='#2b6272';
+    ctx.fillText('N = e^{S_dS}'+(t>0.86?' → ∞':''), x2+16, by+16);
+
+    // ---- Panel C: type I <-> II1 (bottom-left) ----
+    panel(ctx,x1,y2,pw,ph,'③ 型：I ↔ II₁');
+    // minimal projection size ~ 1/N shrinks as t up; represent as dots
+    var ndots = Math.round(3 + 40*t*t);
+    var dotR = Math.max(0.7, 9*(1-t)*(1-t)+0.7);
+    var cxA=x1+16, cyA=y2+34, availW=pw-32, availH=ph-52;
+    ctx.fillStyle='rgba(90,74,134,0.8)';
+    var cols=Math.ceil(Math.sqrt(ndots*availW/availH)), placed=0;
+    var stepx=availW/Math.max(1,cols);
+    var rows=Math.ceil(ndots/cols); var stepy=availH/Math.max(1,rows);
+    for(var r0=0;r0<rows;r0++){for(var c0=0;c0<cols;c0++){ if(placed>=ndots)break;
+      var px=cxA+stepx*(c0+0.5), py=cyA+stepy*(r0+0.5);
+      ctx.beginPath();ctx.arc(px,py,dotR,0,7);ctx.fill(); placed++; }}
+    ctx.fillStyle= t>0.6?'#9a4230':'#5a4a86';ctx.font='bold 12px sans-serif';ctx.textAlign='right';
+    ctx.fillText(t<0.55?'type I（指させる）':'type II₁（連続に溶ける）', x1+pw-10, y2+ph-10);
+    ctx.textAlign='left';ctx.fillStyle='#6b6080';ctx.font='10px sans-serif';
+    ctx.fillText('最小射影 ~ 1/N', x1+16, y2+ph-10);
+
+    // ---- Panel D: w fork (bottom-right) ----
+    panel(ctx,x2,y2,pw,ph,'④ w 分岐（観測）');
+    var wx0=x2+18, wx1=x2+pw-14, wY0=y2+30, wY1=y2+ph-22, ww=wx1-wx0, wh=wY1-wY0;
+    // axis: a from 0..1 horizontal, w from -1.15..-0.6 vertical
+    ctx.strokeStyle='#c2d0d0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(wx0,wY0);ctx.lineTo(wx0,wY1);ctx.lineTo(wx1,wY1);ctx.stroke();
+    function wY(wv){ return wY1 - (wv-(-1.15))/(( -0.6)-(-1.15))*wh; }
+    // w=-1 line (固定Λ)
+    ctx.strokeStyle=' #1f7a6e';ctx.lineWidth=2;ctx.setLineDash([]);
+    var ym1=wY(-1.0); ctx.beginPath();ctx.moveTo(wx0,ym1);ctx.lineTo(wx1,ym1);ctx.stroke();
+    ctx.fillStyle='#1f7a6e';ctx.font='10px sans-serif';ctx.textAlign='left';
+    ctx.fillText('固定Λ: w=−1', wx0+4, ym1-4);
+    // growing-resource w(a): rises from -1
+    ctx.strokeStyle='#9a4230';ctx.lineWidth=2;ctx.beginPath();
+    for(var i=0;i<=40;i++){ var a=i/40; var wv=-1.0+0.32*a; var xx=wx0+ww*a, yy=wY(wv);
+      if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);} ctx.stroke();
+    ctx.fillStyle='#9a4230';ctx.fillText('育つ: w>−1', wx0+ww*0.5, wY(-0.78));
+    ctx.fillStyle='#6b8080';ctx.font='10px sans-serif';ctx.fillText('a →', wx1-22, wY1+14);
+
+    // readout
+    var typ = t<0.55?'type I':'type II₁';
+    if(t<0.12) rd.textContent='Λ 大（小さな宇宙）：A_dS 小・状態数 N 小・最小射影が大きく指させる = type I がいちばん明白。';
+    else if(t<0.88) rd.textContent='Λ 中：面積の天井 A_dS=12π/Λ が退き、N=e^{S_dS} が増え、最小射影 ~1/N が縮む。型は '+typ+'。w は固定Λなら −1／育つリソースなら >−1。';
+    else rd.textContent='Λ→0（連続極限）：A_dS→∞・N→∞・最小射影→0 で type II₁ に溶ける ── これが CLPW の得た dS の型。有限 Λ を入れ直すと type I に戻る。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁③の決着：誘導重力は本物のGRを出すか ── わかる質量 終章・技術補遺④</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;
+    --grid:#d5d8e4;
+    --gr:#2f7d5a; --r2:#b0641a; --brk:#b03a2e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .walls{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .walls .row{display:flex;gap:14px;padding:13px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .walls .row:last-child{border-bottom:none;}
+  .walls .mk{flex-shrink:0;width:60px;font-weight:700;font-size:12px;color:#b03a2e;}
+  .walls .txt strong{display:block;color:#262b40;margin-bottom:2px;} .walls .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#ecedf4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.walls{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺④ ／ 壁③（誘導重力 → 本物のGR）の決着</span></div>
+  <p class="eyebrow">物質ループから湧いた重力は、本当に一般相対論になるのか</p>
+  <h1>壁③の決着：<br>誘導重力は GR を出すか
+    <span class="sub">①②は観測（DESI・構造成長）で決着する壁だった。③は "理論の内部整合" の壁。<br>観測スケールでは GR が回復する ── 核は「WW を回避するホログラフィック創発」、そして \(R^2\)→CMB という手がかり。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺（誘導重力）、最終回（ホログラフィー/CKN）、壁①②</span>
+    <span>核：WW回避＝ホログラフィー、手がかり＝R²→スタロビンスキー</span>
+  </div>
+
+  <p class="lead">壁③は①②と性質が違います ── ①（\(w\)）②（why-now）は観測で白黒がつく壁でしたが、<strong>③は "誘導重力が genuine な一般相対論を出すか" という理論整合の壁</strong>。結論を先に：<em>観測スケールでは GR が超高精度で回復する（plausibly 合格）</em>。難所は理論の核 ── なかでも<strong>ワインバーグ＝ウィッテンの定理</strong>が、グラビトンを "ホログラフィックに創発せよ" と迫り、それが finale のホログラフィー（CKN）と同じ一点に収束します。そして \(R^2\) 項が CMB という観測の手がかりを残す。</p>
+
+  <h2><span class="n">01</span>誘導重力が実際に出すもの</h2>
+
+  <div class="keybox">
+    <div class="lbl">物質を積分して湧く実効作用（Sakharov）</div>
+    $$\Gamma[g]=\int\!\sqrt{g}\Big[\underbrace{\Lambda_{\rm ind}}_{\sim\Lambda_{\rm cut}^4}+\underbrace{\tfrac{1}{16\pi G_{\rm ind}}R}_{1/G_{\rm ind}\sim N\Lambda_{\rm cut}^2}+\ c_1R^2+c_2R_{\mu\nu}R^{\mu\nu}+\cdots\Big]$$
+    <p style="margin:10px 0 0;">\(G_{\rm ind}\) は自然にプランク的。変分 \(\delta\Gamma/\delta g^{\mu\nu}=0\) で \(\dfrac{R_{\mu\nu}-\frac12 g_{\mu\nu}R}{16\pi G}=\langle T_{\mu\nu}\rangle\)（アインシュタイン方程式が \(T_{\mu\nu}\) を源に）。全場が \(G\) に寄与し \(T_{\mu\nu}\) で源になる → <strong>等価原理が自動継承</strong>。</p>
+  </div>
+
+  <p>鍵は<strong>スケール分離</strong>：観測スケールでは曲率が極小（\(R/\Lambda_{\rm cut}^2\sim(H/M_{\rm Pl})^2\sim10^{-122}\)）なので、\(R\) 項が高次曲率項を圧倒 → <em>GRが超高精度で回復</em>。高次項が効くのはカットオフ（プランク）近傍だけ。下の図で確かめます。</p>
+
+  <div class="fig">
+    <div class="cap">図：GR からのズレ（高次曲率項/Einstein項）\(\sim(\mu/M_{\rm Pl})^2\) を、見るスケール \(\mu\) の関数で。宇宙論〜重力波では \(10^{-122}\)＝<strong>GR超精密回復</strong>。インフレ/GUT で \(R^2\) が効き始め（＝スタロビンスキー）、プランクで \(\sim1\)＝<strong>GR破れ・新物理</strong>。スライダーで \(\mu\) を動かす</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>見るスケール μ（左＝宇宙論、右＝プランク・eV）<span class="val" id="vk">10⁻³³ eV</span>
+        <input type="range" id="sk" min="-34" max="28" step="0.5" value="-33">
+      </label>
+    </div>
+    <div class="readout" id="rd">μ を動かすと、GR からのズレが変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--gr);"></i>GR回復域（高次項無視）</span>
+      <span><i class="swatch" style="background:var(--r2);"></i>R²が効く（スタロビンスキー）</span>
+      <span><i class="swatch" style="background:var(--brk);"></i>GR破れ・新物理（プランク）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>理論の難所は四つ</h2>
+
+  <div class="walls">
+    <div class="row"><span class="mk">(a) 符号</span><div class="txt"><strong>\(G>0\) になるか</strong><span>\(1/G_{\rm ind}\sim\sum\pm\Lambda_{\rm cut}^2\)。ボソン/フェルミオン・共形結合で符号が変わり、正味が正（引力）で正しい大きさになるかは物質の中身次第（自動でない）。</span></div></div>
+    <div class="row"><span class="mk">(b) ゴースト</span><div class="txt"><strong>\(R_{\mu\nu}^2\) 項がプランク質量の spin-2 ゴースト</strong><span>（Stelle 1977）。ただしカットオフ質量＝EFTが壊れる領域なので低エネルギーのGRは無傷。難点は「誘導重力だけでは UV 完成しない」こと。</span></div></div>
+    <div class="row"><span class="mk">(c) WW</span><div class="txt"><strong>ワインバーグ＝ウィッテン定理（最も鋭い）</strong><span>ローレンツ不変QFTの平坦時空 "複合粒子" として質量ゼロの spin-2 は禁止（1980）。「グラビトン＝物質の束縛状態」は不可 → ホログラフィックな創発が必要。</span></div></div>
+    <div class="row"><span class="mk">(d) 極限</span><div class="txt"><strong>連続極限で非線形GRを出す</strong><span>Benincasa–Dowker がアインシュタイン=ヒルベルト作用を回復するところまで来たが、完全な量子動力学＋非線形GR＋物質結合は未解決（全離散重力共通）。</span></div></div>
+  </div>
+
+  <h2><span class="n">03</span>WW → ホログラフィー ── 四つの壁が一点へ収束</h2>
+
+  <p>いちばん鋭い制約（WW）が、抜け道として<strong>ホログラフィー</strong>を指します。AdS/CFT では境界のゲージ理論にグラビトンは無く、<em>バルク（1次元上）</em>に現れる ── だから WW の "平坦時空の状態" ではなく、禁止を回避する。つまり<strong>誘導グラビトンは "ホログラフィック的" に創発せねばならない</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">壁③の芯</div>
+    <p style="margin:6px 0 0;">「<strong>WW回避（ホログラフィック創発）＋ \(G>0\) ＋ ゴーストフリー ＋ 連続極限で Einstein 動力学</strong>」を、離散基盤から示す。</p>
+  </div>
+
+  <p>これは偶然ではありません。<strong>最終回の CKN／ホログラフィー、補遺の "有限情報" と、同じ一点に収束</strong>する ── グラビトンは平坦時空の複合でなく、情報の境界（1次元上）から創発することで WW を回避。四つの壁が、一枚の絵（有限情報 → ホログラフィー）へ集まっていく。</p>
+
+  <h2><span class="n">04</span>銀の裏地 ── \(R^2\) が CMB を残す（スタロビンスキー）</h2>
+
+  <p>壁③は主に理論の壁で、観測識別力は弱い（観測スケールで GR と区別不能＝スケール分離）。<strong>でも一つ手がかりがある</strong> ── 誘導重力が生む \(R^2\) 項は、まさに<em>スタロビンスキー・インフレーション</em>を駆動します。</p>
+
+  <div class="calc">
+    <span class="tag">R² → 初期宇宙 → CMB</span>
+    $$R+\frac{R^2}{6M^2}\ \Rightarrow\ n_s\approx1-\frac{2}{N}\approx0.965,\qquad r\approx\frac{12}{N^2}\approx0.003$$
+    <p style="margin:8px 0 14px;">\(N\approx50\text{–}60\)（e-folds）。この \(n_s\approx0.965\) は <strong>Planck の CMB 観測とよく合う</strong>。誘導重力の \(R^2\) 項が初期宇宙のインフレを起こし、スペクトル指数 \(n_s\)・テンソル比 \(r\) で試せる ── 壁③にも観測前線がある。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">壁③は、観測スケールでは GR に帰着するので、既存の重力テスト（PPN・重力波・連星パルサー・等価原理）を指導的には通ります ── だが逆に、観測での識別力が弱い（＝主に理論整合の壁）。図の \((\mu/M_{\rm Pl})^2\) は高次項/Einstein項の大きさのオーダー目安で、係数 \(O(N)\)・\(\log\) の不定性があります。</p>
+    <p style="margin-bottom:0;">(a)〜(d) はいずれも未解決で、閉じればミレニアム級。特に (c) WW と (d) 連続極限は、ホログラフィック量子重力の中心問題そのもの。\(c\cdot t=\text{一定}\) は座標の言い換え、局所光速は不変です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ観測スケールでは、誘導重力が GR と区別できないのか。
+        <details><summary>ひとつの答え</summary><div class="ans">高次曲率項/Einstein項 \(\sim R/\Lambda_{\rm cut}^2\sim(\mu/M_{\rm Pl})^2\)。宇宙論〜重力波のスケールでは \(\sim10^{-122}\) と桁外れに小さく、\(R\) 項（アインシュタイン=ヒルベルト）が圧倒するから。スケール分離が GR を回復させる。高次項が効くのはプランク近傍だけ。</div></details>
+      </li>
+      <li>ワインバーグ＝ウィッテンの定理は、誘導重力に何を要求するか。
+        <details><summary>ひとつの答え</summary><div class="ans">質量ゼロの spin-2（グラビトン）を、ローレンツ不変QFTの平坦時空の複合粒子として作ることを禁じる。だから誘導グラビトンは "平坦時空の束縛状態" ではなく、ホログラフィック（AdS/CFT のようにバルク=1次元上）に創発せねばならない ── 結果、壁③の解決は finale のホログラフィーに収束する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺④まとめ</span>壁③は "ホログラフィック創発" に凝縮し、CMB で手がかりを残す</h2>
+    <p>誘導重力は \(R\) 項（Einstein–Hilbert）を \(G\sim1/(N\Lambda_{\rm cut}^2)\)（プランク的）で生み、スケール分離により<strong>観測スケールで GR を超高精度回復</strong>、等価原理も継承（plausibly 合格）。理論の核は四つ ── (a) \(G>0\) の符号、(b) ゴースト、(c) <strong>WW（→ホログラフィック創発を要求）</strong>、(d) 連続極限で非線形GR。(c) が最も鋭く、<strong>グラビトンをホログラフィックに創発させる</strong>ことで回避 ── これは最終回の CKN／有限情報と同じ一点に収束。そして \(R^2\)→スタロビンスキー→CMB(\(n_s\approx0.965\)) が観測の手がかりを残す。</p>
+    <p>壁③は「重力が入らない」から、<em>「観測スケールでは GR 回復、核は WW を回避するホログラフィック創発、$R^2$ が CMB で試せる」</em>に凝縮した。四つの壁が、有限情報→ホログラフィーという一枚へ集まっていく。残るは壁④（完成理論そのもの）── 最後の扉。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">三つの壁を、越え方まで名指しして</span>
+    壁①（\(w\)、DESI の \(w_a\) 符号で決着）、壁②（why-now、大きさ緩和＋相互作用DE＋構造成長）、壁③（GR回復＋WW→ホログラフィック創発＋\(R^2\)→CMB）── 三つとも「越えられない」から「こう試す/こう収束する」に変わった。しかも③は、①②で使ったホログラフィー（有限情報・CKN）に自ら還ってきた。<strong>四つの壁が、一枚の絵に収束していく</strong>。残る壁④は「これ全部を、予言する一つの完成理論にできるか」── そこはまだ地図にない。だが、地図の描き方（名指し・晒し・"解けた"を疑う）は、もうあなたの手の中に。<br>次は最後の壁④へ。あるいは、ここまでの三つの壁を一枚の "スコアカード" にまとめるか。扉はもう一つ。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺④、物理好きの高校生・大学生向け読み物です。Sakharov 誘導重力（\(1/G_{\rm ind}\sim N\Lambda_{\rm cut}^2\)、実効作用に \(R\)・\(R^2\)・\(R_{\mu\nu}^2\) が生じること、符号問題は Adler 1982 のレビュー等で議論）、高次曲率項のスケール分離（観測スケールで \(\sim(\mu/M_{\rm Pl})^2\ll1\) ゆえ GR 回復）、変分による \(T_{\mu\nu}\) 源のアインシュタイン方程式と等価原理の継承、\(R^2\) 項による質量スピン2ゴースト（Stelle 1977）、ワインバーグ＝ウィッテンの定理（1980；質量ゼロ高スピン複合粒子の禁止）とその AdS/CFT・ホログラフィーによる回避、因果集合の Benincasa–Dowker 作用が連続極限で Einstein–Hilbert を回復すること、\(R+R^2\) のスタロビンスキー・インフレーション（\(n_s\approx1-2/N\approx0.965,\ r\approx12/N^2\)）が Planck の CMB と整合することは、いずれも確立した／現行の研究テーマです。本稿は特定モデルの正否を主張せず、壁の status と収束方向・検証経路を並べたものです。図の \((\mu/M_{\rm Pl})^2\) はオーダーの目安。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで見るスケールを変えると、観測スケールでGRが回復し、プランク近傍で破れる様子が見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var MPL=28.09; // log10(M_Pl / eV)
+  var XL=-34, XR=28, YB=-124, YT=4;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function dev(lm){ return 2*(lm-MPL); } // log10 of (mu/M_Pl)^2
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=54;
+    var lm=parseFloat(sk.value);
+    vk.innerHTML='10<sup>'+lm.toFixed(0)+'</sup> eV';
+    ctx.clearRect(0,0,w,h);
+    function X(x){return pad+(x-XL)/(XR-XL)*(w-pad-14);}
+    function Y(y){return (h-pad)-(y-YB)/(YT-YB)*(h-pad-16);}
+    // regime shading (by deviation): GR回復 dev<-8 ; R² −8..−2 ; 破れ >−2
+    function xForDev(dv){return X(MPL+dv/2);}
+    ctx.fillStyle='rgba(47,125,90,0.10)';ctx.fillRect(X(XL),12,xForDev(-8)-X(XL),h-pad-12);
+    ctx.fillStyle='rgba(176,100,26,0.12)';ctx.fillRect(xForDev(-8),12,xForDev(-2)-xForDev(-8),h-pad-12);
+    ctx.fillStyle='rgba(176,58,46,0.12)';ctx.fillRect(xForDev(-2),12,X(XR)-xForDev(-2),h-pad-12);
+    // grid + y labels
+    ctx.font='10px sans-serif';
+    for(var yv=-120;yv<=0;yv+=20){var y=Y(yv);ctx.strokeStyle='#e7e8f0';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#a2a6bb';ctx.fillText('10^'+yv, 6, y+4);}
+    // axes
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5b6078';ctx.font='12px sans-serif';
+    ctx.fillText('見るスケール μ（eV, 右ほど高エネルギー）→', w-300, h-pad+18);
+    ctx.save();ctx.translate(14,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('GRからのズレ (μ/M_Pl)²', 0,0);ctx.restore();
+    // deviation line
+    ctx.strokeStyle='#3b4668';ctx.lineWidth=2.8;ctx.beginPath();
+    for(var x=XL;x<=XR+1e-9;x+=0.4){var y=dev(x);if(y<YB)y=YB;var px=X(x),py=Y(y);if(x===XL)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    // physical markers
+    function mk(lmv,label,col){var x=X(lmv),y=Y(Math.max(YB,dev(lmv)));
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+      ctx.fillStyle=col;ctx.font='10.5px sans-serif';ctx.fillText(label,x-4,y-8);}
+    mk(-33,'宇宙論','#2f7d5a');
+    mk(9,'GeV(核)','#5a7a8a');
+    mk(25,'インフレ/GUT','#b0641a');
+    mk(28,'プランク','#b03a2e');
+    // current marker
+    var yy=Math.max(YB,dev(lm)), mx=X(lm), my=Y(yy);
+    ctx.strokeStyle='#9296ac';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,12);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#3b4668';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // readout
+    var dv=dev(lm);
+    if(dv<=-8){
+      rd.style.background='#e7f1ec';rd.style.color='#1f6b45';
+      rd.textContent='μ=10^'+lm.toFixed(0)+' eV：GRからのズレ ~10^'+dv.toFixed(0)+' ── R項が圧倒し、一般相対論が超高精度で回復（等価原理も継承）。';
+    } else if(dv<=-2){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='μ=10^'+lm.toFixed(0)+' eV：ズレ ~10^'+dv.toFixed(1)+' ── R²項が効き始める領域。初期宇宙ならスタロビンスキー・インフレを駆動（CMBで試せる）。';
+    } else {
+      rd.style.background='#f4e9e7;';rd.style.color='#a5311f';
+      rd.textContent='μ=10^'+lm.toFixed(0)+' eV：ズレ ~10^'+dv.toFixed(1)+'（O(1)）── プランク近傍。高次項が同等になりGRが破れる＝新物理（量子重力）の領域。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

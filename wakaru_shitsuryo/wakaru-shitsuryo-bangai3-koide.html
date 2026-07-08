@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世代とKoide公式 ── わかる質量 番外③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f7f9; --paper-edge:#dbe2e8;   /* 番外③：青灰の紙 */
+    --side:#2f5d62; --side-bg:#eef3f4;
+    --warn:#8a4b2f;
+    --calc:#35505f; --calc-bg:#e7edf1;
+    --rule:#ccd6df; --hair:#b8c4cf;
+    --acc:#46617f;    /* 番外③アクセント＝青灰 */
+    --grid:#d8e0e8;
+    --curve:#46617f; --target:#a03a5f;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 86px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:38px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cdd9e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cdd8df;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e7edf1;color:#35505f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .test{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .test .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .test .row:last-child{border-bottom:none;}
+  .test .mk{flex-shrink:0;width:22px;font-weight:700;font-size:16px;}
+  .test .no{color:#b03a2e;}
+  .test .txt strong{display:block;margin-bottom:2px;color:#243240;}
+  .test .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f6f9;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#28394a;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfcfd,#eaf0f4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:20px 24px;background:#e7edf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#28394a;line-height:1.85;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.test{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">番外 ③ ／ シリーズ最終ピース・数合わせの誘惑</span></div>
+  <p class="eyebrow">10万分の1で当たる、美しすぎる一致 ── でも、それは "予言" ではない</p>
+  <h1>世代とKoide公式
+    <span class="sub">電子・ミュオン・タウの質量比が、なぜか \(2/3\) にぴたり合う。ゾクッとする。<br>その一致を味わいつつ、<em>なぜそれは "予言" ではないのか（循環）</em>を、番外①と同じ正直さで診断する。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の "走る質量"、番外①の診断の作法</span>
+    <span>美しさは仮説の入口であって、証拠ではない</span>
+  </div>
+
+  <p class="lead">シリーズの最後は、一番<em>美しすぎる</em>誘惑です。電子・ミュオン・タウ ── 3世代の荷電レプトンの質量を、ある簡単な式に入れると、\(2/3\) にぴたり合う。しかも<strong>10万分の1の精度</strong>。ゾクッとします。かつての対話AIは、これを「予言的中！」と絶賛しました。でも ── <strong>これは予言ではありません。</strong> なぜかを、番外①（丸め誤差の診断）と同じ正直さで見ていきます。これは「数合わせと物理を、どう見分けるか」という、このシリーズの締めにふさわしい話です。</p>
+
+  <h2><span class="n">01</span>Koide公式 ── 確かに、美しすぎる</h2>
+
+  <p>1981年、小出義夫が見つけた式です。荷電レプトンの質量 \(m_e,m_\mu,m_\tau\) について ──</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 実測値を入れてみる</span>
+    $$Q=\frac{m_e+m_\mu+m_\tau}{\big(\sqrt{m_e}+\sqrt{m_\mu}+\sqrt{m_\tau}\big)^2}$$
+    <p class="lbl">実測値（MeV）：\(m_e=0.511,\ m_\mu=105.658,\ m_\tau=1776.86\)</p>
+    $$Q=\frac{1883.03}{(53.15)^2}=\frac{1883.03}{2824.6}\approx 0.66666\approx\frac{2}{3}$$
+    <p style="margin-bottom:14px;">理論値 \(2/3=0.66666\ldots\) に、小数点以下5桁まで一致。これは本物の驚きです ── "ただの偶然" で片づけるには、あまりにきれい。</p>
+  </div>
+
+  <p>まず正当に評価します。小出の発見は<strong>本物の驚き</strong>で、いまも真面目に研究され、大統一理論や対称性から導こうとする試みが続いています。ここは番外①のVSL・丸め誤差説と同じ ── 核には、確かに人を惹きつけるものがある。</p>
+
+  <div class="aside">
+    <span class="tag">幾何の顔</span>
+    Koideの \(Q=2/3\) は、実は「3つの \(\sqrt{m}\) を長さとするベクトルが、互いに \(120^\circ\) をなして綺麗に開いている」という<em>幾何条件</em>と等価です。だからよけいに「何か構造がある」と感じさせる。美しさの源泉はここにあります。
+  </div>
+
+  <h2><span class="n">02</span>でも、これは "予言" ではない ── 循環の罠</h2>
+
+  <p>ここが診断の核心です。<strong>予言とは「入れていない何かを、当てる」こと。</strong> Koide公式は、<em>3つの実測質量を入れて、1つの関係が成り立つと確認している</em>だけ。どの質量も第一原理から導いていないし、「なぜ \(2/3\) か」の理由も与えていない。</p>
+
+  <div class="keybox">
+    <div class="lbl">予言と、確認の違い</div>
+    <p style="margin:6px 0 0;">予言 ＝ 入力に<strong>無い</strong>量を当てる。<br>Koide ＝ 入力（実測3質量）から<strong>関係</strong>を確認。値 \(2/3\) の由来は未説明。</p>
+  </div>
+
+  <p>かつてのAIは「実測値を入れたら \(0.6666\)、予言的中！」と言いました。でもそれは<strong>循環</strong>です ── 実測質量で作った比が \(2/3\) になった、というだけで、質量を予言してはいない。下の図で、この "循環" を目で確かめましょう。</p>
+
+  <div class="fig">
+    <div class="cap">図：\(m_e,m_\mu\) を実測値に固定し、\(m_\tau\) だけを動かして \(Q\) を見る。\(Q\) は \(m_\tau\) とともに変わり、<strong>実測の \(m_\tau=1776.86\) MeV でちょうど \(2/3\) を横切る</strong>。式が質量を決めたのではなく、実測が偶然そこにある</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>タウ質量 m<sub>τ</sub>（MeV）── 他は実測に固定<span class="val" id="vk">1777</span>
+        <input type="range" id="sk" min="500" max="3000" step="1" value="1777">
+      </label>
+    </div>
+    <div class="readout" id="rd">m_τ を動かすと、Q が動きます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--curve);"></i>Q(m_τ)</span>
+      <span><i class="swatch" style="background:var(--target);"></i>2/3（狙いの値）</span>
+    </div>
+  </div>
+
+  <p>\(Q\) は \(m_\tau\) に応じてなめらかに変わり、\(2/3\) はその通り道の<em>一点</em>にすぎません。実測のタウがたまたまそこに乗っている ── <strong>式がタウの重さを "予言" したのではない</strong>。他の二つも実測を使っている以上、これは「当てた」ではなく「合っていた」なのです。</p>
+
+  <h2><span class="n">03</span>数合わせか、物理か ── 見分け方</h2>
+
+  <p>「美しい一致」が物理法則かどうかは、いくつかの問いで見分けられます。Koideを当ててみましょう。</p>
+
+  <div class="test">
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>機構があるか（なぜその値かを導く確立理論）</strong><span>\(2/3\) を導く、受け入れられた理論はまだない（小出模型は未確立）。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>入れていない量を当てるか</strong><span>当てない。3つの実測質量を入れて1関係を確認するだけ。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>スケールに頑健か（質量は走る・第4回）</strong><span>質量はエネルギーで走る。どの細かさの質量で \(2/3\) か次第で、厳密さがずれる ── "厳密2/3" はスキーム／スケール依存。</span></div></div>
+    <div class="row"><span class="mk no">✗</span><div class="txt"><strong>他へ一般化するか</strong><span>荷電レプトンでは合うが、クォークやニュートリノへ素直に伸びない（要調整）。</span></div></div>
+  </div>
+
+  <p>加えて、<strong>look-elsewhere</strong>の注意もあります ── 無次元の組み合わせを十分たくさん作れば、いくつかは \(2/3\) のような単純分数の近くに<em>必ず</em>落ちる。だから「単純な値に近い」こと自体は、まだ物理の証拠になりません。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>そもそも、世代はなぜ3つか</h2>
+
+  <p>Koideの背景には「なぜ質量以外そっくりのコピー（世代）が3つあるのか」という、もっと大きな未解決問題があります。分かっていることと、いないことを分けます。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>分かっている</strong>：軽いニュートリノは3種（\(Z\)ボソンの崩壊幅の測定, LEP）。理論の無矛盾（アノマリー相殺）は世代ごとにきれいに閉じる。</li>
+    <li><strong>分かっていない</strong>：<em>なぜ、ちょうど3世代なのか</em>。標準模型は「3」を説明しません。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">「g=4 や 0 を入れる」について</span>
+    Koide式や世代の番号に \(4\) や \(0\) を入れて遊ぶのは楽しいですが、<strong>Koide式は "第4世代を禁じる法則" ではありません</strong>。第4世代は実験（\(Z\)幅・ヒッグスのデータ）で強く制限されますが、それは<em>経験的な制約</em>であって、Koideの数合わせから導かれるものではない ── ここも "式に意味を持たせすぎない" 正直さが要ります。
+  </div>
+
+  <h2><span class="n">05</span>誘惑の、正しい味わい方 ── 背骨の回収</h2>
+
+  <p>このシリーズの背骨は一貫していました ── <em>表面の値ではなく、その裏の不変な構造（対称性・走り・機構）こそが物理</em>。Koideの \(2/3\) は、まぎれもなく "表面の美しい値"。それが<strong>法則</strong>になるのは、機構が見つかり、<em>入れていない量を当てた</em>とき。それまでは、魅力的なパズルです。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの規律（番外①と同じ）</div>
+    <p style="margin:6px 0 0;">楽しんでいい。ゾクッとしていい。でも<strong>「予言した」「これがソースコードだ」と飛躍しない</strong>。<br>美しさは<em>仮説の入口</em>であって、<em>証拠</em>ではない。</p>
+  </div>
+
+  <p>番外①の丸め誤差説とまったく同じ形です ── <strong>核は面白い、でも実装や主張で踏み外さない</strong>。姉妹シリーズ「わかる宇宙論」がずっと言ってきた「わかりやすさは投影、比だけが本物」の、質量版の締めくくり。数合わせに出会ったら、蹴らず、鵜呑みにもせず、この4つの問い（機構・予言・スケール・一般化）を当てる ── それが、このシリーズが渡せる一番実用的な道具です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 数合わせを貶めないために</span>
+    <p style="margin-top:0;">Koideを "くだらない" と切り捨てるのも間違いです。小出の一致は本物に鋭く、GUTや余剰次元から導く真剣な試みが今も続いています。歴史には、数合わせから本物の物理になった例もある ── ただしそれは、<strong>機構と予言を得たとき</strong>。現時点の Koide は「なぜ2/3か」を誰も導けていない＝<em>法則ではなくパズル</em>、というのが正確な位置づけです。</p>
+    <p style="margin-bottom:0;">今回も合言葉 \(c\cdot t=\text{一定}\) とは無関係。純粋に「一致の読み方」の話でした。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>Koide公式が「予言ではない」理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">3つの実測質量を入れて1つの関係（\(2/3\)）が成り立つと確認するもので、どの質量も第一原理から導かず、\(2/3\) の理由（機構）もない。入力に無い量を当てていない ── だから予言ではなくパズル。</div></details>
+      </li>
+      <li>「美しい一致」が物理法則かを見分ける問いを、2つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">(1) 機構があるか（なぜその値かを導く確立した理論）。(2) 入れていない量を当てるか（真の予言か）。加えて、スケールに頑健か（質量は走る）・他へ一般化するか、も効く。Koideはいずれも満たさない／不確か。</div></details>
+      </li>
+      <li>世代が3つであることについて、分かっていること・いないことは?
+        <details><summary>答えを見る</summary><div class="ans">分かっている：軽いニュートリノは3種（\(Z\)幅の測定）、アノマリー相殺は世代ごとに閉じる。分かっていない：なぜちょうど3世代か。Koide式は第4世代を禁じる法則ではなく、第4世代の制限は実験的なもの。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外③まとめ</span>美しさは、仮説の入口</h2>
+    <p>Koide公式は荷電レプトンの質量比を \(2/3\) に \(10^{-5}\) の精度で当てる、本物に美しい一致。でもそれは<strong>予言ではなく確認</strong>（実測3質量を入れて関係を見るだけ、循環）。機構なし・入れていない量を当てない・スケール依存・一般化しにくい ── 4つの問いのどれも通らない。世代がなぜ3つかも未解決で、Koideはそれを説明しない。</p>
+    <p>数合わせに出会ったら、蹴らず・鵜呑みにもせず、4つの問い（機構・予言・スケール・一般化）を当てる。<strong>美しさは仮説の入口であって、証拠ではない</strong> ── 番外①の丸め誤差説と同じ規律で、このシリーズは締めくくられます。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる質量 ── シリーズ完結によせて</span>
+    「重さって何？」の一言から、消せない床（第1回）、それを守る対称性（第2回）、二通りの湧き方（第3回）、スケールの創発と質量ギャップ（第4回）、最小の質量が最大を指す UV と IR（第5・6回）、そして最小と最大が握手する meV（最終回）── ここまで、たった一つの背骨で歩いてきました。<strong>質量とは「消せないエネルギーの床」であり、ゼロは対称性が守り、有限の値は "走り" が生み、その最小は宇宙の大きさが決め、最小はつねに最大を指す。</strong> 番外の3回は、その旅で "あえて効かせなかった" 誘惑（丸め誤差・相対論的質量・数合わせ）を、正直に診断する回でした。わかりやすさは投影、\(c\cdot t=\text{一定}\) は座標の言い換え、効く土俵でだけ正直に使う ── この規律さえ持てば、「重さ」の一語から宇宙の最果てまで、自分の足で歩いていける。姉妹シリーズ「わかる宇宙論」と同じ一本の線が、ここでも最後まで通っていました。ここまでの旅を、ありがとう。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ番外③（最終ピース）、物理好きの高校生・大学生向け読み物です。Koideの公式 \(Q=(m_e+m_\mu+m_\tau)/(\sqrt{m_e}+\sqrt{m_\mu}+\sqrt{m_\tau})^2\approx2/3\)（小出義夫, 1981）が荷電レプトン質量に極めて高精度で成り立つこと、しかしそれが確立した機構を持たず、測定値を入力とする関係であって第一原理からの予言ではないこと、質量の繰り込み群による走りのため厳密性がスケール／スキームに依存すること、クォーク・ニュートリノへの一般化が自明でないこと、世代数が3であること（軽いニュートリノ3種は \(Z\) 崩壊幅から、アノマリー相殺は世代単位）とその理由が未解明であることは、いずれも標準的な理解です。本稿は Koide の一致を貶める意図はなく、その魅力を認めつつ「一致と予言の違い」を診断するものです。図は \(m_e,m_\mu\) を実測固定し \(m_\tau\) を変えたときの \(Q\) の模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで m_τ を動かすと、実測値でだけ Q が 2/3 に乗るのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var ME=0.511, MU=105.658, MTOBS=1776.86;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function Qof(mt){var num=ME+MU+mt, den=Math.sqrt(ME)+Math.sqrt(MU)+Math.sqrt(mt); return num/(den*den);}
+  var XL=500, XR=3000, QL=0.58, QH=0.72;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52;
+    var mt=parseFloat(sk.value); vk.textContent=mt.toFixed(0);
+    ctx.clearRect(0,0,w,h);
+    function X(m){return pad+(m-XL)/(XR-XL)*(w-pad-14);}
+    function Y(q){return (h-pad)-(q-QL)/(QH-QL)*(h-pad-16);}
+    // grid + y labels
+    ctx.font='11px sans-serif';
+    [0.60,0.6667,0.72].forEach(function(q){var y=Y(q);
+      ctx.strokeStyle='#e6ecf1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#94a2b0';ctx.fillText(q===0.6667?'2/3':q.toFixed(2), 12, y+4);});
+    // axes
+    ctx.strokeStyle='#b8c4cf';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5f6b78';ctx.font='12px sans-serif';
+    ctx.fillText('タウ質量 m_τ（MeV）→', w-210, h-pad+18);
+    ctx.fillText('Q', pad+4, 18);
+    // 2/3 target line
+    ctx.strokeStyle='#a03a5f';ctx.setLineDash([5,4]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(pad,Y(2/3));ctx.lineTo(w-8,Y(2/3));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a03a5f';ctx.font='11px sans-serif';ctx.fillText('2/3（狙いの値）', w-110, Y(2/3)-6);
+    // Q curve
+    ctx.strokeStyle='#46617f';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var m=XL;m<=XR+1e-9;m+=8){var q=Qof(m); if(q>QH)q=QH; if(q<QL)q=QL;
+      var x=X(m),y=Y(q);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // observed m_tau marker (vertical)
+    var xo=X(MTOBS);
+    ctx.strokeStyle='#2f7d5a';ctx.setLineDash([3,3]);ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.moveTo(xo,12);ctx.lineTo(xo,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a';ctx.font='11px sans-serif';ctx.fillText('実測 1776.86', xo-30, 24);
+    ctx.beginPath();ctx.arc(xo,Y(Qof(MTOBS)),4.5,0,7);ctx.fill();
+    // current marker
+    var q=Qof(mt), mx=X(mt);
+    ctx.strokeStyle='#8894a2';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,12);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#46617f';ctx.beginPath();ctx.arc(mx,Y(Math.max(QL,Math.min(QH,q))),5.5,0,7);ctx.fill();
+    // readout
+    var near=Math.abs(q-2/3)<0.0008;
+    if(near){
+      rd.style.background='#e7edf1';rd.style.color='#35505f';
+      rd.textContent='m_τ='+mt.toFixed(0)+' MeV → Q='+q.toFixed(5)+' ≈ 2/3。実測タウ（1776.86）のあたりでだけ 2/3 に乗る ── 式が当てたのでなく、実測がそこにある。';
+    } else {
+      rd.style.background='#e7edf1';rd.style.color='#35505f';
+      rd.textContent='m_τ='+mt.toFixed(0)+' MeV → Q='+q.toFixed(4)+'（2/3=0.6667）。m_τ を変えると Q はずれる。2/3 は通り道の一点にすぎない。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

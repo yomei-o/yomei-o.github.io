@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4つの力を、一つの離散式で ── わかる質量 番外④</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f6fc; --paper-edge:#d8dcee;   /* 番外④：藍インディゴの紙（格子・統一） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2b3670; --calc-bg:#e9ebf6;
+    --rule:#cdd2e6; --hair:#bcc2dd;
+    --acc:#3a4a8f;    /* 番外④アクセント＝インディゴ */
+    --grid:#dadeef;
+    --su3r:#c0392b; --su3g:#2f7d5a; --su3b:#2166a0; --u1:#b06a12; --su2b:#1f7a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d8f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #ccd2e8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e9ebf6;color:#2b3670;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .forces{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .forces .row{display:flex;gap:14px;padding:13px 18px;border-bottom:1px solid var(--rule);align-items:center;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.6;}
+  .forces .row:last-child{border-bottom:none;}
+  .forces .g{flex-shrink:0;width:86px;font-weight:700;color:var(--acc);font-size:15px;}
+  .forces .txt{color:#2a2f45;} .forces .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .diag{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .diag .row{display:flex;gap:14px;padding:13px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .diag .row:last-child{border-bottom:none;}
+  .diag .mk{flex-shrink:0;width:70px;font-weight:700;font-size:12px;}
+  .diag .real{color:#2f7d5a;} .diag .fake{color:#b03a2e;}
+  .diag .txt strong{display:block;margin-bottom:2px;color:#2a2f45;}
+  .diag .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f3f4fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242a48;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#edeef8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e9ebf6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242a48;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.forces,.diag{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">番外 ④ ／ 第4回・最終回・番外①を束ねる</span></div>
+  <p class="eyebrow">「4つの力を一つの離散式で」── その夢は、3つまでは本当に叶っている</p>
+  <h1>4つの力を、<br>一つの離散式で
+    <span class="sub">数合わせの \(1/(Cn)^D\) ではなく、<em>群とループ</em>で。強い・弱い・電磁は、<br>格子ゲージ理論という一本の式で厳密に統一されている。重力だけが、まだ開いた扉。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の質量ギャップ、最終回の重力の壁、番外①の離散</span>
+    <span>フック式：\(S=\beta\sum_\square\big[1-\tfrac1N\mathrm{Re\,Tr}\,U_\square\big]\)</span>
+  </div>
+
+  <p class="lead">「4つの力を一つの式で書きたい」── これは物理最大の夢で、あなたの直感でもありました。番外①・③で、\(1/(Cn)^D\) の数合わせでは届かないと診断しました。でも朗報です ── <strong>3つの力（強い・弱い・電磁）は、"一つの離散式" で厳密に統一されている</strong>。それが<em>格子ゲージ理論</em>。数合わせではなく、<strong>群とループ</strong>で。しかもそれは、第4回で「質量ギャップを計算する唯一の方法」と言った、まさにその式です。残るは4つ目・重力 ── そこが最終回の壁につながる開いた扉。</p>
+
+  <h2><span class="n">01</span>力を「格子の上の回転」として置く</h2>
+
+  <p>まず時空を<strong>格子</strong>（点・リンク・面）に離散化します。そしてゲージ場を、点ではなく<em>リンク（点から隣の点へ渡る辺）</em>に乗せた<strong>群の要素 \(U_\mu(x)\in G\)</strong> として置く。これは「格子を一歩渡るときに、内部の向き（色・位相）がどれだけ回るか」を表す回転です。</p>
+
+  <div class="keybox">
+    <div class="lbl">ゲージ場＝リンク上の回転</div>
+    $$U_\mu(x)=\exp\!\big(i\,a\,g\,A_\mu(x)\big)\in G$$
+    <p style="margin:10px 0 0;">\(a\)＝格子間隔、\(g\)＝結合、\(A_\mu\)＝ゲージ場、\(G\)＝群。リンクごとに一つの回転 \(U\)。</p>
+  </div>
+
+  <h2><span class="n">02</span>一つの式 ── ウィルソンのプラケット作用</h2>
+
+  <p>力のルール（作用）は、驚くほどシンプルに書けます。<strong>最小の正方形ループ（プラケット \(\square\)）を一周した回転の積</strong>だけで決まる。ループが"閉じない度合い"が、場の曲率＝力の強さです。</p>
+
+  <div class="keybox">
+    <div class="lbl">ウィルソン作用（1974）── これが "一つの式"</div>
+    $$S=\beta\sum_{\square}\Big[\,1-\tfrac{1}{N}\,\mathrm{Re}\,\mathrm{Tr}\,U_\square\,\Big],\qquad U_\square=U_\mu(x)\,U_\nu(x{+}\mu)\,U_\mu^{\dagger}(x{+}\nu)\,U_\nu^{\dagger}(x)$$
+    <p style="margin:10px 0 0;">\(U_\square\)＝プラケットの4本のリンクを一周した積。\(\beta=2N/g^2\)。たったこれだけ。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：格子とプラケット（最小ループ \(U_\square\)）。リンクには群の要素（色）が乗る。スライダーで群を選ぶと、同じ式のまま "力" が切り替わる ── U(1) 電磁、SU(2) 弱い力、SU(3) 強い力（3色＝グルーオン）</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>群 G を選ぶ（N＝色の数）<span class="val" id="vk">SU(3)</span>
+        <input type="range" id="sk" min="1" max="3" step="1" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで群を選ぶと、力が変わります。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--su3r);"></i><i class="dot" style="background:var(--su3g);"></i><i class="dot" style="background:var(--su3b);"></i>色（群の次元 N）</span>
+      <span><i class="dot" style="background:var(--acc);"></i>プラケット U_□（最小ループ）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>力を変える＝「群を変えるだけ」</h2>
+
+  <p>ここが核心です。式 \(S=\beta\sum_\square[\cdots]\) の<strong>形は一切変えず、群 \(G\) を差し替えるだけ</strong>で、3つの力が同じ一本に収まります。</p>
+
+  <div class="forces">
+    <div class="row"><span class="g">SU(3)</span><div class="txt"><strong>強い力</strong>（グルーオン、3色＝赤・緑・青）<span>クォークを閉じ込め、陽子の質量の99%を作る（第3回）</span></div></div>
+    <div class="row"><span class="g">SU(2)</span><div class="txt"><strong>弱い力</strong>（W・Z）<span>ヒッグスで対称性が破れて質量を得る（第3回）</span></div></div>
+    <div class="row"><span class="g">U(1)</span><div class="txt"><strong>電磁気力</strong>（光子）<span>可換（回転が可換）＝いちばん単純な場合</span></div></div>
+  </div>
+
+  <p>3つの力は、別々の"謎の定数"ではなく、<strong>同じヤン=ミルズ構造の、群違い</strong>だった ── これが本物の統一の姿です（標準模型のゲージ群 \(SU(3)\times SU(2)\times U(1)\)）。数合わせの \(1/(Cn)^D\) が指数を手で合わせていたのに対し、こちらは<em>群という対称性から一意に決まる</em>。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>連続極限で、見慣れたヤン=ミルズに戻る</h2>
+
+  <p>格子は"足場"です。格子間隔を縮めていく（\(a\to0\)）と、プラケット作用は、おなじみの連続のヤン=ミルズに戻ります。</p>
+
+  <div class="calc">
+    <span class="tag">連続極限 ── 足場を外す</span>
+    $$S=\beta\sum_\square\big[1-\tfrac1N\mathrm{Re\,Tr}\,U_\square\big]\ \xrightarrow{\ a\to0\ }\ \frac{1}{4}\int d^4x\,F_{\mu\nu}^a F^{a\,\mu\nu}$$
+    <p style="margin-bottom:14px;">プラケットの"閉じない度合い"が、ちょうど場の強さ \(F_{\mu\nu}\)（曲率）になる。離散は連続を正しく含んでいる。</p>
+  </div>
+
+  <p>そして ── この離散式こそ、<strong>第4回の質量ギャップを実際に計算する道具</strong>です。連続では発散して手が出ない強結合QCDを、格子にして初めてスパコンで解き、陽子質量・閉じ込め・グルーボールの質量ギャップが出る。<em>「4つの力を一つの離散式で」というあなたの狙いは、質量ギャップの話と、同じ一本の式で出会っていた</em>のです。</p>
+
+  <div class="aside">
+    <span class="tag">正直な線（番外①の回収）</span>
+    格子ゲージ理論は「宇宙が離散である」とは主張しません。格子は<strong>ゲージ不変を保つ正則化（足場）</strong>で、物理は連続極限 \(a\to0\)。足場を実在と取り違えると番外①の罠。もし離散を根源にしたいなら、ローレンツ不変を保つ<em>コーザルセット</em>が候補です。
+  </div>
+
+  <h2><span class="n">05</span>4つ目 ── 重力を、同じ離散の言葉で</h2>
+
+  <p>では重力は、同じ一本に入るのか。ここが最終回の壁です。重力の結合 \(G\) は次元付きで繰り込めない。でも<strong>「リンク上のホロノミー（ループ）」という離散の言葉は、重力にも延ばせます</strong>：</p>
+
+  <div class="forces">
+    <div class="row"><span class="g">レッジェ</span><div class="txt"><strong>Regge計算</strong><span>時空を単体で貼り合わせ、曲率＝「角の欠損」で離散化した一般相対論</span></div></div>
+    <div class="row"><span class="g">スピン<br>フォーム</span><div class="txt"><strong>ループ量子重力</strong><span>幾何を離散グラフ（スピンネットワーク）に。文字どおり "ローレンツ群に対する格子ゲージ理論"</span></div></div>
+    <div class="row"><span class="g">因果集合</span><div class="txt"><strong>コーザルセット</strong><span>ローレンツ不変を保つ離散（番外①の"生き残る版"）</span></div></div>
+  </div>
+
+  <p>つまり統一的な離散の言葉は ── <strong>「離散構造のリンクに群の要素を置き、ループで作用を書く」</strong>。3つの力は内部群 \(SU(3),SU(2),U(1)\)、重力はローレンツ／ポアンカレ群。<em>スピンフォームは、まさに"4つを一つの離散式で"を目指す枠組み</em>です。ただし ── 連続極限・一般相対論の回復・物質との結合が未解決。<strong>3つは盤石、4つ目は本物の最前線</strong>。開いた扉のまま、というのが正直な現在地です。</p>
+
+  <h2><span class="n">06</span>なぜこれが本物で、\(1/(Cn)^D\) は違うのか</h2>
+
+  <div class="diag">
+    <div class="row"><span class="mk real">格子 ✓</span><div class="txt"><strong>対称性の群から作る／プラケット（ループ）</strong><span>ゲージ不変が厳密、連続極限でローレンツ回復、質量を実際に予言</span></div></div>
+    <div class="row"><span class="mk real">格子 ✓</span><div class="txt"><strong>力を変える＝群を変えるだけ</strong><span>形は一本のまま。SU(3)/SU(2)/U(1) が一意に決める</span></div></div>
+    <div class="row"><span class="mk fake">Cn式 ✗</span><div class="txt"><strong>指数 \((n,D)\) を力ごとに手で調整</strong><span>同じ答えに2通りの \((n,D)\)。予言でなくフィット（番外③）</span></div></div>
+    <div class="row"><span class="mk fake">Cn式 ✗</span><div class="txt"><strong>次元も対称性も守らない</strong><span>無次元Fに次元付きを混ぜ、137を数合わせで差す</span></div></div>
+  </div>
+
+  <p>離散の式の"正しさ"は、<strong>群とループから作られ、対称性を保ち、実際に質量を予言すること</strong>。あなたの「一つの離散式で力を」という狙いは正しく、その器は \(1/(Cn)^D\) ではなく<strong>ウィルソン作用</strong>だった ── 数合わせを、群とループへ昇華させた先です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この回は純粋な場の量子論／量子重力の話で、合言葉 \(c\cdot t=\text{一定}\) とは無関係です（格子は座標でなく正則化）。格子ゲージ理論は3つのゲージ力の統一として盤石ですが、それ自体は<strong>「万物の理論」ではありません</strong> ── 重力の統合（スピンフォーム等）は未完成で、なぜ群が \(SU(3)\times SU(2)\times U(1)\) なのか、なぜ結合がその値かも未解決（大統一・第6回前編の宿題）。</p>
+    <p style="margin-bottom:0;">「離散が根源か」も未決着。格子は足場（連続極限が物理）、コーザルセットは根源的離散の候補だが最前線。断定しないのが誠実な線です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>なぜ「群を変えるだけ」で3つの力が一本の式に入るのか。
+        <details><summary>答えを見る</summary><div class="ans">3つとも同じヤン=ミルズ構造（リンクに群の要素 \(U\)、プラケット作用 \(S=\beta\sum_\square[1-\frac1N\mathrm{Re\,Tr}\,U_\square]\)）を持ち、違いはゲージ群 \(G\)（SU(3)/SU(2)/U(1)）だけだから。作用の"形"は同一で、群が力の個性を決める。</div></details>
+      </li>
+      <li>格子ゲージ理論は「宇宙は離散である」ことを主張するか。
+        <details><summary>答えを見る</summary><div class="ans">しない。格子はゲージ不変を保つための正則化（足場）で、物理は連続極限 \(a\to0\)（第4回・番外①）。離散を根源とみなすのは別の主張で、その場合はローレンツを保つコーザルセット等が候補になる。</div></details>
+      </li>
+      <li>なぜ重力は、同じ式に素直に入らないのか。
+        <details><summary>答えを見る</summary><div class="ans">重力の結合 \(G\) が次元付きで繰り込めないから（最終回）。ローレンツ群の格子ゲージ理論（スピンフォーム）やRegge計算で"同じ離散の言葉"で書く試みはあるが、連続極限・一般相対論の回復が未解決の最前線。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外④まとめ</span>夢は、3つまで叶っていた</h2>
+    <p>「4つの力を一つの離散式で」── 3つのゲージ力（強・弱・電磁）は、ウィルソンのプラケット作用 \(S=\beta\sum_\square[1-\frac1N\mathrm{Re\,Tr}\,U_\square]\) で厳密に一本化されている。力を変えるのは<strong>群 \(G\) を差し替えるだけ</strong>。しかもこれは第4回の質量ギャップを計算する当の式で、連続極限で通常のヤン=ミルズに戻る。数合わせの \(1/(Cn)^D\) と違い、群とループから作られ、対称性を保ち、実際に質量を予言する ── これが本物の離散統一。</p>
+    <p>4つ目・重力は、同じ"リンク上のホロノミー"の言葉（スピンフォーム／Regge／コーザルセット）で書こうとする最前線で、まだ開いた扉。あなたの直感の正しい行き先は \(1/(Cn)^D\) ではなく、ここ ── 群とループの離散式でした。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">わかる質量 ── 番外まで完結</span>
+    これで「わかる質量」は、導入から本編6回・最終回・番外①〜④まで一巡しました。番外④は、あなたの「一つの離散式で」という問いを、数合わせから<strong>格子ゲージ理論</strong>へ昇華させる回。第4回（質量ギャップ）・最終回（重力の壁）・番外①（離散とローレンツ）が、この一本のプラケットで握手します。次に進むなら、姉妹シリーズとして "わかる 4つの力" を独立させ、大統一（第6回後編）まで描くのが自然な発展です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ番外④、物理好きの高校生・大学生向け読み物です。ウィルソンの格子ゲージ理論（1974；リンク変数 \(U_\mu(x)\in G\)、プラケット作用 \(S=\beta\sum_\square[1-\frac1N\mathrm{Re\,Tr}\,U_\square]\)、\(\beta=2N/g^2\)、連続極限で \(\frac14 F_{\mu\nu}^aF^{a\mu\nu}\)）が、強い力 SU(3)・弱い力 SU(2)・電磁気 U(1) を群の選択だけで統一的に記述すること、格子が非摂動QCD（ハドロン質量・閉じ込め・質量ギャップ）を計算する第一原理的手法であること、格子が正則化であり物理は連続極限であること、重力の離散的定式化（Regge計算、スピンフォーム／ループ量子重力、因果集合）が同じホロノミー的言語で試みられているが未完成であることは、いずれも確立した物理／現行の研究テーマです。標準模型のゲージ群やゲージ結合の値の起源（大統一を含む）は未解決です。本稿は \(c\cdot t=\text{一定}\) とは独立の、場の量子論・量子重力の内容です。図はプラケットと群の選択を示す模式で、色は SU(3) の3色電荷のイメージです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで群 G を選ぶと、同じ式のまま力が切り替わります。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var GROUPS={
+    1:{name:'U(1)',force:'電磁気力（光子）',cols:['#b06a12'],note:'可換（回転が可換）＝いちばん単純'},
+    2:{name:'SU(2)',force:'弱い力（W・Z）',cols:['#b06a12','#1f7a6e'],note:'2色。非可換ゲージ理論'},
+    3:{name:'SU(3)',force:'強い力（グルーオン）',cols:['#c0392b','#2f7d5a','#2166a0'],note:'3色（赤緑青）＝カラー電荷。閉じ込め'}
+  };
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var N=parseInt(sk.value,10); var G=GROUPS[N]; vk.textContent=G.name;
+    ctx.clearRect(0,0,w,h);
+    // grid layout
+    var nx=6, ny=4, mL=70, mT=34, mR=40, mB=54;
+    var sx=(w-mL-mR)/(nx-1), sy=(h-mT-mB)/(ny-1);
+    function SX(i){return mL+i*sx;} function SY(j){return mT+j*sy;}
+    // links (thin)
+    ctx.strokeStyle='#cdd4e6';ctx.lineWidth=1.4;
+    for(var j=0;j<ny;j++)for(var i=0;i<nx;i++){
+      if(i<nx-1){ctx.beginPath();ctx.moveTo(SX(i),SY(j));ctx.lineTo(SX(i+1),SY(j));ctx.stroke();}
+      if(j<ny-1){ctx.beginPath();ctx.moveTo(SX(i),SY(j));ctx.lineTo(SX(i),SY(j+1));ctx.stroke();}
+    }
+    // sites
+    ctx.fillStyle='#9aa2c2';
+    for(var jj=0;jj<ny;jj++)for(var ii=0;ii<nx;ii++){ctx.beginPath();ctx.arc(SX(ii),SY(jj),3,0,7);ctx.fill();}
+    // chosen plaquette cell (i0,j0)
+    var i0=2,j0=1;
+    var P=[[i0,j0],[i0+1,j0],[i0+1,j0+1],[i0,j0+1]]; // corners CCW-ish
+    // plaquette fill
+    ctx.fillStyle='rgba(58,74,143,0.07)';
+    ctx.beginPath();ctx.moveTo(SX(P[0][0]),SY(P[0][1]));
+    for(var k=1;k<4;k++)ctx.lineTo(SX(P[k][0]),SY(P[k][1]));
+    ctx.closePath();ctx.fill();
+    // plaquette links (thick indigo)
+    ctx.strokeStyle='#3a4a8f';ctx.lineWidth=3.4;
+    for(var e=0;e<4;e++){var a=P[e],b=P[(e+1)%4];
+      ctx.beginPath();ctx.moveTo(SX(a[0]),SY(a[1]));ctx.lineTo(SX(b[0]),SY(b[1]));ctx.stroke();}
+    // group "colors" as dots along each plaquette link
+    for(var e2=0;e2<4;e2++){var a2=P[e2],b2=P[(e2+1)%4];
+      var mx=(SX(a2[0])+SX(b2[0]))/2, my=(SY(a2[1])+SY(b2[1]))/2;
+      var dx=SX(b2[0])-SX(a2[0]), dy=SY(b2[1])-SY(a2[1]);
+      var len=Math.sqrt(dx*dx+dy*dy); var px=-dy/len, py=dx/len; // perp
+      var start=-(N-1)/2;
+      for(var c=0;c<N;c++){var off=(start+c)*8;
+        ctx.fillStyle=G.cols[c];
+        ctx.beginPath();ctx.arc(mx+px*off, my+py*off, 4.2, 0,7);ctx.fill();
+        ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke();}
+    }
+    // loop direction arrow (inside plaquette)
+    var cxp=(SX(i0)+SX(i0+1))/2, cyp=(SY(j0)+SY(j0+1))/2, rr=Math.min(sx,sy)*0.24;
+    ctx.strokeStyle='#3a4a8f';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(cxp,cyp,rr,-0.4,4.2);ctx.stroke();
+    var ea=4.2; ctx.fillStyle='#3a4a8f';
+    ctx.beginPath();ctx.moveTo(cxp+rr*Math.cos(ea),cyp+rr*Math.sin(ea));
+    ctx.lineTo(cxp+rr*Math.cos(ea)-6,cyp+rr*Math.sin(ea)-7);
+    ctx.lineTo(cxp+rr*Math.cos(ea)+7,cyp+rr*Math.sin(ea)-4);ctx.closePath();ctx.fill();
+    // label plaquette
+    ctx.fillStyle='#2b3670';ctx.font='13px sans-serif';
+    ctx.fillText('U□', cxp-9, cyp+4);
+    ctx.font='12px sans-serif';ctx.fillStyle='#5b6280';
+    ctx.fillText('プラケット（最小ループ）', SX(i0)-6, SY(j0+1)+22);
+    ctx.fillText('リンク上の群の要素 U（'+N+'色）', mL, mT-14);
+    // readout
+    rd.textContent=G.name+'：'+G.force+'。 リンクに '+N+' 色の群の要素、プラケット U□ の積が"力"。式 S=β Σ[1−(1/N)ReTr U□] は同じまま ── 群を変えただけ。'+G.note+'。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>残った壁を一本に：宇宙は type I か ── わかる質量 終章・技術補遺⑧</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#191a22; --ink-soft:#4a4d5c;
+    --paper:#f6f6fb; --paper-edge:#d8d7e4;
+    --side:#43507a; --side-bg:#eef0f7;
+    --warn:#8a4b2f;
+    --calc:#3a2d55; --calc-bg:#ece8f3;
+    --rule:#cfcedd; --hair:#b9b7cb;
+    --acc:#4a3d6b;
+    --grid:#d7d5e6;
+    --typ1:#1f7a6e; --typ2:#4a3d6b; --typ3:#9a4230;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d6d2ea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#25304f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #d2cce0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:280px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e9e7f2;color:#312a4d;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfdff,#eeebf6);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#e9e7f2;color:#2c2547;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+  .tbl .t1{color:var(--typ1);} .tbl .t2{color:var(--typ2);} .tbl .t3{color:var(--typ3);}
+  .tbl caption{caption-side:bottom;font-size:11.5px;color:var(--ink-soft);text-align:left;margin-top:6px;line-height:1.6;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f1eff8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#28224a;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#ebe9f4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e9e7f2;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#28224a;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6980;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑧ ／ 残った壁を一本に（宇宙は type I か）</span></div>
+  <p class="eyebrow">三点を根まで降りたら、一本の問いに凝縮した</p>
+  <h1>残った壁を一本に<br><span style="font-size:23px;">宇宙は type I か</span>
+    <span class="sub">領域を切ると場の理論は type III₁（trace 無・エントロピー発散）。重力が III→II を架け \(S_{\rm gen}=A/4G+S_{\rm out}\) が落ちる（2022・本物）。<br>残るのは II→I の一段＝<em>面積に離散＋有界スペクトルを与える</em>。それが「宇宙＝有限リソースの計算機」の正確な数学的姿。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑦（S=A/4Gの最前線）</span>
+    <span>到達点：あなたの賭け＝「基盤は type I」／ 未架橋の一段を精密に</span>
+  </div>
+
+  <p class="lead">「残った三点」を根まで降りると、驚くほど一本に凝縮しました。フォン・ノイマン代数の<em>型</em>という一語で ── <strong>連続の場の理論は type III₁、半古典重力＋観測者は type II、そして有限・離散の基盤は type I</strong>。この梯子は、そのままあなたの離散仮説の三段の階段です。「宇宙は有限リソースの計算機」を数学に翻訳すると、<strong>〈本当の領域代数は type I である〉</strong>という、検証可能な一つの命題になる。ここまでは本物で来ていて、残るのは II→I の一段だけ ── その一段が何かを、式で正確に指します。掟どおり、繋いだとは言いません。</p>
+
+  <h2><span class="n">01</span>なぜ領域を切ると壊れるか ── 梯子の一番下（type III₁）</h2>
+
+  <p>「地平線の内側の状態を数える」が素朴にできない理由は、カットオフ（ε）でなく<strong>領域の代数の"型"</strong>にある。場の理論の局所代数は <strong>type III₁</strong>（Haag／Buchholz–D'Antoni–Fredenhagen）── トレースも密度行列も最小射影も無い：</p>
+
+  <div class="keybox">
+    <div class="lbl">type III₁ ＝ 分解不能</div>
+    $$S=-\mathrm{Tr}(\rho\log\rho)\ \ \text{← }\rho\text{ も }\mathrm{Tr}\text{ も存在しない}\qquad \mathcal{H}\ne\mathcal{H}_{\rm in}\otimes\mathcal{H}_{\rm out}$$
+    <p style="margin:8px 0 0;">モジュラー・ハミルトニアン \(K=\hat h_R-\hat h_L\) は差だけが意味を持つ（片側は発散）。だから \(S_{\rm ent}\sim A/\varepsilon^2\) の発散は、カットオフの副作用でなく<strong>「type III には絶対エントロピーが無い」ことの現れ</strong>。</p>
+  </div>
+
+  <p>唯一 有限な手がかりは、2状態の<strong>相対エントロピー</strong> \(S_{\rm rel}(\Phi\|\Psi)=-\langle\Phi|\log\Delta_{\Psi|\Phi}|\Phi\rangle\ge0\)。差なので発散が相殺して有限 ── これが「\(1/4\) がなぜ発散せずロックされるか（Susskind–Uglum）」の代数的な正体。</p>
+
+  <h2><span class="n">02</span>型の梯子は、そのまま「離散さ」の梯子</h2>
+
+  <table class="tbl">
+    <caption>表1：フォン・ノイマン代数の型と、離散仮説の三段。あなたの賭け＝「基盤は type I」。type III₁ はその有限性を忘れて連続極限（リソース→∞）を取った近似。</caption>
+    <thead><tr><th>型</th><th>trace</th><th>密度行列</th><th>エントロピー</th><th>物理での正体</th></tr></thead>
+    <tbody>
+      <tr><td class="c t1">I</td><td class="c">あり</td><td class="c">あり</td><td>有限・普通</td><td class="t1"><strong>可算・離散・分解可能 ＝「有限計算機」（ゴール）</strong></td></tr>
+      <tr><td class="c t2">II</td><td class="c">あり*</td><td class="c">あり</td><td>繰り込めば有限</td><td class="t2">半古典重力＋観測者（いまの最前線・2022）</td></tr>
+      <tr><td class="c t3">III₁</td><td class="c">無い</td><td class="c">無い</td><td>発散・未定義</td><td class="t3">重力を切った場の理論（連続極限）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:var(--ink-soft);margin-top:-8px;">*type II の trace はスケール倍の自由度あり＝相対的なエントロピー。</p>
+
+  <div class="aside">
+    <span class="tag">翻訳 ── あなたの賭けの、いちばん鋭い姿</span>
+    「宇宙＝有限リソースの計算機」＝<strong>〈本当の領域代数は type I〉</strong>。場の理論の type III₁ は、有限リソース（＝ c·t で決まる状態数）を無限に飛ばしたときの近似にすぎない、という主張。この一文が、シリーズ全体の理論的な芯です。
+  </div>
+
+  <h2><span class="n">03</span>重力が III→II を架けた（2022・本物）</h2>
+
+  <p>場の理論だけなら type III₁ のまま。ところが<strong>重力の拘束</strong>（時間並進＝ブースト＝モジュラー流がゲージ）を入れ、<strong>観測者</strong>（時計 \(p\)、エネルギー \(q\ge0\)、\([q,p]=i\)）を足すと、<em>crossed product（交差積）</em>で型が II に落ちる（Witten 2021／CPW・CLPW 2022）：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">交差積 ── 観測者を足すと trace が生える</div>
+    $$\hat{\mathcal{A}}=\mathcal{A}\rtimes_\sigma\mathbb{R},\qquad \hat K=K+q\ (\text{服を着たモジュラー・ハミルトニアン})$$
+    $$\mathrm{Tr}(\hat a)=2\pi\,\big\langle\Psi,\text{obs}\big|\,e^{q/2}\,\hat a\,e^{q/2}\,\big|\Psi,\text{obs}\big\rangle\quad(\text{有限})$$
+    <p style="margin:8px 0 0;">重み \(e^{q}\) が \(K\) の連続スペクトルを \(q\ge0\) で下から抑え、trace を有限にする。<strong>有限性の源は重力の拘束そのもの</strong>＝あなたの「有限リソース＝時空の有限さ」の実装。</p>
+  </div>
+
+  <p>半古典状態でエントロピーを評価し、拘束 \(\delta q=\delta A/4G\)（ブーストエネルギーの揺らぎ＝面積の揺らぎ）を代入すると ── <strong>\(S_{\rm gen}\) が落ちてくる</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">type II の von Neumann エントロピー</div>
+    $$S_{\rm vN}=\underbrace{\langle q\rangle}_{\to\,\langle\hat A\rangle/4G}\ -\ \underbrace{S_{\rm rel}(\Phi\|\Psi)}_{\to\,S_{\rm out}}\ +\ \text{const}\ =\ \frac{\langle\hat A\rangle}{4G}+S_{\rm out}=S_{\rm gen}$$
+    <p style="margin:8px 0 0;">おまけに単調性 \(\delta S_{\rm vN}\ge0\) が<strong>一般化第二法則</strong>になる。ここまでは確立した到達点。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">式の上で「手で入った」所＝壁の本体</span>
+    ① \(\Delta=e^{-K}\) を<strong>固定背景の KMS 状態</strong>から取った（地平線を既知として使う）。② 面積 \(\hat A\) は \(\langle q\rangle\) が揺らぐ<strong>まわりの c 数＝入力</strong>で、創発する演算子でない。③ 観測者を手で足した。④ \(G\) の主要オーダー。<strong>だから「背景を与えたときの \(S_{\rm gen}\) の導出」であって、背景独立に type I の状態を数えて \(e^{A/4G}\) を出す導出ではない。</strong>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>残った一段 ── 右の矢印 II→I ＝ 面積に「離散＋有界」</h2>
+
+  <p>組織化する一文：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">II→I の橋（残った壁の、最も精密な姿）</div>
+    <p style="margin:0 0 6px;">crossed product が type II\(_\infty\) になったのは、\(q\propto\delta A\) が<strong>連続で非有界</strong>だったから。もし面積 \(\hat A\) が<strong>離散</strong>（ギャップあり）で<strong>有界</strong>（最大値 \(A_{\max}\)）なら：</p>
+    $$\text{type II}_\infty\ \xrightarrow[\substack{\text{離散}\ +\ \text{有界}}]{\text{nuclearity 有限}}\ \text{type I},\qquad \dim\mathcal{H}=e^{A_{\max}/4G}\ (\text{有限})$$
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：面積スペクトルを、連続・非有界（type II\(_\infty\)、\(\dim=\infty\)）から、離散・有界（type I、\(\dim=e^{A/4G}\) 有限）へ。スライダーで<strong>基盤の有限さ</strong>を上げると、連続の帯が離散の梯子（LQG 的 \(\sqrt{j(j{+}1)}\)）に解け、上限（c·t が決める天井）が立ち上がり、状態が<strong>数えられる</strong>ようになる</div>
+    <canvas id="cv" width="680" height="240"></canvas>
+    <div class="controls">
+      <label>基盤の有限さ（左＝連続 type II∞、右＝離散＋有界 type I）<span class="val" id="vk">連続</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.06">
+      </label>
+    </div>
+    <div class="readout" id="rd">左端：面積は連続で非有界 → type II∞ → dim = ∞。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:rgba(154,66,48,.5);"></i>連続の帯（type II∞）</span>
+      <span><i class="swatch" style="background:var(--typ1);"></i>離散の床（LQG 面積量子）</span>
+      <span><i class="swatch" style="background:var(--typ2);"></i>上限 A_max（c·t が決める天井）</span>
+    </div>
+  </div>
+
+  <p>この橋には3人の役者がいて、<strong>それぞれ片方しか持っていない</strong>：</p>
+
+  <table class="tbl">
+    <caption>表2：II→I の橋の候補。離散＝LQG、上限＝ホログラフィー／c·t、有限性の意味＝nuclearity。3つを4次元・dS で同時に持つ理論が、まだ無い。</caption>
+    <thead><tr><th>候補</th><th>離散<br>(ギャップ)</th><th>上限<br>(有界)</th><th>我々の宇宙<br>(4D/dS)</th><th>供給するもの／壁</th></tr></thead>
+    <tbody>
+      <tr><td><strong>A. LQG 面積演算子</strong><br><span style="font-size:12px;color:var(--ink-soft);">\(\hat A=8\pi\gamma\ell_P^2\sum\sqrt{j(j{+}1)}\)</span></td><td class="c t1">◎</td><td class="c">△</td><td class="c t1">◎</td><td>離散＋有限次元地平線(Chern–Simons)を4Dで実現。壁＝\(\gamma\)チューニング(自己双対\(\gamma\to i\)で回避も複素条件)、III/なめらかGR復元が未達</td></tr>
+      <tr><td><strong>B. ホログラフィー＋QEC</strong><br><span style="font-size:12px;color:var(--ink-soft);">\(\dim=e^{A/4G}\)</span></td><td class="c">○</td><td class="c t1">◎</td><td class="c t3">✗</td><td>梯子まるごと実装(有限N=I／N→∞=III₁／1/N=II)＋座標なしの領域定義。壁＝AdSのみ、我々のdSで最弱</td></tr>
+      <tr><td><strong>C. split / nuclearity</strong><br><span style="font-size:12px;color:var(--ink-soft);">Doplicher–Longo</span></td><td class="c">─</td><td class="c t1">◎</td><td class="c">場の理論</td><td>「有限リソース＝nuclearity 指数が有限」を定理化＝type I 因子の必要十分。壁＝固定背景・創発・仮定であって導出でない</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">05</span>c·t=const がここで果たす役 ── 「上限」を時間依存で供給</h2>
+
+  <p>3候補が我々の宇宙(dS)で共通して欠くのは、B の「有限な上限」。それを供給するのが、まさにあなたの c·t：</p>
+
+  <div class="keybox">
+    <div class="lbl">有限次元が宇宙年齢とともに増える</div>
+    $$A_{\max}(t)\sim(ct)^2\ \Longrightarrow\ \dim\mathcal{H}(t)=\exp\!\Big[\frac{A_{\max}(t)}{4G}\Big]\sim e^{(ct)^2/G}\ \propto\ e^{\,t^2}$$
+    <p style="margin:8px 0 0;">type II のトレースが持っていた「スケール倍の自由度」（表1の *）が、この<strong>時間とともに動く基準</strong>に対応する ── というのは筋の通った読み。思弁だが、梯子と整合し、しかも定量的。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 左は本物、右は未架橋、繋いだとは言わない</h2>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>左の矢印（III→II）は本物</strong>：富田–竹崎で \(K\)＝ブースト・\(|\Psi\rangle\)＝熱、crossed product で type II 化、\(S_{\rm vN}=A/4G+S_{\rm out}=S_{\rm gen}\)、GSL まで（2022）。</li>
+    <li><strong>右の矢印（II→I）が残り全部</strong>：面積に離散＋有界スペクトルを与え、trace を有限状態数に truncate する。離散は LQG、上限は c·t、有限性の意味は nuclearity ── <strong>役者は揃うが、4D・dS で同じ舞台に立った試しがない</strong>。</li>
+    <li><strong>"解けた" は言わない</strong>：右の矢印は誰も架けていない。会話で繋いだと宣言したら、それがフェイク。</li>
+  </ul>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">crossed product が type II を与えるのは \(G\)（\(1/N\)）の主要オーダーの結論で、非摂動・有限 \(N\) で型が I か II か別物かは<strong>未知</strong>。面積 \(\hat A\) はいまだ背景の c 数で、離散スペクトルを持つ演算子として基盤から創発してはいない。図は模式（面積量子の並びと dim の増減を示すだけで、定量スケールでない）。</p>
+    <p style="margin-bottom:0;">これは負けではありません。三点の宿題を、<strong>一本の検証可能な命題〈基盤は type I か〉に凝縮し、残る一段を「面積スペクトルの離散化＋有界化」という具体的な技術目標にまで絞れた</strong>。研究プログラムと数合わせを分けるのは、まさにこの精密化の力です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「宇宙＝有限リソースの計算機」は〈領域代数は type I〉と同じ主張なのか。
+        <details><summary>ひとつの答え</summary><div class="ans">type I 代数は trace・密度行列・最小射影を持ち、状態が可算（有限次元でもよい）＝文字どおり「数えられる」。type III₁（場の理論）はどれも無く、有限性を忘れて連続極限を取った姿。だから「状態が有限個・数えられる」＝「基盤は type I」で、それが有限リソース仮説の数学的な言い換えになる。</div></details>
+      </li>
+      <li>crossed product は III→II を架けたのに、なぜ II→I（有限計算機）はまだなのか。
+        <details><summary>ひとつの答え</summary><div class="ans">type II∞ は面積の揺らぎ \(q\) が連続・非有界だから。type I にするには面積演算子が離散スペクトル(ギャップ)＋上限(有界)を持ち、trace が有限状態数 \(e^{A/4G}\) に truncate される必要がある。離散はLQG、上限はホログラフィー／c·t、有限性の意味はnuclearityが各々供給するが、4D・dSで3つ同時に持つ理論が無い＝右の矢印は未架橋。会話では埋まらない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑧まとめ</span>三点は一本になった ── 宇宙は type I か</h2>
+    <p>残った三点を根まで降りると、フォン・ノイマン代数の<strong>型</strong>という一語に凝縮した。場の理論は type III₁（分解不能・エントロピー発散）、重力の拘束＋観測者が crossed product で III→II を架け \(S_{\rm gen}=A/4G+S_{\rm out}\) を落とす（2022・本物・GSL 付き）。残るのは II→I の一段＝<strong>面積演算子に離散＋有界スペクトルを与える</strong>こと。離散は LQG、上限は c·t、有限性の意味は nuclearity ── 役者は揃うが、4次元・dS で同じ舞台に立った試しがない。</p>
+    <p>そして「宇宙＝有限リソースの計算機」は、この梯子で〈<strong>本当の領域代数は type I である</strong>〉という一つの検証可能な命題になる。左の矢印は本物、右の矢印は未架橋、<strong>繋いだとは言わない</strong>。三点の宿題を一本の鋭い問いに絞れたこと ── それが、この長い旅の理論的な到達点です。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">シリーズの理論的到達点</span>
+    「宇宙は離散だ」というあなたの直感は、遊びでも数合わせでもなく ── <strong>〈領域代数は type I か〉という、現代物理の最前線そのものの命題</strong>に翻訳できました。場の理論(III₁)は有限リソースを忘れた近似、半古典重力(II)は 2022 に本物で架かった中間段、そして有限・離散の基盤(I)があなたのゴール。残る一段は「面積スペクトルの離散化＋有界化」という、<strong>具体的で、いつか誰かが架けうる</strong>技術目標にまで絞れた。<br>これを "解けた" と会話で宣言することは、しません。でも ── <strong>三点を一本にし、残る一段を式の位置まで指させる</strong>ところまで来た。偽の万物理論より、この一本の問いの眺めの方が、ずっと遠くて、ずっと本物です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑧。局所領域の代数が type III₁ であること（Haag；Buchholz–D'Antoni–Fredenhagen）、type III には trace・密度行列・最小射影が無く絶対エントロピーが定義できない一方 Araki の相対エントロピーが有限であること、重力の拘束と観測者を加えた交差積（crossed product）で代数が type II になり von Neumann エントロピーが一般化エントロピー \(S_{\rm gen}=A/4G+S_{\rm out}\) を与え一般化第二法則を含むこと（Witten 2021；Chandrasekaran–Penington–Witten 2022；Chandrasekaran–Longo–Penington–Witten 2022）、large-N ホログラフィーで type III₁ が創発すること（Leutheusser–Liu）、LQG の面積演算子が離散スペクトルを持ち地平線状態が有限次元 Chern–Simons で数えられること（\(1/4\) は Barbero–Immirzi パラメータ依存、自己双対 \(\gamma\to i\) 解析接続で回避可）、split property と nuclearity の同値（Doplicher–Longo；Buchholz–Wichmann）、ホログラフィックな有限次元性（Bousso 境界）と量子誤り訂正による部分領域再構成（Almheiri–Dong–Harlow）── いずれも確立した結果または現行の研究テーマです。これらを 4 次元・de Sitter 的宇宙で単一の有限・UV完全・背景独立な離散理論（type I 基盤）から導き、type II・type III を近似として回復することは未解決の量子重力問題であり、本稿は特定の完成理論を主張しません。図は面積スペクトルの離散化と \(\dim\mathcal H\) の変化を示す模式で、定量スケールではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで「基盤の有限さ」を上げると、連続の面積帯が離散の床に解け、上限が立ち、状態が数えられる（type II∞ → type I）。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseFloat(sk.value); // 0 continuum .. 1 discrete+bounded
+    vk.textContent = t<0.12?'連続 (II∞)':(t>0.85?'離散＋有界 (type I)':'中間');
+    ctx.clearRect(0,0,w,h);
+    var padL=46, padR=34, axY=h-52, x0=padL, x1=w-padR, aw=x1-x0;
+    // axis
+    ctx.strokeStyle='#9a98ac';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,axY);ctx.lineTo(x1,axY);ctx.stroke();
+    ctx.fillStyle='#6b6980';ctx.font='12px sans-serif';ctx.textAlign='left';
+    ctx.fillText('面積 A （地平線）→', x0, axY+30);
+    var topY=34, botY=axY;
+    // ceiling A_max grows in with t (from far right toward ~78%)
+    var ceilFrac = 1.02 - 0.24*t;         // 1.02 (beyond) -> 0.78
+    var ceilX = x0 + aw*Math.min(ceilFrac,1.0);
+    // continuum band (alpha fades with t)
+    var aBand = Math.max(0,1-t*1.25);
+    if(aBand>0.01){
+      var g=ctx.createLinearGradient(x0,0,x1,0);
+      g.addColorStop(0,'rgba(154,66,48,'+(0.42*aBand)+')');
+      g.addColorStop(1,'rgba(154,66,48,'+(0.10*aBand)+')');
+      ctx.fillStyle=g; ctx.fillRect(x0, topY+30, aw, botY-topY-30);
+      // unbounded arrow at continuum
+      ctx.fillStyle='rgba(154,66,48,'+(0.7*aBand)+')';ctx.font='13px sans-serif';ctx.textAlign='right';
+      ctx.fillText('連続・非有界  dim = ∞  →', x1-6, topY+22);
+    }
+    // discrete LQG-like levels a_n = sqrt(n(n+1)), normalized
+    var alphaD=Math.min(1,t*1.35);
+    var levels=[], n, maxA=Math.sqrt(12*13), cnt=0;
+    for(n=1;n<=12;n++){ levels.push(Math.sqrt(n*(n+1))/maxA); }
+    if(alphaD>0.02){
+      for(var i=0;i<levels.length;i++){
+        var lx=x0 + aw*0.92*levels[i];
+        var below = lx <= ceilX;
+        if(!below && t>0.4) continue; // above ceiling truncated when bounded
+        if(below) cnt++;
+        ctx.strokeStyle = below ? 'rgba(31,122,110,'+alphaD+')' : 'rgba(31,122,110,'+(alphaD*0.25)+')';
+        ctx.lineWidth = below?2.4:1.2;
+        ctx.beginPath();ctx.moveTo(lx,topY+30);ctx.lineTo(lx,botY);ctx.stroke();
+        // gap marker near 0 (area gap)
+        if(i===0){ ctx.fillStyle='rgba(31,122,110,'+alphaD+')';ctx.font='10px sans-serif';ctx.textAlign='center';
+          ctx.fillText('ギャップ', (x0+lx)/2, botY-6); }
+      }
+    }
+    // ceiling wall (alpha with t)
+    var alphaC=Math.max(0,(t-0.15)/0.85);
+    if(alphaC>0.02 && ceilX<x1){
+      ctx.strokeStyle='rgba(74,61,107,'+alphaC+')';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(ceilX,topY+18);ctx.lineTo(ceilX,botY);ctx.stroke();
+      ctx.fillStyle='rgba(74,61,107,'+alphaC+')';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText('A_max', ceilX, topY+12);
+      // hatch beyond ceiling
+      ctx.strokeStyle='rgba(74,61,107,'+(alphaC*0.3)+')';ctx.lineWidth=1;
+      for(var xx=ceilX+6; xx<x1; xx+=9){ ctx.beginPath();ctx.moveTo(xx,topY+30);ctx.lineTo(xx-14,botY);ctx.stroke(); }
+    }
+    // dim readout box top-left
+    ctx.textAlign='left';
+    var typ = t<0.12?'type II∞':(t>0.85?'type I':'II → I …');
+    var dimTxt = t<0.12?'dim = ∞' : (t>0.4? ('状態数 '+cnt+' 床 → dim = e^{A/4G} 有限') : 'dim 収束中');
+    ctx.fillStyle='#312a4d';ctx.font='bold 13px sans-serif';
+    ctx.fillText(typ, x0, topY);
+    // readout text
+    if(t<0.12) rd.textContent='左端：面積は連続で非有界 → type II∞ → dim = ∞（trace はあるがスケール自由度）。';
+    else if(t<0.5) rd.textContent='中間：面積の帯が離散の床（LQG 面積量子 √(j(j+1))）に解け、上限 A_max が立ち上がる。dim が収束へ。';
+    else rd.textContent='右：離散（ギャップ）＋有界（A_max）→ 状態は '+cnt+' 床で数えられる → type I、dim = e^{A/4G}（有限）。これが「有限計算機」。ただし4D・dSでこれを持つ理論はまだ無い。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

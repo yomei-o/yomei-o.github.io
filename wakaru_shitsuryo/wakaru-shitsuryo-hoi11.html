@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有限性の代償と予言：Boltzmann brain と w の緩和 ── わかる質量 終章・技術補遺⑪</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1c1813; --ink-soft:#57503f;
+    --paper:#f9f7f2; --paper-edge:#e2d9c8;
+    --side:#8a5320; --side-bg:#f3ecdf;
+    --warn:#8a3b2f;
+    --calc:#5a4218; --calc-bg:#efe7d6;
+    --rule:#d8cdb8; --hair:#c2b59c;
+    --acc:#8a5320;
+    --grid:#ddd2bc;
+    --good:#2f7d5a; --bad:#9a3b2e; --tgt:#8a5320;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d9bf 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f3117;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f5e7df;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#43241c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #dccfb6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#efe7d6;color:#5a4218;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfcf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfcf8,#f2eADD);}
+  .keybox.hl{background:linear-gradient(180deg,#fdfcf8,#f2eadd);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#efe7d6;color:#4b3714;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+  .tbl .g{color:var(--good);} .tbl .b{color:var(--bad);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4eee1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#402f13;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf8,#f0e8d7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#efe7d6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#402f13;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6f6450;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑪ ／ 有限性の代償と予言（Boltzmann brain と w の緩和）</span></div>
+  <p class="eyebrow">「有限」はタダの仮定ではない ── 双刃の予言を吐く</p>
+  <h1>有限性の代償と予言<br><span style="font-size:22px;">Boltzmann brain と w の緩和</span>
+    <span class="sub">有限次元（type I）は、ユニタリ性を救う一方で、離散スペクトル・Poincaré 再帰・Boltzmann brain を<em>強制</em>する。<br>だがその代償を避ける論理が、枠組みを \(w>-1\) の緩和へ押し、亀裂④・DESI と一本に繋がる。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑨（type I・Λ）、補遺②③（w問題）</span>
+    <span>到達点：有限性＝制約され反証可能な立場 ／ 過去仮説は皆の宿題</span>
+  </div>
+
+  <p class="lead">補遺⑧⑨で「宇宙は type I（有限次元 \(\dim=e^{S_{\rm dS}}\)）か」と賭けました。ここで正直に問う ── <strong>「有限」はタダの仮定か？</strong> 違います。有限性は<em>硬い予言</em>を吐き、しかも双刃です：ブラックホール情報パラドックスを救う当の有限性が、Poincaré 再帰と Boltzmann brain を<strong>強制</strong>する。だが掘ると ── その代償を避ける論理が、枠組みを \(w>-1\) の緩和へ押し、亀裂④（w フォーク）・DESI と<strong>一本に繋がる</strong>。有限性は自由な信念でなく、<strong>制約され・反証可能な立場</strong>になる。ただし過去仮説だけは、皆と同じく開いたまま。</p>
+
+  <h2><span class="n">01</span>逃げられない論理の鎖</h2>
+
+  <p>「有限リソース＝type I＝有限次元」を認めた瞬間、次が<strong>強制される</strong>（選べない）：</p>
+
+  <div class="keybox">
+    <div class="lbl">有限次元 ⟹ 再帰（Dyson–Kleban–Susskind 2002）</div>
+    $$\text{有限次元}\Rightarrow\text{離散スペクトル}\Rightarrow\text{概周期的発展}\Rightarrow\text{Poincaré 再帰}$$
+    $$t_{\rm rec}\sim e^{S_{\rm dS}}\sim e^{10^{122}}\ \text{年}$$
+    <p style="margin:8px 0 0;">あなたの枠組みは、この仮定（有限次元・eternal dS）を<strong>まさに置いている</strong>ので、この帰結を回避できない。掘るべきはここ。</p>
+  </div>
+
+  <h2><span class="n">02</span>良い刃（feature）── 有限性は資産でもある</h2>
+
+  <p>まず公平に。同じ有限性が、いくつもの難問を素直に解く：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>ユニタリ性／情報パラドックス</strong>：有限次元なら Page 曲線が有限で閉じ、真の情報喪失がない（無限の情報を溜められない）。</li>
+    <li><strong>正確な連続対称性の不在</strong>：有限次元は正確な連続大域対称性を許さない ── 量子重力の一般則（swampland 系）と一致。</li>
+    <li><strong>有限精度</strong>：観測量は分解能 \(\sim1/N=e^{-S_{\rm dS}}\) を持つ。「有限計算機は有限精度」の、そのままの帰結。</li>
+  </ul>
+  <p>有限性は、ここでは明確に<strong>武器</strong>。type I 仮説の「勝ち」の側面です。</p>
+
+  <h2><span class="n">03</span>悪い刃（bug）── Boltzmann brain と測度問題</h2>
+
+  <p>だが裏側。<strong>eternal な有限 dS</strong> では、真空の熱ゆらぎ（\(T_{\rm dS}=H/2\pi\)）が \(t_{\rm rec}\) スケールで<em>何でも</em>生む ── 偽の記憶を備えた観測者「Boltzmann brain（BB）」を含めて：</p>
+
+  <div class="keybox">
+    <div class="lbl">測度問題（Bousso–Freivogel）</div>
+    $$\text{十分永く続く dS}\ \Rightarrow\ N_{\rm BB}\gg N_{\text{通常観測者(低エントロピー Big Bang 起源)}}$$
+    <p style="margin:8px 0 0;"><strong>典型的観測者は BB のはず。だが我々は BB でない</strong>（観測は秩序立ち、最小ゆらぎでない）＝パラドックス。まともな理論は通常観測者の優越を保証せねばならない ── 本物の制約。<strong>枠組みは BB を生む当の有限 dS を仮定しているので、正面から晒される。</strong></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>掘り当てた逃げ道 ── 亀裂⑤は亀裂④と繋がっている</h2>
+
+  <p>ここが収穫。BB を避ける最も自然な道は「<strong>dS を eternal にしない</strong>」＝ダークエネルギーが<strong>緩和する</strong>こと。それは補遺⑨§05／補遺②の<strong>「育つリソース＝\(w\ne-1\)」の枝そのもの</strong>：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">BB 回避が w>−1 を要求する</div>
+    $$\begin{aligned}
+    w=-1\,(\text{固定 }\Lambda):&\ \ \text{eternal dS}\Rightarrow\text{再帰・BB パラドックス全開}\\
+    w>-1\,(\text{緩和・育つリソース}):&\ \ \rho_{\rm DE}\text{ が薄まる}\Rightarrow\text{安定 dS に落ち着かない}\Rightarrow\text{BB 回避}
+    \end{aligned}$$
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：宇宙の時間（対数・模式）。今 → Boltzmann brain 湧出 \(t_{\rm BB}\) → Poincaré 再帰 \(t_{\rm rec}\sim e^{S_{\rm dS}}\)。スライダーで \(1+w\)（緩和の強さ）を上げると「dS 終了」の時刻が早まる。<strong>dS 終了が \(t_{\rm BB}\) より前なら通常観測者が優越（BB 回避）、後（or 永遠）なら BB 優越パラドックス</strong></div>
+    <canvas id="cv" width="680" height="210"></canvas>
+    <div class="controls">
+      <label>1+w（ダークエネルギーの緩和の強さ：0＝固定Λ・eternal ／ 右＝緩和）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd">1+w=0（固定Λ）：dS は eternal → BB が優越 → 我々が非典型というパラドックス。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--good);"></i>BB 回避（通常観測者が優越）</span>
+      <span><i class="swatch" style="background:var(--bad);"></i>BB 優越（パラドックス）</span>
+      <span><i class="swatch" style="background:var(--tgt);"></i>dS 終了時刻（w で動く）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">三つが同じ枝を指す</span>
+    <strong>無矛盾性</strong>（BB を避けたい）→ \(w>-1\) を要求。<strong>枠組み</strong>（c·t＝育つ有限リソース）→ \(w>-1\) を自然に出す。<strong>観測</strong>（DESI は今日 \(w_0>-1\) を示唆）→ 同じ向き。亀裂⑤（再帰・BB）と亀裂④（w フォーク）は独立の弱点でなく、<strong>互いを補強する一本の予言</strong>だった。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な但し書き（重要）</span>
+    DESI は \(w_0>-1\)（今日）と同時に \(w_a<0\)（過去に phantom 側、交差）を示唆。補遺②の最も素朴な thawing 実現は \(w_a>0\) を出し、<strong>この \(w_a\) の符号で DESI と緊張する</strong>（補遺②③で既述）。だから正確には ── 「BB回避→緩和→今日 \(w_0>-1\)」は DESI の \(w_0\) と整合するが、\(w(a)\) の詳細な形（\(w_a\) の符号）は枠組みの単純版が試され・緊張している場所。<strong>同じ向きを指すが、詳細は観測が裁く。</strong>誇張はしません。
+  </div>
+
+  <h2><span class="n">05</span>残る深い緊張 ── 過去仮説（arrow of time）</h2>
+
+  <p>逃げ道（緩和）を取っても、最深の一点は残る。<strong>なぜ低エントロピーの過去があったのか（過去仮説）。</strong> 有限 dS では、秩序ある過去は "巨大なゆらぎ" になってしまう ── DKS が突いた本体で、時間の矢が統計的・局所的でしかなくなる。</p>
+
+  <div class="aside">
+    <span class="tag">これは皆の宿題</span>
+    過去仮説は<strong>この枠組み固有でなく、宇宙論全体の未解決</strong>（Penrose の Weyl 曲率仮説、Carroll–Chen、測度問題の核）。有限リソース仮説はこれを<strong>解かないが、悪化もさせない</strong> ── 誰もが負う宿題を、同じだけ負う。ここは正直に「開いている」。
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 双刃の予言</h2>
+
+  <table class="tbl">
+    <thead><tr><th>側面</th><th>評価</th></tr></thead>
+    <tbody>
+      <tr><td class="c">論理の鎖</td><td>有限次元⟹離散スペクトル⟹再帰 \(t_{\rm rec}\sim e^{S_{\rm dS}}\)。<strong>回避不能・枠組みが強制</strong>。</td></tr>
+      <tr><td class="c g">良い刃</td><td>ユニタリ性・Page曲線・連続対称性不在・有限精度＝<strong>資産</strong>。</td></tr>
+      <tr><td class="c b">悪い刃</td><td>eternal dS の BB／測度問題＝<strong>本物の制約</strong>。</td></tr>
+      <tr><td class="c g">逃げ道</td><td><strong>BB回避→緩和(w>−1)→亀裂④とDESIに直結</strong>。三つが同じ枝＝予言に昇格。</td></tr>
+      <tr><td class="c">但し書き</td><td>\(w_a\) の符号で DESI と緊張（補遺②③）。詳細は観測が裁く。</td></tr>
+      <tr><td class="c">深い残り</td><td>過去仮説＝<strong>皆の宿題</strong>。悪化はさせないが解かない。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Boltzmann brain 論法には、"BB が本当に観測者か"、測度の定義（どう数えるか未確定）、dS 熱ゆらぎが安定な観測者を生むか、など未解決の前提が幾重にもある。だから「BB 優越」は確立した反証でなく、<strong>もっともらしい制約</strong>。図は模式（時間は対数の対数レベルで潰してあり、\(t_{\rm BB}\)・\(t_{\rm rec}\) の位置は桁の目安）。</p>
+    <p style="margin-bottom:0;">それでも要点は動きません ── <strong>有限性は代償（再帰・BB）を伴い、その代償を避ける論理が枠組みを緩和（w>−1）へ押し、観測で試せる</strong>。「有限リソース」は自由な信念でなく、制約され・反証可能な立場になった。掟どおり、過去仮説を解いたとは言いません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「有限次元」は Boltzmann brain 問題を回避できないのか。
+        <details><summary>ひとつの答え</summary><div class="ans">有限次元⟹離散エネルギースペクトル⟹概周期的発展⟹Poincaré 再帰（t_rec~e^{S_dS}）が数学的に強制される。eternal な dS ならこの超長時間で真空の熱ゆらぎが偽記憶つき観測者（BB）を大量に生み、通常観測者を数で圧倒する。有限リソース仮説はまさにこの有限次元・eternal dS を仮定しているので、この帰結に正面から晒される。</div></details>
+      </li>
+      <li>Boltzmann brain 問題は、なぜ「弱点」でなく「予言」になるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">BB を避けるには dS を eternal にしない＝ダークエネルギーが緩和（w>−1、ρ_DE が薄まって安定 dS に落ち着かない）必要がある。これは c·t＝育つ有限リソースの枝そのもので、DESI が今日 w0>−1 を示唆する向きと一致。無矛盾性・枠組み・観測の三つが同じ w>−1 を指す＝亀裂④と一本に繋がり、反証可能な予言に昇格する。ただし w(a) の詳細（wa の符号）は DESI と緊張しており、そこは観測が裁く。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑪まとめ</span>有限性は双刃 ── 代償が予言に変わる</h2>
+    <p>「宇宙は type I（有限次元）」を認めると、有限性は双刃になる。<strong>良い刃</strong>＝ユニタリ性・Page曲線・連続対称性の不在・有限精度（資産）。<strong>悪い刃</strong>＝離散スペクトル・Poincaré 再帰 \(t_{\rm rec}\sim e^{S_{\rm dS}}\)・Boltzmann brain（回避不能な代償）。だがその代償を避ける論理が、枠組みを<strong>\(w>-1\) の緩和</strong>へ押し、<strong>亀裂④（w フォーク）・c·t・DESI と一本に繋がる</strong>。</p>
+    <p>無矛盾性（BB回避）・枠組み（育つリソース）・観測（DESI の \(w_0>-1\)）が同じ枝を指す ── <strong>弱点が反証可能な予言に昇格した</strong>。ただし \(w_a\) の符号は DESI と緊張し（観測が裁く）、過去仮説は皆と同じく開いたまま。<strong>有限リソースは、自由な信念でなく、制約され・試せる立場になった。</strong></p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">「有限」を選ぶことの、正直な意味</span>
+    あなたの「宇宙＝有限リソース」は、掘り切ると<strong>タダの美学ではなく、代償と予言を伴う物理的立場</strong>でした。有限性はユニタリ性を救い（良い刃）、再帰と Boltzmann brain を強制する（悪い刃）。そして代償を避ける唯一自然な道が、ダークエネルギーの緩和（\(w>-1\)）── c·t の育つリソースと、DESI の観測に、まっすぐ繋がる。<br>これは「解けた」ではありません。過去仮説も、測度の定義も、開いている。でも ── <strong>賭けが自分に課す代償を直視し、その代償が観測で試せる予言へ変わる瞬間まで、正直に辿れた</strong>。偽の無敵理論より、この双刃を握る手のほうが、ずっと本物です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑪。有限次元ヒルベルト空間が離散スペクトルと Poincaré 再帰（\(t_{\rm rec}\sim e^{S_{\rm dS}}\)）を持つこと、de Sitter 空間での Boltzmann brain と測度問題（Dyson–Kleban–Susskind 2002；Bousso–Freivogel）、有限次元性がブラックホール情報の unitarity／Page 曲線と整合すること、量子重力での正確な連続大域対称性の不在、ダークエネルギーが \(w>-1\)（緩和・thawing）なら安定 de Sitter に落ち着かず再帰・Boltzmann brain を回避しうること、過去仮説と時間の矢が宇宙論全体の未解決問題であること（Penrose の Weyl 曲率仮説、Carroll–Chen 等）── いずれも確立した議論または現行の研究テーマです。Boltzmann brain 論法は BB を観測者とみなせるか・測度の定義・熱ゆらぎが安定観測者を生むか等の未解決の前提に依存し、確立した反証ではなく制約です。DESI が \(w_0>-1\) かつ \(w_a<0\)（phantom crossing）を示唆すること、素朴な thawing 実現の \(w_a>0\) がこれと緊張することは補遺②③のとおり。図は宇宙の時間を対数的に大きく圧縮した模式で、\(t_{\rm BB}\)・\(t_{\rm rec}\) の位置は桁の目安です。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで 1+w（緩和の強さ）を動かすと、dS 終了時刻が早まり、Boltzmann brain 湧出の前で終われば BB を回避できると分かる。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var s=parseFloat(sk.value); // 0..1  (1+w)
+    vk.textContent = s.toFixed(2);
+    ctx.clearRect(0,0,W,H);
+    var padL=40, padR=30, axY=H-52, x0=padL, x1=W-padR, aw=x1-x0;
+    // fixed marks (fractions along log-time axis)
+    var fNow=0.10, fBB=0.60, fRec=0.90;
+    var xNow=x0+aw*fNow, xBB=x0+aw*fBB, xRec=x0+aw*fRec;
+    // dS end position: s=0 -> beyond right (eternal ~1.05), s=1 -> ~0.20
+    var fEnd = 1.05 - 0.85*s;
+    var xEnd = x0+aw*Math.min(fEnd,1.0);
+    var avoided = (fEnd < fBB); // dS ends before BB nucleation
+    // shading: region up to xEnd is "dS exists"; whether it crosses BB
+    // draw good/bad band under axis
+    ctx.fillStyle = avoided ? 'rgba(47,125,90,0.13)' : 'rgba(154,59,46,0.12)';
+    ctx.fillRect(x0, axY-70, aw, 70);
+    // axis
+    ctx.strokeStyle='#a99a7e';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x0,axY);ctx.lineTo(x1,axY);ctx.stroke();
+    ctx.fillStyle='#7a6c50';ctx.font='11px sans-serif';ctx.textAlign='right';
+    ctx.fillText('宇宙の時間（対数・模式）→', x1, axY+30);
+    // marks
+    function mark(x,label,col,dashed){
+      ctx.strokeStyle=col;ctx.lineWidth=2; if(dashed)ctx.setLineDash([5,4]); else ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(x,axY-70);ctx.lineTo(x,axY);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=col;ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText(label,x,axY-76);
+    }
+    mark(xNow,'今 (t_H)','#7a6c50',false);
+    mark(xBB,'BB 湧出 t_BB','#9a3b2e',false);
+    mark(xRec,'再帰 t_rec ~ e^{S_dS}','#7a6c50',false);
+    // dS end marker
+    if(fEnd<1.0){
+      mark(xEnd,'dS 終了','#8a5320',true);
+      // hatch region after dS end (no eternal dS)
+      ctx.strokeStyle='rgba(138,83,32,0.25)';ctx.lineWidth=1;
+      for(var xx=xEnd+5; xx<x1; xx+=9){ ctx.beginPath();ctx.moveTo(xx,axY-70);ctx.lineTo(xx-12,axY);ctx.stroke(); }
+    } else {
+      ctx.fillStyle='#9a3b2e';ctx.font='bold 11px sans-serif';ctx.textAlign='right';
+      ctx.fillText('dS は eternal（終わらない）→', x1-4, axY-40);
+    }
+    // verdict badge
+    ctx.textAlign='left';ctx.font='bold 13px sans-serif';
+    ctx.fillStyle = avoided ? '#2f7d5a' : '#9a3b2e';
+    ctx.fillText(avoided?'✓ BB 回避（通常観測者が優越）':'✕ BB 優越（パラドックス）', x0+6, axY-52);
+    // readout
+    if(s<0.02) rd.textContent='1+w=0（固定Λ）：dS は eternal → 再帰 t_rec で BB が優越 → 我々が非典型というパラドックス。';
+    else if(!avoided) rd.textContent='1+w='+s.toFixed(2)+'：緩和はするが dS 終了が t_BB より後 → まだ BB が優越しうる。もっと緩和が要る。';
+    else rd.textContent='1+w='+s.toFixed(2)+'：dS 終了が Boltzmann brain 湧出 t_BB より前 → BB を回避、通常観測者が優越。w>−1 の緩和が代償を予言に変える（DESI で試せる）。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

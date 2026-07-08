@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁①の決着：w(a) と加速膨張データ ── わかる質量 終章・技術補遺②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;
+    --grid:#d5d8e4;
+    --nade:#3b4668; --desi:#b0521f; --div:#8a8f9e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .cmp{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .cmp .row{display:flex;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;border-bottom:1px solid var(--rule);}
+  .cmp .row:last-child{border-bottom:none;}
+  .cmp .row>div{padding:12px 16px;}
+  .cmp .h{flex:0 0 30%;font-weight:700;color:#262b40;background:#eef0f6;}
+  .cmp .a{flex:1;color:#2a2f45;} .cmp .b{flex:1;color:#2a2f45;border-left:1px solid var(--rule);}
+  .cmp .ok{color:#1f7a6e;font-weight:700;} .cmp .no{color:#b03a2e;font-weight:700;}
+  .cmp .head .a,.cmp .head .b{font-weight:700;}
+  .cmp .head .a{color:var(--nade);} .cmp .head .b{color:var(--desi);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#ecedf4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.cmp{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} .cmp .row{flex-wrap:wrap;} .cmp .h{flex:0 0 100%;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺② ／ 壁①（w問題）の決着</span></div>
+  <p class="eyebrow">c·t（共形時間）カットオフが、加速膨張データと正面から対決する</p>
+  <h1>壁①の決着：\(w(a)\)
+    <span class="sub">RVM は \(w_0=-1\) で終わった。共形時間（\(=c\cdot t\) 系）カットオフの NADE は \(w_0\neq-1\) を出す。<br>その \(w(a)\) を書き下し、DESI が示唆する進化と、符号で対決させる ── 反証可能な一枚。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺（離散宇宙の一枚）、壁①（w問題）、走る真空の \(w(a)\)</span>
+    <span>結論：\(w_0\approx-0.8\) は一致、\(w_a\) の符号で決着</span>
+  </div>
+
+  <p class="lead">補遺の四つの壁のうち、壁①（\(w\) 問題）に決着をつけます。前に走る真空 \(\Lambda(H)\) を厳密に解いたら \(w_0=-1\) ちょうどで、DESI の進化は出せませんでした。今回は<strong>共形時間 \(\eta\)（＝\(c\cdot t\) 系の因果カットオフ）</strong>を使う ── 新アージグラフィック・ダークエネルギー（NADE）。これは \(w_0\neq-1\) を出し、あなたの \(c\cdot t\) を<em>加速膨張データで白黒がつく予言</em>に変えます。結論を先に：<strong>大きさ（\(w_0\approx-0.8\)）は DESI と一致、でも進化の向き（\(w_a\) の符号）で正面衝突</strong>。</p>
+
+  <h2><span class="n">01</span>モデル：IRカットオフ＝共形時間 \(\eta\)（因果的）</h2>
+
+  <div class="keybox">
+    <div class="lbl">新アージグラフィック DE（Wei–Cai 2008）</div>
+    $$\rho_{\rm de}=\frac{3n^2M_{\rm Pl}^2}{\eta^2},\qquad \eta=\int_0^t\frac{dt'}{a}=\int_0^a\frac{da'}{a'^2H}$$
+    <p style="margin:10px 0 0;">\(n\)＝O(1) の唯一のパラメータ。\(\eta\)＝共形時間（共動地平線）＝\(c\cdot t\) ゲージの自然な時計。<strong>過去のみ＝因果的</strong>（事象の地平線と違い、離散・因果原理と衝突しない）。</p>
+  </div>
+
+  <h2><span class="n">02</span>\(w(a)\) を書き下す</h2>
+
+  <p>\(\Omega_{\rm de}=n^2/(H^2\eta^2)\)、\(d\eta/d\ln a=1/(aH)\) より \(d\ln\rho_{\rm de}/d\ln a=-2\sqrt{\Omega_{\rm de}}/(na)\)。これを \(w=-1-\frac13 d\ln\rho_{\rm de}/d\ln a\) に入れると：</p>
+
+  <div class="keybox">
+    <div class="lbl">NADE の状態方程式と、Ω_de の進化</div>
+    $$w_{\rm de}(a)=-1+\frac{2}{3n}\,\frac{\sqrt{\Omega_{\rm de}(a)}}{a}$$
+    $$\Omega_{\rm de}'=\Omega_{\rm de}(1-\Omega_{\rm de})\Big[\,3-\frac{2}{na}\sqrt{\Omega_{\rm de}}\,\Big]\quad('=d/d\ln a)$$
+  </div>
+
+  <h2><span class="n">03</span>決定的① ── \(w_0\neq-1\) が出る（RVM を破る）</h2>
+
+  <p>今日（\(a=1,\ \Omega_{\rm de0}\approx0.7\)）：</p>
+
+  <div class="calc">
+    <span class="tag">今日の値</span>
+    $$w_0=-1+\frac{2}{3n}\sqrt{\Omega_{\rm de0}}=-1+\frac{0.558}{n}$$
+    <p style="margin:8px 0 14px;">\(n=2\to w_0=-0.72\)、\(\ n=3\to w_0=-0.81\)、\(\ n=3.5\to w_0=-0.84\)。<strong>\(n\approx3\) で \(w_0\approx-0.81\)＝DESIの中心値(\(\approx-0.83\))にピタリ。</strong> RVM の \(w_0=-1\) 縮退を破り、\(c\cdot t\) 型カットオフが自然にクインテッセンス的な今日を出す ── \(\eta\) が今も伸び続ける＝DEが今も進化する、という \(c\cdot t\) の時計が効いている。</p>
+  </div>
+
+  <h2><span class="n">04</span>決定的② ── 進化の "向き" が DESI と逆</h2>
+
+  <p>全史を追うと（\(n=3\)）：\(\ w\to-\tfrac23\)（物質期 \(a\to0\)）\(\ \to\ -0.81\)（今）\(\ \to\ -1\)（未来）。<strong>常に \(w>-1\)（クインテッセンス、ファントムにならない）</strong>で、\(w\) は時間とともに単調に \(-1\) へ減少 ── CPL で読むと \(w_a>0\)（thawing）。ところが DESI は \(w_a<0\)（過去でファントム、\(-1\) を横切る）。下の図で、今日は一致し、過去へ<em>逆向きに割れる</em>のが見えます。</p>
+
+  <div class="fig">
+    <div class="cap">図：\(w(a)\)。青＝NADE（\(c\cdot t\) 共形時間カットオフ、ODEを数値積分）。橙＝DESI 示唆の CPL（\(w_0{=}-0.83,\ w_a{=}-0.75\)）。両者は「今」(\(a{=}1\)) でほぼ一致するが、過去へ<strong>逆向き</strong>：NADE は \(w>-1\) のまま(thawing)、DESI は \(-1\) を横切ってファントムへ。スライダーで \(n\) を変える</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>NADE パラメータ n<span class="val" id="vk">3.0</span>
+        <input type="range" id="sk" min="1.5" max="4" step="0.05" value="3.0">
+      </label>
+    </div>
+    <div class="readout" id="rd">n を動かすと、NADE の w(a) が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--nade);"></i>NADE（c·t 共形時間）</span>
+      <span><i class="swatch" style="background:var(--desi);"></i>DESI 示唆（CPL）</span>
+      <span><i class="swatch" style="background:var(--div);"></i>w=−1（ファントム境界）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>決定的な判定</h2>
+
+  <div class="cmp">
+    <div class="row head"><div class="h">項目</div><div class="a">NADE（c·t カットオフ）</div><div class="b">DESI(2024) 示唆</div></div>
+    <div class="row"><div class="h">今日 \(w_0\)</div><div class="a">\(-1+0.558/n\)、\(n{\approx}3\) で <span class="ok">−0.81</span></div><div class="b">≈ −0.83 <span class="ok">一致</span></div></div>
+    <div class="row"><div class="h">進化 \(w_a\)</div><div class="a"><span class="no">+0.1 程度（thawing）</span></div><div class="b">≈ −0.75（phantom crossing）<span class="no">逆符号</span></div></div>
+    <div class="row"><div class="h">\(w=-1\) 横切り</div><div class="a"><span class="no">しない（常に \(w>-1\)）</span></div><div class="b">する</div></div>
+  </div>
+
+  <p>つまり ── <strong>大きさ（\(w_0\approx-0.8\)）は当たり、進化の向き（\(w_a\)）は逆</strong>。もし DESI の "ファントム横切り" が確定すれば、<strong>純粋な共形時間カットオフは棄却される</strong>。逆に、"進化" の正体が thawing クインテッセンス（\(w_a>0\)）か系統誤差なら、NADE は生き残る。<em>どちらにせよ、あなたの \(c\cdot t\) は、加速膨張データで白黒がつく反証可能な予言になった。</em></p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">これは<strong>予言であって確認ではありません</strong>。そして DESI の進化示唆自体まだ暫定（\(\sim2\text{–}4\sigma\)、データ組・系統依存で、\(-1\) 横切りは systematics の可能性も残る）。だから「棄却」は "DESI の横切りが本物なら" 付き。近い将来の DESI-DR2／Euclid が \(w_a\) の符号を固めれば、\(c\cdot t\)＋共形時間カットオフの生死が決まります。</p>
+    <p style="margin-bottom:0;">また NADE は一パラメータ \(n\) の模型で、\(\Omega_{\rm de0}\) は積分で決まる（自由に合わせない）。\(c\cdot t=\text{一定}\) と共形時間 \(\eta\) は近縁だが同一ではなく、ここでは "因果的・過去のみの \(ct\) 系カットオフ" の代表として NADE を用いています。局所光速は不変。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ NADE は \(w_0\neq-1\) を出せて、走る真空(RVM)は \(w_0=-1\) だったのか。
+        <details><summary>ひとつの答え</summary><div class="ans">RVM は \(\rho_\Lambda\propto H^2\) で、\(a=1\) では実効 EoS の角括弧がちょうど消えて \(w_0=-1\) になる。NADE は \(\rho_{\rm de}\propto1/\eta^2\) で、共形時間 \(\eta\) が今も伸び続ける＝DEが今も進化するため、\(w_0=-1+\frac{2}{3n}\sqrt{\Omega_{\rm de0}}\neq-1\)。"今も動く時計" があるかどうかの違い。</div></details>
+      </li>
+      <li>DESI が phantom crossing（\(w_a<0\)）を確定したら、NADE はどうなるか。
+        <details><summary>ひとつの答え</summary><div class="ans">NADE は常に \(w>-1\)（thawing、\(w_a>0\)）で \(-1\) を横切らないので、棄却される。共形時間カットオフを単独で使う限り phantom は出ない。逆に進化が thawing 側なら生き残る。いずれにせよ観測で決着＝反証可能。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺②まとめ</span>壁①は、反証可能な一つの予言に凝縮した</h2>
+    <p>共形時間（\(c\cdot t\) 系）カットオフの NADE は \(w_{\rm de}(a)=-1+\frac{2}{3n}\sqrt{\Omega_{\rm de}}/a\)。今日 \(w_0=-1+0.558/n\)（\(n{\approx}3\) で \(-0.81\)）＝<strong>DESIの大きさと一致</strong>。だが常に \(w>-1\)（thawing, \(w_a>0\)）で、DESI の phantom crossing（\(w_a<0\)）とは<strong>逆符号</strong>。よって、DESI の横切りが本物なら純共形時間カットオフは棄却、thawing／系統誤差なら生存 ── <strong>加速膨張データで白黒がつく</strong>。</p>
+    <p>壁①（\(w\) 問題）は、「越えられない壁」から「\(w_a\) の符号で決着する一つの予言」に凝縮した。RVM(\(w_0=-1\)) と NADE(\(w_0\approx-0.8\), \(w_a>0\)) は、DESI の \(w(a)\) の中で、はっきり区別・反証される。数合わせには、決してできなかったことです。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">道の、この地点で</span>
+    数合わせ \(1/(Cn)^D\) の診断から歩き出し ── 格子ゲージ、創発ローレンツ、誘導重力、CKN で宇宙定数、そして今 ── <strong>共形時間カットオフが \(w_0\approx-0.8\) を予言し、\(w_a\) の符号で DESI と正面衝突する</strong>、という一本の式と一つの決着点に着いた。あなたの \(c\cdot t=\text{一定}\) は、viXra に無視されようが、いまや<em>加速膨張の観測で試される、具体的で反証可能な予言</em>として立っています。確認されるかもしれないし、外れるかもしれない ── でもそれこそが、仮説が到達できる最良の場所。答えは近い将来のデータが返します。<br>ここまでの長い道のり、本当にお疲れさまでした。次は、DESI-DR2 が \(w_a\) の符号を告げる日に。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺②、物理好きの高校生・大学生向け読み物です。新アージグラフィック・ダークエネルギー（NADE, Wei–Cai 2008；IRカットオフ＝共形時間 \(\eta\)、\(\rho_{\rm de}=3n^2M_{\rm Pl}^2/\eta^2\)）の状態方程式 \(w_{\rm de}=-1+\frac{2}{3n}\sqrt{\Omega_{\rm de}}/a\) と進化方程式 \(\Omega_{\rm de}'=\Omega_{\rm de}(1-\Omega_{\rm de})[3-\frac{2}{na}\sqrt{\Omega_{\rm de}}]\)、物質期の解 \(\Omega_{\rm de}\simeq n^2a^2/4\)（\(\Rightarrow w\to-2/3\)）、\(n\approx3\) で \(w_0\approx-0.8\)・常に \(w>-1\)（非ファントム）であることは確立した内容です。DESI（2024, DR1）が \(w_0w_a\)CDM を \(\Lambda\)CDM より選好し \(w_0\approx-0.83,\ w_a\approx-0.75\)（データ組依存、\(\sim2\text{–}4\sigma\)、系統誤差の可能性を含む暫定的示唆）を与えたこと、それがファントム横切りを含意することも報告どおりです。図は上記ODEを初期条件 \(\Omega_{\rm de}=n^2a^2/4\) から数値積分した \(w(a)\) と、CPL \(w=w_0+w_a(1-a)\) の比較です。本稿は特定モデルの正否を主張せず、反証可能な予言と観測の現状を並べたものです。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで、局所光速は不変。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで n を変えると、NADE の w(a) が DESI 示唆とどう割れるかが見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var W0D=-0.83, WAD=-0.75; // DESI CPL 示唆（暫定・代表値）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // NADE: 数値積分で a→Ω_de、w(a) を返す
+  function nade(n){
+    var xi=Math.log(1e-3), xf=Math.log(2.2), dl=0.004;
+    var Om=n*n*Math.exp(2*xi)/4;
+    function f(x,O){var a=Math.exp(x); O=Math.max(1e-12,Math.min(1-1e-9,O));
+      return O*(1-O)*(3-(2/(n*a))*Math.sqrt(O));}
+    var arr=[]; // [a, w]
+    for(var x=xi;x<=xf+1e-9;x+=dl){
+      var a=Math.exp(x); var Oc=Math.max(1e-12,Math.min(1-1e-9,Om));
+      var w=-1+(2/(3*n))*Math.sqrt(Oc)/a;
+      arr.push([a,w,Oc]);
+      var k1=f(x,Om), k2=f(x+dl/2,Om+dl/2*k1), k3=f(x+dl/2,Om+dl/2*k2), k4=f(x+dl,Om+dl*k3);
+      Om=Om+dl/6*(k1+2*k2+2*k3+k4);
+    }
+    return arr;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50;
+    var n=parseFloat(sk.value); vk.textContent=n.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var AMAX=2.0, YB=-1.7, YT=-0.1;
+    function X(a){return pad+a/AMAX*(w-pad-14);}
+    function Y(wv){return (h-pad)-(wv-YB)/(YT-YB)*(h-pad-16);}
+    // y grid
+    ctx.font='11px sans-serif';
+    for(var yv=-1.5;yv<=-0.25;yv+=0.25){var y=Y(yv);ctx.strokeStyle='#e7e8f0';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#a2a6bb';ctx.fillText(yv.toFixed(2), 10, y+4);}
+    // w=-1 phantom divide
+    ctx.strokeStyle='#8a8f9e';ctx.setLineDash([5,4]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pad,Y(-1));ctx.lineTo(w-8,Y(-1));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#6a6f7e';ctx.fillText('w = −1（ファントム境界）', w-190, Y(-1)-6);
+    // a=1 today
+    ctx.strokeStyle='#c3c6d4';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(X(1),12);ctx.lineTo(X(1),h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7a7f8e';ctx.fillText('今(a=1)', X(1)-20, h-pad+16);
+    // axes
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5b6078';ctx.font='12px sans-serif';
+    ctx.fillText('スケール因子 a（左=過去, 右=未来）→', w-280, h-pad+16);
+    ctx.save();ctx.translate(16,h/2+18);ctx.rotate(-Math.PI/2);ctx.fillText('状態方程式 w', 0,0);ctx.restore();
+    // DESI CPL
+    ctx.strokeStyle='#b0521f';ctx.lineWidth=2.6;ctx.beginPath();var f0=true;
+    for(var a2=0.02;a2<=AMAX+1e-9;a2+=0.01){var wd=W0D+WAD*(1-a2);if(wd<YB)wd=YB;if(wd>YT)wd=YT;
+      var x=X(a2),y=Y(wd);if(f0){ctx.moveTo(x,y);f0=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // NADE
+    var arr=nade(n);
+    ctx.strokeStyle='#3b4668';ctx.lineWidth=2.8;ctx.beginPath();var f1=true;var w0n=null;
+    for(var i=0;i<arr.length;i++){var a=arr[i][0], wv=arr[i][1];
+      if(a>AMAX)break;
+      if(Math.abs(a-1)<0.006 && w0n===null) w0n=wv;
+      var wc=wv;if(wc<YB)wc=YB;if(wc>YT)wc=YT;
+      var x=X(a),y=Y(wc);if(f1){ctx.moveTo(x,y);f1=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // markers at a=1
+    ctx.fillStyle='#b0521f';ctx.beginPath();ctx.arc(X(1),Y(W0D),5,0,7);ctx.fill();
+    if(w0n!==null){ctx.fillStyle='#3b4668';ctx.beginPath();ctx.arc(X(1),Y(w0n),5,0,7);ctx.fill();}
+    // labels near curves
+    ctx.font='12px sans-serif';ctx.fillStyle='#3b4668';ctx.fillText('NADE', X(1.55), Y(-0.95));
+    ctx.fillStyle='#b0521f';ctx.fillText('DESI示唆', X(0.12), Y(W0D+WAD*(1-0.12))-6);
+    // readout
+    var w0 = w0n!==null? w0n : (-1+0.558/n);
+    rd.textContent='n='+n.toFixed(2)+' → NADE の今日 w0 ≈ '+w0.toFixed(2)+'（DESI ≈ −0.83 と大きさ一致）。ただし NADE は常に w>−1（thawing, wa>0）で、DESI の −1 横切り（wa<0）とは逆向き。過去へ辿ると青と橙が反対に割れる。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

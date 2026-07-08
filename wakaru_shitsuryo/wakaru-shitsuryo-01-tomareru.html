@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>止まれること、それが質量 ── わかる質量 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f9fb; --paper-edge:#dce6ec;   /* 第1回：スチールブルーの紙 */
+    --side:#2f5d62; --side-bg:#eef3f4;
+    --warn:#8a4b2f;
+    --calc:#1f5b6e; --calc-bg:#e6f0f4;
+    --rule:#cdd9e0; --hair:#b7c8d0;
+    --acc:#2e6f8e;    /* 第1回アクセント＝スチールブルー（慣性・どっしり） */
+    --grid:#d6e2ea;
+    --massive:#2e6f8e; --massless:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe2ec 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dae2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e6f0f4;color:#1f5b6e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4fafc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#173f4a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfeff,#eef5f8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e6f0f4;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#173f4a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 1 回 ／ まずは「質量とは何か」から</span></div>
+  <p class="eyebrow">「止まれる＝重い」を、今度はきちんと式で</p>
+  <h1>止まれること、それが質量
+    <span class="sub">光は止まれない、だから質量ゼロ。質量とは「静止系を持てること」であり、<br>"運動量を全部抜いても残るエネルギー" のこと。たった一本の式が、光と物質を同時に説明します。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：掛け算、速さ＝距離÷時間、ルート</span>
+    <span>フック式：\(E^2=(mc^2)^2+(pc)^2\)</span>
+  </div>
+
+  <p class="lead">導入版で「重さとは<em>止まれること</em>」と言いました。今回はそれを、ちゃんと式で確かめます。鍵になるのは、たった一本の式 \(E^2=(mc^2)^2+(pc)^2\)。これを読むと「質量とは何か」が驚くほどはっきり見えます ── <strong>質量とは、運動量をぜんぶ抜いても残るエネルギーの"床"</strong>。そして光は、その床がゼロだから、止まれない。</p>
+
+  <h2><span class="n">01</span>「重い」とは、動かしにくいこと（慣性）</h2>
+
+  <p>ニュートンの運動方程式 \(F=ma\) を思い出します。同じ力 \(F\) をかけても、質量 \(m\) が大きいほど加速度 \(a\) は小さい ── つまり<em>動きにくい</em>。空のカートは軽く押せて、満載のカートは同じ力ではなかなか動かない。この「動かしにくさ」が<strong>慣性質量</strong>で、今回の主役です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声</span>
+    質量にはもう一つ「重力に引かれやすさ（重力質量）」の顔があり、二つは実験的にぴったり一致します（等価原理）。今回は動かしにくさ＝慣性の顔に集中します。重力の顔は、シリーズ後半で宇宙の大きさと質量を結ぶときに戻ってきます。
+  </div>
+
+  <h2><span class="n">02</span>光は止まれない ── 「静止系がない」ということ</h2>
+
+  <p>質量ゼロの粒子（光子）は、<strong>どの立場から見ても光速 \(c\)</strong> で動きます。どんなに速く追いかけても追い越せない。だから光子には「止まって見える立場（静止系）」が存在しません。一方、質量を持つ粒子は追い越して<em>静止系に入れる</em> ── 止まって見える視点を作れる。</p>
+
+  <div class="keybox">
+    <div class="lbl">質量の、いちばん素朴な定義</div>
+    <p style="margin:6px 0 0;">質量あり　⇔　静止系を持てる（止まれる）<br>質量ゼロ　⇔　どの系でも光速（止まれない）</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第2回へ）</span>
+    「止まれる」ことは、実は<em>自由度が1つ増える</em>ことでもあります。止まれない光（スピン1）は偏光が2つ（横波だけ）。止まれる \(W,Z\) 粒子は3つ（縦波が生える）。この「縦波が1つ生える」が質量の指紋で、<strong>なぜ光がゼロでいられるのか</strong>は、第2回「対称性が質量を守る」で正面から扱います。</p>
+  </div>
+
+  <h2><span class="n">03</span>質量とエネルギーは、同じ帳簿 ── \(E=mc^2\)</h2>
+
+  <p>止まっている物体も、実はエネルギーを抱えています。それが<strong>静止エネルギー</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">静止しているときのエネルギー</div>
+    $$E_0 = mc^2$$
+  </div>
+
+  <p>\(c^2\) は途方もなく大きい数なので、ほんの少しの質量に莫大なエネルギーが眠っています。どれくらいか、実際に手を動かしてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 1グラムをエネルギーに</span>
+    <p class="lbl">\(m=1\) g \(=10^{-3}\) kg、\(c=3\times10^8\) m/s を代入</p>
+    $$E=mc^2=(10^{-3})\times(3\times10^8)^2=9\times10^{13}\ \text{J}$$
+    <p style="margin-bottom:14px;">\(9\times10^{13}\) ジュールは、広島型原爆（およそ \(6\times10^{13}\) J）を超えるエネルギー。<strong>角砂糖ひとつぶんの質量に、都市を動かす勢いが圧縮されている</strong> ── 質量とは、それほど濃いエネルギーの塊です。</p>
+  </div>
+
+  <p>物体が動いているときは、運動量 \(p\) のぶんエネルギーが増えます。静止・運動・光を<em>ぜんぶ一本で</em>書いたのが、今回のフック式です。</p>
+
+  <div class="keybox">
+    <div class="lbl">エネルギー・運動量・質量の関係（すべてを束ねる一本）</div>
+    $$E^2=(mc^2)^2+(pc)^2$$
+    <p style="margin:12px 0 0;">・静止（\(p=0\)）→ \(E=mc^2\)（静止エネルギー＝質量の顔）<br>・質量ゼロ（\(m=0\)）→ \(E=pc\)（光子。運動量だけがエネルギー）</p>
+  </div>
+
+  <p>この一本が、<strong>物質（\(m>0\)）と光（\(m=0\)）を同時に説明</strong>します。同じ式の、二つの読み方にすぎなかったのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>質量とは「運動量を抜いても残るエネルギー」</h2>
+
+  <p>ここが今回の核心です。式 \(E^2=(mc^2)^2+(pc)^2\) で、運動量 \(p\) をだんだん小さくしていくと、\(E\) は下がっていきます。でも ── <em>どこまで下げても \(mc^2\) より下には行けない。</em> \(p=0\) でぴたりと底を打ちます。</p>
+
+  <div class="keybox">
+    <div class="lbl">質量の正体（式で言うと）</div>
+    <p style="margin:6px 0 0;">質量 \(m\) ＝ 運動量をゼロにしても残るエネルギーの<strong>床</strong>（\(p=0\) での \(E\)）。<br>光子は床がゼロ（\(m=0\)）なので、運動量を抜くと消えてしまう ── だから<em>止まれない</em>。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：エネルギー \(E\) と運動量 \(p\) の関係。質量あり（青）は \(p=0\) でも \(mc^2\) の"床"が残る。質量ゼロ（琥珀）は原点を通り、止まると消える。スライダーで \(p\) を動かしてみてください</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>運動量 p（右ほど速く動く・mc 単位）<span class="val" id="vp">1.50</span>
+        <input type="range" id="sp" min="0" max="4" step="0.05" value="1.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">運動量 p を動かすと E が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--massive);"></i>質量あり E=√((mc²)²+(pc)²)</span>
+      <span><i class="swatch" style="background:var(--massless);"></i>質量ゼロ E=pc（光）</span>
+    </div>
+  </div>
+
+  <p>青い曲線は、運動量を抜いても \(mc^2\) の高さで止まる。琥珀の直線（光）は原点まで滑り落ちる。<strong>この「消せない床」こそが質量</strong>です。そしてこの視点 ── <em>抜いても残る最低のエネルギー</em> ── は、シリーズ後半で「宇宙が許す最小の質量」や「質量ギャップ」として、もっと深い形でもう一度戻ってきます。質量とは、ある種の<em>消せない床</em>なのです。</p>
+
+  <h2><span class="n">05</span>だから、質量は「部品の足し算」ではない</h2>
+
+  <p>最後に、導入版で驚いてもらった事実を式で。陽子の質量はおよそ \(938\) MeV。ところが、中身の3つのクォーク（アップ2つ・ダウン1つ）の静止質量を足しても、わずか \(9\) MeV ほど。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 陽子の重さの内訳</span>
+    $$\frac{\text{クォーク3個の静止質量}}{\text{陽子の質量}}\approx\frac{9\ \text{MeV}}{938\ \text{MeV}}\approx 1\%$$
+    <p style="margin-bottom:14px;">残りの<strong>約99%</strong>は、クォークを閉じ込める強い力（グルーオン場）の<em>エネルギー</em>が、\(E=mc^2\) で質量に化けたもの。質量は「部品の合計」ではなく、<strong>閉じ込められたエネルギー</strong>だったのです。</p>
+  </div>
+
+  <p>つまり質量の湧き方には、少なくとも二通りある ── 電子のように<em>ヒッグスから直接もらう</em>質量と、陽子のように<em>閉じ込めのエネルギーから生まれる</em>質量。この二つを、第3回でじっくり見分けます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(E=mc^2\) の「質量」は<strong>静止質量（不変質量）</strong>を指します。「速く動くと重くなる」という言い方（相対論的質量）は、いまは使わないのが標準 ── 増えるのはエネルギーであって、質量 \(m\) は速度によらず一定です。この誤解は番外②で詳しく解きます。</p>
+    <p style="margin-bottom:0;">また、今回は合言葉 \(c\cdot t=\text{一定}\) を<strong>あえて前面に出していません</strong>。質量が「静止系を持てること」や「エネルギーの床」であることは、\(c\cdot t\) を持ち出さなくても成り立つ標準物理だからです。このレンズが<em>正当に効く</em>のは、スケールが創発する第4回や、最小質量を宇宙の大きさが決める第6回。効かない場所で無理に効かせない ── これが姉妹シリーズ番外③の教訓でした。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>質量ゼロの光子が「止まれない」理由を、\(E^2=(mc^2)^2+(pc)^2\) から一言で。
+        <details><summary>答えを見る</summary><div class="ans">\(m=0\) なら \(E=pc\)。止まる（\(E\) を最小にする）には \(p=0\) が必要だが、そのとき \(E=0\) ＝ 存在しないに等しい。運動量を抜くと消えてしまうので、光は常に動き続けるしかない（＝静止系が定義できない）。</div></details>
+      </li>
+      <li>質量 1 kg の物体の静止エネルギーは何ジュールか（\(c=3\times10^8\) m/s）。
+        <details><summary>答えを見る</summary><div class="ans">\(E=mc^2=1\times(3\times10^8)^2=9\times10^{16}\) J。1グラム（\(9\times10^{13}\) J）の1000倍。桁違いに大きい。</div></details>
+      </li>
+      <li>陽子の質量の約99%はどこから来るか、一言で。
+        <details><summary>答えを見る</summary><div class="ans">クォークを閉じ込める強い力（グルーオン場）のエネルギーが \(E=mc^2\) で質量に化けたもの。部品であるクォークの静止質量の合計は約1%にすぎない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>質量とは「消せないエネルギーの床」</h2>
+    <p>質量とは「止まれること」＝静止系を持てること。式で言えば \(E^2=(mc^2)^2+(pc)^2\) の、<strong>運動量を抜いても残るエネルギーの床 \(E=mc^2\)</strong>。光は床がゼロ（\(m=0\)）だから止まれず、常に光速で走る。そして質量は部品の足し算ではなく、閉じ込められたエネルギーでもある（陽子の99%）。</p>
+    <p>「消せない床としての質量」──この一言が、このシリーズの背骨です。ゼロの床（光）はなぜ守られるのか、有限の床はどう生まれるのか、そして床の<em>最小値</em>は何が決めるのか。次回からその床の"起源"を、一枚ずつめくっていきます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第2回</span>
+    「質量ゼロは、対称性が守っている」。なぜ光子は"床ゼロ"でいられるのか。ゲージ対称性が質量を<strong>禁じる</strong>仕組み、止まれる粒子に縦波が1つ生える話、そして質量が<em>点く</em>瞬間（対称性が破れるとき）。ゼロは自明ではなく、見張り番がいたのです。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第1回、物理好きの高校生・大学生向け読み物です。相対論的エネルギー・運動量関係 \(E^2=(mc^2)^2+(pc)^2\)、静止エネルギー \(E_0=mc^2\)、質量ゼロ粒子が \(E=pc\) で光速に固定されること、陽子質量の大半（約99%）がクォークの静止質量ではなく量子色力学（グルーオン場）の結合エネルギー由来であることは、いずれも確立した物理です。本稿の「質量」は静止質量（不変質量）を指し、いわゆる相対論的質量は用いていません。図はエネルギー・運動量関係を \(c=1,\,mc^2=1\) の単位で描いた模式図です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで p を動かすと、質量の"床"が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sp=document.getElementById('sp'), vp=document.getElementById('vp'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var PMAX=4, EMAX=4.3;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var p=parseFloat(sp.value); vp.textContent=p.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(pp){return pad+pp/PMAX*(w-pad-16);}
+    function Y(E){return (h-pad)-E/EMAX*(h-pad-14);}
+    // grid
+    ctx.strokeStyle='#e3edf2';ctx.lineWidth=1;
+    for(var g=1;g<=4;g++){var yy=Y(g);ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();
+      ctx.fillStyle='#9fb0ba';ctx.font='11px sans-serif';ctx.fillText(g+' mc²', 6, yy+4);}
+    // axes
+    ctx.strokeStyle='#b7c8d0';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b7680';ctx.font='12px sans-serif';
+    ctx.fillText('運動量 p（mc 単位）→', w-180, h-pad+18);
+    // floor line E=1 (mc^2)
+    ctx.strokeStyle='#8fa0aa';ctx.setLineDash([4,4]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(pad,Y(1));ctx.lineTo(w-8,Y(1));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#4f6570';ctx.font='11px sans-serif';ctx.fillText('mc²（静止エネルギー＝質量の床）', pad+8, Y(1)-6);
+    // massless line E=p (amber)
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=2.4;ctx.beginPath();
+    ctx.moveTo(X(0),Y(0));ctx.lineTo(X(PMAX),Y(PMAX));ctx.stroke();
+    // massive hyperbola E=sqrt(1+p^2) (steel)
+    ctx.strokeStyle='#2e6f8e';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var pp=0;pp<=PMAX+1e-9;pp+=0.04){var E=Math.sqrt(1+pp*pp);var x=X(pp),y=Y(E);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // current markers
+    var Em=Math.sqrt(1+p*p), mx=X(p);
+    ctx.strokeStyle='#9aa7b0';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,10);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(mx,Y(p),4.5,0,7);ctx.fill();
+    ctx.fillStyle='#2e6f8e';ctx.beginPath();ctx.arc(mx,Y(Em),5.5,0,7);ctx.fill();
+    // rest-energy dot at p=0
+    ctx.fillStyle='#2e6f8e';ctx.beginPath();ctx.arc(X(0),Y(1),4,0,7);ctx.fill();
+    // labels
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#2e6f8e';ctx.fillText('質量あり  E=√((mc²)²+(pc)²)', X(1.05), Y(Math.sqrt(1+1.05*1.05))-12);
+    ctx.fillStyle='#b06a12';ctx.fillText('質量ゼロ  E=pc（光）', X(2.6), Y(2.6)+16);
+    rd.textContent='運動量 p='+p.toFixed(2)+' mc → E='+Em.toFixed(2)+' mc²。 p をゼロに近づけても E は 1 mc² より下がらない ── この「床」が質量です。';
+  }
+  sp.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

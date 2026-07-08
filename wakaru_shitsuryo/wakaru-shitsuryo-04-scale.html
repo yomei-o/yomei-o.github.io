@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スケールなき理論から、スケールが湧く ── わかる質量 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4f8f5; --paper-edge:#d8e6dd;   /* 第4回：緑の紙（走る結合・創発） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1f6b45; --calc-bg:#e6f1ea;
+    --rule:#cbdcd1; --hair:#b6cabd;
+    --acc:#2f7d5a;    /* 第4回アクセント＝緑 */
+    --grid:#d3e4da;
+    --run:#2f7d5a; --scale:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #c8e6d5 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c5ddce;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e6f1ea;color:#1f6b45;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2faf5;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#164a32;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e6f1ea;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#164a32;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 4 回 ／ ここで c・t のレンズが、初めて効く</span></div>
+  <p class="eyebrow">閉じ込め側の "99%" の正体 ── 何もない世界に、重さの目盛りが湧く</p>
+  <h1>スケールなき理論から、<br>スケールが湧く
+    <span class="sub">古典的には目盛りを一つも持たない理論（＝c・t が綺麗に効く土俵）が、<br>量子効果でその不変性を破り、\(\Lambda_{\rm QCD}\) という重さの尺度を生む。これが「質量ギャップ」の正体。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第3回の閉じ込め、わかる宇宙論 第6回の "走る結合"</span>
+    <span>フック式：無次元の走り → \(\Lambda\)</span>
+  </div>
+
+  <p class="lead">第3回で、陽子の重さの99%は「閉じ込めのエネルギー」でした。でも謎が残っています ── <em>古典的には長さも重さも一つも入っていないはずの理論から、なぜ \(\Lambda_{\rm QCD}\approx0.2\) GeV という重さの目盛りが湧くのか。</em> 今回はこの「スケールの創発」を追います。そしてここで初めて、姉妹シリーズの合言葉 \(c\cdot t=\text{一定}\) が、<strong>正当な土俵</strong>に乗ります。</p>
+
+  <h2><span class="n">01</span>パズル：目盛りのない世界から、目盛りが出る</h2>
+
+  <p>強い力を記述する純粋なヤン=ミルズ理論には、<strong>古典的には尺度が一つもありません</strong>。結合 \(g\) は無次元、質量項はゼロ、グルーオンは古典的に質量ゼロ。長さも、重さも、時間の刻みも、どこにも書き込まれていない。</p>
+
+  <p>なのに現実には、\(\Lambda_{\rm QCD}\approx0.2\) GeV、陽子 \(\approx0.94\) GeV という<em>はっきりした重さの目盛り</em>が存在します。<strong>何も入れていないのに、尺度が湧いている。</strong> これが今回のパズルです。</p>
+
+  <h2><span class="n">02</span>c・t が効く土俵 ── 「目盛りがない」＝スケール不変</h2>
+
+  <p>「目盛りを持たない」とは、<em>スケール不変（共形不変）</em>ということ。全体をどんな倍率で拡大・縮小しても、理論が同じ姿に見える。ここで思い出してください ── 姉妹シリーズの \(c\cdot t=\text{一定}\)（共形時間ゲージ）が、光のような<strong>質量ゼロ・スケールフリーな場に綺麗に効いた</strong>のは、まさにその場が目盛りを持たないからでした。</p>
+
+  <div class="keybox">
+    <div class="lbl">このレンズが正当に効く条件</div>
+    <p style="margin:6px 0 0;">古典ヤン=ミルズ ＝ <strong>スケール不変（目盛りなし）</strong> ＝ \(c\cdot t\) が綺麗に効く土俵。<br>質量とは、この土俵が<em>量子で壊れる</em>ときに現れる。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">正直な線（大事）</span>
+    ここで \(c\cdot t=\text{一定}\) が効くのは、あくまで「スケール不変な場に対する<strong>座標・単位の選び方（共形時間ゲージ）</strong>」としての意味です。光速を literal に変える新物理ではありません（番外③のVSLの教訓）。前の3回で「効かせない」と線を引いてきたのは、この正当な土俵に来るまで待つためでした。
+  </div>
+
+  <h2><span class="n">03</span>走る結合 ── 無次元の数が、見る細かさで変わる</h2>
+
+  <p>鍵は、姉妹シリーズ「わかる宇宙論」第6回で見た<strong>走る結合</strong>です。無次元の結合は、<em>見る細かさ（エネルギー）</em>によって値が変わる。強い力の走り方は、電磁気とは<strong>逆</strong>です ── これを<em>漸近的自由性</em>といいます。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>高エネルギー（近くで細かく見る）</strong>→ 結合は<em>弱く</em>なる（クォークはほぼ自由）。</li>
+    <li><strong>低エネルギー（遠くで粗く見る）</strong>→ 結合が<em>強く</em>なり、ついにクォークを閉じ込める。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（わかる宇宙論 第6回の回収）</span>
+    電磁気の \(\alpha\) は、高エネルギーで<em>強く</em>なりました（\(1/137\to1/128\)）。強い力の \(\alpha_s\) はその逆で、高エネルギーで<em>弱く</em>なる。この「逆向きの走り」こそが、閉じ込めと、次に見る目盛りの創発を生みます。
+  </div>
+
+  <h2><span class="n">04</span>次元的移行 ── 走りから、目盛りが生まれる</h2>
+
+  <p>ここが核心です。走り方のルール（無次元）に、境界条件を<strong>ひとつ</strong>与える ── 「ある細かさ \(E\) での結合の値 \(\alpha_s(E)\)」を1個決める。すると、結合がぐんぐん強くなって<em>発散するエネルギー \(\Lambda\)</em> が、自動的に決まってしまう。</p>
+
+  <div class="keybox">
+    <div class="lbl">次元的移行 ── 無次元の数から、次元を持つ目盛りへ</div>
+    $$\Lambda = E\,\exp\!\left(-\frac{1}{b\,\alpha_s(E)}\right)$$
+    <p style="margin:10px 0 0;">右辺の入力は<strong>無次元の1つの数</strong>（ある細かさでの結合）。なのに左辺 \(\Lambda\) は<strong>次元を持つ（＝重さ・長さの目盛り）</strong>。何も尺度を入れていないのに、目盛りが湧いた。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：強い力の結合 \(\alpha_s\) の走り。スライダーで "高エネルギーでの結合"（無次元の入力）を変えると、結合が発散するエネルギー \(\Lambda\)（重さの目盛り）が動く。目盛りは入れたのでなく、走りから湧く</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>高エネルギー(1000 GeV)での結合の強さ α<sub>s</sub>（無次元の入力）<span class="val" id="vk">0.100</span>
+        <input type="range" id="sk" min="6" max="14" step="0.1" value="10">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで結合を動かすと、Λ が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--run);"></i>走る結合 α_s(E)</span>
+      <span><i class="swatch" style="background:var(--scale);"></i>Λ（重さの目盛りが湧く場所）</span>
+    </div>
+  </div>
+
+  <p>そして陽子の質量は \(m_{\text{陽子}}\sim\) 数 \(\times\Lambda\)。第3回の「99%」の正体はこれでした。<strong>目盛りは "入れた" のではなく、走りから "湧いた"</strong>。無次元の走り方さえ決まれば、重さの尺度は勝手に決まる ── これが「スケールなき理論からスケールが湧く」の中身です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>質量ギャップ ── c・t の土俵が、量子で壊れる幅</h2>
+
+  <p>もう一段深く。古典ヤン=ミルズはスケール不変（＝\(c\cdot t\) が綺麗に効く）。ところが量子効果は、その不変性を<strong>破ってしまう</strong>（トレース・アノマリー）。破れた証拠が、いま湧いた \(\Lambda\) です。そしてこの \(\Lambda\) のせいで、理論の最も軽い励起（グルーオンの束縛状態＝グルーボール）に、<em>真空のすぐ上の消せない隙間</em>が開く。</p>
+
+  <div class="keybox">
+    <div class="lbl">質量ギャップ</div>
+    $$\Delta \sim \Lambda > 0\qquad(\text{＝スケール不変が量子で破れた幅})$$
+  </div>
+
+  <p>第1回の「消せない床」を思い出してください。あれは "運動量を抜いても残るエネルギー" でした。質量ギャップは、その<strong>最も深い姿</strong>です ── <em>真空のすぐ上に、必ず開いてしまう隙間</em>。これを数学的に厳密に証明せよ、というのがクレイ研究所のミレニアム問題「ヤン=ミルズ理論の存在と質量ギャップ」です。</p>
+
+  <h2><span class="n">06</span>だから c・t は「効く土俵が壊れる場所」を指す</h2>
+
+  <p>まとめの種明かし。\(c\cdot t=\text{一定}\) が綺麗に効くのは、スケール不変な古典の土俵。そして<strong>質量（ギャップ）とは、その土俵が量子で壊れる現象そのもの</strong>。だからこのレンズは、"自分が効く土俵が、どこで・どう壊れて質量を生むか" を正確に指させてくれる。これがこのレンズの、正当で誠実な効き方です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この創発は<strong>次元的移行</strong>という、無次元の走りからの創発であって、「有限計算機の丸め誤差」ではありません。両者は似て非なるもの ── その違いは<strong>番外①「質量ギャップは丸め誤差か」</strong>で正面から診断します。</p>
+    <p style="margin-bottom:0;">クレイ問題は、格子（離散化）で数値的にはギャップが見えますが、連続極限での<em>厳密な証明</em>はいまも未解決。「離散にすれば解けた」ではありません。上の式・図は一ループの模式で、実際の走りは対数的かつ粒子種に依存します。局所的に測る光速は常に \(c_0\) で不変です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>古典ヤン=ミルズが「目盛りを持たない」とはどういう意味か、一言で。
+        <details><summary>答えを見る</summary><div class="ans">スケール不変（共形不変）であること。結合が無次元で質量項がなく、全体を拡大・縮小しても理論が同じ姿に見える。つまり長さ・重さの尺度がどこにも入っていない。</div></details>
+      </li>
+      <li>強い力の結合の走り方は、電磁気とどう「逆」か。
+        <details><summary>答えを見る</summary><div class="ans">漸近的自由性。電磁気の α は高エネルギーで強くなる（1/137→1/128）が、強い力の α_s は逆で、高エネルギーで弱く、低エネルギーで強くなる。この逆向きの走りが低エネルギーでの閉じ込めを生む。</div></details>
+      </li>
+      <li>「スケールなき理論からスケールが湧く」を、次元的移行の言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">無次元の走り方のルールに、ある細かさでの結合の値（無次元の1つの数）を境界条件として与えると、結合が発散するエネルギー Λ（次元を持つ）が自動的に決まる。目盛りは入れたのではなく、走りから創発する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>目盛りは、走りから湧いた</h2>
+    <p>古典ヤン=ミルズは目盛りを持たない＝スケール不変で、そこは \(c\cdot t=\text{一定}\) が正当に効く土俵。だが量子効果でその不変性が破れ、<strong>走る結合＋境界条件1つ</strong>から次元を持つ \(\Lambda\) が湧く（次元的移行）。陽子の質量 \(\sim\) 数 \(\times\Lambda\) が、第3回の "99%" の正体だった。そして真空のすぐ上に開く消せない隙間が<strong>質量ギャップ \(\Delta\sim\Lambda>0\)</strong> ── 第1回の「床」の最深形。</p>
+    <p>質量とは「\(c\cdot t\) が綺麗に効く土俵（スケール不変）が、量子で壊れる幅」だった。ここまでで「有限の床がどう湧くか」を、ヒッグス・閉じ込めの両方で見終えました。次はいよいよ、床の<em>最小値</em>へ向かいます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第5回</span>
+    「最小の質量・UV編：ニュートリノはなぜ軽い」。ここまでは "床がどう湧くか"。次は "床の最小値" へ。ニュートリノの桁外れの軽さを<strong>シーソー機構</strong>で解くと、<em>最小の質量が、宇宙で最大のスケール（大統一）を指している</em>ことが見えてきます。\(m_\nu\sim v^2/M\)。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第4回、物理好きの高校生・大学生向け読み物です。純粋ヤン=ミルズ理論が古典的に共形（スケール）不変であること、量子効果（トレース・アノマリー）による共形不変性の破れ、漸近的自由性（Gross–Wilczek–Politzer）、走る結合、次元的移行によるスケール \(\Lambda_{\rm QCD}\approx0.2\) GeV の創発、陽子質量 \(\sim\) 数 \(\times\Lambda_{\rm QCD}\)、および質量ギャップ \(\Delta>0\)（クレイ・ミレニアム問題「ヤン=ミルズの存在と質量ギャップ」）は、いずれも確立した物理／現行の未解決問題です。\(c\cdot t=\text{一定}\) はここでは共形時間ゲージ（スケール不変な場に対する座標・単位の選び方）としての意味で、局所光速は不変です。質量ギャップの厳密な数学的証明（連続極限）は未解決で、格子上の数値計算は近似です。図・式は一ループの模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで、無次元の結合から質量の目盛り Λ が湧く様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var XL=-1.2, XR=3.3, AMAX=1.5, COEF=2.7626; // COEF = b_nat * ln10, b_nat=1.2
+  function fmt(g){ return g>=1 ? g.toFixed(2)+' GeV' : (g*1000).toFixed(0)+' MeV'; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var inv=parseFloat(sk.value); vk.textContent=(1/inv).toFixed(3);
+    ctx.clearRect(0,0,w,h);
+    function X(le){return pad+(le-XL)/(XR-XL)*(w-pad-16);}
+    function Y(a){var ac=a>AMAX?AMAX:a; return (h-pad)-ac/AMAX*(h-pad-14);}
+    // grid + x labels (log10 E)
+    ctx.strokeStyle='#e0ede6';ctx.lineWidth=1;ctx.fillStyle='#8fa89a';ctx.font='11px sans-serif';
+    for(var gx=-1;gx<=3;gx++){var x=X(gx);ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,h-pad);ctx.stroke();
+      var lbl = gx<0?'0.1':(gx===0?'1':(gx===1?'10':(gx===2?'100':'1000')));
+      ctx.fillText(lbl, x-8, h-pad+16);}
+    // alpha_s = 1 reference
+    ctx.strokeStyle='#b9d0c3';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad,Y(1));ctx.lineTo(w-8,Y(1));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#5a7a68';ctx.font='11px sans-serif';ctx.fillText('α_s ≈ 1（強い＝閉じ込め）', w-190, Y(1)-6);
+    // axes
+    ctx.strokeStyle='#b6cabd';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5f6b62';ctx.font='12px sans-serif';
+    ctx.fillText('見るエネルギー E（GeV, 右ほど高い＝細かい）→', w-320, h-pad+30);
+    ctx.save();ctx.translate(14,h/2+6);ctx.rotate(-Math.PI/2);ctx.fillText('結合 α_s', 0,0);ctx.restore();
+    // Lambda
+    var logL = 3 - inv/COEF;
+    // running curve
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var le=XL;le<=XR+1e-9;le+=0.015){
+      var denom = inv + COEF*(le-3);
+      if(denom<=0.66) continue; // near/left of Lambda: diverges
+      var a=1/denom; var x=X(le),y=Y(a);
+      if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Lambda vertical
+    if(logL>XL && logL<XR){
+      var xL=X(logL);
+      ctx.strokeStyle='#b06a12';ctx.setLineDash([5,4]);ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(xL,12);ctx.lineTo(xL,h-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#8a5a1e';ctx.font='12px sans-serif';
+      ctx.fillText('Λ（重さの目盛りが湧く）', xL+6, 24);
+      ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(xL,Y(1),5,0,7);ctx.fill();
+    }
+    // annotations
+    ctx.fillStyle='#2f7d5a';ctx.font='12px sans-serif';
+    ctx.fillText('高エネルギー→弱い（漸近的自由）', X(1.4), Y(0.18));
+    // readout
+    var Lam = Math.pow(10, logL);
+    rd.textContent='高エネルギー(1000 GeV)での結合 α_s='+(1/inv).toFixed(3)+'（無次元の1つの数）→ 発散するエネルギー Λ='+fmt(Lam)+'。目盛りを入れていないのに、質量の尺度が湧いた。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

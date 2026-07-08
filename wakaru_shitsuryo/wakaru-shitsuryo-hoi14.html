@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面積はブースト：地平線コーナーの SL(2,R) ── わかる質量 終章・技術補遺⑭</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1822; --ink-soft:#4e4a60;
+    --paper:#f7f6fa; --paper-edge:#d8d4e2;
+    --side:#3a3566; --side-bg:#ece9f3;
+    --warn:#8a4b2f;
+    --calc:#2e2a52; --calc-bg:#e8e5f2;
+    --rule:#d0ccdd; --hair:#b8b2c8;
+    --acc:#3a3566;
+    --grid:#d6d2e2;
+    --gold:#b0821a; --typ1:#1f7a6e; --plum:#6e3350; --boost:#3a3566;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd6ea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#2b2648;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #d2cce0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8e5f2;color:#2e2a52;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdfe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfdfe,#eae7f3);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#e8e5f2;color:#2b2648;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#ece9f3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#292345;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdfe,#e9e6f2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8e5f2;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#292345;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#655f74;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑭ ／ 面積はブースト（地平線コーナーの SL(2,R)）</span></div>
+  <p class="eyebrow">旅の最も深い結節点 ── ⑧⑨⑩⑬が一つの代数に束なる</p>
+  <h1>面積はブースト<br><span style="font-size:22px;">地平線コーナーの SL(2,R)</span>
+    <span class="sub">面積は、地平線コーナーの \(SL(2,\mathbb R)\) の<em>ブースト生成子＝Casimir</em>（Wieland）。その離散系列表現が、境界から離散面積を出す。<br>この \(SL(2,\mathbb R)\) が、モジュラー流(⑧⑩)・自己双対の 1/4(⑩)・Λ で有限化した type I(⑨) を、一点に束ねる。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑧⑨⑩⑬（type II・Λ・k↔c・地平線収束）</span>
+    <span>到達点：有限リソース＝コーナー SL(2,R) の Λ切り詰め離散系列表現／綱領は未完</span>
+  </div>
+
+  <p class="lead">長い旅の、最も深い一点に着きました。障害B（エントロピーはゲージのエッジモードか、微分同相の対称性か）を掘ると ── 両者を含む<strong>地平線コーナーの対称性代数</strong>が現れ、その中心に一つの事実があります：<em>面積は、コーナーの \(SL(2,\mathbb R)\) の「ブースト生成子」だ</em>（Wieland）。この一点から、シリーズの糸がすべて集まる ── モジュラー流と type II（⑧⑩）、自己双対の tuning-free な 1/4（⑩）、Λ で有限化した type I（⑨）、エッジモード＝パンクチャー（⑬）が、<strong>一つの代数の別々の顔</strong>になる。あなたの「宇宙＝有限リソース」が、一文にまで精密化される場所です。掟どおり、綱領は未完 ── 解けたとは言いません。</p>
+
+  <h2><span class="n">01</span>面積は、境界のブースト生成子（Wieland）</h2>
+
+  <p>地平線断面（余次元2のコーナー）で重力の境界シンプレクティック構造を書くと、<strong>面積とブースト角（rapidity）が共役対</strong>になる：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">面積＝ブースト生成子（Wieland, null 面変数）</div>
+    $$\{\,A(S),\ \eta\,\}\ \propto\ 8\pi G\qquad\Longrightarrow\qquad \hat A\ \text{は法平面のブーストを生成する}$$
+    <p style="margin:8px 0 0;">空間的2-コーナーの<strong>法平面は (1,1) のローレンツ平面</strong>。その対称性はブースト \(SO(1,1)\)、束ねると \(SL(2,\mathbb R)\cong SU(1,1)\)。<strong>面積は、このコーナーのブーストの生成子</strong>（＝Frodden–Gupta–Rovelli の「局所地平線のブーストエネルギー \(=A/8\pi G\)」）。</p>
+  </div>
+
+  <h2><span class="n">02</span>離散性は、離散系列表現から出る</h2>
+
+  <p>ブースト \(SL(2,\mathbb R)\) は非コンパクト（素朴には連続スペクトル）。だが面積の正値性などの要請が、\(SU(1,1)\) の<strong>離散系列（最低ウェイト）表現</strong>を選ぶ ── 離散系列では生成子のスペクトルが離散：</p>
+
+  <div class="keybox">
+    <div class="lbl">境界から再導出される面積の離散性</div>
+    $$\hat A=(\text{離散系列 }SL(2,\mathbb R)\text{ の生成子})\ \Longrightarrow\ \text{離散スペクトル}$$
+    <p style="margin:8px 0 0;">これは LQG の面積離散性を、バルクのスピンネットからでなく<strong>境界（コーナー）のブースト表現から再導出</strong>したもの。バルクと境界の離散性が<strong>同じもの</strong>だと分かる。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：（左）コーナーの法平面（(1,1)ローレンツ）── 面積 \(\hat A\) がブースト（双曲線軌道）を生成＝モジュラー流 \(K\)。（右）離散系列の面積はしご ── Λ が上限 \(A_{\max}\) を立て、そこまでの段が有限個＝type I（\(\dim\sim e^{A/4G}\)）。スライダーで Λ を回すと段数（＝状態数）が動く</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>Λ（左＝大きい・切り詰め強い ／ 右＝Λ→0・連続系列へ）<span class="val" id="vk">中</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.42">
+      </label>
+    </div>
+    <div class="readout" id="rd">面積＝ブースト生成子。離散系列が離散面積を出し、Λ が有限次元（type I）にする。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--boost);"></i>ブースト＝面積生成子＝モジュラー流</span>
+      <span><i class="swatch" style="background:var(--typ1);"></i>離散系列の面積段</span>
+      <span><i class="swatch" style="background:var(--gold);"></i>Λ の上限 A_max（type I）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>三つの接続 ── ⑧⑩⑨がここで束なる</h2>
+
+  <table class="tbl">
+    <thead><tr><th>接続</th><th>コーナー \(SL(2,\mathbb R)\) が束ねるもの</th></tr></thead>
+    <tbody>
+      <tr><td class="c" style="color:var(--boost);">(1) ⑧⑩</td><td><strong>面積＝ブースト＝モジュラー流</strong>。地平線近傍のモジュラー流＝ブースト（Bisognano–Wichmann、\(K=2\pi\times\)ブースト）。面積が生成するブーストが CLPW の crossed product の \(K\)。<strong>コーナー \(SL(2,\mathbb R)\)＝type II のモジュラー構造の幾何的な家</strong>。</td></tr>
+      <tr><td class="c" style="color:var(--plum);">(2) ⑩</td><td><strong>ローレンツのコーナー＝自己双対</strong>。法平面がローレンツ的で \(SL(2,\mathbb R)/SU(1,1)\) ── 自己双対 \(\gamma\to i\)（複素 \(SL(2,\mathbb C)\)）の路線と整合。⑩§04 の「自己双対は 1/4 をチューニング無しで出す」舞台（構造は整合、実際に出るかは未証明）。</td></tr>
+      <tr><td class="c" style="color:var(--gold);">(3) ⑨</td><td><strong>有限次元＝type I は Λ で切り詰め</strong>。\(SL(2,\mathbb R)\) 非コンパクト→表現は無限次元。量子群 \(SU(1,1)_q\)（Λ変形）の切り詰めで<strong>有限次元＝type I、\(\dim\sim e^{A/4G}\)</strong>。</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">04</span>Loop gravity from corners ── LQGがコーナー対称性の量子化</h2>
+
+  <p>Freidel–Livine–Pranzetti（"quantum gravity at the corner"）：<strong>LQG のスピンネット状態は、コーナー対称性代数の表現として現れる</strong>。面積量子＝コーナー Casimir、パンクチャー＝コーナー電荷の励起。LQG は仮定でなく<strong>境界コーナー対称性の量子化として導出される</strong>：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">地平線コーナー代数 ── 局所と大域の半直積</div>
+    $$\text{地平線コーナー}=\underbrace{SL(2,\mathbb R)}_{\text{面積=ブースト Casimir（局所）}}\ \ltimes\ \underbrace{\mathrm{Diff}(S^2)}_{\text{Carlip Virasoro（大域）}}$$
+    <p style="margin:8px 0 0;">障害B の二つの中心電荷（ゲージのエッジモード ＝ 微分同相の対称性）が、<strong>この一つのコーナー代数の別々の顔</strong>。⑬の「エッジモード＝パンクチャー＝地平線CS」が、コーナー対称性の表現という言葉を得る。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>一文の精密化 ── そして残る綱領</h2>
+
+  <div class="keybox">
+    <div class="lbl">「宇宙＝有限リソース」の、最も精密な姿</div>
+    <p style="margin:0;">＝<strong>地平線コーナー \(SL(2,\mathbb R)\) の、Λ で切り詰めた離散系列表現。面積をブースト Casimir とし、モジュラー流を生成し、自己双対で 1/4 を担う。</strong>シリーズ全体（⑦〜⑬）が、この一つの代数構造に収束する。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 残る綱領</span>
+    <p style="margin-top:0;">美しく束なるが、まだ研究綱領（Freidel–Geiller–Pranzetti・Wieland、2017–2024、活発だが未完）：(1) \(SU(1,1)_q\) 切り詰めの離散系列で<strong>正確な \(A/4G\) を tuning-free で出す</strong>のは未計算（自己双対との整合はヒント、証明でない）。(2) 局所 \(SL(2,\mathbb R)\)（面積）＋大域 \(\mathrm{Diff}(S^2)\)（Carlip 中心電荷）を<strong>一つの量子代数に統合</strong>し両方を同時に出すのは未完（＝障害A・Bの本体）。(3) コーナー表現の次元＝<strong>\(G\) を繰り込むもつれエントロピー</strong>（1/4 ロック、Susskind–Uglum）は未証明。</p>
+    <p style="margin-bottom:0;">これは負けではありません。「宇宙＝有限リソース」という一つの信念が、掘るほど ── <strong>"地平線コーナー \(SL(2,\mathbb R)\) の Λ切り詰め離散系列表現、面積を Casimir とする" という一文</strong>にまで精密化され、いま人類が実際に掘っている前線と同じ場所に着地した。穴を埋めたのでなく、穴の縁を、これ以上ないほど鋭く磨いた ── 会話でできる最深到達点です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「面積はブースト生成子」だと言えるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">地平線コーナー（余次元2）の法平面は(1,1)ローレンツ平面で、その対称性はブーストSO(1,1)→SL(2,R)。境界シンプレクティック構造で面積とブースト角ηが共役（{A,η}∝8πG）なので、面積はブーストを生成する（Wieland）。これはFrodden–Gupta–Rovelliの局所地平線ブーストエネルギー=A/8πGと同じ。ブースト=モジュラー流だから、面積はtype IIのモジュラー生成子でもある。</div></details>
+      </li>
+      <li>この \(SL(2,\mathbb R)\) が ⑧⑨⑩⑬ をどう束ねるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">面積=ブースト=モジュラー流Kなのでtype II crossed product(⑧⑩)の幾何的な家。法平面がローレンツ的でSL(2,R)/SU(1,1)なので自己双対γ→iの舞台=tuning-free 1/4(⑩)。非コンパクトゆえΛ/量子群SU(1,1)_qで切り詰めると有限次元=type I, dim~e^{A/4G}(⑨)。そしてLQGはコーナー対称性の量子化として出て、パンクチャー=コーナー電荷の励起=エッジモード(⑬)。全部が一つのコーナー代数SL(2,R)⋉Diff(S²)の別々の顔。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑭まとめ</span>面積はブースト ── 旅の結節点</h2>
+    <p>障害B を掘ると、地平線コーナーの対称性代数が現れ、その中心に一つの事実がある ── <strong>面積は、コーナーの \(SL(2,\mathbb R)\) のブースト生成子＝Casimir</strong>（Wieland）。その離散系列表現が、境界から離散面積を出し、LQG のバルク離散性と一致する。この \(SL(2,\mathbb R)\) は ── <strong>モジュラー流＝type II（⑧⑩）の家、ローレンツ＝自己双対 1/4（⑩）の舞台、Λ 切り詰めで type I（⑨、\(\dim\sim e^{A/4G}\)）</strong>。LQG 全体がこのコーナー対称性の量子化として出る（Freidel–Livine–Pranzetti）。</p>
+    <p>あなたの「宇宙＝有限リソース」は、ここで一文になる ── <strong>地平線コーナー \(SL(2,\mathbb R)\) の、Λ で切り詰めた離散系列表現、面積を Casimir とする。</strong>だが正確な \(A/4G\)・局所と大域の統合・もつれとの一致は、活発だが未完の綱領。<strong>穴を埋めたのでなく、縁を最も鋭く磨いた</strong> ── これがシリーズの、いちばん深い結節点です。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる質量 ── 結節点からの眺め</span>
+    「重さって何？」から始まった旅は、質量の床を越え、S=A/4・type I・Λ の舞台・地平線 CFT・有限性の代償・残る穴・QG動力学を抜けて、最後に一つの結節点に着きました ── <strong>面積はブースト。地平線コーナーの \(SL(2,\mathbb R)\)。</strong>もつれ・離散・エントロピー・モジュラー流・自己双対・有限次元が、この一点で一つの代数の顔になる。あなたの「有限リソース」の直感が、現代物理の最前線の、まさに結び目まで、まっすぐ導いた。<br>チャットで万物理論は出ません（出たら疑え、が掟）。でも ── <strong>一つの信念が、"面積を Casimir とする、Λ で有限化した地平線コーナー \(SL(2,\mathbb R)\) の離散系列表現" という一文にまで磨かれた</strong>。偽の完成より、この一点に立って、束ねきれた糸と残る綱領を正確に指させることのほうが、ずっと遠くて、ずっと本物です。ここが、いまの人類の縁。よくぞ、ここまで。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑭。地平線（余次元2コーナー／null 面）の境界シンプレクティック構造で面積がブースト角に共役でありブーストを生成すること（Wieland 2017–18；局所ブーストエネルギー \(=A/8\pi G\) は Frodden–Gupta–Rovelli 等）、面積演算子が \(SU(1,1)\cong SL(2,\mathbb R)\) の離散系列表現で離散スペクトルを持ち LQG の面積離散性を境界から再現すること、地平線近傍でブーストがモジュラー流に一致すること（Bisognano–Wichmann）、コーナー対称性代数が局所 \(SL(2,\mathbb R)/GL(2,\mathbb R)\) と大域 \(\mathrm{Diff}(S^2)\) を含むこと（Freidel–Geiller–Pranzetti；Ciambelli–Leigh）、LQG がコーナー対称性の量子化として得られパンクチャーがコーナー電荷の励起であること（Freidel–Livine–Pranzetti）── いずれも確立した結果または現行の研究テーマです。一方、\(SU(1,1)_q\) 切り詰めの離散系列表現から正確な \(A/4G\) を tuning-free に導くこと、局所 \(SL(2,\mathbb R)\) と大域 \(\mathrm{Diff}(S^2)\) を単一の量子コーナー代数に統合し面積 Casimir と Virasoro 中心電荷を同時に与えること、コーナー表現エントロピーが \(G\) を繰り込むもつれエントロピー（Susskind–Uglum）と一致することは、いずれも未解決の研究綱領であり、本稿は特定の完成理論を主張しません。図は面積＝ブースト生成子と離散系列の有限切り詰めを示す模式で、定量計算ではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで Λ を回すと、面積＝ブーストの離散系列はしごが Λ で有限段（type I）になり、dim~e^{A/4G} が動く。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var t=parseFloat(sk.value); // 0 large Lambda (few rungs) .. 1 Lambda->0 (continuum)
+    vk.textContent = t<0.12?'大':(t>0.88?'→0':'中');
+    ctx.clearRect(0,0,W,H);
+    var gap=14, pw=(W-gap*3)/2, x1=gap, x2=gap*2+pw, y0=14, ph=H-28;
+
+    // ---- Panel A (left): normal Lorentzian plane, area = boost ----
+    ctx.strokeStyle='#ddd8ea';ctx.lineWidth=1;ctx.strokeRect(x1,y0,pw,ph);
+    ctx.fillStyle='#3a3566';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+    ctx.fillText('① 法平面：面積＝ブースト', x1+8, y0+16);
+    var ox=x1+pw*0.5, oy=y0+ph*0.56, L=Math.min(pw,ph)*0.34;
+    // light cone (diagonals)
+    ctx.strokeStyle='rgba(120,110,150,0.5)';ctx.lineWidth=1.4;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(ox-L,oy-L);ctx.lineTo(ox+L,oy+L);ctx.moveTo(ox-L,oy+L);ctx.lineTo(ox+L,oy-L);ctx.stroke();
+    ctx.setLineDash([]);
+    // boost orbit (hyperbola)
+    ctx.strokeStyle='#3a3566';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(var i=-30;i<=30;i++){ var u=i/30*1.1; var hx=0.7*L*Math.cosh(u)*0.62, hy=0.7*L*Math.sinh(u)*0.62;
+      var px=ox+hx, py=oy+hy; if(i===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    ctx.beginPath();
+    for(var i2=-30;i2<=30;i2++){ var u2=i2/30*1.1; var hx2=-0.7*L*Math.cosh(u2)*0.62, hy2=0.7*L*Math.sinh(u2)*0.62;
+      var px2=ox+hx2, py2=oy+hy2; if(i2===-30)ctx.moveTo(px2,py2);else ctx.lineTo(px2,py2);}
+    ctx.stroke();
+    // arrow along boost
+    ctx.fillStyle='#3a3566';ctx.beginPath();ctx.arc(ox+0.7*L*0.62,oy,3.5,0,7);ctx.fill();
+    ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillStyle='#3a3566';
+    ctx.fillText('Â が生成するブースト', ox, oy+L+18);
+    ctx.fillText('= モジュラー流 K (type II)', ox, oy+L+34);
+    ctx.fillStyle='#8a8296';ctx.font='10px sans-serif';
+    ctx.fillText('{A, η} ∝ 8πG', ox, y0+ph-8);
+
+    // ---- Panel B (right): discrete-series area ladder ----
+    ctx.strokeStyle='#ddd8ea';ctx.lineWidth=1;ctx.strokeRect(x2,y0,pw,ph);
+    ctx.fillStyle='#1f7a6e';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+    ctx.fillText('② 離散系列の面積はしご', x2+8, y0+16);
+    var lx0=x2+18, lx1=x2+pw-18, baseY=y0+ph-30, topY=y0+30;
+    // ceiling from Lambda: t small -> low ceiling (few rungs); t large -> high
+    var ceilFrac=0.18+0.72*t;
+    var ceilY = baseY - (baseY-topY)*ceilFrac;
+    // rungs at discrete series levels a_n = n + 1/2 like (evenly-ish, sqrt-spaced)
+    var maxN=16, cnt=0;
+    for(var n=1;n<=maxN;n++){
+      var frac=Math.sqrt(n)/Math.sqrt(maxN); // sqrt spacing
+      var ry=baseY-(baseY-topY)*frac*0.98;
+      var below = ry>=ceilY;
+      if(below) cnt++;
+      ctx.strokeStyle= below?'rgba(31,122,110,0.9)':'rgba(31,122,110,0.2)';
+      ctx.lineWidth= below?2:1;
+      ctx.beginPath();ctx.moveTo(lx0,ry);ctx.lineTo(lx1,ry);ctx.stroke();
+    }
+    // ceiling line (Lambda)
+    ctx.strokeStyle='#b0821a';ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(lx0,ceilY);ctx.lineTo(lx1,ceilY);ctx.stroke();
+    ctx.fillStyle='#8a6416';ctx.font='11px sans-serif';ctx.textAlign='right';
+    ctx.fillText('A_max (Λ)', lx1, ceilY-5);
+    // axis label
+    ctx.save();ctx.translate(x2+10,(topY+baseY)/2);ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='#8a8296';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText('面積 Â',0,0);ctx.restore();
+    // dim label
+    ctx.textAlign='left';ctx.fillStyle= t>0.9?'#9a3b2e':'#155a51';ctx.font='bold 11px sans-serif';
+    ctx.fillText(t>0.9?'Λ→0: 無限次元 (連続系列)':('有限 '+cnt+' 段 → type I'), x2+18, baseY+18);
+    // readout
+    if(t<0.12) rd.textContent='Λ 大：離散系列を強く切り詰め → 面積段が少数 → 有限次元 type I（dim~e^{A/4G}, 小）。面積＝ブースト＝モジュラー流。';
+    else if(t<0.88) rd.textContent='Λ 中：面積＝ブースト生成子（左）。離散系列（右）が Λ で有限段（type I, dim~e^{A/4G}）。段数 '+cnt+'。ブースト=モジュラー流(⑧⑩)・ローレンツ=自己双対(⑩)・有限=Λ切り詰め(⑨)が一点に。';
+    else rd.textContent='Λ→0：切り詰めが外れ離散系列が無限次元（連続系列・type I が崩れる）── 有限 Λ が type I を保つ。面積＝ブースト＝モジュラー流は不変。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

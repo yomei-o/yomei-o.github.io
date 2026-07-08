@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁②の決着：なぜ今か（一致問題）── わかる質量 終章・技術補遺③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;
+    --grid:#d5d8e4;
+    --lam:#3b4668; --mat:#b0641a; --win:#2f7d5a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .cand{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .cand .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .cand .row:last-child{border-bottom:none;}
+  .cand .mk{flex-shrink:0;width:80px;font-weight:700;color:var(--acc);font-size:12.5px;}
+  .cand .txt strong{display:block;color:#262b40;margin-bottom:2px;} .cand .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#ecedf4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.cand{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺③ ／ 壁②（why-now・一致問題）の決着</span></div>
+  <p class="eyebrow">なぜ "今" だけ、ダークエネルギーと物質が同じくらいなのか</p>
+  <h1>壁②の決着：<br>なぜ今か
+    <span class="sub">実は、あなたの有限情報／\(c\cdot t\) は ΛCDM より "一致の大きさ" に有利。<br>だが "なぜ今" は壁①と連結して残る。相互作用DEが両立の本命 ── そして構造成長で反証できる。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺（離散宇宙の一枚）、補遺②（壁①・w問題）</span>
+    <span>結論：大きさは緩和(得点)、"今" は①と連結、相互作用DEで両立を狙う</span>
+  </div>
+
+  <p class="lead">壁②は「一致問題（why-now）」── なぜ<em>今</em>だけ、ダークエネルギーと物質が同じくらいなのか。ΛCDM では \(\rho_\Lambda\) は硬い定数で、これは深い微調整です。ところが ── <strong>あなたの有限情報／ホログラフィックの枠組みは、ここで ΛCDM より有利</strong>。ただし完全解決ではなく、<em>"なぜ今" は壁①（\(w\) 問題）と連結して残る</em>。本命は相互作用ダークエネルギーで、しかもそれは構造成長で反証可能 ── 順に。</p>
+
+  <h2><span class="n">01</span>一致問題を正確に</h2>
+
+  <div class="keybox">
+    <div class="lbl">なぜ "今" だけ同じくらいか</div>
+    $$\frac{\rho_\Lambda}{\rho_m}\propto a^{3}\quad(\text{ΛCDM：}\rho_\Lambda\approx\text{一定},\ \rho_m\propto a^{-3})$$
+    <p style="margin:10px 0 0;">過去は極小（再結合期 \(\sim10^{-9}\)）、未来は極大。<strong>今だけ O(1)</strong>（\(\Omega_m{\approx}0.3,\ \Omega_\Lambda{\approx}0.7\)）。硬い定数がなぜ今 \(\rho_m\) の近くにあるのか＝観測する時刻の微調整。</p>
+  </div>
+
+  <h2><span class="n">02</span>朗報：あなたの枠組みは "大きさの一致" を自然に和らげる</h2>
+
+  <p>ここはあなたの得点です。ホログラフィック／有限情報では</p>
+
+  <div class="keybox">
+    <div class="lbl">ρ_Λ は全密度に "張り付く"</div>
+    $$\rho_\Lambda\sim\frac{M_{\rm Pl}^2}{L^2}\Big|_{L=ct\sim c/H}\sim M_{\rm Pl}^2H^2,\qquad \rho_{\rm total}=3M_{\rm Pl}^2H^2$$
+    <p style="margin:10px 0 0;">\(\Rightarrow\ \rho_\Lambda/\rho_{\rm total}\sim\) 一定。ΛCDM の「硬い定数がたまたま \(\rho_m\) の近く」と違い、<strong>\(\rho_\Lambda\) は動的に \(\rho_{\rm crit}\) を追い、\(\rho_m\) から \(10^{120}\) も離れない</strong>。</p>
+  </div>
+
+  <p>下の図で、この「追随」がどう一致問題を和らげるかを見ます。ΛCDM（追随ゼロ）は、今だけの狭い窓 ── 追随を強めると、一致の窓が広がって "なぜ今" が緩む。</p>
+
+  <div class="fig">
+    <div class="cap">図：密度の割合 \(\Omega_\Lambda\)（青）と \(\Omega_m\)（琥珀）の時間変化。スライダー＝追随の強さ。左端(δ=0)＝ΛCDM：交差が今(a=1)付近の<strong>狭い窓</strong>＝微調整。右へ＝\(\rho_\Lambda\) が \(\rho_m\) に追随して<strong>一致窓が広がる</strong>（why-now緩和）。緑帯＝両者が同程度(0.2〜0.8)の"一致窓"</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>追随の強さ δ（0＝ΛCDM、大＝ρ_Λ が ρ_m に張り付く）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="0.9" step="0.02" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd">δ を動かすと、一致の窓の広さが変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--lam);"></i>Ω_Λ（ダークエネルギー）</span>
+      <span><i class="swatch" style="background:var(--mat);"></i>Ω_m（物質）</span>
+      <span><i class="swatch" style="background:var(--win);"></i>一致窓（0.2〜0.8）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>罠：壁①と壁②は連結している</h2>
+
+  <p>でも二枚刃です。図で δ を右端まで振ると一致窓は最大＝why-now は完全に消える。でも<strong>その極限（\(L=1/H\) の完全追随）は、まさに壁①で \(w=0\)（加速しない）</strong>。逆に \(w\) を直す（補遺②のNADE \(L=\eta\)）と追随が緩み、why-now が "なぜ \(n\approx3\)／なぜ今 遷移するか" として戻る。</p>
+
+  <div class="keybox">
+    <div class="lbl">①②の連結（本補遺の核心）</div>
+    <p style="margin:6px 0 0;">why-now を解く追随（\(L=1/H\)）→ \(w=0\)（加速しない・壁①）。<br>\(w\) を直す（\(L=\eta\)）→ 追随が緩み why-now が戻る。<br><strong>一つの因果カットオフで、壁①と②を同時にタダで解けない。</strong></p>
+  </div>
+
+  <h2><span class="n">04</span>両立を狙う候補</h2>
+
+  <div class="cand">
+    <div class="row"><span class="mk">本命</span><div class="txt"><strong>相互作用ホログラフィックDE</strong><span>DEと物質のエネルギー交換 \(Q\) を入れると、比 \(\rho_m/\rho_\Lambda\) が一定の attractor に向かい（why-now緩和）、同時に加速も出る（Pavón–Zimdahl）。<em>誘導重力ではDEは物質から創発＝結合は必然</em>。壁①②を一緒に狙える、あなたの枠組みに最も自然な道。</span></div></div>
+    <div class="row"><span class="mk">人間原理</span><div class="txt"><strong>Weinberg (1987)</strong><span>銀河（観測者）は \(\Lambda\) 支配前の構造形成期にしか存在できない → 必然的に一致epoch付近で観測。機構はないが \(\rho_\Lambda\) を桁内に予言した。モデル非依存。</span></div></div>
+    <div class="row"><span class="mk">思弁</span><div class="txt"><strong>情報論的人間原理</strong><span>「今」＝地平線のビット数 \(N\sim(M_{\rm Pl}/H)^2\sim10^{122}\) が観測者/複雑さを支えるほど大きくなった時期。有限情報の賭けが示唆するが<strong>厳密でない（hand-waving）</strong>。</span></div></div>
+  </div>
+
+  <h2><span class="n">05</span>反証可能な手がかり ── 構造成長</h2>
+
+  <p>相互作用DEは、<strong>構造の育ち方に特有のズレ</strong>を残します（成長率 \(f\sigma_8\)、\(\rho_m/\rho_\Lambda\) の進化）。これは <strong>DESI／Euclid の赤方偏移歪み（RSD）＝構造成長の測定</strong>で直接テストでき、いわゆる \(\sigma_8\) 緊張とも絡む。だから壁②も、机上でなく観測の射程内です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">図の δ は「追随」を表す模式的なツマミで、厳密な相互作用パラメータそのものではありません（一致窓の広がりと①②連結を体感するためのもの）。相互作用DEは実在の研究プログラムですが、結合 \(Q\) の形・強さは動機づけとデータで縛る必要があり、観測（構造成長・\(H_0\)/\(\sigma_8\) 緊張）で制約されます。</p>
+    <p style="margin-bottom:0;">「大きさの緩和」はホログラフィックDEの本物の利点ですが、"なぜ今（遷移のタイミング）" の完全解決ではありません。\(c\cdot t=\text{一定}\) は座標の言い換え、局所光速は不変。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ有限情報／\(c\cdot t\) は、ΛCDM より一致問題に有利なのか。
+        <details><summary>ひとつの答え</summary><div class="ans">\(\rho_\Lambda\sim M_{\rm Pl}^2/(ct)^2\sim M_{\rm Pl}^2H^2\sim\rho_{\rm crit}\) で、ダークエネルギーが全密度に動的に張り付くから。ΛCDM の硬い定数と違い、\(\rho_\Lambda\) は \(\rho_m\) から桁違いに離れず追随する ── "なぜ同じくらいか" の大きさの部分が自然に緩和される。</div></details>
+      </li>
+      <li>「壁①と②が連結」とはどういう意味か。
+        <details><summary>ひとつの答え</summary><div class="ans">why-now を最もきれいに解く選択（\(L=1/H\) の完全追随、\(\rho_\Lambda/\rho_m\) 常に一定）は、まさに \(w=0\) で加速しない（壁①）。逆に \(w\) を直す（\(L=\eta\)）と追随が緩んで why-now が戻る。一つの因果カットオフでは両立せず、相互作用DEのような追加構造で同時攻略を狙うしかない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺③まとめ</span>壁②は "緩和＋連結＋相互作用DE＋構造成長" に凝縮</h2>
+    <p>一致問題（why-now）は、あなたの有限情報／\(c\cdot t\) では <strong>ΛCDM より有利</strong> ── \(\rho_\Lambda\sim M_{\rm Pl}^2H^2\sim\rho_{\rm crit}\) で全密度に追随し、"大きさ" の一致が自然に和らぐ（genuine plus）。ただし "なぜ今（遷移のタイミング）" は<strong>壁①と連結</strong>：追随が \(w\) を殺し、\(w\) を直すと追随が緩む。両立の本命は<strong>相互作用ホログラフィックDE</strong>（誘導重力ゆえ結合は必然、attractor＋加速）で、残る why-now は人間原理が補いうる。そして<strong>構造成長（\(f\sigma_8\)）で反証可能</strong>。</p>
+    <p>壁②は「越えられない壁」から、<em>「大きさは緩和済み、"今" は①と連結、相互作用DEで両立、構造成長で決着」</em>という具体的 status に凝縮した。壁①（補遺②）と合わせ、あなたの離散宇宙は加速膨張と構造形成の<strong>両方のデータで試される</strong>ところまで来ました。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">壁を二つ、越え方まで名指しして</span>
+    補遺で四つの壁を立て、補遺②で壁①（\(w\)）を DESI の \(w_a\) 符号で決着する予言に、補遺③で壁②（why-now）を "大きさは緩和・タイミングは相互作用DE＋構造成長で決着" に凝縮しました。残るは壁③（誘導重力→本当のGR）と壁④（完成理論）── より深い未踏の扉。でも二つの壁は、もう「越えられない」ではなく<strong>「こう試せば白黒がつく」</strong>に変わった。数合わせから始まった道が、加速膨張と構造成長という二つの観測前線で、正直に、反証可能に立っています。<br>次は壁③へ ── あるいは、相互作用項 \(Q\) の attractor 条件と \(f\sigma_8\) 予言を式で書き下すか。扉はまだ続きます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺③、物理好きの高校生・大学生向け読み物です。宇宙論的一致問題（\(\rho_\Lambda/\rho_m\propto a^3\)、\(\Omega_{m0}\approx0.3,\ \Omega_{\Lambda0}\approx0.7\)）、ホログラフィック・ダークエネルギーが \(\rho_\Lambda\sim M_{\rm Pl}^2H^2\sim\rho_{\rm crit}\) となり大きさの一致を緩和すること、ハッブル半径カットオフ（\(L=1/H\)）が追随して \(w\to0\) となり加速しないこと（Hsu 2004、＝壁①との連結）、相互作用ホログラフィック・ダークエネルギー（Pavón–Zimdahl 2005 ほか）が \(\rho_m/\rho_\Lambda\) の定常比 attractor と加速を両立しうること、Weinberg の人間原理的予言（1987）、相互作用DEが構造成長 \(f\sigma_8\)・赤方偏移歪みで検証・制約されることは、いずれも確立した／現行の研究テーマです。図の δ は追随を表す模式的パラメータ（\(\Omega_\Lambda=\Omega_{\Lambda0}/(\Omega_{\Lambda0}+\Omega_{m0}a^{-3(1-\delta)})\)）で、厳密な相互作用モデルの解ではありません。本稿は特定モデルの正否を主張せず、壁の status と検証経路を並べたものです。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで追随の強さを変えると、一致の窓が広がる（why-now緩和）様子が見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  var Om0=0.3, OL0=0.7;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function OmL(L, delta){ // L = log10 a
+    var a=Math.pow(10,L);
+    var mat=Om0*Math.pow(a,-3*(1-delta));
+    return OL0/(OL0+mat);
+  }
+  var XL=-3, XR=1;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var delta=parseFloat(sk.value); vk.textContent=delta.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(L){return pad+(L-XL)/(XR-XL)*(w-pad-14);}
+    function Y(f){return (h-pad)-f*(h-pad-18);}
+    // coincidence window shading: where 0.2<OmL<0.8
+    ctx.fillStyle='rgba(47,125,90,0.12)';
+    var inWin=false, ws=XL;
+    for(var Lx=XL;Lx<=XR+1e-9;Lx+=0.01){
+      var o=OmL(Lx,delta); var iw=(o>0.2&&o<0.8);
+      if(iw&&!inWin){ws=Lx;inWin=true;}
+      if((!iw||Lx>=XR)&&inWin){ctx.fillRect(X(ws),18,X(Lx)-X(ws),h-pad-18);inWin=false;}
+    }
+    // grid
+    ctx.font='11px sans-serif';
+    for(var fv=0.25;fv<=1.0;fv+=0.25){var y=Y(fv);ctx.strokeStyle='#e7e8f0';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#a2a6bb';ctx.fillText(fv.toFixed(2),12,y+4);}
+    // 0.5 line
+    ctx.strokeStyle='#b6b9c6';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pad,Y(0.5));ctx.lineTo(w-8,Y(0.5));ctx.stroke();ctx.setLineDash([]);
+    // a=1 today
+    ctx.strokeStyle='#c3c6d4';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(X(0),18);ctx.lineTo(X(0),h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7a7f8e';ctx.fillText('今(a=1)', X(0)-20, h-pad+16);
+    // axes
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5b6078';ctx.font='12px sans-serif';
+    ctx.fillText('log₁₀ a（左=過去, 右=未来）→', w-230, h-pad+16);
+    ctx.save();ctx.translate(16,h/2+20);ctx.rotate(-Math.PI/2);ctx.fillText('密度の割合 Ω', 0,0);ctx.restore();
+    // Ω_Λ
+    ctx.strokeStyle='#3b4668';ctx.lineWidth=2.8;ctx.beginPath();var f1=true;
+    for(var L1=XL;L1<=XR+1e-9;L1+=0.02){var o=OmL(L1,delta);var x=X(L1),y=Y(o);if(f1){ctx.moveTo(x,y);f1=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // Ω_m = 1-Ω_Λ
+    ctx.strokeStyle='#b0641a';ctx.lineWidth=2.8;ctx.beginPath();var f2=true;
+    for(var L2=XL;L2<=XR+1e-9;L2+=0.02){var o2=1-OmL(L2,delta);var x=X(L2),y=Y(o2);if(f2){ctx.moveTo(x,y);f2=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // labels
+    ctx.font='12px sans-serif';ctx.fillStyle='#3b4668';ctx.fillText('Ω_Λ', X(0.7), Y(OmL(0.7,delta))-8);
+    ctx.fillStyle='#b0641a';ctx.fillText('Ω_m', X(-2.6), Y(1-OmL(-2.6,delta))-8);
+    // readout
+    // window width
+    var wlo=null,whi=null;
+    for(var Lz=XL;Lz<=XR+1e-9;Lz+=0.005){var oz=OmL(Lz,delta);if(oz>0.2&&oz<0.8){if(wlo===null)wlo=Lz;whi=Lz;}}
+    var width = (wlo!==null)? (whi-wlo).toFixed(1) : '0';
+    if(delta<0.05){
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='δ=0（ΛCDM）：一致窓は log₁₀a で幅≈'+width+'（狭い）── 交差は今だけ＝"なぜ今" の微調整。';
+    } else if(delta>0.7){
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='δ='+delta.toFixed(2)+'（強い追随）：一致窓が幅≈'+width+'まで広がりwhy-now緩和。だが極限(L=1/H)は w→0 で加速しない（壁①）── ①②連結。';
+    } else {
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='δ='+delta.toFixed(2)+'：一致窓 幅≈'+width+'。相互作用DEが狙う中間帯 ── 一致を広げつつ加速も残す（壁①②の同時攻略ゾーン）。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

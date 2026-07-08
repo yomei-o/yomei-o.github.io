@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>残る穴の地図：確かめた／試せる／鋭く開いた／ただ一つの穴 ── わかる質量 終章・技術補遺⑫</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4c5060;
+    --paper:#f6f7f9; --paper-edge:#d4d7e0;
+    --side:#3a4250; --side-bg:#eceef3;
+    --warn:#8a4b2f;
+    --calc:#2d3345; --calc-bg:#e7eaf0;
+    --rule:#ccd0da; --hair:#b6bbc8;
+    --acc:#3a4250;
+    --grid:#d4d8e2;
+    --settled:#2f7d5a; --testable:#8a5320; --sharp:#6e3350; --hole:#2f3550;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d7e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#293040;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #ccd1de;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e7eaf0;color:#2d3345;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfdff,#eceef4);}
+
+  .tier{margin:20px 0;border-radius:5px;overflow:hidden;border:1px solid var(--rule);}
+  .tier .head{padding:10px 16px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-weight:700;font-size:14px;color:#fff;letter-spacing:.05em;display:flex;justify-content:space-between;}
+  .tier .body{padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;line-height:1.7;background:#fbfbfd;}
+  .tier .body ul{margin:4px 0;padding-left:1.2em;} .tier .body li{margin:4px 0;}
+  .t-settled .head{background:var(--settled);} .t-test .head{background:var(--testable);}
+  .t-sharp .head{background:var(--sharp);} .t-hole .head{background:var(--hole);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eceef4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#262b3d;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaecf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e7eaf0;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#262b3d;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tier{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#63677a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑫ ／ 残る穴の地図（旅の俯瞰）</span></div>
+  <p class="eyebrow">25本の登攀の到達点を、一枚の地図に</p>
+  <h1>残る穴の地図<br><span style="font-size:22px;">確かめた／試せる／鋭く開いた／ただ一つの穴</span>
+    <span class="sub">この旅が成したのは「解いた」ではなく ── <em>「宇宙＝有限リソースの計算機」という曖昧な信念を、"量子重力のどの一片に賭けているか" の精密な地図に変えた</em>こと。四段で俯瞰する。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑦〜⑪ の全体</span>
+    <span>到達点：残る穴は全部、ただ一つ（QG動力学）に落ちる</span>
+  </div>
+
+  <p class="lead">長い登攀でした ── 質量の床（第1〜6回）から、S=A/4 の最前線（⑦）、type I 命題（⑧）、Λ の舞台（⑨）、地平線 CFT の融合（⑩）、有限性の代償と予言（⑪）まで。締めに、掟どおり「解いた」を主張せず、<strong>到達点を正直に仕分けた地図</strong>を置きます。四段：<strong>確かめた（settled）／試せる（testable）／鋭く開いた（sharp open）／ただ一つの穴（the one hole）</strong>。そして最後に見えるのは ── <em>残る穴はバラバラでなく、全部が一つの穴に落ちる</em>、という構造です。</p>
+
+  <div class="fig">
+    <div class="cap">図：25本の旅の到達点を四段に。下から <strong>確かめた（固い足場）→ 試せる（観測が裁く）→ 鋭く開いた（欠けた一つの方程式）→ ただ一つの穴（QG動力学・未着工の親）</strong>。スライダーで段を選ぶと、そこに属する結果と現状が灯る</div>
+    <canvas id="cv" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>段を選ぶ（0＝確かめた … 3＝ただ一つの穴）<span class="val" id="vk">確かめた</span>
+        <input type="range" id="sk" min="0" max="3" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd">確かめた段：足場が固い結果。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--settled);"></i>確かめた</span>
+      <span><i class="swatch" style="background:var(--testable);"></i>試せる</span>
+      <span><i class="swatch" style="background:var(--sharp);"></i>鋭く開いた</span>
+      <span><i class="swatch" style="background:var(--hole);"></i>ただ一つの穴</span>
+    </div>
+  </div>
+
+  <h2><span class="n">01</span>確かめた（settled）── 足場が固い</h2>
+
+  <div class="tier t-settled">
+    <div class="head"><span>SETTLED ── 立てる足場</span><span>確立／厳密</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>II₁ ＝ 有限 I_N の極限</strong>（⑧⑨）── 「有限性」の意味は数学的に厳密。連続極限こそが type I を壊す犯人。</li>
+        <li><strong>\(S=A/4G\) が robustly 出る</strong>（⑦）── もつれ＋誘導重力＋一般化エントロピー（cutoff 非依存）。</li>
+        <li><strong>対数補正 \(-\tfrac32\ln A\) が一致</strong>（⑩）── LQG と CFT が γ 非依存の次数で符合。</li>
+      </ul>
+    </div>
+  </div>
+  <p>ここは「賭け」でなく、標準物理の到達点。あなたの直感（有限・離散）が、代数の型・エントロピーの言葉で<strong>正確に立つ</strong>ことが確かめられた場所。</p>
+
+  <h2><span class="n">02</span>試せる（testable）── 観測が裁く</h2>
+
+  <div class="tier t-test">
+    <div class="head"><span>TESTABLE ── 反証可能な種</span><span>DESI／Euclid 等</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>\(w\ne-1\)／ダークエネルギーの緩和</strong>（④⑤⑪）── BB 回避＋c·t の育つリソースが要求。DESI が今日 \(w_0>-1\) を示唆（\(w_a\) の符号は緊張＝観測が裁く）。</li>
+        <li><strong>離散スペクトル・Poincaré 再帰</strong>（⑤⑪）── 有限次元の帰結。原理的な予言。</li>
+        <li><strong>ユニタリ性・Page 曲線が有限で閉じる</strong>（⑪）── 有限性の良い刃。</li>
+      </ul>
+    </div>
+  </div>
+  <p>信念でなく<strong>反証可能な立場</strong>。とくに \(w\) の緩和は、無矛盾性・枠組み・観測の三つが同じ向きを指す ── 弱点が予言に昇格した種。</p>
+
+  <h2><span class="n">03</span>鋭く開いた（sharp open）── 欠けた一つの方程式</h2>
+
+  <div class="tier t-sharp">
+    <div class="head"><span>SHARP OPEN ── 式の粒度で書けた問い</span><span>未解決だが精密</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>地平線 CFT の \(k\leftrightarrow c\) 一致</strong>（⑩）── LQG の Chern–Simons レベル \(k\) と、エッジモード／Carlip の中心電荷 \(c\) が同一の境界 CFT か。成れば Cardy が \(S=A/4G\) を返し、\(\gamma\) が導出され、<strong>二つの 1/4 が一つになる</strong>。</li>
+      </ul>
+    </div>
+  </div>
+  <p>これは「深い謎」でなく<strong>精密な問い</strong>。論文の問題設定の粒度で書けており、Carlip・Jacobson の路線がまさにここを狙っている。繋がっていないが、繋ぐべき一点は特定できた。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>ただ一つの穴（the one hole）── 残り全部の親</h2>
+
+  <div class="tier t-hole">
+    <div class="head"><span>THE ONE HOLE ── 量子重力の動力学</span><span>未着工の親</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>背景独立な有限動力学の実在</strong>（亀裂①）── 状態が可算で、\(G\to0\) で CLPW の II₁ を \(S_{\rm gen}\) 込みで返す理論が実在するか。<strong>＝量子重力の動力学的完成そのもの。</strong></li>
+        <li>断面 ── <strong>4D スピンフォームの完成</strong>（③、未着工・青写真つき）、<strong>基層の融合</strong>（④、未着工＋"要るのか"前問）、<strong>観測者の関係的創発</strong>（Page–Wootters、実現なし）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="keybox hl">
+    <div class="lbl">構造 ── 残る穴は全部、一つに落ちる</div>
+    <p style="margin:0;">①（動力学）が穴そのもの。③は覗き込むトンネル、④と観測者は壁の細部。<strong>残る亀裂 ①③④＋観測者は、すべて「量子重力の動力学的理論を、我々は持っていない」という一つの穴の断面。</strong>これは c·t 枠組みの特別な失敗でなく、物理学全体の THE 未解決問題。</p>
+  </div>
+
+  <h2><span class="n">05</span>メタ判定 ── 旅が成したこと</h2>
+
+  <p>穴（①）は誰にも埋まっていない。では、この登攀は何を成したか ──</p>
+
+  <div class="aside">
+    <span class="tag">達成 ── 信念を地図に変えた</span>
+    「宇宙は有限リソースの計算機」という曖昧な信念を、<strong>"量子重力のどの一片に賭けているか" の精密な地図</strong>に変えた。settled（立てる）／testable（試せる）／sharp open（式で書けた問い）／the one hole（QG動力学）。<strong>賭けの中身が、論文の粒度で仕分けされた。</strong>穴を埋めた人は多くないが、"自分がどの穴に賭けているか" をこれだけ正確に指させる人も、多くない。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 掟</span>
+    <p style="margin-top:0;">この地図は「解いた」を一つも含みません。settled は標準物理、testable は未確定、sharp open は未解決、the one hole は量子重力そのもの。四段のどこでも、会話で穴を「埋めた」と宣言したら、それがフェイクです。</p>
+    <p style="margin-bottom:0;">そして最上段（the one hole）が埋まらないことは、この枠組みの敗北ではありません ── <strong>そこに人類の誰も立っていない</strong>から。旅の値打ちは、最後の穴を飛び越えたか（誰にも無理）でなく、<strong>足場・種・鋭い問い・穴を、正直に四段へ仕分けきれた</strong>ことにあります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ残る亀裂 ①③④＋観測者は「一つの穴」だと言えるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">①（背景独立な有限動力学の実在＝QG動力学）が親で、それが手に入れば③（4D理論）でもあり、④（基層の働き）を確定し、観測者（関係的時計）を内包する。③④・観測者は①の部分問題／断面にすぎない。だから残る穴は全部、「量子重力の動力学的理論を持っていない」という単一の穴に落ちる。これは枠組み固有でなく物理全体の未解決。</div></details>
+      </li>
+      <li>「解いていない」のに、この旅に値打ちがあるのはなぜか。
+        <details><summary>ひとつの答え</summary><div class="ans">曖昧な信念を、settled/testable/sharp open/the one hole の四段に仕分け、賭けが量子重力のどの一片に依るかを論文の粒度で特定したから。最上段（QG動力学）に誰も立っていない以上、埋められないのは敗北でなく現在地。旅の値打ちは穴を飛び越えたかでなく、足場・種・鋭い問い・穴を正直に地図にできたことにある。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑫まとめ</span>四段の地図 ── そして穴は一つ</h2>
+    <p>25本の登攀を四段に仕分けた。<strong>確かめた</strong>（II₁＝有限I_N、S=A/4G、対数一致）は標準物理として立つ足場。<strong>試せる</strong>（w の緩和、離散スペクトル、ユニタリ性）は反証可能な種。<strong>鋭く開いた</strong>（地平線 CFT の \(k\leftrightarrow c\)）は式の粒度で書けた一つの問い。<strong>ただ一つの穴</strong>（背景独立な有限動力学＝QG動力学）は残り全部の親で、③④・観測者はその断面。</p>
+    <p>残る穴は全部、「量子重力の動力学を我々は持っていない」という一つに落ちる ── <strong>枠組みの敗北でなく、物理学全体の最前線</strong>。この旅が成したのは穴を埋めたことでなく、<strong>曖昧な信念を、賭けの中身を論文の粒度で示す精密な地図に変えたこと</strong>。掟どおり、穴を埋めたとは言いません。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる質量 ── 終章の、本当の締め</span>
+    「重さって何？」から始まって、質量の床・対称性・走り・シーソー・IR フロア・meV の握手を抜け、離散仮説の四つの壁を越え、S=A/4 の最前線・type I 命題・Λ の舞台・地平線 CFT・有限性の代償まで登りました。最後に残ったのは、埋まらない一つの穴 ── <strong>量子重力の動力学</strong>。それは、あなたの賭けが本物の最前線に直結していた証です。<br>チャットで万物理論は出ません（出たら疑え、が掟）。でも ── <strong>あなたの「宇宙＝有限リソース」は、掘るほど曖昧な信念でなく、確かめた足場・試せる種・鋭い問い・ただ一つの穴、という論文の粒度の地図になった</strong>。偽の完成より、この地図を手にして最前線の縁に正直に立てることのほうが、ずっと遠くて、ずっと本物です。ここまで、よくぞ登り切りました。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑫、旅の俯瞰図です。四段の内訳 ── 確かめた（超有限 II₁ 因子が有限次元行列環の極限であること、もつれ＋誘導重力による \(S=A/4G\)、γ 非依存の対数補正の一致）、試せる（ダークエネルギー \(w\ne-1\) の緩和と DESI/Euclid、有限次元由来の離散スペクトルと Poincaré 再帰、有限次元と unitarity/Page 曲線の整合）、鋭く開いた（地平線境界 CFT の Chern–Simons レベルと中心電荷の一致による \(1/4\) の tuning-free 化）、ただ一つの穴（背景独立で有限・UV完全な量子重力動力学の実在と、その半古典 type II・連続 type III₁ の回復）── の位置づけは補遺⑦〜⑪ の各注記のとおりで、いずれも確立した結果・現行の研究テーマ・未解決問題の別を明示しています。本稿は特定の完成理論を主張せず、既知の到達点と残る未解決を四段に整理したものです。図は結果の分類を示す模式で、定量スケールではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで四段（確かめた／試せる／鋭く開いた／ただ一つの穴）を選ぶと、各段の結果と現状が灯る。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var tiers=[
+    {name:'確かめた', sub:'SETTLED ── 立てる足場', col:'#2f7d5a',
+     chips:['II₁ = 有限 I_N の極限（⑧⑨）','S=A/4G が robustly（⑦）','対数補正 −3/2 の一致（⑩）'],
+     read:'確かめた（settled）：標準物理として立つ足場。有限・離散が代数の型とエントロピーで正確に立つ。'},
+    {name:'試せる', sub:'TESTABLE ── 反証可能な種', col:'#8a5320',
+     chips:['w≠−1 / 緩和（DESI・④⑤⑪）','離散スペクトル・再帰（⑤⑪）','ユニタリ性・Page 曲線（⑪）'],
+     read:'試せる（testable）：反証可能な種。w の緩和は無矛盾性・枠組み・観測が同じ向きを指す＝予言に昇格。'},
+    {name:'鋭く開いた', sub:'SHARP OPEN ── 式で書けた問い', col:'#6e3350',
+     chips:['地平線CFTの k↔c 一致（⑩）','＝二つの 1/4 を一つにする欠けた方程式'],
+     read:'鋭く開いた（sharp open）：未解決だが式の粒度で書けた一つの問い。k↔c が成れば γ が導出され二つの1/4が一つに。'},
+    {name:'ただ一つの穴', sub:'THE ONE HOLE ── QG動力学', col:'#2f3550',
+     chips:['背景独立な有限動力学の実在（①＝QG動力学）','断面：4D完成（③）／基層融合（④）／観測者創発'],
+     read:'ただ一つの穴（the one hole）：背景独立な有限動力学＝量子重力そのもの。残る亀裂 ①③④＋観測者は全部この一つの穴の断面。誰も埋めていない。'}
+  ];
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath(); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var sel=parseInt(sk.value,10); vk.textContent=tiers[sel].name;
+    ctx.clearRect(0,0,W,H);
+    var padX=14, padT=12, gap=10;
+    var bandH=(H-padT*2-gap*3)/4;
+    // draw from bottom (settled) to top (hole): index 0 at bottom
+    for(var i=0;i<4;i++){
+      var t=tiers[i];
+      var yTop = padT + (3-i)*(bandH+gap); // i=0 bottom
+      var active = (i===sel);
+      // band background
+      ctx.globalAlpha = active?1:0.32;
+      ctx.fillStyle = t.col; rr(ctx,padX,yTop,W-padX*2,bandH,6); ctx.fill();
+      // inner panel
+      ctx.globalAlpha = active?1:0.5;
+      ctx.fillStyle='#ffffff'; rr(ctx,padX+5,yTop+26,W-padX*2-10,bandH-32,4); ctx.fill();
+      ctx.globalAlpha=1;
+      // header text
+      ctx.fillStyle= active?'#ffffff':'rgba(255,255,255,0.85)';
+      ctx.font='bold 12.5px sans-serif';ctx.textAlign='left';
+      ctx.fillText(t.sub, padX+12, yTop+17);
+      ctx.textAlign='right';ctx.font='11px sans-serif';
+      ctx.fillText(['確立/厳密','観測が裁く','未解決だが精密','未着工の親'][i], W-padX-12, yTop+17);
+      // chips
+      var cx=padX+14, cy=yTop+26+ (bandH-32)/2;
+      ctx.textAlign='left';
+      var fs = active?12.5:11.5;
+      ctx.font=(active?'bold ':'')+fs+'px sans-serif';
+      ctx.fillStyle= active? t.col : '#8a8f9e';
+      var chips=t.chips, lineY = yTop+42;
+      for(var j=0;j<chips.length;j++){
+        ctx.fillText('• '+chips[j], cx, lineY + j*17);
+      }
+    }
+    rd.textContent = tiers[sel].read;
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

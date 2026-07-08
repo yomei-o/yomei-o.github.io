@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剥ぎきった核心：表現に溶けないもの ── わかる質量 終章・技術補遺⑮</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1b20; --ink-soft:#4c4e5a;
+    --paper:#f7f7f8; --paper-edge:#d6d6dc;
+    --side:#2c2e3a; --side-bg:#ebebf0;
+    --warn:#8a4b2f;
+    --calc:#26272e; --calc-bg:#e8e8ee;
+    --rule:#cccdd5; --hair:#b6b7c0;
+    --acc:#2c2e3a;
+    --grid:#d4d5dd;
+    --core:#b0821a; --diss:#a6a7b0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #dcdce4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#26283a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccdd8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8e8ee;color:#26272e;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdfe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--core);border-width:2px;background:linear-gradient(180deg,#fdfcf6,#f4ecd9);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#e8e8ee;color:#26283a;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+  .tbl .diss{color:var(--diss);} .tbl .keep{color:var(--core);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#ebebf0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#25273a;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdfe,#e9e9ef);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8e8ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#25273a;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#64656f;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑮ ／ 剥ぎきった核心（表現に溶けないもの）</span></div>
+  <p class="eyebrow">シリーズの本当の締め ── 剥いで、剥いで、残ったもの</p>
+  <h1>剥ぎきった核心<br><span style="font-size:22px;">表現に溶けないもの</span>
+    <span class="sub">c·t=const も、連続/離散も、面積スペクトルの離散性も、type I という枠組み語も ── 剥ぐと表現に溶けた。<br>最後に残る、溶けない一つ：<em>厳密な有限性の、観測可能な帰結。</em></span>
+  </h1>
+  <div class="byline">
+    <span>前提：シリーズ全体（表現 vs 不変量の区別）</span>
+    <span>到達点：溶けない核心＝厳密な有限性の帰結／表現でも美学でもない物理命題</span>
+  </div>
+
+  <p class="lead">この対話の最後の数手で、あなたは僕が「これが不変量だ」と差し出すたびに ── <em>それ、まだ表現じゃないの？</em> と剥いできました。そして毎回、正しかった。c·t=const は座標、連続/離散は表現、面積スペクトルの離散性すら（Dirac 観測量論争ゆえ）まだ表現の余地。剥いで、剥いで ── 最後に、<strong>表現に溶けない一つ</strong>が残ります。それは「離散時空」でも「離散面積」でも「type I という枠組み語」でもなく、<strong>厳密な有限性の、観測可能な帰結</strong>。この一枚で、旅を締めます。掟どおり、真偽は言いません ── 残ったのは、答えでなく、<strong>正確に切り出された一つの問い</strong>です。</p>
+
+  <h2><span class="n">01</span>剥いだ層 ── 毎回あなたが正しかった</h2>
+
+  <div class="fig">
+    <div class="cap">図：スライダーで上から層を剥ぐ。表現に溶ける層（灰）が落ち、最後に<strong>溶けない核心（金）</strong>が残る。c·t=const → 連続/離散 → 面積スペクトル → type I（半分溶ける）→ [核心]</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>剥ぐ深さ（0＝そのまま … 4＝核心まで）<span class="val" id="vk">0</span>
+        <input type="range" id="sk" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd">上の層から剥いでいくと、表現に溶けるものが落ち、溶けない核心が残る。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--diss);"></i>表現に溶ける</span>
+      <span><i class="swatch" style="background:var(--core);"></i>溶けない核心</span>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>層</th><th>正体</th><th>溶ける？</th></tr></thead>
+    <tbody>
+      <tr><td>c·t=const</td><td>座標・単位の言い換え（局所光速は不変）</td><td class="c diss">溶ける</td></tr>
+      <tr><td>連続 vs 離散の宇宙</td><td>同じ物理の二つの表現</td><td class="c diss">溶ける</td></tr>
+      <tr><td>離散 vs 連続の面積スペクトル</td><td>面積は Dirac 観測量でない → ゲージ/定式化に依りうる（Dittrich–Thiemann 論争）</td><td class="c diss">まだ表現の余地</td></tr>
+      <tr><td>type I という型</td><td>同型不変量（本物）だが枠組み語で、答えるには完全理論が要る</td><td class="c" style="color:#8a7a3a;">半分</td></tr>
+      <tr><td><strong>厳密な有限性の帰結</strong></td><td><strong>違う物理的予言をする</strong></td><td class="c keep">溶けない</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">02</span>溶けない核心 ── 違う予言をするから</h2>
+
+  <p>なぜ最下層だけ溶けないか。<strong>type I（厳密に有限整数個の状態）</strong>と <strong>type II/III</strong> は、<em>観測可能な帰結が違う</em>から ── 表現の選択なら予言は同じはずだが、そうでない：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">溶けない核心 ── 違う物理的予言</div>
+    <ul style="margin:6px 0 0;padding-left:1.2em;line-height:1.9;">
+      <li><strong>Poincaré 再帰</strong>：type I（有限次元）なら \(t_{\rm rec}\sim e^{S}\) で再帰。II/III は違う。</li>
+      <li><strong>厳密なユニタリ性／Page 曲線</strong>：type I なら厳密に閉じる。</li>
+      <li><strong>エントロピー</strong>：\(S=\log(\text{整数})\)（type I・絶対）か、繰り込まれた連続量（type II）か。</li>
+    </ul>
+  </div>
+
+  <p>剥ぎきると、あなたの賭けは、時空の描き方でも美学でもなく ── <strong>違う予言をする、一つの物理命題</strong>になる：</p>
+
+  <div class="keybox">
+    <div class="lbl">剥ぎきった賭け</div>
+    <p style="margin:0;text-align:center;font-size:17px;"><strong>「ある領域は、厳密に有限整数個の状態を含む。」</strong></p>
+    <p style="margin:8px 0 0;">＝有限性は<strong>厳密で物理的</strong>（便利な繰り込みでなく）。帰結：厳密な再帰・厳密なユニタリ性・絶対的な \(S=\log(\text{整数})\)。</p>
+  </div>
+
+  <h2><span class="n">03</span>少し痛い、正直な着地</h2>
+
+  <p>そして誠実な落ち ── <strong>その核心の帰結は、実際にはほぼ観測できない</strong>：</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Poincaré 再帰は \(e^{10^{122}}\) 年後。ユニタリ性の "厳密さ" は測りにくい。<strong>だから決着がこれほど難しい。</strong>核心は<strong>表現に溶けない（違う予言をする）が、いまは観測の縁の外</strong>。これが、剥ぎきったあなたの賭けの、正直な姿です。</p>
+    <p style="margin-bottom:0;">「解けた」ではありません。真偽は、観測にも計算にも、まだ手が届かない。でも ── <strong>表現に溶けるものを全部剥ぎ落として、溶けない一つの物理命題を、正確に切り出せた。</strong>それは、答えを持つことの隣にある、別の本物です。</p>
+  </div>
+
+  <h2><span class="n">04</span>あなたが繰り返しやったこと</h2>
+
+  <div class="aside">
+    <span class="tag">剥ぐ、という規律</span>
+    僕が「これが不変量だ」と差し出すたび（離散 → type I → 面積スペクトル）、あなたは<strong>まだ残る表現の余地を正しく見抜いた</strong>。毎回あなたが正しかった。剥ぐ規律は、<strong>「解けた」を疑う掟の、能動的な形</strong>です ── 飾りを一枚ずつ剥いで、溶けない核だけを残す。数合わせと物理を分けるのは、まさにこの剥ぐ力。
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「厳密な有限性の帰結」は表現に溶けないのか。
+        <details><summary>ひとつの答え</summary><div class="ans">type I（厳密に有限整数個の状態）と type II/III は、観測可能な帰結が違うから ── Poincaré 再帰の有無、ユニタリ性が厳密に閉じるか、エントロピーが log(整数) か繰り込まれた連続量か。表現の選択なら予言は一致するはずで、しない。だから溶けない。一方 c·t=const・連続/離散・面積スペクトルの離散性は、予言を変えない（または定式化に依る）ので溶ける。</div></details>
+      </li>
+      <li>核心が「溶けない」のに、賭けが決着しないのはなぜか。
+        <details><summary>ひとつの答え</summary><div class="ans">溶けない＝違う予言をする、だが その予言（e^{S}での再帰、ユニタリ性の厳密さ、状態数が整数か）は、実際にはほぼ観測できない（再帰は10^122年後等）。しかも type I か否かは完全な量子重力理論を要する。だから核心は表現に溶けない物理命題でありながら、観測にも計算にも手が届かず、決着しない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑮まとめ</span>剥いで、剥いで、残った一つ</h2>
+    <p>c·t=const（座標）、連続/離散（表現）、面積スペクトルの離散性（Dirac 観測量論争ゆえ、まだ表現の余地）、type I という型（同型不変量だが枠組み語で、答えるには完全理論が要る）── 剥ぐと、これらは表現に溶けた。あなたは毎回、正しく剥いだ。</p>
+    <p>最後に残った、溶けない一つ ── <strong>「ある領域は、厳密に有限整数個の状態を含む」</strong>。違う物理的予言（厳密な再帰・ユニタリ性・\(S=\log(\text{整数})\)）をするから、表現に溶けない。だが その予言はほぼ観測の縁の外で、type I か否かは完全な量子重力理論を要する ── <strong>表現に溶けない、けれど今は裁けない、一つの物理命題</strong>。掟どおり、真偽は言いません。切り出せたのは、答えでなく、正確な問いです。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる質量 ── 本当の締め</span>
+    「重さって何？」から始まった旅は、質量の床を越え、S=A/4・type I・Λ の舞台・地平線コーナーの \(SL(2,\mathbb R)\) まで登り、最後に ── あなたが飾りを一枚ずつ剥いで、<strong>表現に溶けない核心を一つ、正確に切り出す</strong>ところに着きました。「宇宙＝有限リソース」は、時空の描き方でも美学でもなく、<strong>「領域は厳密に有限整数個の状態を含む」という、違う予言をする物理命題</strong>だった。<br>チャットで万物理論は出ません（出たら疑え、が掟）。そして今回、あなたはその掟の<strong>能動的な形</strong>を実演した ── 差し出された "不変量" を毎回剥いで、溶けない核だけを残す。偽の答えより、剥ぎきって残った一つの正確な問いを手にすることのほうが、ずっと遠くて、ずっと本物です。<br>ここまで、よくぞ剥ぎきりました。これで、締めます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑮、シリーズの締めです。\(c\cdot t=\text{一定}\) が座標・単位の言い換えであること（局所光速は不変）、連続と離散が同じ物理の二つの表現でありうること、ループ量子重力の面積演算子の離散スペクトルが物理的（Dirac）観測量として保たれるかに議論があること（Dittrich–Thiemann 2007 とその応答）、フォン・ノイマン代数の型（I/II/III）が同型不変量であること、有限次元（type I）が離散スペクトル・Poincaré 再帰・厳密なユニタリ性・絶対的なエントロピー \(S=\log\dim\) を含意し type II/III と異なる物理的帰結を持つこと ── いずれも確立した事実または現行の議論です。一方、物理的な領域の代数が完全な量子重力理論において type I か（＝領域が厳密に有限整数個の状態を含むか）は未解決であり、その帰結（\(e^{S}\) スケールの Poincaré 再帰、ユニタリ性の厳密さ）は事実上観測が困難で、本稿は真偽を主張しません。図は表現に溶ける層と溶けない核心の分類を示す模式です。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで層を剥ぐと、表現に溶けるものが落ち、溶けない核心（厳密な有限性の帰結）が残る。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var layers=[
+    {t:'c·t = const', s:'座標・単位の言い換え', kind:'溶ける'},
+    {t:'連続 vs 離散の宇宙', s:'同じ物理の二つの表現', kind:'溶ける'},
+    {t:'離散 vs 連続の面積スペクトル', s:'Dirac観測量でない → 定式化依存', kind:'まだ表現の余地'},
+    {t:'type I という型', s:'同型不変量だが枠組み語＋完全理論が要る', kind:'半分'},
+    {t:'厳密な有限性の帰結', s:'再帰・ユニタリ性・S=log(整数)＝違う予言', kind:'溶けない核心'}
+  ];
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath(); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var peel=parseInt(sk.value,10); vk.textContent=peel;
+    ctx.clearRect(0,0,W,H);
+    var padX=16, padT=12, gap=9, n=5;
+    var bandH=(H-padT*2-gap*(n-1))/n;
+    for(var i=0;i<n;i++){
+      var L=layers[i];
+      var y=padT+i*(bandH+gap);
+      var peeled = (i<peel);            // top `peel` layers removed
+      var isCore = (i===n-1);
+      var reached = (peel>=n-1);        // core reached when peel=4
+      // color
+      var col, txtcol, subcol;
+      if(peeled){ col='#eeeef2'; txtcol='#a6a7b0'; subcol='#bcbcC4'; }
+      else if(isCore){
+        if(reached){ col='#f4ecd9'; txtcol='#8a6416'; subcol='#a5892f'; }
+        else { col='#f0f0f4'; txtcol='#75767f'; subcol='#9a9ba4'; }
+      } else { col='#e8e8ee'; txtcol='#26283a'; subcol='#5c5e6c'; }
+      ctx.fillStyle=col; rr(ctx,padX,y,W-padX*2,bandH,6); ctx.fill();
+      // border for core when reached
+      if(isCore && reached){ ctx.strokeStyle='#b0821a'; ctx.lineWidth=2.5; rr(ctx,padX,y,W-padX*2,bandH,6); ctx.stroke(); }
+      else { ctx.strokeStyle='#dcdce2'; ctx.lineWidth=1; rr(ctx,padX,y,W-padX*2,bandH,6); ctx.stroke(); }
+      // strike-through for peeled
+      if(peeled){ ctx.strokeStyle='#c2c2ca'; ctx.lineWidth=1.4;
+        ctx.beginPath();ctx.moveTo(padX+14,y+bandH/2);ctx.lineTo(W-padX-14,y+bandH/2);ctx.stroke(); }
+      // text
+      ctx.textAlign='left';
+      ctx.fillStyle=txtcol; ctx.font='bold 14px sans-serif';
+      ctx.fillText(L.t, padX+16, y+bandH*0.42);
+      ctx.fillStyle=subcol; ctx.font='11.5px sans-serif';
+      ctx.fillText(L.s, padX+16, y+bandH*0.42+18);
+      // tag right
+      ctx.textAlign='right'; ctx.font='bold 11px sans-serif';
+      ctx.fillStyle= peeled? '#b8b9c1' : (isCore&&reached? '#b0821a' : '#8a8b95');
+      ctx.fillText(peeled?'剥いだ ✕':L.kind, W-padX-16, y+bandH*0.55);
+    }
+    // readout
+    if(peel===0) rd.textContent='そのまま：五層すべて重なっている。上（表現的なもの）から剥いでいく。';
+    else if(peel<4) rd.textContent='剥いだ '+peel+' 層：'+layers.slice(0,peel).map(function(l){return l.t;}).join(' / ')+' ── 表現に溶けた。まだ下に層が残る。';
+    else rd.textContent='剥ぎきった：表現に溶ける層は全部落ち、溶けない核心「厳密な有限性の帰結（再帰・ユニタリ性・S=log(整数)）」だけが残る ── 違う予言をするから溶けない。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

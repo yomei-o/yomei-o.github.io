@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>質量は、二通りに湧く ── わかる質量 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f1; --paper-edge:#ece0cd;   /* 第3回：琥珀の紙（エネルギー・炉） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a5a1e; --calc-bg:#f4ecdd;
+    --rule:#dccfba; --hair:#ccbfa6;
+    --acc:#b0641a;    /* 第3回アクセント＝琥珀オレンジ */
+    --grid:#e2d6bf;
+    --higgs:#b0641a; --qcd:#7a3b2e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0dcbc 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e0d3b6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf7;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f4ecdd;color:#8a5a1e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  /* 質量の内訳バー */
+  .bar{margin:14px 0 6px;height:34px;border-radius:4px;overflow:hidden;display:flex;border:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;}
+  .bar .q{background:#c9b48f;color:#4a3413;display:flex;align-items:center;justify-content:center;}
+  .bar .g{background:#b0641a;color:#fff;display:flex;align-items:center;justify-content:center;flex:1;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 二通りの対比 */
+  .twocol{display:flex;gap:16px;flex-wrap:wrap;margin:26px 0;}
+  .opt{flex:1;min-width:240px;border-radius:5px;padding:18px 20px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.72;}
+  .optA{background:#f6ecdd;border:1px solid #e2c99e;}
+  .optB{background:#f2e6e1;border:1px solid #d9bdb2;}
+  .opt .h{font-weight:700;font-size:15px;margin-bottom:6px;letter-spacing:.03em;}
+  .optA .h{color:#8a5a1e;} .optB .h{color:#7a3b2e;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6ee;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3413;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf8,#f4ecdd);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ecdd;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3413;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.twocol{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 3 回 ／ 有限の床は、どう湧くのか</span></div>
+  <p class="eyebrow">ヒッグスと、閉じ込め ── 同じ「質量」でも、湧き方はまるで違う</p>
+  <h1>質量は、二通りに湧く
+    <span class="sub">第2回で「有限の床は対称性が破れて湧く」。では実際どう湧くのか。<br>電子は<em>ヒッグス</em>から、陽子は<em>閉じ込め</em>から ── しかも宇宙の可視質量の99%は、後者。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の床、第2回の底の曲がり、掛け算</span>
+    <span>フック式：\(m_f=y_f\,v/\sqrt2\)／陽子 \(\sim\) 数 \(\times\Lambda_{\rm QCD}\)</span>
+  </div>
+
+  <p class="lead">第1回で質量は「消せないエネルギーの床」、第2回で「ゼロの床は対称性が守り、有限の床は対称性が破れて湧く」でした。今回はその<em>湧き方</em>を見ます。ところが ── <strong>湧き方は一つではなく、二通りある。</strong> 電子のような素粒子は<em>ヒッグス</em>から直接もらい、陽子のような複合粒子は<em>閉じ込め</em>のエネルギーから生まれる。そして驚くことに、あなたの体重の99%は、有名なヒッグスではなく、後者の仕業です。</p>
+
+  <h2><span class="n">01</span>湧き方その1：ヒッグス ── 真空に満ちた場に"つかまる"</h2>
+
+  <p>第2回の「質量²＝ポテンシャルの底の曲がり」の図を、もう一歩動かします。ヒッグス場のポテンシャルは、底の係数を<strong>負にした</strong>形 ── いわゆる<em>メキシカンハット</em>です。すると真空（谷底）が原点から横にずれ、<strong>場が至るところで \(v\neq0\) の値を持つ</strong>ようになる。これが「対称性の自発的破れ」。</p>
+
+  <div class="fig">
+    <div class="cap">図：ヒッグスのポテンシャル。ツマミ μ² を負にすると原点が"丘"になり、真空が \(\phi=v\neq0\) にずれる（対称性の自発的破れ）。真空に満ちた場 \(v\) が、粒子に質量の床を与える</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>対称性のツマミ μ²（左ほど負＝破れる）<span class="val" id="vk">-1.00</span>
+        <input type="range" id="sk" min="-1.2" max="1.2" step="0.05" value="-1.0">
+      </label>
+    </div>
+    <div class="readout" id="rd">ツマミを動かすと、真空の位置が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--higgs);"></i>ヒッグスのポテンシャル V(φ)</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>真空の値 v</span>
+    </div>
+  </div>
+
+  <p>粒子は、この<em>真空に満ちた場</em>と結合します。結合していると、止まっていてもエネルギーの床を持つ ── これが第1回の「床」＝質量です。床の高さは、場の値 \(v\) と、結合の強さ（湯川結合 \(y_f\)）で決まります。</p>
+
+  <div class="keybox">
+    <div class="lbl">ヒッグスが与える質量</div>
+    $$m_f=\frac{y_f\,v}{\sqrt2},\qquad v\approx 246\ \text{GeV}$$
+  </div>
+
+  <p>同じ \(v\) でも、結合 \(y_f\) が桁違いだから質量も桁違い。トップクォークは \(y\approx1\) で約173 GeV、電子は \(y\approx3\times10^{-6}\) で約0.5 MeV。<strong>質量の"個性"は、真空への結合の強さ</strong>だったのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第1回・第2回の回収）</span>
+    破れたとき、ポテンシャルには第2回の"平らな方向"（ゴールドストン）が現れます。\(W,Z\) 粒子はこの平らな方向を<strong>食べて</strong>、第1回で言った<em>縦波</em>を手に入れ、重くなる。破れずに残った組み合わせが、質量ゼロの光子。第1回（縦波）・第2回（平らな方向）・今回（質量が点く）が、この一枚のハットで握手します。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">02</span>湧き方その2：閉じ込め ── エネルギーが、そのまま質量になる</h2>
+
+  <p>もう一方はまったく別物です。陽子は、3つのクォーク（アップ2・ダウン1）が強い力（グルーオン）で固く結ばれた<em>複合粒子</em>。ところが、中のクォークの"素の質量"（ヒッグス由来）を全部足しても、陽子の重さのほんの一部にしかなりません。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 陽子の重さの内訳</span>
+    $$\frac{\text{クォーク3個の素の質量}}{\text{陽子の質量}}\approx\frac{2.2+2.2+4.7\ \text{MeV}}{938\ \text{MeV}}\approx\frac{9}{938}\approx 1\%$$
+    <div class="bar" aria-hidden="true">
+      <div class="q" style="width:6%;">1%</div>
+      <div class="g">99% ＝ 閉じ込めのエネルギー（グルーオン場＋運動）</div>
+    </div>
+    <p style="margin:6px 0 14px;">残りの<strong>約99%</strong>は、クォークを閉じ込めるグルーオン場のエネルギーと、閉じ込められたクォークの運動エネルギー。それが \(E=mc^2\) で<strong>そのまま質量に化けている</strong>。</p>
+  </div>
+
+  <p>この機構は、<strong>ヒッグスと完全に無関係</strong>です。もしヒッグスをオフにして全クォークを質量ゼロにしても、陽子はほぼ同じ重さで残る。なぜなら質量の出どころが、部品の重さではなく<em>閉じ込めのエネルギー</em>だから。</p>
+
+  <div class="keybox">
+    <div class="lbl">閉じ込めが与える質量（スケールが湧く）</div>
+    $$m_{\text{陽子}}\ \sim\ \text{数}\times\Lambda_{\rm QCD}\qquad(\Lambda_{\rm QCD}\approx 0.2\ \text{GeV})$$
+    <p style="margin:10px 0 0;">何もスケールを持たないはずの理論から、\(\Lambda_{\rm QCD}\) という<strong>重さの目盛り</strong>が湧く ── この不思議の正体は、第4回で。</p>
+  </div>
+
+  <h2><span class="n">03</span>だから、体重の99%はヒッグスではない</h2>
+
+  <p>ここが今回いちばんの種明かしです。「ヒッグスが万物に質量を与える」とよく言われますが、それは<strong>言い過ぎ</strong>。ヒッグスが与えるのは<em>素粒子の"素の質量"</em>だけ。あなたの体をつくる陽子・中性子の重さの大半は、QCDの閉じ込めエネルギーです。二つの機構を並べます。</p>
+
+  <div class="twocol">
+    <div class="opt optA">
+      <div class="h">ヒッグス（素粒子の素の質量）</div>
+      対象：クォーク・レプトン・\(W,Z\) の静止質量。<br>機構：対称性の自発的破れ。真空に満ちた場 \(v\) との結合。<br>式：\(m_f=y_f v/\sqrt2\)。<br>可視質量への寄与：<strong>約1%</strong>。
+    </div>
+    <div class="opt optB">
+      <div class="h">閉じ込め（複合粒子の質量）</div>
+      対象：陽子・中性子などハドロンの質量の大半。<br>機構：強い力の閉じ込め。場のエネルギーが \(E=mc^2\)。<br>式：\(m\sim\) 数 \(\times\Lambda_{\rm QCD}\)。<br>可視質量への寄与：<strong>約99%</strong>。
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>二つの床、一つの背骨</h2>
+
+  <p>湧き方は違っても、行き着く先は同じ ── 第1回の「消せない床」です。<em>ヒッグスの床</em>は、真空に満ちた場との結合が作る。<em>閉じ込めの床</em>は、場のエネルギーが化けて生まれる。第2回の「質量²＝底の曲がり」は、ヒッグス側では文字どおり（ヒッグス粒子自身の質量＝ハットの径方向の曲がり）。閉じ込め側は別種の湧き方で、そこにこそ<strong>このシリーズの合言葉 \(c\cdot t=\text{一定}\) が、初めて正当に効く</strong>扉があります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「ヒッグスは糖蜜（molasses）のように抵抗を与えて重くする」という比喩は<strong>不正確</strong>です。抵抗なら等速では効かないはず ── 実際に起きているのは「真空に満ちた場との結合が、<em>静止しているときのエネルギーの床</em>＝質量を与える」こと。第1回の"床"の言葉が正しい絵です。</p>
+    <p style="margin-bottom:0;">今回もレンズ \(c\cdot t=\text{一定}\) は前面に出していません。ヒッグス機構は標準物理で、\(c\cdot t\) と無関係だからです（無理に効かせない＝姉妹シリーズ番外③の教訓）。ただし閉じ込め側の「スケールが湧く」は別。<strong>次回・第4回で、このレンズが本当に効きます。</strong> 「99%」はクォークの素質量の定義で多少ゆれますが、桁として99%は堅い事実です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>「ヒッグスが万物に質量を与える」がなぜ言い過ぎか、一言で。
+        <details><summary>答えを見る</summary><div class="ans">ヒッグスが与えるのは素粒子（クォーク・レプトン・W,Z）の"素の質量"だけ。目に見える質量（陽子・中性子）の大半（約99%）はQCDの閉じ込めエネルギー由来で、ヒッグスの寄与は約1%にすぎない。</div></details>
+      </li>
+      <li>トップクォークが電子より圧倒的に重い理由を \(m_f=y_f v/\sqrt2\) で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">真空の値 \(v\) は同じでも、湯川結合 \(y_f\) が桁違い（トップ \(\approx1\)、電子 \(\approx3\times10^{-6}\)）。質量は真空への結合の強さで決まるので、結合が大きいトップは重く、小さい電子は軽い。</div></details>
+      </li>
+      <li>ヒッグスをオフにして全クォークを質量ゼロにしたら、陽子の重さはどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">ほとんど変わらない。陽子質量の約99%は閉じ込めのエネルギー由来で、クォークの素の質量（約1%）にほぼ依存しないから。陽子の重さはヒッグスにほぼ無関係に決まっている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>同じ「床」に、二つの湧き方があった</h2>
+    <p>有限の質量（床）の湧き方は二通り。<strong>ヒッグス</strong>は対称性の自発的破れで真空に場 \(v\) を満たし、結合 \(y_f\) に応じて素粒子に床を与える（\(m_f=y_f v/\sqrt2\)）。<strong>閉じ込め</strong>は強い力の場のエネルギーが \(E=mc^2\) でそのまま質量に化け、陽子の約99%を作る。宇宙の可視質量の大半は、ヒッグスではなく閉じ込めの仕業だった。</p>
+    <p>ヒッグス側は第2回の「底の曲がり」で綺麗に描けた。だが閉じ込め側の「何もないところに重さの目盛り \(\Lambda_{\rm QCD}\) が湧く」は、まだ絵にできていない。この<em>スケールの創発</em>こそ、次回の主役 ── そしてついに \(c\cdot t=\text{一定}\) のレンズが正当に効く場所です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第4回</span>
+    「スケールなき理論から、スケールが湧く」。閉じ込め側の"99%"の正体を、<strong>走る結合</strong>と<strong>次元的移行</strong>で追います。古典的には目盛りを持たない理論（＝\(c\cdot t\) が綺麗に効く共形不変の土俵）が、量子効果でその不変性を破り、\(\Lambda_{\rm QCD}\) を生む。これが「質量ギャップ」の正体でもあります。ここから \(c\cdot t\) のレンズが、本当に働き始めます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第3回、物理好きの高校生・大学生向け読み物です。ヒッグス機構（電弱対称性の自発的破れ、真空期待値 \(v\approx246\) GeV、フェルミオン質量 \(m_f=y_f v/\sqrt2\)、\(W,Z\) が南部・ゴールドストン自由度を吸収して質量を得ること）、および陽子・中性子の質量の大半（約99%）がクォークの静止質量ではなく量子色力学の力学的エネルギー（グルーオン場と閉じ込められたクォークの運動）に由来し、次元的移行によるスケール \(\Lambda_{\rm QCD}\approx0.2\) GeV で決まることは、いずれも確立した物理です。「ヒッグス＝糖蜜で抵抗」という比喩は不正確で、正しくは真空に満ちた場との結合が静止エネルギー（質量）を与えます。図は \(V=\tfrac12\mu^2\phi^2+\tfrac14\phi^4\) の模式的な断面です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで対称性の破れ（真空のずれ）を動かせます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var PHI=1.9, VMIN=-0.7, VMAX=3.2;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var mu2=parseFloat(sk.value); vk.textContent=mu2.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(phi){return pad+(phi+PHI)/(2*PHI)*(w-pad-14);}
+    function Yv(V){var Vc=V; if(Vc>VMAX)Vc=VMAX; if(Vc<VMIN)Vc=VMIN;
+      return (h-pad)-(Vc-VMIN)/(VMAX-VMIN)*(h-pad-16);}
+    // grid
+    ctx.strokeStyle='#efe6d3';ctx.lineWidth=1;
+    for(var g=0;g<=3;g++){var yy=Yv(g);ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#ccbfa6';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6250';ctx.font='12px sans-serif';
+    ctx.fillText('ヒッグス場 φ →', w-130, h-pad+18);
+    ctx.save();ctx.translate(14,h/2+10);ctx.rotate(-Math.PI/2);ctx.fillText('エネルギー V', 0,0);ctx.restore();
+    // V=0 baseline
+    ctx.strokeStyle='#ddd0b8';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad,Yv(0));ctx.lineTo(w-8,Yv(0));ctx.stroke();ctx.setLineDash([]);
+    // potential V=0.5 mu2 phi^2 + 0.25 phi^4
+    ctx.strokeStyle='#b0641a';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var phi=-PHI;phi<=PHI+1e-9;phi+=0.025){var V=0.5*mu2*phi*phi+0.25*phi*phi*phi*phi;
+      var x=X(phi),y=Yv(V);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // vacuum位置
+    var v=0, Vmin=0;
+    if(mu2<0){ v=Math.sqrt(-mu2); Vmin=0.5*mu2*v*v+0.25*v*v*v*v; }
+    // hilltop marker when broken
+    if(mu2<0){
+      ctx.fillStyle='#c9a76a';ctx.beginPath();ctx.arc(X(0),Yv(0),4.5,0,7);ctx.fill();
+      ctx.fillStyle='#8a6a30';ctx.font='11px sans-serif';ctx.fillText('丘（不安定）', X(0)+8, Yv(0)-6);
+      // both minima
+      ctx.fillStyle='#2f7d5a';
+      ctx.beginPath();ctx.arc(X(-v),Yv(Vmin),4,0,7);ctx.fill();
+      // vacuum ball at +v
+      ctx.fillStyle='#2f7d5a';ctx.beginPath();ctx.arc(X(v),Yv(Vmin)-6,7,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      // v marker line
+      ctx.strokeStyle='#2f7d5a';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(X(v),Yv(Vmin));ctx.lineTo(X(v),h-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#1f6b45';ctx.font='12px sans-serif';ctx.fillText('真空 v='+v.toFixed(2), X(v)+6, Yv(Vmin)-10);
+    } else {
+      // single min at 0, ball there
+      ctx.fillStyle='#2f7d5a';ctx.beginPath();ctx.arc(X(0),Yv(0)-6,7,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle='#1f6b45';ctx.font='12px sans-serif';ctx.fillText('真空 v=0', X(0)+8, Yv(0)-10);
+    }
+    // readout
+    if(mu2>0.02){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='μ²>0：対称。真空は φ=0、場の値ゼロ ── 結合しても床はできず、質量は湧かない。';
+    } else if(mu2<-0.02){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='μ²<0：対称性が破れた！真空が φ=v='+v.toFixed(2)+' ≠0 にずれ、真空に場が満ちる。この v が、結合する粒子に質量の床を与える。';
+    } else {
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='μ²≈0：ちょうど境目。ここから左へ倒すと、真空が横にずれ始める（対称性の破れ）。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

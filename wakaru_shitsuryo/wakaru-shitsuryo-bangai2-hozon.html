@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>質量は保存しない ── わかる質量 番外②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f3faf8; --paper-edge:#d5e8e2;   /* 番外②：ティールの紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#165a4e; --calc-bg:#e4f1ed;
+    --rule:#c8ded7; --hair:#b3d0c7;
+    --acc:#1f7a6e;    /* 番外②アクセント＝ティール */
+    --grid:#d0e6df;
+    --mass:#1f7a6e; --photon:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 86px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:38px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #c6e6dc 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #c6ddd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfefc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e4f1ed;color:#165a4e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:42px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f1faf7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#124a40;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfefc,#eaf4f0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e4f1ed;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#124a40;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">番外 ② ／ 身近な誤解を、二つ解く</span></div>
+  <p class="eyebrow">「速く動くと重くなる」も「質量は保存する」も、実は正確ではない</p>
+  <h1>質量は保存しない
+    <span class="sub">第1回で質量は "不変の床" だと言った。でも街には二つの誤解が生き残っている。<br>E=mc² と第1回の式に戻って、"不変質量" の本当の意味を確かめます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の \(E^2=(mc^2)^2+(pc)^2\)、第3回の "部品の和でない"</span>
+    <span>保存するのは 質量でなく エネルギーと運動量</span>
+  </div>
+
+  <p class="lead">第1回で、質量とは「運動量を抜いても残る、消せないエネルギーの床」でした。この "床" には大事な性質があります ── <em>誰から見ても同じ（不変）</em>だということ。ところが世の中には、この性質と食い違う二つの誤解が根強く残っています ──「<strong>速く動くと重くなる</strong>」と「<strong>質量は保存する</strong>」。今回はこの二つを、E=mc² と第1回の式に戻って正します。行き着く先は少し意外です ── 静止質量の足し算は保存しないし、<em>質量ゼロの粒子だけで、質量のある系が作れる</em>。</p>
+
+  <h2><span class="n">01</span>誤解その1「速く動くと重くなる」</h2>
+
+  <p>昔の教科書には「相対論的質量 \(m_{\rm rel}=\gamma m\)（速いほど大きい）」という言い方がありました。でも<strong>今は使いません</strong>。第1回の式に戻れば理由は明快です。</p>
+
+  <div class="keybox">
+    <div class="lbl">第1回の式で見る ── 増えるのは何か</div>
+    $$E^2=(mc^2)^2+(pc)^2,\qquad E=\gamma mc^2,\quad p=\gamma mv$$
+    <p style="margin:10px 0 0;">速く動くと \(E\) も \(p\) も増える。でも \(m\)（＝床・切片）は<strong>びくとも動かない</strong>。増えるのはエネルギーであって、質量ではない。</p>
+  </div>
+
+  <p>「相対論的質量」という言い方をやめたのは、\(m\) が速度や向きで変わるように錯覚させ、\(E=mc^2\) の \(m\) と混乱を生むから。<strong>質量とは、その物がもつ "フレームによらない性質"</strong> ── 速くしても、向きを変えても、変わりません。</p>
+
+  <h2><span class="n">02</span>質量は "不変" ── 誰から見ても同じ</h2>
+
+  <p>ここが芯です。質量 \(m\) は<strong>ローレンツ不変量</strong>。止まって見ても、猛スピードで飛びながら見ても、同じ値。第1回の "床" が、フレームを変えても高さを変えないのがこれです。</p>
+
+  <div class="keybox">
+    <div class="lbl">質量＝4元運動量の "長さ"（不変）</div>
+    $$(mc^2)^2 = E^2-(pc)^2\qquad(\text{どのフレームでも同じ値})$$
+  </div>
+
+  <p>対照的に、エネルギー \(E\) は<em>フレーム依存</em>です ── 止まっていれば \(mc^2\)、動いて見れば \(\gamma mc^2\)。同じ物でも見る人で変わる \(E\) と、誰が見ても同じ \(m\)。この違いを混ぜたのが「動くと重くなる」の誤解でした。だから今は「静止質量」より<strong>「不変質量」</strong>と呼ぶのが正確です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>誤解その2「質量は保存する」── 足し算は保存しない</h2>
+
+  <p>化学で習う "質量保存則" は、実は<strong>近似</strong>です。反応で<em>静止質量の合計</em>は保存しません。いちばん鮮烈な例が、電子と陽電子の<strong>対消滅</strong>。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 対消滅で質量が消える</span>
+    <p class="lbl">電子＋陽電子 → 光子2個</p>
+    $$\underbrace{0.511+0.511}_{\text{静止質量あり}}\ \text{MeV}\ \longrightarrow\ \underbrace{2\ \text{個の光子}}_{\text{静止質量ゼロ}}\ (\text{合計エネルギー }1.022\ \text{MeV})$$
+    <p style="margin-bottom:14px;">反応前は静止質量 \(1.022\) MeV ぶん。反応後は<strong>静止質量ゼロ</strong>の光子だけ。静止質量の和は \(1.022\to0\) と消えた ── でもエネルギーは \(1.022\) MeV のまま、光として保存されている。核融合（太陽）や核分裂（原子炉）の "質量欠損" も、同じ話です。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">本当に保存するもの</div>
+    <p style="margin:6px 0 0;">保存する：<strong>全エネルギー</strong>と<strong>全運動量</strong>（4元運動量）。<br>保存しない：<strong>静止質量の "足し算"</strong>（\(\sum m_i\)）。</p>
+  </div>
+
+  <h2><span class="n">04</span>質量ゼロの部品から、質量のある系ができる</h2>
+
+  <p>ここが今回いちばん面白いところ。複数の粒子からなる<em>系</em>の質量（系の不変質量 \(M\)）は、部品の静止質量の和ではありません。全エネルギーと全運動量から決まります。</p>
+
+  <div class="keybox">
+    <div class="lbl">系の不変質量（部品の和ではない）</div>
+    $$(Mc^2)^2=\Big(\textstyle\sum E_i\Big)^2-\Big(\textstyle\sum \vec p_i\,c\Big)^2$$
+  </div>
+
+  <p>すると驚くことが起きます ── <strong>静止質量ゼロの光子2個でも、系としては質量 \(M\neq0\) を持てる</strong>。反対向きに飛ぶ2個の光子は運動量が打ち消し合い（\(\sum\vec p=0\)）、でも全エネルギーは残る（\(\sum E\neq0\)）から、\(M\neq0\)。下の図で、開き角を変えて確かめてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：エネルギー \(E\) の光子2個（静止質量ゼロ・琥珀）が作る "系" の質量。開き角 θ を変えると、系の質量 \(Mc^2=2E\sin(\theta/2)\) が変わる。同じ向き（θ=0）なら \(M=0\)、反対向き（θ=180°）なら最大</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>2つの光子の開き角 θ（右ほど反対向き）<span class="val" id="vk">180°</span>
+        <input type="range" id="sk" min="0" max="180" step="1" value="180">
+      </label>
+    </div>
+    <div class="readout" id="rd">開き角を動かすと、系の質量が変わります。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--photon);"></i>光子（静止質量ゼロ）</span>
+      <span><i class="dot" style="background:var(--mass);"></i>系の質量 M</span>
+    </div>
+  </div>
+
+  <p>これは第3回の "陽子の99%はグルーオン場のエネルギー" の、いちばん純粋な姿です。<strong>質量は "部品の性質" ではなく、"系のエネルギーと運動量の組み合わせ"</strong>。第1回の床 \((mc^2)^2=E^2-(pc)^2\) が、1粒子だけでなく<em>系全体</em>でもそのまま成り立っている ── それが「不変質量」の本当の意味です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「保存しない」の正確な意味</span>
+    <p style="margin-top:0;">「質量は保存しない」が指すのは、あくまで<strong>個々の静止質量の "和" \(\sum m_i\)</strong> が保存しない、ということ。<em>閉じた孤立系の全エネルギー・全運動量（＝系の不変質量 \(M\)）は、ちゃんと保存します</em>。日常の「質量保存則」は、エネルギーのごく一部しか質量差に現れない<strong>低エネルギー近似</strong>として、実用上は十分よく成り立っているだけです。</p>
+    <p style="margin-bottom:0;">また、相対論的質量 \(\gamma m\) は "間違い" というより<strong>古い記法</strong>で、現代の標準は不変質量のみを「質量」と呼びます。今回は合言葉 \(c\cdot t=\text{一定}\) とは無関係の、標準的な特殊相対論の話です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>「速く動くと重くなる」は、何が間違いか。
+        <details><summary>答えを見る</summary><div class="ans">増えるのはエネルギー \(E=\gamma mc^2\) と運動量 \(p=\gamma mv\) であって、質量 \(m\) は不変（ローレンツ不変、第1回の "床"）。速度で変わる "相対論的質量 \(\gamma m\)" は古い記法で、いまは使わない。</div></details>
+      </li>
+      <li>\(e^+e^-\to2\gamma\) で、保存する量・しない量は?
+        <details><summary>答えを見る</summary><div class="ans">保存する：全エネルギーと全運動量。保存しない：静止質量の和（\(1.022\) MeV ぶんが、すべて静止質量ゼロの光子のエネルギーに移る）。</div></details>
+      </li>
+      <li>静止質量ゼロの光子2個で、質量のある系ができるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">系の不変質量は \((Mc^2)^2=(\sum E)^2-(\sum \vec p\,c)^2\)。反対向きに飛ぶ2光子は運動量が打ち消し（\(\sum\vec p=0\)）、全エネルギーは残る（\(\sum E\neq0\)）ので \(M\neq0\)。質量は部品の和ではなく、系のエネルギーと運動量の組み合わせ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外②まとめ</span>質量は "不変" だが、"足し算" は保存しない</h2>
+    <p>質量 \(m\) はローレンツ不変（誰から見ても同じ）── だから「速く動くと重くなる」は誤解で、増えるのはエネルギーと運動量。一方、反応では静止質量の "和" は保存せず（対消滅・質量欠損）、保存するのは全エネルギーと全運動量。そして系の質量は部品の和ではなく \((Mc^2)^2=(\sum E)^2-(\sum \vec p c)^2\) ── 質量ゼロの光子2個でも、質量のある系が作れる。</p>
+    <p>第1回の床 \((mc^2)^2=E^2-(pc)^2\) は、1粒子でも系全体でも成り立つ "不変な長さ"。それが「不変質量」の正体で、第3回の陽子99%と同じ話でした。動かしても不変、でも反応で系が変われば別の質量になる ── 混同しやすい二つを、これで切り分けられます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外③（シリーズ最終ピース）</span>
+    「世代とKoide公式」。電子・ミュオン・タウの質量比が、なぜか \(2/3\) にぴたりと合う不思議な式。10万分の1の精度で当たるこの一致を、"数合わせの誘惑" として味わいつつ、<strong>なぜそれは "予言" ではないのか（循環）</strong>を、番外①と同じ正直さで診断します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ番外②、物理好きの高校生・大学生向け読み物です。相対論的質量（\(\gamma m\)）が現代では標準的に用いられず、質量は不変質量（ローレンツ不変量、\((mc^2)^2=E^2-(pc)^2\)）を指すこと、エネルギー \(E=\gamma mc^2\) と運動量 \(p=\gamma mv\) がフレーム依存で速度とともに増えること、反応で静止質量の総和が保存せず全エネルギー・全運動量（4元運動量）が保存すること（対消滅 \(e^+e^-\to2\gamma\)、核反応の質量欠損）、多粒子系の不変質量が \((Mc^2)^2=(\sum E_i)^2-(\sum\vec p_i c)^2\) で与えられ部品の静止質量の和ではないこと、質量ゼロ粒子系でも不変質量が非ゼロになりうることは、いずれも確立した特殊相対論の内容です。閉じた孤立系の全4元運動量（したがって系の不変質量）は保存します。図は \(E=1\) 単位・2光子系の模式で \(Mc^2=2E\sin(\theta/2)\)。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで開き角を変えると、質量ゼロの光子2個から系の質量が生まれます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function arrow(ctx,x0,y0,x1,y1,col){
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.6;
+    ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
+    var a=Math.atan2(y1-y0,x1-x0),hl=10;
+    ctx.beginPath();ctx.moveTo(x1,y1);
+    ctx.lineTo(x1-hl*Math.cos(a-0.4),y1-hl*Math.sin(a-0.4));
+    ctx.lineTo(x1-hl*Math.cos(a+0.4),y1-hl*Math.sin(a+0.4));
+    ctx.closePath();ctx.fill();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var deg=parseFloat(sk.value); vk.textContent=deg+'°';
+    ctx.clearRect(0,0,w,h);
+    var th=deg*Math.PI/180;
+    var Ox=w*0.42, Oy=h*0.52, La=130;
+    var Mc2=2*Math.sin(th/2);        // in units of E
+    var ptot=2*Math.cos(th/2);       // system momentum /c, units of E
+    // system mass halo
+    var rr=12+Mc2*46;
+    ctx.fillStyle='rgba(31,122,110,0.14)';ctx.beginPath();ctx.arc(Ox,Oy,rr,0,7);ctx.fill();
+    ctx.strokeStyle='#1f7a6e';ctx.lineWidth=1.6;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(Ox,Oy,rr,0,7);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#165a4e';ctx.font='12px sans-serif';
+    ctx.fillText('系の質量 M', Ox-30, Oy-rr-8);
+    // total momentum (faint, along +x = bisector)
+    if(ptot>0.02){
+      ctx.globalAlpha=0.5; arrow(ctx,Ox,Oy,Ox+ptot*70,Oy,'#8aa0aa'); ctx.globalAlpha=1;
+      ctx.fillStyle='#7a8f99';ctx.font='11px sans-serif';ctx.fillText('系の運動量', Ox+ptot*70+4, Oy+4);
+    }
+    // two photons at ±theta/2 from +x (bisector). screen y up = negative
+    var a1=+th/2, a2=-th/2;
+    arrow(ctx,Ox,Oy, Ox+La*Math.cos(a1), Oy-La*Math.sin(a1), '#b06a12');
+    arrow(ctx,Ox,Oy, Ox+La*Math.cos(a2), Oy-La*Math.sin(a2), '#b06a12');
+    ctx.fillStyle='#8a5a1e';ctx.font='12px sans-serif';
+    ctx.fillText('光子 (E, m=0)', Ox+La*Math.cos(a1)+6, Oy-La*Math.sin(a1)-4);
+    ctx.fillText('光子 (E, m=0)', Ox+La*Math.cos(a2)+6, Oy-La*Math.sin(a2)+14);
+    // origin dot
+    ctx.fillStyle='#1f7a6e';ctx.beginPath();ctx.arc(Ox,Oy,4,0,7);ctx.fill();
+    // readout
+    if(deg<2){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='θ=0°：同じ向き → 系の運動量は最大、系の質量 M=0。まるで1個の光子（質量ゼロ）のよう。';
+    } else if(deg>178){
+      rd.style.background='#e4f1ed';rd.style.color='#165a4e';
+      rd.textContent='θ=180°：反対向き → 運動量が打ち消し、系の質量 Mc²=2E（最大）。質量ゼロの光2個から、止まった "質量のある系" ができた！';
+    } else {
+      rd.style.background='#e4f1ed';rd.style.color='#165a4e';
+      rd.textContent='θ='+deg+'°：系の質量 Mc² = 2E·sin(θ/2) = '+Mc2.toFixed(2)+'×E。部品（光子）の静止質量はどちらも 0 なのに、系には質量がある。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

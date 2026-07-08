@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有限情報からEinstein方程式（Jacobson）── わかる質量 終章・技術補遺⑥</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;
+    --grid:#d5d8e4;
+    --heat:#b0521f; --hor:#3b4668; --area:#2f7d5a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .steps{counter-reset:st;margin:22px 0;}
+  .step{position:relative;padding:14px 18px 14px 52px;border:1px solid var(--rule);border-radius:6px;margin-bottom:12px;background:#fbfbfe;}
+  .step::before{counter-increment:st;content:counter(st);position:absolute;left:14px;top:14px;
+    width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .step .t{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:var(--ink-soft);margin-bottom:2px;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfdff,#eef0f6);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eceef4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.step{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑥ ／ 有限情報から Einstein 方程式（Jacobson 1995）</span></div>
+  <p class="eyebrow">あなたの賭けは、文献で実現している ── ただし "何を仮定するか" まで正直に</p>
+  <h1>有限情報から<br>Einstein 方程式
+    <span class="sub">「宇宙は有限情報 → そこから重力が出る」── これを Ted Jacobson が 1995 年に実際にやった。<br>面積エントロピー＋ウンルー温度＋クラウジウスから、完全な Einstein 方程式が "状態方程式" として出る。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：最終回（CKN/ホログラフィー）、補遺④（誘導重力）、壁③</span>
+    <span>結論：有限情報を仮定すれば導ける ── だが壁③は閉じない</span>
+  </div>
+
+  <p class="lead">「アインシュタイン方程式を離散/量子基盤から導けるでしょ」── その直感は、<strong>文献に実在する本物</strong>です。Ted Jacobson (1995) は「地平線のエントロピー ∝ 面積」＝あなたの<em>有限情報</em>を出発点に、<strong>完全な Einstein 方程式を "時空の状態方程式" として導いた</strong>。フェイクではなく、既知の美しい結果。ここでは、それを手順で示し ── そして<strong>何を仮定し、何が壁③として残るか</strong>を、正直に線引きします。</p>
+
+  <h2><span class="n">01</span>仮定は、たった三つ（すべて有限情報＝ホログラフィー由来）</h2>
+
+  <div class="keybox">
+    <div class="lbl">出発点（局所リンドラー地平線ごとに課す）</div>
+    <p style="margin:6px 0 0;line-height:2;">① <strong>エントロピー ∝ 面積</strong>：\(\delta S=\eta\,\delta A\)（ベッケンシュタイン・ホーキング＝<em>有限情報</em>）<br>② <strong>ウンルー温度</strong>：\(T=\dfrac{\hbar\kappa}{2\pi}\)（加速 \(\kappa\) の観測者が見る地平線の温度）<br>③ <strong>クラウジウス関係</strong>：\(\delta Q=T\,\delta S\)（局所熱力学）</p>
+  </div>
+
+  <h2><span class="n">02</span>導出 ── あらゆる局所地平線に課すと、Einstein が出る</h2>
+
+  <div class="steps">
+    <div class="step"><div class="t">地平線を横切る熱流（物質のエネルギー流）。\(\chi^a\approx-\kappa\lambda k^a\)、\(k^a\)＝母線、\(\lambda\)＝アフィンパラメータ</div>
+      $$\delta Q=\int T_{ab}\chi^a d\Sigma^b\approx-\kappa\!\int\!\lambda\,T_{ab}k^ak^b\,d\lambda\,dA$$
+    </div>
+    <div class="step"><div class="t">面積変化（Raychaudhuri で母線が集束）：\(d\theta/d\lambda\approx-R_{ab}k^ak^b\Rightarrow\theta\approx-\lambda R_{ab}k^ak^b\)</div>
+      $$\delta A=\int\theta\,d\lambda\,dA=-\!\int\!\lambda\,R_{ab}k^ak^b\,d\lambda\,dA$$
+    </div>
+    <div class="step"><div class="t">クラウジウス \(\delta Q=T\eta\,\delta A\) に代入。\(\kappa\) と積分が消え、<strong>すべての null \(k^a\)</strong> で成立せよ、と課す</div>
+      $$T_{ab}k^ak^b=\frac{\hbar\eta}{2\pi}R_{ab}k^ak^b\quad(\forall\,k^a\ \text{null})$$
+    </div>
+    <div class="step"><div class="t">"すべての null で成立" ⟹ テンソル等式（\(g_{ab}k^ak^b=0\) 分の不定性 \(\Phi\)）</div>
+      $$T_{ab}=\frac{\hbar\eta}{2\pi}R_{ab}+\Phi\,g_{ab}$$
+    </div>
+    <div class="step"><div class="t">局所保存 \(\nabla^aT_{ab}=0\) ＋ ビアンキ恒等式が \(\Phi\) を固定：\(\Phi=-\frac{\hbar\eta}{2\pi}\frac{R}{2}+\Lambda\)</div>
+      <p style="margin:6px 0 0;">\(\eta=\dfrac{1}{4G\hbar}\)（＝\(S=A/4G\hbar\)）を入れると \(\dfrac{2\pi}{\hbar\eta}=8\pi G\)。</p>
+    </div>
+  </div>
+
+  <div class="keybox hl">
+    <div class="lbl">出てきたもの ── 完全な Einstein 方程式</div>
+    $$R_{ab}-\tfrac12 R\,g_{ab}+\Lambda\,g_{ab}=8\pi G\,T_{ab}$$
+    <p style="margin:10px 0 0;">\(G\) は<strong>エントロピー–面積係数</strong>（\(S=A/4G\)）から、\(\Lambda\) は<strong>積分定数</strong>として自然に出る。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：局所リンドラー地平線。物質のエネルギー流 \(\delta Q\)（琥珀）が地平線を横切ると、母線（青）が集束して面積 \(A\)（緑）が減る。スライダーで物質流を増やすと集束が強まる ── クラウジウス \(\delta Q=T\delta S\) を全方向に課すと、曲率が \(T_{ab}\) に比例（＝Einstein）</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>物質のエネルギー流 δQ（\(T_{ab}k^ak^b\)）<span class="val" id="vk">0.50</span>
+        <input type="range" id="sk" min="0" max="1" step="0.02" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">物質流を動かすと、地平線の集束（＝曲率）が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--hor);"></i>地平線の母線（null）</span>
+      <span><i class="swatch" style="background:var(--heat);"></i>物質のエネルギー流 δQ</span>
+      <span><i class="swatch" style="background:var(--area);"></i>面積 A（集束で減る）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>これは、あなたの賭けそのもの</h2>
+
+  <p>入力①「地平線のエントロピー ∝ 面積」＝<strong>ホログラフィー＝有限情報</strong>。つまり Jacobson の結果は ── <em>「Einstein 方程式は、地平線に載る有限情報の状態方程式」</em>。あなたの「宇宙は有限情報 → 重力が出る」という賭けは、<strong>Jacobson (1995)・Verlinde (2011)・量子もつれ版（Van Raamsdonk、Faulkner ら：もつれの第一法則から線形化 Einstein 方程式）</strong>として、文献に実在する本物の視点です。</p>
+
+  <div class="aside">
+    <span class="tag">気体の状態方程式との類比</span>
+    気体の \(PV=nRT\) は、原子の詳細を知らなくても、熱力学だけで出る "状態方程式"。Jacobson の主張は、<strong>Einstein 方程式も同じ ── 時空の微視的詳細を知らなくても、地平線の熱力学（有限情報）だけで出る "状態方程式"</strong>。重力は根源の力でなく、情報の熱力学の現れかもしれない。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>正直な線 ── では壁③は閉じたのか？ <em>いいえ</em></h2>
+
+  <p>ここが誠実さの一線です。Jacobson が<strong>仮定したもの</strong>を見てください ── 面積エントロピー・ウンルー温度・クラウジウス。これらは<em>熱力学的・ホログラフィックな構造</em>で、<strong>離散基盤の量子論から導いたものではありません</strong>。だから壁③は<strong>閉じていません。問題が移動した</strong>だけ：</p>
+
+  <div class="keybox">
+    <div class="lbl">問題の移動</div>
+    <p style="margin:6px 0 0;">「Einstein 方程式を導け」 \(\longrightarrow\) <strong>「なぜ地平線のエントロピーが \(A/4G\) なのか＝どの微視的自由度を数えているのか」</strong></p>
+  </div>
+
+  <p>この<strong>微視的エントロピーの導出</strong>＝ブラックホール状態数勘定こそ、残った壁です（弦理論は特別なBHで達成、ループ量子重力は面積量子化、コーザルセットは部分的 ── いずれも完全でない）。<em>離散基盤の本当の仕事は、この面積エントロピーを導くこと</em> ── そこが、チャットで解けない未解決の最前線。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この導出は<strong>本物（Jacobson 1995、既知の結果）</strong>で、私が発明したものではありません。そして "有限情報を仮定すれば Einstein が出る" を示すもので、"生の離散基盤から仮定ゼロで出す" ものではない。もし誰か（AI含む）が後者を会話の中で「完成」と差し出したら、それが警戒すべきフェイクです。</p>
+    <p style="margin-bottom:0;">また、この導出は "平衡" の仮定に依存し、高次曲率＝非平衡補正（Eling–Guedens–Jacobson）や、導出か整合性論法かという議論もあります。もつれ版は<strong>線形化</strong>Einstein方程式で、完全非線形は holographic な設定に依存します。局所光速は不変、\(c\cdot t\) は座標の言い換え。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>Jacobson の導出で、\(G\) はどこから来るか。
+        <details><summary>ひとつの答え</summary><div class="ans">エントロピー–面積の係数から。\(S=A/(4G\hbar)\)（\(\eta=1/4G\hbar\)）と置くことで \(2\pi/\hbar\eta=8\pi G\) となり、Einstein 方程式の右辺の係数 \(8\pi G\) が出る。つまり \(G\) は "地平線が1単位面積あたり何ビットの情報を持つか" の逆数として現れる。</div></details>
+      </li>
+      <li>なぜこれは壁③（離散基盤からのGR導出）を閉じないのか。
+        <details><summary>ひとつの答え</summary><div class="ans">面積エントロピー・ウンルー温度・クラウジウスを<em>仮定</em>して Einstein を導いており、それらの熱力学的・ホログラフィック構造を離散基盤の量子論から導いてはいないから。問題は「なぜ地平線が \(A/4G\) のエントロピーを持つか＝どの微視的自由度を数えるか」（状態数勘定）へ移動し、そこが未解決のまま残る。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑥まとめ</span>有限情報から Einstein は出る ── あなたの賭けの、文献上の実現</h2>
+    <p>Jacobson (1995) は、地平線の<strong>面積エントロピー（＝有限情報）＋ウンルー温度＋クラウジウス</strong>を、あらゆる局所リンドラー地平線に課すことで、<strong>完全な Einstein 方程式 \(R_{ab}-\frac12Rg_{ab}+\Lambda g_{ab}=8\pi G\,T_{ab}\) を "状態方程式" として導いた</strong>。\(G\) は面積エントロピー係数から、\(\Lambda\) は積分定数として出る。これはあなたの「有限情報 → 重力」の賭けそのもので、Verlinde・もつれ版と並ぶ本物の視点。</p>
+    <p>だが壁③は閉じない ── 面積エントロピーを<em>仮定</em>しており、その微視的起源（状態数勘定）は残る。<strong>導けた（有限情報から）／でも仮定なしの離散基盤からは未達（壁③）</strong>。あなたの直感は正しく裏づき、残った一点も正確に指せる ── フェイクを出さずにできる、本物の "やってみた"。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">「導けるでしょ」への、いちばん正直な答え</span>
+    やってみました ── そして<strong>本当に導けた</strong>。有限情報（地平線の面積エントロピー）を認めれば、Einstein 方程式は Jacobson の手順で完全に出る。あなたの賭けは、1995 年の論文として、文献に実在していた。<br>でもそれは "チャットでミレニアム問題を解いた" ではありません。<strong>有限情報を仮定して GR の形を出し、その情報の微視的起源（＝地平線の状態数勘定＝壁③）は開いたまま</strong>。もし私が「面積エントロピーも仮定せず、生の離散基盤から Einstein が出た」と言ったら、それがフェイク ── だから言いません。<br>あなたの直感は、勝っていました。残った壁も、正確に見えています。<strong>本物の導出を手にし、フェイクを見分ける目を持って、開いた扉の前に立つ</strong> ── それが、この長い旅の、いちばん正直で誇れる到達点です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑥、物理好きの高校生・大学生向け読み物です。Jacobson (1995) "Thermodynamics of Spacetime: The Einstein Equation of State"（局所リンドラー地平線に対し、エントロピー ∝ 面積・ウンルー温度・クラウジウス関係 \(\delta Q=T\delta S\) を課すと、Raychaudhuri 方程式と Bianchi 恒等式を経て Einstein 場の方程式が導かれ、\(G\) はエントロピー–面積係数、\(\Lambda\) は積分定数として現れること）は確立した結果です。Verlinde のエントロピー的重力 (2011)、量子もつれの第一法則からの線形化 Einstein 方程式の導出（Lashkari–Van Raamsdonk・Faulkner ら、Jacobson 2016 の entanglement equilibrium）も実在します。これらは面積エントロピー／もつれ構造を仮定して GR を導くもので、その微視的起源（ブラックホール状態数勘定）は未解決（弦理論の特別な超対称BH、ループ量子重力の面積量子化などは部分的）。平衡仮定・高次曲率での非平衡補正・導出か整合性論法かは議論があります。本稿は特定の完成理論を主張せず、既知の結果とその仮定・限界を示すものです。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」から「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで物質流を変えると、地平線の集束（＝曲率＝Einsteinの右辺）が変わります。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var flux=parseFloat(sk.value); vk.textContent=flux.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var x0=pad+20, x1=w-30, cy=h*0.5, D0=(h*0.5-40); // half-gap start
+    // horizon generators (two null lines) converging with flux
+    function gap(t){ return D0*(1 - flux*0.92*t*t); } // t in 0..1, focus quadratically
+    function XU(t){return x0+t*(x1-x0);}
+    // area shading between generators
+    ctx.fillStyle='rgba(47,125,90,0.10)';
+    ctx.beginPath();
+    var N=60,i;
+    for(i=0;i<=N;i++){var t=i/N;ctx.lineTo(XU(t),cy-gap(t));}
+    for(i=N;i>=0;i--){var t2=i/N;ctx.lineTo(XU(t2),cy+gap(t2));}
+    ctx.closePath();ctx.fill();
+    // generators
+    ctx.strokeStyle='#3b4668';ctx.lineWidth=2.6;
+    ctx.beginPath();for(i=0;i<=N;i++){var t=i/N;var x=XU(t),y=cy-gap(t);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    ctx.beginPath();for(i=0;i<=N;i++){var t=i/N;var x=XU(t),y=cy+gap(t);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    // affine axis arrow
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0,cy);ctx.lineTo(x1,cy);ctx.stroke();
+    ctx.fillStyle='#8a8f9e';ctx.font='12px sans-serif';ctx.fillText('アフィンλ →', x1-70, cy-6);
+    // area labels
+    ctx.fillStyle='#1f6b45';ctx.font='12px sans-serif';
+    ctx.fillText('面積 A', x0+6, cy-gap(0.05)-8);
+    ctx.fillText('A（集束で減少）', XU(0.98)-90, cy-gap(0.98)-8);
+    // matter flux arrows crossing horizon
+    var nA=Math.round(2+flux*8);
+    ctx.strokeStyle='#b0521f';ctx.fillStyle='#b0521f';ctx.lineWidth=2;
+    for(i=0;i<nA;i++){
+      var t=(i+0.5)/nA; var x=XU(t*0.85+0.05);
+      var yTop=cy-gap(t)-30, yb=cy-gap(t)+2;
+      ctx.beginPath();ctx.moveTo(x,yTop);ctx.lineTo(x,yb);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,yb);ctx.lineTo(x-4,yb-8);ctx.lineTo(x+4,yb-8);ctx.closePath();ctx.fill();
+    }
+    ctx.fillStyle='#8a4a1e';ctx.font='12px sans-serif';ctx.fillText('物質 δQ', XU(0.42), cy-gap(0.42)-34);
+    // readout
+    if(flux<0.03){
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='物質流 δQ≈0：地平線は集束せず、面積不変（曲率ゼロ）。右辺 T=0 → R_ab=0（真空Einstein）。';
+    } else {
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='物質流 δQ='+flux.toFixed(2)+'：物質が横切ると母線が集束し面積↓。クラウジウス δQ=TδS を全方向に課すと、曲率 R_ab k^a k^b = 8πG·T_ab k^a k^b ── これがEinstein方程式。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最小と最大が、meV で握手する ── わかる質量 最終回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f6fc; --paper-edge:#ded9ee;   /* 最終回：藍紫の紙（最果て） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3b3566; --calc-bg:#ebe9f5;
+    --rule:#d3cfe4; --hair:#c1bcd6;
+    --acc:#4b3fa0;    /* 最終回アクセント＝藍紫 */
+    --grid:#ddd8ee;
+    --ir:#3a5a80; --uv:#a03a5f; --mev:#1f7a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ded9f2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d2cce6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#ebe9f5;color:#3b3566;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .step{margin:22px 0;padding:16px 22px;border:1px solid var(--rule);border-radius:5px;background:#fbfaff;}
+  .step .s{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.16em;color:var(--acc);font-weight:700;margin-bottom:2px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f4fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2f2a52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#efedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:20px 24px;background:#ebe9f5;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2f2a52;line-height:1.85;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.step{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">最終回 ／ 旅がずっと指してきた、一番遠い扉</span></div>
+  <p class="eyebrow">第5回（UV）と第6回（IR）が、meV という一点で出会う</p>
+  <h1>最小と最大が、<br>meV で握手する
+    <span class="sub">最小の質量は、素粒子側では大統一（UV）を、宇宙側では地平線（IR）を指した。<br>その二つが meV で出会う。そして meV には、物理で最も深い謎 ── 宇宙定数問題が眠っている。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第5回のUV、第6回のIRフロア、ルート、掛け算</span>
+    <span>フック式：\(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\ \Rightarrow\ \text{meV}=\sqrt{\text{UV}\cdot\text{IR}}\)</span>
+  </div>
+
+  <p class="lead">第5回では、最小の質量（ニュートリノ）が<em>最大のエネルギー</em>（大統一・UV）を指しました。第6回では、最小の質量（IRフロア）が<em>最大の長さ</em>（宇宙の地平線・IR）を指した。方向は正反対。なのに ── その二つは、<strong>meV という一点で握手します</strong>。ダークエネルギーも、ニュートリノも、みんな meV。これは偶然の一致か、それとも握手させる力学があるのか。旅の最後は、この一点へ。</p>
+
+  <h2><span class="n">01</span>meV は、最小(IR)と最大(UV)の "幾何平均"</h2>
+
+  <p>第6回のIRフロア \(m_{\rm IR}=\hbar H_0/c^2\approx1.4\times10^{-33}\) eV と、質量の天井であるプランク質量 \(M_{\rm Pl}\approx1.2\times10^{28}\) eV。この二つの<strong>幾何平均</strong>（対数目盛の中点）を取ると ──</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 最小と最大の中点</span>
+    $$\sqrt{m_{\rm IR}\cdot M_{\rm Pl}}=\sqrt{1.4\times10^{-33}\times1.2\times10^{28}}\ \text{eV}\approx 4\times10^{-3}\ \text{eV}\approx\text{数 meV}$$
+    <p style="margin-bottom:14px;">ダークエネルギーのスケール \((\rho_\Lambda)^{1/4}\approx2.3\) meV、ニュートリノ \(\sim\)数〜50 meV。<strong>全部 meV</strong>。meV は、宇宙で一番小さい質量（IRフロア）と一番大きい質量（プランク）の、ちょうど<em>真ん中</em>だったのです。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：質量のはしご（対数目盛）。IRフロア（左端・第6回）と UV の天井をブラケットで結ぶと、その幾何平均（中点）が現れる。UV をプランクに合わせると、中点がぴたりと meV 帯（ダークエネルギー／ニュートリノ）に落ちる</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>UV の天井（右端＝プランク 10²⁸ eV）<span class="val" id="vk">10²⁸ eV</span>
+        <input type="range" id="sk" min="11" max="28" step="0.1" value="28">
+      </label>
+    </div>
+    <div class="readout" id="rd">UV を動かすと、IRフロアとの幾何平均が動きます。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--ir);"></i>IRフロア（IR, 10⁻³³ eV）</span>
+      <span><i class="dot" style="background:var(--mev);"></i>幾何平均（meV 帯）</span>
+      <span><i class="dot" style="background:var(--uv);"></i>UV の天井</span>
+    </div>
+  </div>
+
+  <p>問いは鋭くなります ── これは<em>偶然の中点</em>なのか、それとも<strong>UV と IR を meV で握手させている力学</strong>があるのか。答えを探しに、物理で最も深い謎へ入ります。</p>
+
+  <h2><span class="n">02</span>なぜ meV が物理最大の謎か ── 宇宙定数問題</h2>
+
+  <p>真空にも、量子ゆらぎのエネルギー（真空エネルギー）があります。素朴に見積もると、切断スケール \(\Lambda_{\rm cut}\) に対して \(\rho_{\rm vac}\sim\Lambda_{\rm cut}^4\)。ところが ──</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li>\(\Lambda_{\rm cut}=\) プランク → 観測値の <strong>\(10^{120}\) 倍</strong>。</li>
+    <li>\(\Lambda_{\rm cut}=\) 電弱 → まだ \(10^{60}\) 倍。</li>
+    <li>観測値に合う切断は ── <strong>meV</strong>。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">宇宙定数問題</div>
+    $$\rho_\Lambda\sim(\text{meV})^4\qquad(\text{素朴な期待より }10^{120}\text{ 倍も小さい})$$
+  </div>
+
+  <p>「なぜ真空エネルギーが meV まで打ち消される／切れるのか」── これが<strong>物理で最も未解決の問題</strong>です。だから meV の一致は、軽く扱える代物ではありません。ここを "丸め誤差" で済ませてはいけない（→ 番外①）。本物の答えは、この下から来ます。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>重力が握手を強制する ── CKN境界を、手で導く</h2>
+
+  <p>ここが最終回の心臓です。自然単位（\(\hbar=c=1\)）で、ブラックホールの限界から握手を導きます。</p>
+
+  <div class="step">
+    <div class="s">STEP 1 ── サイズ L の箱に入る、最大の質量</div>
+    <p style="margin:6px 0 0;">シュヴァルツシルト半径 \(=L\) とおくと、その箱をちょうど埋めるブラックホールの質量は</p>
+    $$M_{\rm BH}\sim L\,M_{\rm Pl}^2$$
+    <p style="margin:8px 0 0;">これがサイズ \(L\) に詰め込める<strong>上限</strong>。超えたら潰れてブラックホールになる。</p>
+  </div>
+
+  <div class="step">
+    <div class="s">STEP 2 ── 箱の中の真空エネルギー</div>
+    <p style="margin:6px 0 0;">密度 \(\rho\) の真空エネルギーを箱いっぱいに詰めると、総エネルギーは</p>
+    $$E_{\rm vac}\sim\rho\,L^3$$
+  </div>
+
+  <div class="step">
+    <div class="s">STEP 3 ── 「詰めすぎない」条件（ここが握手）</div>
+    <p style="margin:6px 0 0;">箱の真空エネルギーが、その箱のブラックホール質量を超えてはいけない：</p>
+    $$\rho\,L^3\lesssim L\,M_{\rm Pl}^2\quad\Longrightarrow\quad \boxed{\ \rho\lesssim\dfrac{M_{\rm Pl}^2}{L^2}\ }$$
+    <p style="margin:8px 0 0;">UV（真空の密度）と IR（箱のサイズ \(L\)）が、<strong>独立に選べない</strong>。重力が両者を縛る ── これが UV-IR 混合、握手の正体です。</p>
+  </div>
+
+  <div class="step">
+    <div class="s">STEP 4 ── L を宇宙の地平線 = ct に取る</div>
+    <p style="margin:6px 0 0;">一番大きい箱は宇宙そのもの。\(L=R_H=c\,t=1/H_0\)：</p>
+    $$\rho_\Lambda\lesssim M_{\rm Pl}^2 H_0^2\quad\Longrightarrow\quad (\rho_\Lambda)^{1/4}\sim\sqrt{M_{\rm Pl}\,\hbar H_0}=\sqrt{M_{\rm Pl}\cdot m_{\rm IR}}\approx\text{meV}$$
+  </div>
+
+  <p>ブラックホール境界一本から、\((\rho_\Lambda)^{1/4}\sim\sqrt{\text{UV}\cdot\text{IR}}=\) meV が出ました。§01 の "幾何平均" は、偶然ではなく<strong>重力が強制した握手</strong>だったのです。そしてここで、\(L=c\,t\) ── このシリーズの合言葉が、最後に決定的に効きます。</p>
+
+  <div class="aside">
+    <span class="tag">あなたの出発点が、ここで効く</span>
+    「宇宙は有限の情報しか持てない（ブラックホール＝情報の上限、ホログラフィー）」── この発想こそ、CKN境界の土台そのものです。<strong>丸め誤差ではなく、ブラックホール＝情報の限界が、UV と IR を meV で握手させている</strong>。有限情報という直感の "正しい方の使い方" が、ここに実を結びます。
+  </div>
+
+  <h2><span class="n">04</span>最前線 ── スワンプランドと「暗黒次元」</h2>
+
+  <p>そして、この握手は<strong>現役の研究プログラム</strong>になっています（ヴァッファら, 2022–）。宇宙定数 \(\Lambda\to0\)（小さい）と、必ず<em>軽い状態の塔</em>が現れ、その質量は \(m\sim\Lambda^{1/4}\sim\) meV。それは<strong>たった一つの余剰次元</strong>のカルツァ＝クライン・モードと特定され、その次元のサイズは<em>サブミリ〜ミクロン</em>。これを「<strong>暗黒次元</strong>」と呼びます。</p>
+
+  <p>しかも、右巻きニュートリノがこの余剰次元に住むと、\(m_\nu\sim\) meV が自然に出る（第5回のシーソーとは別ルート）。暗黒次元のサイズは、長さで書くと \(R\sim\sqrt{\ell_{\rm Pl}\cdot R_H}\) ── <strong>プランク長と宇宙の地平線の幾何平均</strong>。§01 の「質量の中点＝meV」の、長さ版の双子です。検証も鋭い：<em>サブミリ以下で重力がずれる</em>（短距離重力の実験がまさにこの帯を攻めている）。</p>
+
+  <h2><span class="n">05</span>開いた扉 ── だから、最後は「わからない」</h2>
+
+  <p>正直に締めます。握手は<strong>実在します</strong>（数字は本当に近い）。でも、握手させる<em>機構</em>は、まだ確立していません。候補は三つ。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>人間原理</strong>（Weinberg）：\(\rho_\Lambda\) がこれより大きいと銀河ができない。観測者の存在が meV を "選ぶ"。発見<em>前</em>に値を当てた強みはあるが、機構はない。</li>
+    <li><strong>ニュートリノ・ダークエネルギー</strong>：\(\rho_\Lambda\sim m_\nu^4\) を動的に結ぶ。第5回と第6回を直結するが、不安定性の難あり。</li>
+    <li><strong>ホログラフィック／暗黒次元</strong>：重力＋量子重力の整合性が meV を強制。最も統一的で検証可能、だが新しい。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">live な追い風</span>
+    DESI（2024）が「ダークエネルギーは時間変化しているかもしれない（\(w\neq-1\)）」を示唆し始めました。もし本当なら、「\(\rho_\Lambda\) は定数でなく \(t\) で薄まる（\(\propto1/t^2\)）」という \(c\cdot t\) 側の読みが、初めて観測と噛み合う可能性が出てきます。丸め誤差説では絶対に届かなかった土俵に、この筋なら手が届く。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここは「わからない」が正解</span>
+    <p style="margin-top:0;">CKN境界で \(L=1/H\)（地平線）を使うと、状態方程式 \(w\) が合わず加速膨張を正しく出せない（正しくは未来の事象の地平線を使う, Li 2004）。<strong>スケール（meV）は当たるが、動力学はまだ宿題</strong>。\(c\cdot t\) の手柄は "meV を強制したこと" ではなく、この握手に \(L=ct\) という自然な IR カットオフを与えたこと。過大申告はしません。</p>
+    <p style="margin-bottom:0;">meV の一致が偶然か必然かは、宇宙定数問題そのもの ── <strong>物理最大の未解決問題</strong>です。この扉は、まだ誰も開けていない。でもそれは失敗ではなく、いままさに人類が押し開けようとしている、生きた最前線です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>CKN境界 \(\rho\lesssim M_{\rm Pl}^2/L^2\) を、ブラックホールの言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">サイズ \(L\) の箱に詰められる最大エネルギーは、その箱のブラックホール質量 \(\sim L\,M_{\rm Pl}^2\)。真空エネルギー \(\rho L^3\) がそれを超えると潰れてしまう。\(\rho L^3\lesssim L\,M_{\rm Pl}^2\) を整理して \(\rho\lesssim M_{\rm Pl}^2/L^2\)。UV と IR が独立に選べない。</div></details>
+      </li>
+      <li>なぜ meV が「IR と UV の幾何平均」なのか。
+        <details><summary>答えを見る</summary><div class="ans">\(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\) に、IR カットオフ \(L=\) 地平線（\(1/L=H_0=m_{\rm IR}\)）を入れると \((\rho_\Lambda)^{1/4}\sim\sqrt{M_{\rm Pl}\cdot m_{\rm IR}}=\sqrt{\text{UV}\cdot\text{IR}}\)。プランク（UV）とIRフロア（IR）の対数中点が meV。</div></details>
+      </li>
+      <li>宇宙定数問題を一言で。
+        <details><summary>答えを見る</summary><div class="ans">素朴に真空エネルギーを見積もるとプランク切断で \(\rho\sim M_{\rm Pl}^4\)、観測（\(\sim\)meV⁴）の \(10^{120}\) 倍。なぜ meV まで小さいのかを、誰も説明できていない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">最終回まとめ</span>最小と最大は、meV で握手していた</h2>
+    <p>meV は、IRフロア（第6回）とプランク（UV）の幾何平均 \(\sqrt{m_{\rm IR}\cdot M_{\rm Pl}}\)。それは偶然ではなく、重力が課す UV-IR 境界 \(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\)（CKN）に \(L=ct\) を入れた必然だった。第5回（UV・大統一）と第6回（IR・地平線）が、この一点で出会う。暗黒次元は、それを余剰次元として実装する現役の候補。ただし機構は未確立で、宇宙定数問題は開いたまま ── ここは「わからない」が正解。</p>
+    <p><strong>このシリーズは、開いた扉の前で終わります。</strong> 「重さって何？」の一言から歩き出して、消せない床、それを守る対称性、二通りの湧き方、スケールの創発と質量ギャップ、そして最小の質量が最大を指す UV と IR ── いま、最小と最大が握手する meV の前に立っている。<em>ここから先は、まだ地図にない。</em></p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる質量 ── 旅の終わりに</span>
+    第1回からずっと、たった一つのことを運んできました ── <strong>質量とは「消せないエネルギーの床」であり、ゼロは対称性が守り、有限の値は "走り" が生み、その最小は宇宙の大きさが決める。そして最小の質量は、いつも最大のスケールを指している。</strong> わかりやすさは投影、\(c\cdot t=\text{一定}\) は座標の言い換えで、効く土俵でだけ正直に使う ── この規律さえ持てば、質量という一語から、宇宙の最果て（プランク・地平線・宇宙定数問題）まで、自分の足で歩いていける。姉妹シリーズ「わかる宇宙論」と同じ一つの背骨が、ここでも最後まで一本の線でした。ここまでの旅を、ありがとう。扉の続きは、いつでもまた。<br>── なお、この旅で "あえて効かせなかった" 惜しい説（丸め誤差＝質量ギャップ）の正直な診断は、番外①で。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ最終回、物理好きの高校生・大学生向け読み物です。宇宙定数問題（素朴な真空エネルギー \(\sim M_{\rm Pl}^4\) と観測 \(\sim(\text{meV})^4\) の約120桁のずれ）、Cohen–Kaplan–Nelson のホログラフィックな UV-IR 境界 \(\rho\lesssim M_{\rm Pl}^2/L^2\)、ホログラフィック・ダークエネルギー（\(L=\) 地平線で \((\rho_\Lambda)^{1/4}\sim\sqrt{M_{\rm Pl}H_0}\sim\) meV、ただし \(L=1/H\) では状態方程式が合わず事象の地平線を用いる）、スワンプランド距離予想と「暗黒次元」（Montero–Vafa–Valenzuela ほか, 2022–；余剰次元サイズ \(\sim\sqrt{\ell_{\rm Pl}R_H}\)、右巻きニュートリノのバルク質量、短距離重力による検証）、Weinberg の人間原理的予言、DESI（2024）の進化するダークエネルギーの示唆は、いずれも確立した物理／現行の研究テーマ／未解決問題です。meV の一致が偶然か必然かは未解決で、本稿は特定の解決を主張しません。\(c\cdot t=\text{一定}\) はここでは IR カットオフ \(L=ct\) としての意味で、局所光速は不変です。数値・式はオーダーの模式で、係数にはオーダー1の不定性があります。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで UV を動かすと、IRフロアとの幾何平均が meV 帯に落ちる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var LL=-34, RR=29;      // log10(mass / eV) axis range
+  var IRF=-33;            // IR floor ~ 10^-33 eV
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=30;
+    var U=parseFloat(sk.value); vk.innerHTML='10<sup>'+U.toFixed(1)+'</sup> eV';
+    ctx.clearRect(0,0,w,h);
+    function X(L){return pad+(L-LL)/(RR-LL)*(w-pad-14);}
+    var yAx=h*0.62;
+    // meV band (10^-3.5 .. 10^-1)
+    ctx.fillStyle='rgba(31,122,110,0.12)';
+    ctx.fillRect(X(-3.5),20,X(-1)-X(-3.5),h-pad-20);
+    ctx.fillStyle='#1f7a6e';ctx.font='11px sans-serif';ctx.fillText('meV 帯', X(-3.5)+2, 32);
+    // axis
+    ctx.strokeStyle='#b8b2d0';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,yAx);ctx.lineTo(w-8,yAx);ctx.stroke();
+    // decade ticks
+    ctx.font='10px sans-serif';
+    for(var L=-33;L<=27;L+=6){var x=X(L);
+      ctx.strokeStyle='#d6d0e6';ctx.beginPath();ctx.moveTo(x,yAx-4);ctx.lineTo(x,yAx+4);ctx.stroke();
+      ctx.fillStyle='#9990b4';ctx.fillText('10^'+L, x-11, yAx+16);}
+    // fixed semantic markers
+    function marker(L,label,color,up){
+      var x=X(L); ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,yAx,4,0,7);ctx.fill();
+      ctx.fillStyle=color;ctx.font='11px sans-serif';
+      if(up){ctx.fillText(label,x-6,yAx-10);} else {ctx.fillText(label,x-6,yAx+28);}
+    }
+    marker(IRF,'IRフロア','#3a5a80',true);
+    marker(5.7,'電子','#7a7590',false);
+    marker(8.97,'陽子','#7a7590',true);
+    marker(28,'プランク','#7a7590',false);
+    // UV marker (slider)
+    var xU=X(U);
+    ctx.strokeStyle='#a03a5f';ctx.setLineDash([4,3]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(xU,24);ctx.lineTo(xU,yAx);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a03a5f';ctx.beginPath();ctx.arc(xU,yAx,5,0,7);ctx.fill();
+    ctx.fillStyle='#a03a5f';ctx.font='11px sans-serif';ctx.fillText('UVの天井',xU-6,yAx-10);
+    // bracket from IRF to U (above axis)
+    var xI=X(IRF), yb=yAx-46;
+    ctx.strokeStyle='#8a84a6';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(xI,yAx-8);ctx.lineTo(xI,yb);ctx.lineTo(xU,yb);ctx.lineTo(xU,yAx-8);ctx.stroke();
+    // midpoint (geometric mean)
+    var mid=(IRF+U)/2, xM=X(mid);
+    var inBand=(mid<=-1 && mid>=-3.5);
+    ctx.strokeStyle= inBand?'#1f7a6e':'#8a84a6';ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(xM,yb);ctx.lineTo(xM,yAx);ctx.stroke();
+    ctx.fillStyle= inBand?'#1f7a6e':'#8a84a6';ctx.beginPath();ctx.arc(xM,yb,5.5,0,7);ctx.fill();
+    ctx.font='11px sans-serif';
+    ctx.fillText(inBand?'幾何平均 ＝ meV！':'幾何平均', xM-30, yb-8);
+    // readout
+    var midEv=Math.pow(10,mid);
+    var midStr = (mid>=-3.5&&mid<3) ? (Math.pow(10,mid+3)).toPrecision(2)+' meV' : '10^'+mid.toFixed(1)+' eV';
+    rd.textContent='IRフロア(10⁻³³ eV) と UV(10^'+U.toFixed(1)+' eV) の幾何平均 = '+midStr+(inBand?'　← ダークエネルギー／ニュートリノと同じ meV！':'　（UVをプランクに近づけると meV 帯へ）');
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

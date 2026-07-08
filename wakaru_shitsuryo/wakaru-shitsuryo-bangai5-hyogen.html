@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「最小の質量」は一語で六つ ── わかる質量 番外編⑤</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f6fa; --paper-edge:#ddd8e6;   /* 番外⑤：仕分け＝すみれ灰の紙 */
+    --side:#3f6660; --side-bg:#eef2ee;
+    --warn:#8a4b2f;
+    --calc:#4a3d6b; --calc-bg:#eceaf3;
+    --rule:#d3cddf; --hair:#bdb5cf;
+    --acc:#5a4a70;    /* 番外⑤アクセント＝すみれ灰 */
+    --grid:#e2dcec;
+    --inv:#2f6d5a;    /* 表現によらない＝緑 */
+    --dis:#9a5a2e;    /* 表現に溶ける＝銅 */
+    --floor:#3a5a80;  --gap:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd6ea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#23342f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d5cfe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:9px 20px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#eceaf3;color:#4a3d6b;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.tax{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.tax th,table.tax td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.tax th{background:#e9e5f1;color:#463a5e;font-weight:700;}
+  table.tax .inv{color:var(--inv);font-weight:700;}
+  table.tax .dis{color:var(--dis);font-weight:700;}
+  table.tax .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+
+  .conf{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .conf .row{display:flex;gap:14px;padding:13px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.65;}
+  .conf .row:last-child{border-bottom:none;}
+  .conf .k{flex-shrink:0;width:26px;font-weight:700;color:var(--dis);font-size:15px;}
+  .conf .txt{color:var(--ink-soft);} .conf .txt b{color:#2c2a2e;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f4fa;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3d3352;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdff,#eceaf3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e9e5f1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3d3352;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.conf,table.tax{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} table.tax{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">番外編 ⑤（本編級）／ 第6回・第7回の言葉を、一本の線で仕分ける</span></div>
+  <p class="eyebrow">「最小の質量」と呼ばれるものは一語で六つ ── 専門家も混ぜる。区別する線はただ一本</p>
+  <h1>「最小の質量」は一語で六つ
+    <span class="sub">質量ギャップ・IRフロア・凍結・モード間隔・離散・有限 ── ぜんぶ「最小の質量」や「ギャップ」と呼ばれ、<strong>専門家の口語でも混ざる</strong>。仕分ける線はただ一本 ── <em>観測で区別できるか（表現によらない量）か、言い方が違うだけ（表現に溶ける）か</em>。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回 \(m_{\min}=\hbar H/c^2\)、第7回、わかる宇宙論・番外④の等価原理</span>
+    <span>フック式：観測量か、表現に溶ける言葉か</span>
+  </div>
+
+  <p class="lead">第6回・第7回で「最小の質量」をめぐって、いくつもの言葉が出ました ── 測れない床、凍る境目、質量ギャップ、離散のはしご、有限の状態数。じつはこれらは<strong>別々の概念で、少なくとも六つ</strong>あります。そして厄介なことに、<em>専門家でさえ口語では混ぜます</em>。「宇宙が有限だから質量ギャップがある」「格子でギャップが見えた（＝解けた）」「離散だから最小質量が実在する」── どれも、六つのどれかを別のどれかにすり替えている。この回では、それを<strong>ただ一本の線</strong>で仕分けます ── その線は、このシリーズがずっと使ってきた掟そのもの：<strong>観測にかかる量（表現によらない）か、言い方が違うだけ（表現に溶ける）か</strong>。そして最後に、その線を「質量ギャップ問題」そのものに当てると ── 問題の大半はそもそも起きておらず、残った芯はブラックホール（量子重力）の"易しい影"だと分かります。</p>
+
+  <h2><span class="n">01</span>「最小の質量」と呼ばれる、六つの顔</h2>
+
+  <p>まず、混ぜずに並べます。ぜんぶ「最小の質量」「ギャップ」「下限」などと呼ばれますが、正体は別物です。</p>
+
+  <table class="tax">
+    <tr><th>#</th><th>顔（呼ばれ方）</th><th>正体</th><th>スケール</th><th>\(t\)・箱 \(L\) 依存</th></tr>
+    <tr><td class="id">①</td><td>操作的フロア</td><td>測定限界（宇宙年齢に1回振動できる最小）</td><td>\(\hbar H/c^2\)</td><td>\(\propto1/t\)</td></tr>
+    <tr><td class="id">②</td><td>力学的フロア</td><td>凍る／振動の境目（ハッブル摩擦）</td><td>\(\hbar H/c^2\)</td><td>\(\propto H\)</td></tr>
+    <tr><td class="id">③</td><td>有限体積のモード間隔</td><td>箱の最低モード（IRカットオフ）</td><td>\(\hbar c/L=\hbar/t\)</td><td>\(\propto1/t\)、\(L\to\infty\)で消える</td></tr>
+    <tr><td class="id">④</td><td>真の質量ギャップ</td><td>真空と第一励起の差（無限体積のスペクトルギャップ）</td><td>\(\Delta\sim\Lambda\)</td><td>不変、\(L\to\infty\)で残る</td></tr>
+    <tr><td class="id">⑤</td><td>スペクトルの離散性</td><td>準位が飛び飛び（調和振動子でも起きる）</td><td>準位間隔</td><td>体積・系による</td></tr>
+    <tr><td class="id">⑥</td><td>有限次元ヒルベルト空間</td><td>状態が有限個（ホログラフィック／de Sitter）</td><td>\(\dim=e^{A/4G}\)</td><td>\(\Lambda\)（地平線）による</td></tr>
+  </table>
+
+  <p>①②③はどれも \(\hbar H/c^2\sim10^{-33}\) eV に着地し、④だけ 0.2 GeV（41桁上）。⑤と⑥は「離散」「有限」という<em>性質</em>で、①〜④の"高さ"とは別の軸の話です。ここまでで既に、混ぜると事故ることが見えます。</p>
+
+  <h2><span class="n">02</span>仕分ける一本の線 ── 観測で区別できるか</h2>
+
+  <p>このシリーズの土台（わかる宇宙論・番外④）は、こう言っていました ── <strong>「空間が伸びる」と「光速が遅くなる」は同じ物理の二つの表現で、観測量はどちらでも一致する。</strong>連続と離散も、まったく同じ。だから六つの顔も、この一本で切れます。</p>
+
+  <div class="keybox">
+    <div class="lbl">仕分けの線</div>
+    <p style="margin:6px 0 0;"><span style="color:var(--inv);font-weight:700;">表現によらない量（＝物理）</span>：連続で計算しても離散で計算しても<strong>同じ値</strong>になる。観測で確かめられる。<br><span style="color:var(--dis);font-weight:700;">表現に溶ける言葉</span>：連続と離散で<strong>言い方だけ</strong>違う。どんな観測でも区別できない。</p>
+  </div>
+
+  <table class="tax">
+    <tr><th>問い</th><th>連続表現の言い方</th><th>離散表現の言い方</th><th>判定</th></tr>
+    <tr><td>閾値の"値" \(\hbar H/c^2\)（①②③）</td><td colspan="2" style="text-align:center;">両方とも同じ \(1.4\times10^{-33}\) eV</td><td class="inv">不変</td></tr>
+    <tr><td>質量ギャップ \(\Delta\)（④）</td><td colspan="2" style="text-align:center;">格子→連続極限で同じ \(\sim\Lambda\)</td><td class="inv">不変</td></tr>
+    <tr><td>閾値の下は？</td><td>凍った連続スペクトル</td><td>段が無い</td><td class="dis">溶ける</td></tr>
+    <tr><td>フロアの身分は？</td><td>操作的な限界</td><td>実在するギャップ</td><td class="dis">溶ける</td></tr>
+    <tr><td>時空そのものは？</td><td>連続体</td><td>格子</td><td class="dis">溶ける</td></tr>
+  </table>
+
+  <p>下の図で、これを体感できます。表現を<strong>連続⇄離散</strong>で切り替えても、目印（閾値・\(\Delta\)・meV・プランク）は<em>1ミリも動きません</em>。動くのは、それに貼る<strong>言葉のラベルだけ</strong>。それが「表現に溶ける」ということです。</p>
+
+  <div class="fig">
+    <div class="cap">図：質量の対数スケール。ボタンで<strong>連続／離散</strong>の表現を切り替える。目印（閾値・meV・Δ・プランク）は表現によらず同じ位置＝<span style="color:var(--inv);font-weight:700;">不変量</span>。変わるのは下端の下・フロアの身分・時空に貼る<span style="color:var(--dis);font-weight:700;">言葉</span>だけ</div>
+    <canvas id="cv" width="680" height="380"></canvas>
+    <div class="controls">
+      <button class="tbtn on" id="bC">連続表現</button>
+      <button class="tbtn" id="bD">離散表現</button>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>専門家も踏む、五つのすり替え</h2>
+
+  <p>この線を引くと、よくある混同が全部「線のどちら側を取り違えたか」で診断できます。</p>
+
+  <div class="conf">
+    <div class="row"><span class="k">A</span><span class="txt"><b>ギャップ ≠ 離散</b>：質量ギャップ④のある理論（YM）も、\(\Delta\) の上は<b>連続</b>スペクトル（多粒子連続体）。「ギャップ」は"0と\(\Delta\)の間に何も無い"の意味で、"準位が飛び飛び⑤"ではない。自由な質量粒子ですらギャップあり＋上は連続。</span></div>
+    <div class="row"><span class="k">B</span><span class="txt"><b>有限体積のモード間隔③ ≠ 質量ギャップ④</b>：③は \(\propto1/L\) で \(L\to\infty\) に<b>消える</b>IR効果。④は残る。<b>格子や箱の最低モードを"質量ギャップ"と呼ぶのは古典的な罠</b> ── 連続極限 \(a\to0\) と無限体積 \(L\to\infty\) の両方を取って初めて④。</span></div>
+    <div class="row"><span class="k">C</span><span class="txt"><b>離散スペクトル⑤ ≠ 有限次元⑥</b>：調和振動子は準位が離散でも状態は無限個。⑥（有限個）はずっと強い主張。「量子化されている」を「状態が有限」と混ぜない。</span></div>
+    <div class="row"><span class="k">D</span><span class="txt"><b>UVの離散 ≠ IRの離散</b>：プランク長（最小の長さ・最大振動数・はしごの<b>上端</b>）と、有限の箱（最大の長さ・最小振動数・<b>下端</b>）は正反対の端。両方「離散」と呼ばれる。</span></div>
+    <div class="row"><span class="k">E</span><span class="txt"><b>表現の離散 ≠ 物理の離散</b>：格子か連続体か（時空の描き方）は<b>表現＝溶ける</b>。いっぽう「有限整数個の状態⑥」は<b>物理＝別の観測結果</b>（再帰・ユニタリ性）を出す。同じ「離散」でも住む側が違う。</span></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>整理の答え ── 三つが一つ、一つは別、二つは特別</h2>
+
+  <p>六つを線で仕分けると、きれいに片づきます。</p>
+
+  <div class="keybox">
+    <div class="lbl">「最小の質量」六つの、本当の関係</div>
+    <p style="margin:6px 0 0;">
+    <strong>①②③ ＝ 同じ一つの不変閾値の、三つの顔</strong>：測定（①）・力学（②）・箱のモード（③）という別角度の言い方だが、値はみな \(\hbar H/c^2\)。一致する。<br>
+    <strong>④ ＝ 別の不変量</strong>：無限体積で残るスペクトルギャップ \(\Delta\sim\Lambda\)。①②③とは41桁違い、出自も動力学（次元的移行）。<br>
+    <strong>⑤ ＝ 分解能しだい</strong>：間隔が測れれば物理（原子スペクトル）、測れなければ表現に溶ける（宇宙の閾値の下）。<br>
+    <strong>⑥ ＝ 別の観測量を動かす物理命題</strong>：有限性は再帰・ユニタリ性を変えるが、\(\hbar H/c^2\) や \(\Delta\) の<em>値</em>は変えない。</p>
+  </div>
+
+  <p>つまり ──「宇宙が有限だから質量ギャップがある」は、③（または⑥）と④のすり替え（罠B・E）。「格子でギャップが見えたから解けた」は、④の格子表現（不変量）と、その連続極限の存在証明（クレイ問題）の混同。「離散だから最小質量が実在する」は、フロアの身分（溶ける言葉）を物理に格上げする誤り。<em>どれも、線のどちら側かを取り違えている。</em></p>
+
+  <div class="aside">
+    <span class="tag">なぜ専門家も混ぜるのか ── 言葉が節約されるから</span>
+    現場では「mass gap」「IR cutoff」「lowest mode」「discrete spectrum」「finite-dimensional」がしばしば同じ文脈で飛び交います。多くは<em>その場では</em>害がない ── どの意味か了解されているから。事故るのは、了解のない相手へ、あるいは哲学的な主張（「だから宇宙は離散だ」「だから解けた」）に格上げする瞬間。線を一本持っていれば、その格上げが正当か（観測量か）を即座に問い返せます。これはこのシリーズの「正直な線」の、道具版です。
+  </div>
+
+  <h2><span class="n">05</span>質量ギャップで総ざらい ── 表現・不変量・未解決を分ける</h2>
+
+  <p>いちばん混ざりやすい④で、三つを分けておきます。</p>
+
+  <table class="tax">
+    <tr><th>層</th><th>中身</th><th>身分</th></tr>
+    <tr><td>表現</td><td>格子（離散）か連続場か ── 計算の足場</td><td class="dis">溶ける（どちらでもよい）</td></tr>
+    <tr><td>不変量</td><td>\(\Delta\sim\Lambda\) ── 格子で計算し連続極限を取った値。物理・格子では既定事実</td><td class="inv">物理（表現によらない）</td></tr>
+    <tr><td>未解決</td><td>連続極限で \(\Delta>0\) が厳密に残ることの<em>数学的証明</em></td><td style="color:var(--warn);font-weight:700;">クレイ問題（未解決）</td></tr>
+  </table>
+
+  <p>この三層を一緒くたにすると、「格子で \(\Delta\) が出た（不変量）」を「ギャップの存在が証明された（未解決の数学）」と誤読したり、「離散で計算した（表現）」を「宇宙が離散だと分かった（物理命題⑥）」と飛躍したりする。<strong>層を分けて名指しするだけで、ほとんどの混乱は消えます。</strong></p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>だから「質量ギャップ問題」は、半分は起きていない</h2>
+
+  <p>§05 の三層で読むと、有名な「ヤン=ミルズ質量ギャップ問題」は、じつは三つの別々の問いが束ねられていたと分かります。</p>
+
+  <table class="tax">
+    <tr><th></th><th>問い</th><th>表現</th><th>状態</th></tr>
+    <tr><td class="id">Q1</td><td>格子（離散）で、有限間隔 \(a\) ならギャップはあるか</td><td>離散</td><td class="inv">厳密に解決（強結合展開で閉じ込め＋ギャップ）</td></tr>
+    <tr><td class="id">Q2</td><td>\(a\to0\)・\(L\to\infty\) でギャップは残るか（数値）</td><td>連続極限</td><td class="inv">物理的に決着（格子QCDが測定、〜1.7 GeV）</td></tr>
+    <tr><td class="id">Q3</td><td>厳密な連続場の理論として構成し \(\Delta>0\) を証明できるか</td><td>連続・公理的</td><td style="color:var(--warn);font-weight:700;">未解決＝クレイ問題</td></tr>
+  </table>
+
+  <p><strong>消える擬似問題</strong> ──「そもそもギャップは実在するのか」。これは表現不変な事実で、格子では顕わ、連続極限でも測定済み（Q1・Q2）。「厳密な連続証明が無い」を「ギャップがあるか分からない」とすり替えるのが、§03 の罠B・E。<em>その意味の"問題"は、正しく整理すれば起きていません。</em></p>
+
+  <p><strong>残る真の問題</strong> ── Q3。これは §02 の線でいえば「④が \(a\to0\)・\(L\to\infty\) で残るか」＝<strong>表現によらない不変な問い</strong>（溶ける側ではない）。だから整理では消えず、クレイ問題はここだけに凝縮する。</p>
+
+  <div class="keybox">
+    <div class="lbl">なぜ連続だけが特別扱いされるのか</div>
+    <p style="margin:6px 0 0;">正則格子は<strong>ローレンツ不変性を \(O(a)\) で破り</strong>、それが厳密に戻るのは連続極限だけ。ローレンツ不変性は超高精度で検証された観測量。だから Q3 は「ただの数学的厳密さ」ではなく、<strong>"ローレンツ不変な連続理論が存在するか"という物理</strong>を含む ── だから溶けない。</p>
+  </div>
+
+  <p>結論は、<em>「解いた」ではなく「問題を正しい大きさに畳んだ」</em>。大半は表現の混同が生んだ擬似問題で、正しく整理すれば起きない。残る Q3 だけが本物 ── そしてそれは「ギャップがあるか」ではなく「<strong>離散→連続のローレンツ不変な極限が厳密に存在するか</strong>」です。</p>
+
+  <h2><span class="n">07</span>その残り（Q3）は、ブラックホールの"易しい影"</h2>
+
+  <p>「離散→連続のローレンツ不変な極限が厳密に存在するか」── この問いは、じつはブラックホールが<strong>同じ骨格</strong>で抱えています。しかもブラックホールの方が深い版。違うのは、<em>有限を誰が持ち込むか</em>です。</p>
+
+  <table class="tax">
+    <tr><th></th><th>YMの残り（Q3）</th><th>ブラックホール</th></tr>
+    <tr><td>有限/離散の出どころ</td><td>格子＝正則化（人が置く表現）</td><td class="inv">\(S=A/4G\)＝物理的な状態数の上限（自然が課す＝⑥）</td></tr>
+    <tr><td>連続の中身</td><td>固定した平坦時空の上のQFT</td><td>時空そのものが創発（動力学的）</td></tr>
+    <tr><td>極限の見込み</td><td>漸近自由でUVが素直＝足りないのは厳密性だけ</td><td style="color:var(--warn);font-weight:700;">厳密構成なし＝量子重力そのもの</td></tr>
+  </table>
+
+  <p>だから YM は<strong>飼いならされた従兄弟</strong>（時空は傍観者、ローレンツは平坦時空に最初から在り、極限の存在はほぼ確実で厳密証明だけが宿題）。ブラックホールは<strong>本体</strong>（時空とローレンツ不変性を、有限の自由度から創発させねばならない）。同じ問いでも、桁違いに難しい。</p>
+
+  <p>ブラックホールが"どうしているか"── 有限（\(S=A/4G\)）と滑らかなローレンツ不変時空を現に両立させる機構は、このシリーズの技術補遺が地図にしています：<strong>ホログラフィー</strong>（有限情報を面積に載せ、連続バルクを創発）、<strong>誘導重力</strong>（Jacobson＝地平線熱力学 \(\delta Q=T\delta S\) から連続のアインシュタイン方程式、技術補遺⑥）、<strong>代数の型の昇格</strong>（重力で type III₁→II、有限エントロピー、技術補遺⑧⑩⑬⑭）。ただし ── <em>どれも解決ではありません。</em>量子重力は未解決で、これはシリーズが名指しした<strong>「ただ一つの穴＝背景独立な有限動力学」</strong>そのもの。</p>
+
+  <div class="keybox">
+    <div class="lbl">いちばん切れる一点 ── "どんな離散か" で答えが割れる</div>
+    <p style="margin:6px 0 0;">正則格子はローレンツ不変性を破る → \(a\to0\) が要る（YMの宿題の正体）。<strong>コーザルセット的な離散はローレンツ不変</strong>（不変なランダム散布で離散化）→ 破らない。だから終章は「離散はコーザルセット的でなければならない」と賭けた。重力の側は、<strong>"賢い（ローレンツ不変な）離散"を要求する</strong> ── YMの「正則格子＋\(a\to0\)」は、その要求を最も素朴に回避しているだけ。</p>
+  </div>
+
+  <p>そして要（かなめ）── §04 で「⑥は別の観測量を動かす物理命題」と言いました。その⑥が<strong>現に実現している唯一の現場がブラックホール</strong>です（\(S=A/4G\)、ページ曲線、ユニタリ性は観測量）。つまり <strong>⑥が"表現"から"物理"へ渡る場所</strong>。YMの残り Q3 と、ブラックホールの連続創発は、<em>「ローレンツ不変な連続を、有限から出せるか」という一つの問いの、二つの顔</em>で、番外⑤の線でいえば同じ<strong>"溶けない核心"側</strong>に並ぶ。<em>ヤン=ミルズ質量ギャップの残った芯は、ブラックホール＝量子重力の、易しい影だったのです。</em></p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この回自身も、線を引いて安心して終わりにはしません。境目には正直に曖昧さがあります ── ⑤「離散スペクトル」が物理か表現かは<em>分解能に依存する連続的な問い</em>で、白黒ではありません。また「表現によらない」と言えるのは、その量を<strong>実際に両表現で計算して一致を確かめた</strong>範囲まで（\(\Delta\) は格子で検証済み、閾値 \(\hbar H/c^2\) は無次元 \(N\) で保証）。未計算の量まで無条件に不変と決めつけるのは、それ自体が別の飛躍です。</p>
+    <p style="margin-bottom:0;">そして最大の但し書き ── <strong>「宇宙は有限整数個の状態か（⑥）」は未証明の賭け</strong>（終章・技術補遺⑮）。この回は「⑥が正しいか」を決めるものではなく、「⑥が正しくても、それが変えるのは再帰・ユニタリ性であって \(\hbar H/c^2\) や \(\Delta\) の値ではない」と、<em>効く先を正しく仕分ける</em>だけです。そして §06–07 の Q3（ローレンツ不変な連続極限の厳密構成）とブラックホール＝量子重力は、畳んだ先に残る<strong>本物の未解決</strong>で、この回はそれを"正しい大きさに畳む"だけ ── 解いてはいません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この回の線で解けます）</div>
+    <ol>
+      <li>「宇宙が有限だから、質量ギャップ（YMの \(\Delta\)）が存在するんだ」── これは六つのどれとどれのすり替えか。
+        <details><summary>答えを見る</summary><div class="ans">③（または⑥、有限性）と ④（真の質量ギャップ）のすり替え（罠B・E）。\(\Delta\) は無限体積で残る動力学的な不変量（次元的移行 \(\Lambda\)）で、宇宙の有限性（③⑥）とは出自も値も別。①②③の閾値 \(\hbar H/c^2\) とは41桁違う。</div></details>
+      </li>
+      <li>「格子計算でグルーボールに隙間が出た。だからヤン=ミルズ質量ギャップは解けた」── どこが誤りか。
+        <details><summary>答えを見る</summary><div class="ans">「表現（格子で \(\Delta\) が出る）」と「未解決の数学（連続極限 \(a\to0\)・無限体積 \(L\to\infty\) で \(\Delta>0\) が厳密に残る証明）」の混同。格子でギャップが見えるのは既定事実だが、クレイ問題はその連続極限の存在証明で、別物。§05 の三層を混ぜている。</div></details>
+      </li>
+      <li>「離散にすると、宇宙の最小質量 \(\hbar H/c^2\) は"実在するギャップ"になる」は、線のどちら側か。
+        <details><summary>答えを見る</summary><div class="ans">表現に溶ける側。閾値の下に「凍った連続」があるか「段が無い」かを区別できる観測は無い（閾値＝分解能そのもの）。値 \(\hbar H/c^2\) とその \(1/t\) 依存は両表現で同じ＝不変。「実在ギャップか操作的限界か」は言い方の違いで、物理ではない。</div></details>
+      </li>
+      <li>「ブラックホールがあるのだから質量ギャップも当然ある」あるいは「質量ギャップ問題はブラックホールと全く同じで未解決」── どこまで正しく、どこが違うか。
+        <details><summary>答えを見る</summary><div class="ans">骨格（有限/離散 → ローレンツ不変な連続の厳密極限）は同じで、残る Q3 はブラックホール＝量子重力の"易しい影"。だが違いが二つ：有限の出どころ（YMは格子＝表現、BHは \(S=A/4G\)＝物理⑥）と、連続の中身（YMは固定した平坦時空、BHは創発する時空）。YMは漸近自由で存在ほぼ確実・厳密性だけが宿題、BHは量子重力で未解決。「全く同じ」は言い過ぎ、「無関係」も誤り ── YMはBHの易しい影で、どちらも未解決。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外⑤まとめ</span>混ぜない ── 線は一本、観測で区別できるか</h2>
+    <p>「最小の質量／ギャップ」と呼ばれるものは一語で六つ ── ①操作的フロア・②力学的フロア・③モード間隔・④真の質量ギャップ・⑤離散スペクトル・⑥有限次元。専門家も口語では混ぜる。仕分ける線はただ一本：<strong>連続でも離散でも同じ値になる（表現によらない＝物理）か、言い方が違うだけ（表現に溶ける）か</strong>（わかる宇宙論・番外④）。</p>
+    <p>答え ── ①②③は同じ不変閾値 \(\hbar H/c^2\) の三つの顔、④は別の不変量 \(\Delta\sim\Lambda\)（41桁上・無限体積で残る）、⑤は分解能しだい、⑥は再帰・ユニタリ性という<em>別の観測量</em>を動かす物理命題で値は変えない。五つのすり替え（ギャップ≠離散、③≠④、⑤≠⑥、UV≠IR、表現の離散≠物理の離散）は、全部この線のどちら側かの取り違え。<strong>層を分けて名指しすれば、混乱は消える。</strong>これは第6回・第7回の言葉の、地図と索引です。</p>
+    <p>そして最後に、この線を「問題」自体に当てると ── 有名なヤン=ミルズ質量ギャップ問題は、Q1・Q2（ギャップの実在＝表現不変な既定事実）と Q3（ローレンツ不変な連続極限の厳密構成＝未解決）に割れ、<strong>大半は表現の混同が生んだ擬似問題</strong>だと分かる。残る Q3 は、ブラックホール＝量子重力の<strong>易しい影</strong>で、⑥が"物理"になる現場に地続き。<em>解いてはいない ── 問題を正しい大きさに畳んだだけ。</em></p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">この回の位置</span>
+    第6回（IRフロア＝①②③）と第7回（②③ vs ④、そして表現不変）で出た言葉を、この番外⑤が一枚の地図に畳み、さらに「問題」自体を Q1–Q3 に割りました。④の格子表現は本シリーズ番外④「4つの力を、一つの離散式で」へ、幾何中心 meV は最終回へ。そして残った Q3 ── ブラックホール（\(S=A/4G\)・誘導重力・代数の型）は、終章「宇宙は離散である」と技術補遺⑥〜⑮の <strong>"ただ一つの穴（背景独立な有限動力学）"</strong> に合流します。⑥が"物理"になる、あの現場へ。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ番外編⑤、物理好きの高校生・大学生向け読み物です。①操作的フロア・②凍結/振動の境目（第6回、\(m_{\min}=\hbar H/c^2\approx1.4\times10^{-33}\) eV、\(H_0=67.4\) km/s/Mpc）・③有限体積のモード間隔（\(\hbar c/L\)、\(L\to\infty\)で消える）・④スペクトルギャップ（真空と第一励起の差、YMで \(\Delta\sim\Lambda\)、\(\Lambda^{(5)}_{\overline{\rm MS}}\approx0.21\) GeV）・⑤スペクトルの離散性・⑥有限次元ヒルベルト空間（\(\dim=e^{A/4G}\)、de Sitter）は、いずれも確立した概念です。連続表現と離散（格子）表現の観測量一致は、局所光速・\(\alpha\) 不変と同じ「見方の自由」（わかる宇宙論・番外④）で、\(\Delta\) が格子→連続極限で表現によらないことは格子QCDの前提です。「閾値の下が連続か離散か」「時空が連続体か格子か」「フロアが実在か操作的か」は観測で区別できず表現に溶けます。ヤン=ミルズ質量ギャップの数学的存在証明（連続極限で \(\Delta>0\)）はクレイ・ミレニアム懸賞問題として未解決です（2025年時点）。「有限整数個の状態」（技術補遺⑮）が再帰・ユニタリ性等の別の観測量を変えうることは仮説段階で、閾値や \(\Delta\) の値は変えません。「質量ギャップ問題」の三層（Q1：格子・強結合展開での厳密なギャップ〔Osterwalder–Seiler ほか〕、Q2：連続極限での存続の数値的確立、Q3：連続場の理論としての厳密構成＋\(\Delta>0\) の証明＝クレイ問題・未解決）、正則格子がローレンツ不変性を \(O(a)\) で破り連続極限で回復する一方コーザルセット型の離散はローレンツ不変を保つこと、ブラックホールのエントロピー \(S=A/4G\)（ベケンシュタイン–ホーキング）・ホログラフィー・地平線熱力学からの誘導重力（Jacobson 1995）・局所代数の type III₁→II 昇格（2022）は、いずれも確立した結果または現行の研究テーマで、量子重力の完成は未解決です。YMの連続極限（固定平坦時空・漸近自由）とブラックホールの時空創発（動力学的時空＝量子重力）は同じ骨格の問いですが難度が異なります。図の目印位置は上記の値の \(\log_{10}\) で、表現の切替は説明ラベルのみを変えます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では切替ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「連続表現／離散表現」ボタンで、目印は動かず言葉だけが変わる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), bC=document.getElementById('bC'), bD=document.getElementById('bD'), rd=document.getElementById('rd');
+  var mode='C'; // 'C' 連続 / 'D' 離散
+  // 不変な目印（log10 eV）
+  var marks=[
+    {ly:-32.84, name:'閾値 ℏH/c²', val:'1.4×10⁻³³ eV', col:'#3a5a80'},
+    {ly:-2.38,  name:'幾何中心 meV', val:'4×10⁻³ eV', col:'#5a4a70'},
+    {ly:8.30,   name:'YM質量ギャップ Δ', val:'0.2 GeV', col:'#a83a22'},
+    {ly:28.09,  name:'プランク', val:'1.2×10²⁸ eV', col:'#2c2a2e'}
+  ];
+  var MY0=-35, MY1=31;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padT=18, padB=22, ax=150;
+    function Y(ly){return (h-padB)-(ly-MY0)/(MY1-MY0)*(h-padT-padB);}
+    ctx.clearRect(0,0,w,h);
+    var yThr=Y(-32.84);
+    // 閾値の下（溶ける領域）を淡く塗る
+    ctx.fillStyle = (mode==='C') ? 'rgba(154,90,46,0.08)' : 'rgba(90,74,112,0.08)';
+    ctx.fillRect(ax-4, yThr, w-ax-6, (h-padB)-yThr);
+    // 縦軸
+    ctx.strokeStyle='#bdb5cf';ctx.lineWidth=1.5;ctx.beginPath();
+    ctx.moveTo(ax,padT);ctx.lineTo(ax,h-padB);ctx.stroke();
+    ctx.fillStyle='#6b6478';ctx.font='11px sans-serif';
+    ctx.save();ctx.translate(20,padT+80);ctx.rotate(-Math.PI/2);ctx.fillText('質量 m（eV, 対数）',0,0);ctx.restore();
+    // 目印（表現によらず同じ位置）
+    marks.forEach(function(m){
+      var y=Y(m.ly);
+      ctx.strokeStyle=m.col;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(ax-9,y);ctx.lineTo(ax+9,y);ctx.stroke();
+      ctx.fillStyle=m.col;ctx.font='bold 12.5px sans-serif';ctx.textAlign='right';
+      ctx.fillText(m.name, ax-14, y-3);
+      ctx.font='11px sans-serif';ctx.fillStyle='#8a8397';
+      ctx.fillText(m.val, ax-14, y+12);
+      ctx.textAlign='left';
+    });
+    // 変わるラベル（表現に溶ける言葉）＝右側
+    var col=(mode==='C')?'#9a5a2e':'#5a4a70';
+    ctx.fillStyle=col;ctx.font='bold 12.5px sans-serif';ctx.textAlign='left';
+    // 閾値の下
+    ctx.fillText((mode==='C')?'▸ 凍った連続スペクトル':'▸ 段が無い', ax+16, (yThr+(h-padB))/2);
+    ctx.font='11px sans-serif';
+    ctx.fillText('（閾値の下：観測に効かない）', ax+16, (yThr+(h-padB))/2+16);
+    // フロアの身分（閾値の位置に注記）
+    ctx.font='bold 12px sans-serif';ctx.fillStyle=col;
+    ctx.fillText((mode==='C')?'← 操作的な限界':'← 実在するギャップ', ax+120, yThr+3);
+    // 時空
+    ctx.font='11px sans-serif';ctx.fillStyle=col;
+    ctx.fillText('時空：'+((mode==='C')?'連続体':'格子'), ax+16, padT+14);
+    // タイトル
+    ctx.fillStyle='#463a5e';ctx.font='bold 13px sans-serif';
+    ctx.fillText('表現：'+((mode==='C')?'連続':'離散'), ax+16, padT+34);
+    rd.innerHTML='表現＝<b>'+((mode==='C')?'連続':'離散')+'</b>。目印（閾値・meV・Δ・プランク）は<b>1ミリも動かない＝不変量（物理）</b>。'
+      +'変わったのは "閾値の下・フロアの身分・時空" の言葉だけ ＝ <b>表現に溶ける</b>。だから観測量は同じ。';
+  }
+  function setMode(m){ mode=m; bC.className='tbtn'+(m==='C'?' on':''); bD.className='tbtn'+(m==='D'?' on':''); draw(); }
+  bC.addEventListener('click',function(){setMode('C');});
+  bD.addEventListener('click',function(){setMode('D');});
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

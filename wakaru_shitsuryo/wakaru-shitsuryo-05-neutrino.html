@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最小の質量・UV編：ニュートリノはなぜ軽い ── わかる質量 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf6f8; --paper-edge:#ecdbe2;   /* 第5回：赤紫の紙（UV・最小質量） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a2f4f; --calc-bg:#f6e8ee;
+    --rule:#e0cdd6; --hair:#d0bac5;
+    --acc:#a03a5f;    /* 第5回アクセント＝赤紫 */
+    --grid:#ecd8e0;
+    --nu:#a03a5f; --heavy:#3a5a80;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0d4e0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4cdd8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfafb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f6e8ee;color:#8a2f4f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffcfd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 測り方リスト */
+  .meas{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .meas .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .meas .row:last-child{border-bottom:none;}
+  .meas .mk{flex-shrink:0;width:76px;font-weight:700;font-size:12.5px;color:var(--acc);}
+  .meas .txt strong{display:block;margin-bottom:2px;color:#2a2740;}
+  .meas .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf3f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5a2338;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffcfd,#f5e9ef);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f6e8ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5a2338;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.meas{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 5 回 ／ ここから「床の最小値」へ</span></div>
+  <p class="eyebrow">既知で最小の質量 ── その桁外れの軽さは、宇宙で最大のスケールからの手紙</p>
+  <h1>最小の質量・UV編：<br>ニュートリノはなぜ軽い
+    <span class="sub">既知で最小の非ゼロ質量は、電子の1000万分の1以下。<br>その軽さを "シーソー" で解くと、<em>最小の質量が、宇宙で最大のスケール（大統一）を指している</em>ことが見えてくる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第3回のヒッグス式、第2回のカイラル対称性、割り算</span>
+    <span>フック式：\(m_\nu\sim v^2/M\)</span>
+  </div>
+
+  <p class="lead">第4回までで「有限の床がどう湧くか」を、ヒッグスと閉じ込めの両方で見終えました。今回からは、床の<em>最小値</em>へ向かいます。既知の素粒子で最小の非ゼロ質量 ── それがニュートリノ。あまりに軽く、電子の<strong>1000万分の1以下</strong>です。なぜそんなに軽いのか。その種明かしが<em>シーソー機構</em>で、しかもそこから、<strong>最小の質量が宇宙で最大のスケールを指している</strong>という、思いがけない一望が開けます。</p>
+
+  <h2><span class="n">01</span>まず、どれだけ軽いか</h2>
+
+  <p>質量のはしごを見ます（\(\text{eV}\) 単位）。トップクォーク \(1.7\times10^{11}\)、陽子 \(9.4\times10^8\)、電子 \(5.1\times10^5\) ── そして<strong>ニュートリノは \(0.05\) 以下</strong>。電子から数えても7桁下、桁が崩れ落ちています。</p>
+
+  <p>第3回のヒッグス式 \(m_f=y_f v/\sqrt2\) で言えば、もしニュートリノもヒッグスから素直に質量をもらう（ディラック型）なら、湯川結合は \(y_\nu\sim3\times10^{-13}\)。トップ（\(y\approx1\)）の<strong>12桁下</strong>。第2回のカイラル対称性のおかげで「小さくても技術的には自然」ですが ── <em>なぜ1個だけ、そんなに小さいのか。</em> 素直なヒッグスでは、答えになりません。</p>
+
+  <h2><span class="n">02</span>手がかり ── ニュートリノだけ、別の書き方が許される</h2>
+
+  <p>決定的な特徴があります。右巻きニュートリノ \(\nu_R\) は、<strong>標準模型のどのゲージ荷も持たない、完全に中性な粒子</strong>。すると、他のフェルミオンには禁じられている<em>マヨラナ質量</em>（粒子と反粒子が同じ、という型の質量）が書けます。</p>
+
+  <div class="keybox">
+    <div class="lbl">ニュートリノだけの特権</div>
+    <p style="margin:6px 0 0;">\(\nu_R\) は完全中性 → <strong>マヨラナ質量 \(M\)</strong> が許される。<br>しかも \(M\) は電弱スケール \(v\) に縛られない ── <em>自然に巨大（大統一スケール）でよい</em>。</p>
+  </div>
+
+  <p>ここが効きます。ヒッグス由来の質量（第3回）は \(v\approx246\) GeV に縛られていました。でもマヨラナ質量 \(M\) を止めるものは何もない。だから \(M\) は、加速器のはるか上 ── \(10^{14\text{–}15}\) GeV のような巨大な値を、自然に取れるのです。</p>
+
+  <h2><span class="n">03</span>シーソー機構 ── 小ささは、大きさの裏返し</h2>
+
+  <p>電弱スケールのディラック質量 \(m_D\)（ヒッグス由来）と、巨大なマヨラナ質量 \(M\) が同居すると、質量の"天秤"はこうなります。対角化（＝実際の質量を求める）と、固有値が2つ出ます。</p>
+
+  <div class="keybox">
+    <div class="lbl">シーソー ── 片方を上げると、片方が沈む</div>
+    $$m_{\text{軽}}\approx\frac{m_D^{2}}{M},\qquad m_{\text{重}}\approx M$$
+  </div>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── ニュートリノの重さを出す</span>
+    <p class="lbl">\(m_D\sim100\) GeV（湯川 \(\sim1\) の自然な値）、\(M\sim10^{15}\) GeV を代入</p>
+    $$m_\nu\sim\frac{(100\ \text{GeV})^2}{10^{15}\ \text{GeV}}=10^{-11}\ \text{GeV}=0.01\ \text{eV}$$
+    <p style="margin-bottom:14px;">観測どんぴしゃ。<strong>\(10^{-13}\) の不自然な湯川は要りません。</strong> 自然な O(1) の結合と、自然に巨大な \(M\) を使うだけで、ニュートリノの桁外れの小ささが "比" として自動で出る ── 小ささの原因は、\(M\) の大きさだったのです。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：シーソー。支点は電弱スケール \(m_D\)（不動）。スライダーで重い相棒の質量 \(M\) を上げると、ニュートリノ \(m_\nu\) が下がる。両者は対数目盛で支点をはさんで対称 ── まさにシーソー</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>重い相棒の質量 M（右ほど大きい）<span class="val" id="vk">10¹⁴·⁵ GeV</span>
+        <input type="range" id="sk" min="9" max="16" step="0.1" value="14.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">M を動かすと、ニュートリノの重さが変わります。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--nu);"></i>ニュートリノ m_ν（軽い）</span>
+      <span><i class="dot" style="background:var(--heavy);"></i>重い相棒 N（質量 M）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>だから、最小の質量が最大のスケールを指す</h2>
+
+  <p>いまの式を<strong>逆に読みます</strong>。観測された \(m_\nu\) から、隠れた \(M\) を求める。</p>
+
+  <div class="keybox">
+    <div class="lbl">最小の質量が、最大のスケールを教える</div>
+    $$M\sim\frac{v^2}{m_\nu}\sim\frac{(100\ \text{GeV})^2}{0.05\ \text{eV}}\sim2\times10^{14}\ \text{GeV}$$
+  </div>
+
+  <p>加速器では絶対に届かない<strong>大統一スケール \(10^{14\text{–}15}\) GeV</strong> が、宇宙で<em>一番軽い</em>粒子の重さから読み取れてしまう。ニュートリノの軽さは、宇宙で最大のスケールからの<strong>手紙</strong>だったのです。第4回が「無次元の走りが自分でスケールを生む（UV自己完結）」だったのに対し、今回は<em>最小の質量が、はるか高エネルギーを覗く窓になる</em>。同じ "質量" でも、指している方向がまるで違います。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>では、どうやって測る? ── 4つの取っ手</h2>
+
+  <p>絶対値は、まだ完全には分かっていません。独立な4つの取っ手が、それぞれ違うものを見ています。</p>
+
+  <div class="meas">
+    <div class="row"><span class="mk">振動</span><div class="txt"><strong>質量の"差"だけが見える</strong><span>\(\sqrt{\Delta m^2_{\rm sol}}\approx0.0086\) eV、\(\sqrt{\Delta m^2_{\rm atm}}\approx0.050\) eV。→ 一番重いのは 0.05 eV 以上。ただし絶対値も順序も不明。</span></div></div>
+    <div class="row"><span class="mk">宇宙論</span><div class="txt"><strong>構造形成を抑える度合い</strong><span>Planck＋銀河分布で \(\Sigma m_\nu\lesssim0.07\text{–}0.12\) eV。最強だが ΛCDM 依存。</span></div></div>
+    <div class="row"><span class="mk">KATRIN</span><div class="txt"><strong>β崩壊の端点（直接・モデル非依存）</strong><span>トリチウム崩壊の運動学だけから \(m_\beta<0.45\) eV。弱いが仮定なし。</span></div></div>
+    <div class="row"><span class="mk">0νββ</span><div class="txt"><strong>マヨラナなら起きる二重β崩壊</strong><span>未発見（\(m_{\beta\beta}\lesssim0.03\text{–}0.2\) eV）。<em>検出できればマヨラナ確定＝シーソーの裏付け</em>。</span></div></div>
+  </div>
+
+  <p>正直な現状：<strong>少なくとも1個は 0.05 eV 以上、合計は 0.1 eV 以下、一番軽いのは 0 かもしれない、ディラックかマヨラナかも未決着</strong>。シーソーは最有力の"物語"ですが、まだ実証されていません。その引き金が 0νββ です。</p>
+
+  <div class="aside">
+    <span class="tag">おまけ ── だから物質が存在する</span>
+    シーソーの重い相棒 \(N\) が初期宇宙で <strong>CP を破って崩壊</strong>すると、レプトン数の非対称が生まれ、それがバリオン非対称に転換される（<em>レプトジェネシス</em>）。つまり<strong>ニュートリノの軽さの機構が、「なぜ宇宙に反物質でなく物質が残ったか＝なぜ我々が存在するか」に繋がっている</strong>可能性がある。最小の質量が、存在の理由まで指しているのです。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">今回は合言葉 \(c\cdot t=\text{一定}\) を前面に出していません。ニュートリノの軽さは<strong>素粒子の内部構造（UV側）</strong>の話で、宇宙の膨張とは無関係だからです。宇宙の大きさが決める "最小の床"（IR側）は次回・第6回で、そこで \(c\cdot t\) が正当に効きます。今回（UV）と第6回（IR）が、<em>逆方向から同じ meV 付近</em>に迫るのが、最終回への布石です。</p>
+    <p style="margin-bottom:0;">数値は代表値で、\(m_D\) や \(M\) の取り方で桁は動きます。シーソーには何種類か（Type I/II/III）あり、ここでは最も基本的な Type I を描いています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>なぜニュートリノ<em>だけ</em>マヨラナ質量が許されるのか、一言で。
+        <details><summary>答えを見る</summary><div class="ans">右巻きニュートリノ \(\nu_R\) が標準模型のゲージ荷を一つも持たない完全中性粒子だから。電荷などを持つ他のフェルミオンは、粒子＝反粒子とするマヨラナ質量が対称性で禁じられる。</div></details>
+      </li>
+      <li>シーソー \(m_\nu\approx m_D^2/M\) で、\(m_D\sim100\) GeV、\(M\sim10^{15}\) GeV のとき \(m_\nu\) は?
+        <details><summary>答えを見る</summary><div class="ans">\((100)^2/10^{15}\) GeV \(=10^{-11}\) GeV \(=10^{-2}\) eV \(=0.01\) eV。観測されたニュートリノ質量と同じオーダー。不自然に小さい湯川を使わずに出る。</div></details>
+      </li>
+      <li>「最小の質量が、最大のスケールを指す」とはどういうことか。
+        <details><summary>答えを見る</summary><div class="ans">シーソーを逆に解くと \(M\sim v^2/m_\nu\sim10^{14}\) GeV。一番軽い粒子（ニュートリノ）の軽さから、加速器では届かない大統一スケールが読み取れる。小ささが、巨大さを覗く窓になっている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>小ささは、大きさの裏返しだった</h2>
+    <p>ニュートリノは既知で最小の質量（電子の1000万分の1以下）。素直なヒッグスでは \(10^{-13}\) の不自然な湯川が要る。だが \(\nu_R\) が完全中性なので<strong>マヨラナ質量 \(M\)</strong>（\(v\) に縛られず巨大でよい）が許され、シーソー \(m_\nu\approx m_D^2/M\) で自然に軽くなる。逆に読めば \(M\sim v^2/m_\nu\sim10^{14}\) GeV ── <strong>最小の質量が、宇宙で最大のスケール（大統一）を指している</strong>。</p>
+    <p>これは "床の最小値" の、素粒子側（UV）からの答え。測り方は振動・宇宙論・KATRIN・0νββ の4つで、絶対値やディラック/マヨラナはまだ未決着。次は同じ最小の床に、まったく別の方向 ── <em>宇宙の大きさ</em> ── から迫ります。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第6回</span>
+    「最小の質量・IR編：宇宙の大きさが決める床」。今回は素粒子の内部構造（UV）が決める軽さでした。次は<strong>宇宙の大きさ（IR）</strong>が決める、質量の下の壁。ハッブル摩擦で "凍る／振動する" の境目が最小質量で、\(R_h=ct\) が正当に入り、床は \(1/t\) で下がる。UV と IR が、同じ meV 付近で出会い始めます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第5回、物理好きの高校生・大学生向け読み物です。ニュートリノ質量の桁外れの小ささ、右巻きニュートリノがゲージ一重項（中性）であることによるマヨラナ質量の許容、Type I シーソー機構 \(m_\nu\approx m_D^2/M\)、それを逆算した \(M\sim v^2/m_\nu\sim10^{14\text{–}15}\) GeV（大統一近傍）、質量差からの下限（\(\sqrt{\Delta m^2_{\rm atm}}\approx0.05\) eV）、宇宙論的上限（\(\Sigma m_\nu\lesssim0.07\text{–}0.12\) eV）、KATRIN の直接上限、0νββ とマヨラナ性、レプトジェネシスは、いずれも確立した物理／現行の研究テーマです。絶対質量・質量順序・ディラック/マヨラナの別は未確定です。数値は代表値で、\(m_D,M\) の取り方に依存します。図は対数目盛でシーソー関係 \(\log m_\nu + \log m_N = 2\log m_D\) を模式化したものです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで重い相棒 M を上げると、ニュートリノがシーソーで下がります。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var YMIN=-3.5, YMAX=26;   // log10(mass / eV)
+  var PIVOT=11;             // m_D = 100 GeV = 1e11 eV
+  function sup(mg){ // pretty exponent for GeV
+    var s=mg.toFixed(1); return s;
+  }
+  function nuStr(nuEv){
+    if(nuEv>=1e-3 && nuEv<10) return nuEv.toPrecision(2)+' eV （'+(nuEv*1000).toFixed(0)+' meV）';
+    return nuEv.toExponential(1)+' eV';
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=40, topPad=18;
+    var Mg=parseFloat(sk.value); vk.innerHTML='10<sup>'+sup(Mg)+'</sup> GeV';
+    ctx.clearRect(0,0,w,h);
+    function Y(L){return (h-pad)-(L-YMIN)/(YMAX-YMIN)*(h-pad-topPad);}
+    var xL=pad+70, xR=w-70, xC=(xL+xR)/2;
+    // y grid + labels (log10 eV)
+    ctx.font='11px sans-serif';
+    for(var L=-3;L<=24;L+=3){
+      var y=Y(L); ctx.strokeStyle='#f0dee6';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-10,y);ctx.stroke();
+      ctx.fillStyle='#b898a8';ctx.fillText('10^'+L+' eV', 4, y+4);
+    }
+    // observed neutrino band (0.01–0.1 eV => log -2..-1)
+    var yb1=Y(-1), yb2=Y(-2);
+    ctx.fillStyle='rgba(160,58,95,0.10)';
+    ctx.fillRect(xL-40, yb1, (xR-xL)*0.55, yb2-yb1);
+    ctx.fillStyle='#a03a5f';ctx.font='11px sans-serif';
+    ctx.fillText('観測されたニュートリノ帯 (0.01–0.1 eV)', xL-36, yb1-5);
+    // compute
+    var logN = Mg + 9;            // m_N in eV (log10)
+    var lognu = 2*PIVOT - logN;   // seesaw symmetry about pivot
+    var yN=Y(logN), yNu=Y(lognu), yP=Y(PIVOT);
+    // plank (through pivot)
+    ctx.strokeStyle='#7a5a68';ctx.lineWidth=5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(xL,yNu);ctx.lineTo(xR,yN);ctx.stroke();ctx.lineCap='butt';
+    // pivot triangle at (xC, yP)
+    ctx.fillStyle='#8a6f7a';
+    ctx.beginPath();ctx.moveTo(xC,yP);ctx.lineTo(xC-13,yP+26);ctx.lineTo(xC+13,yP+26);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#5a4650';ctx.font='11px sans-serif';
+    ctx.fillText('支点 = m_D（電弱 100 GeV）', xC-70, yP+40);
+    // balls
+    ctx.fillStyle='#a03a5f';ctx.beginPath();ctx.arc(xL,yNu,9,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.stroke();
+    ctx.fillStyle='#3a5a80';ctx.beginPath();ctx.arc(xR,yN,9,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.stroke();
+    // labels near balls
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#a03a5f';ctx.textAlign='center';
+    ctx.fillText('ニュートリノ m_ν', xL, yNu>h-70? yNu-16 : yNu+24);
+    ctx.fillStyle='#3a5a80';
+    ctx.fillText('重い相棒 N（M）', xR, yN<40? yN+22 : yN-16);
+    ctx.textAlign='left';
+    // readout
+    var nuEv=Math.pow(10, lognu);
+    var inBand = (lognu<=-1 && lognu>=-2);
+    rd.textContent='重い相棒 M ≈ 10^'+Mg.toFixed(1)+' GeV → ニュートリノ m_ν ≈ '+nuStr(nuEv)+(inBand?'　← 観測領域！':'')+'。 M↑ で m_ν↓ ── これがシーソー。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

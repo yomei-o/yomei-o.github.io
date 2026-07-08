@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最小の質量・IR編：宇宙の大きさが決める床 ── わかる質量 第6回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f7fb; --paper-edge:#d9e0ea;   /* 第6回：藍の紙（IR・宇宙の大きさ） */
+    --side:#2f5d62; --side-bg:#eef3f4;
+    --warn:#8a4b2f;
+    --calc:#2b4668; --calc-bg:#e8edf5;
+    --rule:#ccd6e4; --hair:#b6c3d6;
+    --acc:#3a5a80;    /* 第6回アクセント＝藍 */
+    --grid:#d6dfec;
+    --osc:#3a5a80; --frozen:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cdd9ea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ccd6e6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8edf5;color:#2b4668;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 地下室のはしご */
+  .ladder{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .ladder .row{display:flex;gap:14px;padding:12px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.6;}
+  .ladder .row:last-child{border-bottom:none;}
+  .ladder .row.hi{background:#eef2f8;}
+  .ladder .m{flex-shrink:0;width:120px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;}
+  .ladder .txt{color:var(--ink-soft);}
+  .ladder .txt b{color:#25303a;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f3f6fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#243a54;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfeff,#eef2f8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e8edf5;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#243a54;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.ladder{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 6 回 ／ 再び c・t のレンズが、正当に効く</span></div>
+  <p class="eyebrow">質量に「下の壁」はあるか ── 前回とは逆方向、宇宙の大きさから迫る</p>
+  <h1>最小の質量・IR編：<br>宇宙の大きさが決める床
+    <span class="sub">前回は素粒子の内部（UV）がニュートリノの軽さを決めた。今回は逆 ── 宇宙の大きさ（IR）。<br>質量の下の壁は "測れない" より深く、<em>凍る／振動する</em> の物理的な境目だった。ここで \(R_h=ct\) が正当に効く。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の床、割り算、わかる宇宙論の \(R_h=ct\)・サンプリング</span>
+    <span>フック式：\(m_{\min}\sim \hbar/(c^2 t)\)</span>
+  </div>
+
+  <p class="lead">第5回では、素粒子の内部構造（UV）がニュートリノの桁外れの軽さを決めました。今回はまったく逆の方向 ── <strong>宇宙の大きさ（IR）</strong>から、質量に迫ります。問いはシンプル：<em>質量に「下の壁」はあるのか。</em> 答えはイエス。しかもその壁は "測れない限界" であると同時に、場が<em>凍るか振動するか</em>という<strong>物理的な境目</strong>でもある。ここで、姉妹シリーズの \(R_h=ct\) が、今度は<strong>式の中に正当に入って</strong>きます。</p>
+
+  <h2><span class="n">01</span>質量に、下の壁はあるか ── 3つの入口が同じ場所へ</h2>
+
+  <p>質量の下限を、独立な3つの見方で見積もると、全部が同じ場所に着地します。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>コンプトン波長＝宇宙の大きさ</strong>：波長 \(\hbar/(mc)\) が宇宙の地平線 \(R_H\) を超えると、粒子の量子的な広がりが宇宙より大きい。</li>
+    <li><strong>エネルギー・時間の不確定性</strong>：使える最長時間は宇宙年齢 \(t\)。測れる最小エネルギーは \(\hbar/t\)。</li>
+    <li><strong>一回の振動</strong>：質量の振動周期が宇宙年齢を超えたら、一度も振動を終えられない。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">宇宙のIRフロア（ここで R_h=ct が入る）</div>
+    $$m_{\min}\sim\frac{\hbar}{c\,R_H}=\frac{\hbar}{c\,(c\,t)}=\frac{\hbar H_0}{c^2}\approx 1.4\times10^{-33}\ \text{eV}$$
+  </div>
+
+  <p>第4回では \(c\cdot t\) は「効く土俵（スケール不変）」として背景にいました。今回はそれが<strong>式の中に \(R_H=c\,t\) として正当に登場</strong>します ── 宇宙の大きさ \(R_H\) は、光が宇宙年齢 \(t\) の間に進む距離、まさに \(c\cdot t\) だからです。</p>
+
+  <h2><span class="n">02</span>隠し玉 ── これは「測れない」より深い。<em>凍る</em>のだ</h2>
+
+  <p>膨張宇宙の中で、質量 \(m\) の場は<strong>摩擦つきの振り子</strong>のように振る舞います。</p>
+
+  <div class="keybox">
+    <div class="lbl">膨張宇宙での場の運動方程式</div>
+    $$\ddot\phi + \underbrace{3H\dot\phi}_{\text{ハッブル摩擦}} + \Big(\frac{mc^2}{\hbar}\Big)^2\phi = 0$$
+  </div>
+
+  <p>真ん中の \(3H\dot\phi\) が<strong>ハッブル摩擦</strong>（宇宙膨張による粘性）。ここで振る舞いが二つに割れます。</p>
+
+  <div class="keybox">
+    <div class="lbl">凍る／振動するの境目</div>
+    <p style="margin:6px 0 0;">\(mc^2/\hbar > H\)（重い）→ <strong>振動する</strong>。ふつうの質量粒子。<br>\(mc^2/\hbar < H\)（軽い）→ <strong>過減衰。凍りついて動けない</strong>。ダークエネルギー的。<br>境目：\(m=\hbar H/c^2\) ── まさにIRフロア。</p>
+  </div>
+
+  <p>つまりこの壁は「測定の限界」だけでなく、<strong>物理的な相転移の線</strong>。これより軽い場は、宇宙が膨張で変化してしまう前に一度も振動を完了できず、ハッブル摩擦に押さえつけられて<em>凍る</em>。第1回の「一回も振動できない」が、粘性項つきの運動方程式で<strong>厳密に裏づく</strong>のです。</p>
+
+  <div class="fig">
+    <div class="cap">図：膨張宇宙での場の時間発展。スライダーで質量 \(m\)（IRフロア \(\hbar H/c^2\) を1とした比）を変える。フロアより重ければ振動、軽ければハッブル摩擦で凍りつく</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>質量 m ／ IRフロア（\(\hbar H/c^2\) を 1 とした比）<span class="val" id="vk">2.50</span>
+        <input type="range" id="sk" min="0.1" max="6" step="0.05" value="2.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">m を動かすと、凍る／振動するが切り替わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--osc);"></i>振動する（重い＝物質的）</span>
+      <span><i class="swatch" style="background:var(--frozen);"></i>凍る（軽い＝ダークエネルギー的）</span>
+    </div>
+  </div>
+
+  <p>これは思弁ではなく、現役の道具です ── インフレーション中の「軽い場は凍って揺らぐ」、<strong>アクシオン</strong>（\(H\) が \(m\) を下回った瞬間に振動を開始してダークマターになる）、<strong>クインテッセンス</strong>（\(m<H\) を保って凍り続ける＝ダークエネルギー役）。すべてこの一本の線で仕切られています。</p>
+
+  <h2><span class="n">03</span>R_h=ct の、二枚の意味</h2>
+
+  <p>\(R_H=c\,t\) を入れると、フロアは \(m_{\min}\sim\hbar/(c^2 t)\)。この式には、意味が二枚あります。</p>
+
+  <div class="aside">
+    <span class="tag">(a) 測定窓（サンプリングの低周波端）</span>
+    観測できる最長時間 \(t\) が、測れる最低振動数＝最小質量を決める。わかる宇宙論・第5回「サンプリング」で、高周波側に \(f<f_s/2\) の壁があったのと裏返しで、<strong>有限の観測時間 \(t\) は低周波（＝低質量）に \(f>1/t\) の壁を作る</strong>。宇宙が有限だから帯域が有限、の一番きれいな実装です。
+  </div>
+
+  <div class="aside">
+    <span class="tag">(b) 力学（実際に凍る）</span>
+    時刻 \(t\) で \(H\sim1/t\) より軽い場は、まだ凍っている。\(t\) が延びて \(H\) が下がると、ある質量の場が<strong>解凍して振動を始める</strong>（アクシオンはこれで動き出す）。測定の話ではなく、場が実際にそう振る舞う。
+  </div>
+
+  <p>どちらも今 \(\sim10^{-33}\) eV、どちらも \(1/t\) で下がる。<strong>昔の宇宙ほど、最小質量の床は高かった</strong> ── \(t\) が小さいから。第4回の「\(c\cdot t\) が効く土俵」に続き、今回は \(c\cdot t\) がフロアの<em>時間変化</em>まで決めています。</p>
+
+  <h2><span class="n">04</span>地下室に、何が住んでいるか</h2>
+
+  <p>ニュートリノ（\(\sim0.05\) eV）の、さらに<strong>30桁下</strong>に伸びる地下室。実在／提案されている住人を並べます。</p>
+
+  <div class="ladder">
+    <div class="row"><span class="m">~2×10⁻³ eV</span><span class="txt"><b>ダークエネルギーのスケール</b>（\((\rho_\Lambda)^{1/4}\)）── 次回の主役</span></div>
+    <div class="row"><span class="m">~10⁻²² eV</span><span class="txt"><b>ファジー・ダークマター</b>（提案）ド・ブロイ波長が銀河サイズ。真剣に提案された最軽量粒子</span></div>
+    <div class="row"><span class="m">&lt; 10⁻²⁷ eV</span><span class="txt"><b>光子質量の上限</b>（銀河磁場）── ここまでしかゼロと区別できていない</span></div>
+    <div class="row"><span class="m">~10⁻³²⁻³³ eV</span><span class="txt"><b>重力子質量の上限</b>（宇宙論）── コンプトン波長＝地平線なら、まさに床に触れる</span></div>
+    <div class="row hi"><span class="m">~1.4×10⁻³³ eV</span><span class="txt"><b>IRフロア \(\hbar H_0/c^2\)</b> ── 地下室の底。ここが人類の "知りうる最小質量" の最果て</span></div>
+  </div>
+
+  <p>面白いのは、<strong>光子ですら \(10^{-27}\) eV より軽い質量はゼロと区別できていない</strong>こと。\(10^{-27}\)〜\(10^{-33}\) eV は、光子にとってさえ "知りようのない帯" で、IRフロアはその最果て。重力子の宇宙論的上限がちょうど床に触れているのも象徴的です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>第5回と、逆方向から同じ場所へ</h2>
+
+  <p>第5回（UV）と今回（IR）を並べると、同じ言葉が二度、逆向きに現れます。</p>
+
+  <div class="keybox">
+    <div class="lbl">最小の質量は、いつも "最大" を指す</div>
+    <p style="margin:6px 0 0;">第5回・UV編：\(m_\nu\sim v^2/M\) ── 最小の質量 ↔ <strong>最大のエネルギー</strong>（大統一 \(10^{14}\) GeV）。<br>第6回・IR編：\(m_{\min}\sim\hbar/(c^2 t)\) ── 最小の質量 ↔ <strong>最大の長さ</strong>（宇宙の地平線 \(c\,t\)）。</p>
+  </div>
+
+  <p>片方は高エネルギーの天井（UV）を、片方は宇宙の端（IR）を指す。二つの "最小の質量" は、まるで別の物理から来ているのに ── 次回、<strong>両者が meV という一点で握手します</strong>。じつは meV は、IRフロアとプランク質量の<em>幾何平均</em> \(\sqrt{m_{\rm IR}\cdot M_{\rm Pl}}\approx\) meV。UV と IR の、ちょうど真ん中。その謎が、最終回の主役です。</p>
+
+  <h2><span class="n">06</span>低質量は消えない ── 解像度の低下は「高エネルギー端」の話</h2>
+
+  <p>ここで、よくある疑問に答えておきます ──「\(c\cdot t\) で光速が落ち、宇宙の "解像度" が下がるなら、低エネルギーの質量はどんどん見えなくなるのでは？」。直感的ですが、<strong>実は逆</strong>です。落とし穴は、低エネルギーを "細かいもの" と結びつけてしまう点にあります。</p>
+
+  <div class="keybox">
+    <div class="lbl">低エネルギー＝細かい、ではない</div>
+    $$\text{低エネルギー}=\text{低振動数}=\text{長い波長}=\textbf{大きい・のっそり}$$
+    <p style="margin:10px 0 0;">質量のコンプトン波長は \(\lambda=\hbar/(mc)\)。軽いほど波長は長く "大きい"。粗いグリッドが苦手なのは<strong>短波長＝高エネルギー＝重いもの</strong>で、長波長＝低エネルギー＝軽いものは、粗い世界がむしろ得意な側です。</p>
+  </div>
+
+  <p>物理でも結論は同じ。ある質量をゼロと区別して測るには、静止エネルギー \(mc^2\) を宇宙年齢 \(t\) の間に最低1回は振動させる必要がある ── 測れる最小の静止エネルギーは \(\sim\hbar/t=\hbar H\)。\(t\) は増えるので、これは \(1/t\) で<strong>下がる</strong>。<em>時間が経つほど、より軽い質量まで見えるようになる</em>。§03 の「床は \(1/t\) で下がる」は、まさにこれ ── 膨張は低質量の味方です。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ「見えなくなる」と感じるか ── 単位の罠</span>
+    \(c\cdot t\) のゲージで \(m_{\min}=\hbar/(c^2 t)\) に \(c\propto1/t\) を入れると \(\hbar t\) と<em>増える</em>ように見え、「軽い質量が押し出される」錯覚が生じます。でもこれは、\(c\) が動くゲージで次元付きの "質量" を読んでしまった罠。測れるかどうかを決めるのは無次元の \(mc^2 t/\hbar\)（振動数 × 時間）で、これはゲージによらず「床は下がる（軽い方が見やすい）」を返します。合言葉どおり ── <strong>\(c\cdot t\) は座標の言い換え、物理は無次元で読む</strong>。
+  </div>
+
+  <p>本当に時間とともに見えにくくなるのは、逆の<strong>高エネルギー（重い）端</strong>です ── 宇宙が冷えて周囲のエネルギーが下がり、重い粒子はもう作られない。「解像度が下がる」の実体は、この高エネルギー端の後退。しかも軽い側は、番外②で見るとおり<strong>静止質量は不変（赤方偏移しない）</strong>ので、低い質量が薄れて消えることはありません。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">IRフロアは<strong>操作的（測れない）かつ力学的（凍る）な床</strong>であって、「質量が \(10^{-33}\) eV 刻みで量子化されている」でも「そこに粒子が1個いる」でもありません。<em>知りうる／振る舞いうるの地平線</em>です。かつて話題にのぼった「有限計算機の最小ビット＝質量」とは別物 ── その診断は<strong>番外①</strong>で。</p>
+    <p style="margin-bottom:0;">\(\sim10^{-33}\) eV というスケールは頑健ですが、係数（\(2\pi\)、地平線の取り方）は<strong>オーダー1だけ曖昧</strong>。またこのフロアは標準物理で、\(c\cdot t=\text{一定}\) を必要としません（\(R_H\sim ct\) はどんな膨張でもオーダーで成立）。このレンズの手柄は "床を作ったこと" ではなく、\(\hbar/(c^2 t)\) という<strong>\(1/t\) の自然な読み</strong>を与えたこと。過大申告はしません。なお、かつて言われた「ギャップは \(t\) で重くなる」は逆で、現実の床は \(t\) とともに<strong>下がり</strong>ます。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>質量 \(m\) の場が「凍る」条件を、運動方程式の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">\(mc^2/\hbar < H\)（\(m<\hbar H/c^2\)）。ハッブル摩擦 \(3H\dot\phi\) が復元力に勝って過減衰になり、宇宙が変化してしまう前に一度も振動を完了できず凍りつく。ダークエネルギー的に振る舞う。</div></details>
+      </li>
+      <li>IRフロアが \(1/t\) で下がる理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">\(m_{\min}\sim\hbar/(c\,R_H)\) で、地平線 \(R_H=c\,t\) だから \(m_{\min}\sim\hbar/(c^2 t)\)。宇宙年齢 \(t\) が延びるほど床は下がる ── 昔の宇宙ほど床は高かった。</div></details>
+      </li>
+      <li>IRフロアは「質量が \(10^{-33}\) eV 刻みで量子化されている」ことを意味するか。
+        <details><summary>答えを見る</summary><div class="ans">意味しない。これは "測れない／凍る" という操作的・力学的な床（地平線）で、質量の量子化でも、そこに実在する粒子でもない。\(10^{-33}\) eV より軽い質量は、この宇宙のどんな観測者にもゼロと区別できない、というだけ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第6回まとめ</span>下の壁は、宇宙の大きさが決めていた</h2>
+    <p>質量の下限は実在する ── \(m_{\min}\sim\hbar H_0/c^2\sim10^{-33}\) eV。正体は「ハッブル摩擦で凍るか振動するかの境目」で、測定窓（サンプリングの低周波端）と力学（凍結線）の二枚看板。\(R_h=ct\) なら \(1/t\) で下がり、昔ほど高かった。地下室の底には重力子・光子の質量上限が触れ、そこが人類の "知りうる最小質量" の最果て。</p>
+    <p>第5回（UV）と第6回（IR）で、"最小の質量が最大を指す" を両側から見ました ── 片や大統一、片や宇宙の地平線。そしてこの二つは、次回 meV で出会う。<strong>meV は IRフロアとプランクの幾何平均</strong>。最小と最大が握手するその一点へ、いよいよ最終回で。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 最終回</span>
+    「最小と最大が、meV で握手する」。第5回（UV）と第6回（IR）が、meV という一点で出会う。重力が課す UV-IR 境界（ブラックホールの限界から \(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\)）を手で導き、\(L=ct\) を入れて meV を出す。暗黒次元、そして宇宙定数問題 ── 開いたままの、最後の扉へ。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第6回、物理好きの高校生・大学生向け読み物です。宇宙論的IRスケール \(\hbar H_0/c^2\approx1.4\times10^{-33}\) eV、膨張宇宙でのスカラー場の運動方程式 \(\ddot\phi+3H\dot\phi+(mc^2/\hbar)^2\phi=0\) とハッブル摩擦による凍結／振動の境目（\(m\sim\hbar H/c^2\)、正確な臨界減衰は \(mc^2/\hbar=\tfrac32 H\)）、アクシオンのミスアラインメント機構、クインテッセンス、フリーストリーミング、光子・重力子の質量上限は、いずれも確立した物理／現行の研究テーマです。IRフロアは操作的・力学的な下限であって質量の量子化ではありません。スケール \(\sim10^{-33}\) eV は頑健ですが係数はオーダー1の不定性があり、この下限は \(c\cdot t=\text{一定}\) を仮定せず標準宇宙論でも成り立ちます（\(R_H\sim ct\) はオーダーで一般に成立）。局所光速は不変です。図は \(H=1\) 単位での数値積分による模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで、フロアより軽い場が凍りつく様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var T=8, YMAX=1.15;  // t in units of 1/H ; phi
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var r=parseFloat(sk.value); vk.textContent=r.toFixed(2);  // r = m/(hbar H/c^2) = omega/H
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t/T*(w-pad-14);}
+    function Y(p){return (h-pad)/2 - p/YMAX*((h-pad-16)/2) + 8;}
+    // grid
+    ctx.strokeStyle='#e3e9f2';ctx.lineWidth=1;
+    for(var gy=-1;gy<=1;gy++){var y=Y(gy);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();}
+    // zero line
+    ctx.strokeStyle='#aebccf';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(w-8,Y(0));ctx.stroke();
+    // axes
+    ctx.strokeStyle='#b6c3d6';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,Y(YMAX)-2);ctx.lineTo(pad,Y(-YMAX)+2);ctx.stroke();
+    ctx.fillStyle='#5f6b7a';ctx.font='12px sans-serif';
+    ctx.fillText('時間 t（1/H 単位）→', w-190, Y(-YMAX)+22);
+    ctx.fillText('場の値 φ', pad+6, Y(YMAX)+2);
+    // integrate phi'' = -3 phi' - r^2 phi  (H=1), semi-implicit Euler
+    var dt=0.008, phi=1, v=0, frozen=(r<1.5);
+    ctx.strokeStyle= frozen? '#b06a12' : '#3a5a80';
+    ctx.lineWidth=2.8;ctx.beginPath();
+    ctx.moveTo(X(0),Y(1));
+    for(var t=dt;t<=T+1e-9;t+=dt){
+      var a=-3*v - r*r*phi;
+      v += a*dt;
+      phi += v*dt;
+      var pp=phi; if(pp>YMAX)pp=YMAX; if(pp<-YMAX)pp=-YMAX;
+      ctx.lineTo(X(t),Y(pp));
+    }
+    ctx.stroke();
+    // readout
+    if(frozen){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.textContent='m = '+r.toFixed(2)+' ×（ℏH/c²）：過減衰＝凍る。宇宙が変わる前に一度も振動できない ── IRフロア以下の軽さの世界（ダークエネルギー的）。';
+    } else {
+      rd.style.background='#e8edf5';rd.style.color='#2b4668';
+      rd.textContent='m = '+r.toFixed(2)+' ×（ℏH/c²）：振動する ── ふつうの質量粒子（物質的）。フロアより十分重い。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

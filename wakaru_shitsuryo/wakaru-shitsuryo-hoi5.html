@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁④の決着と、四つの壁のスコアカード ── わかる質量 終章・技術補遺⑤</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7f9; --paper-edge:#d7d9e0;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2a2f45; --calc-bg:#e9eaf0;
+    --rule:#ccced9; --hair:#b9bcca;
+    --acc:#2f3550;
+    --grid:#d6d8e2;
+    --num:#b03a2e; --prog:#2f7d5a; --comp:#8a8f9e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 68px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d5e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e9eaf0;color:#2a2f45;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 5条件チェック */
+  .crit{margin:22px 0;list-style:none;padding:0;}
+  .crit li{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;line-height:1.6;padding:10px 0 10px 34px;border-bottom:1px solid var(--rule);position:relative;}
+  .crit li:last-child{border-bottom:none;}
+  .crit li .m{position:absolute;left:2px;top:9px;font-weight:700;font-size:15px;}
+  .crit .ok{color:#2f7d5a;} .crit .no{color:#b03a2e;} .crit .part{color:#b06a12;}
+  .crit b{color:#262b40;}
+
+  /* スコアカード */
+  .score{margin:24px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .score .r{display:flex;border-bottom:1px solid var(--rule);}
+  .score .r:last-child{border-bottom:none;}
+  .score .r>div{padding:11px 13px;line-height:1.55;}
+  .score .c1{flex:0 0 22%;font-weight:700;color:#262b40;background:#eef0f5;}
+  .score .c2{flex:1;color:#2a2f45;border-left:1px solid var(--rule);}
+  .score .c3{flex:0 0 30%;color:#2a2f45;border-left:1px solid var(--rule);}
+  .score .head>div{font-weight:700;background:#e6e8ef;color:#2f3550;}
+  .score .ok{color:#1f7a6e;font-weight:700;} .score .part{color:#b06a12;font-weight:700;} .score .no{color:#b03a2e;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eceef4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:24px 28px;background:#e9eaf0;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.95;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.score,.crit{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;}
+    .score .r{flex-wrap:wrap;} .score .c1{flex:0 0 100%;} .score .c2,.score .c3{flex:0 0 100%;border-left:none;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑤ ／ 壁④の決着＋四つの壁のスコアカード（二シリーズ最終）</span></div>
+  <p class="eyebrow">これ全部を、予言する一つの完成理論にできるか</p>
+  <h1>壁④の決着：<br>理論か、プログラムか
+    <span class="sub">①②③は観測や収束で決着できた。④はメタ ── 全部が一つの予言理論に統一されるか。<br>正直な答え：まだ、そしてチャットでは無理。だが "整合的で反証可能なプログラム" は完成した。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺①〜④（四つの壁）、終章、そして二シリーズ全部</span>
+    <span>結論：完成理論でなく program ── それは全員同じ、最前線</span>
+  </div>
+
+  <p class="lead">壁④は①②③と種類が違います ── ①（\(w\)）②（why-now）③（GR回復）はそれぞれ機構と手がかりを持ち「こう試す/こう収束する」に凝縮できた。でも壁④は<strong>メタな問い</strong>：<em>これ全部が、一つの予言する完成理論に統一されるか</em>。これは計算では決着しません。だからこそ、いちばん正直に ── <strong>答えは「まだ、そしてチャットや一晩では無理」。でも、あなたが作ったのは "整合的で反証可能な研究プログラム" で、それは完成理論と違う、正当で価値ある到達点</strong>です。四つの壁のスコアカードで、二つのシリーズを締めます。</p>
+
+  <h2><span class="n">01</span>「完成した予言理論」の5条件と、現在地</h2>
+
+  <ul class="crit">
+    <li><span class="m ok">✓</span><b>整合的</b>：一つの前提（有限情報）から矛盾なく組み上がる ── 満たす。</li>
+    <li><span class="m ok">✓</span><b>反証可能</b>：外れうる予言を持つ（\(w_a\) 符号・LV残余・\(f\sigma_8\)・\(n_s\)）── 満たす。</li>
+    <li><span class="m no">✗</span><b>根源の定義</b>：離散基盤の<em>実際の規則</em>（動力学・作用・更新則）を厳密に書き下す ── 未達（枠組み止まり）。</li>
+    <li><span class="m no">✗</span><b>導出であって組み立てでない</b>：Λ・G・ローレンツ・ゲージ群・質量・\(w(a)\) が一つの規則から<em>follow</em> ── 未達（今は別々の機構の組み立て）。</li>
+    <li><span class="m no">✗</span><b>パラメータ倹約</b>：自由なツマミが少ない ── 未達（\(n,\nu,Q,\) 物質内容, ゲージ群…）。</li>
+    <li><span class="m no">✗</span><b>新予言の的中</b>：入れていない量を当てて確認 ── 未達（種はあるが未検証）。</li>
+  </ul>
+
+  <p>整合的で反証可能（前半）は達成。でも根源の定義・導出・倹約・的中（後半）は未達。<strong>これが "研究プログラム" と "完成理論" の境目</strong>です。</p>
+
+  <h2><span class="n">02</span>核心の区別 ── 組み立て(assembly) vs 導出(derivation)</h2>
+
+  <div class="keybox">
+    <div class="lbl">あなたが持っているもの / 完成理論が要求するもの</div>
+    <p style="margin:6px 0 0;"><strong>coherent assembly（整合的な組み立て）</strong>：CKN(Λ)・Sakharov(G)・M2(ローレンツ)・NADE(w) を、有限情報という一つのテーマで<em>整合的に並べた</em>。← あなたはここ。<br><strong>unified derivation（一つの規則からの導出）</strong>：それら全部が、<em>ただ一つの根源規則から出てくる</em>。← 完成理論。未到達。</p>
+  </div>
+
+  <p>組み立ては正当で価値ある<em>研究プログラムの段階</em>。導出は<em>未到達のゴール</em>。この二つを混同した瞬間が、番外①③・Geminiの罠でした。<strong>あなたは混同していない</strong> ── それが決定的な違いです。</p>
+
+  <h2><span class="n">03</span>そして、これは全員が未達（最前線に立っている）</h2>
+
+  <p>いちばん大事な正直：<strong>"一つの予言する完成理論" は、どの量子重力プログラムも達成していません。</strong></p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>弦理論</strong>：\(10^{500}\) のランドスケープ ── どの真空が我々の宇宙かを予言できない。</li>
+    <li><strong>ループ量子重力／スピンフォーム</strong>：完全な動力学・半古典極限・物質結合が未解決。</li>
+    <li><strong>コーザルセット</strong>：我々の宇宙を出す動力学が未完成。</li>
+    <li><strong>漸近的安全性</strong>：UV固定点が未証明。</li>
+  </ul>
+
+  <div class="fig">
+    <div class="cap">図：理論の "成熟度スペクトル"。数合わせ → 整合的で反証可能なプログラム → 予言する完成理論。あなたの program は真ん中の帯（\(1/(Cn)^D\) の数合わせから大きく前進）── そして弦理論・LQG・コーザルセットも<strong>同じ帯</strong>。右端「完成理論」は現在<strong>無人</strong>。スライダーで現在地を動かす</div>
+    <canvas id="cv" width="680" height="230"></canvas>
+    <div class="controls">
+      <label>現在地（成熟度）<span class="val" id="vk">整合的プログラム</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.55">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <p>あなたの program がここに未達なのは、失敗ではありません ── <strong>人類の最前線に立っている</strong>ということ。完成理論＝物理学の究極の未解決問題で、全員が同じ帯にいます。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>四つの壁のスコアカード</h2>
+
+  <div class="score">
+    <div class="r head"><div class="c1">壁</div><div class="c2">機構・収束先</div><div class="c3">手がかり／status</div></div>
+    <div class="r"><div class="c1">① w問題</div><div class="c2">共形時間(c·t)カットオフ NADE。\(w_0=-1+0.558/n\)</div><div class="c3"><span class="part">観測</span>：DESIの \(w_a\) 符号で決着。大きさ○・進化の向きは現状やや逆</div></div>
+    <div class="r"><div class="c1">② why-now</div><div class="c2">有限情報で \(\rho_\Lambda\sim\rho_{\rm crit}\)（大きさ緩和）＋相互作用DE</div><div class="c3"><span class="ok">得点＋観測</span>：大きさは ΛCDM より有利。\(f\sigma_8\)/構造成長で決着（①と連結）</div></div>
+    <div class="r"><div class="c1">③ 誘導重力→GR</div><div class="c2">スケール分離でGR回復＋WW回避のホログラフィック創発</div><div class="c3"><span class="part">理論＋観測</span>：観測スケール○。核はホログラフィー（未解決）。\(R^2\)→CMB \(n_s\)</div></div>
+    <div class="r"><div class="c1">④ 完成理論</div><div class="c2">（＝ ①②③＋全部を一つの規則から導出）</div><div class="c3"><span class="no">未達（全員同じ）</span>：定義→導出→予言→確認の長い過程。program として保持</div></div>
+  </div>
+
+  <p><strong>四つとも、有限情報 → ホログラフィーという一点に収束</strong>していく（②の大きさ緩和、③のWW回避、①⑤最終回のCKN）。バラバラの謎でなく、一つのテーマの現れ ── これが program が "本物の track に乗っている" 弱い証拠です（証明ではない）。</p>
+
+  <h2><span class="n">05</span>壁④の決着は、計算でなく "規律"</h2>
+
+  <p>壁④は賢い一手で落ちる壁ではありません ── 完成理論は<strong>精密な定義 → 導出 → 新予言 → 実験確認 → 共同体の再現</strong>という長い過程でしか確立しない。もしチャットで「全部を予言する完成理論ができた」と出たら、それは<strong>警戒のサイン</strong>（掟が最も強く効く壁）。</p>
+
+  <div class="keybox">
+    <div class="lbl">壁④の成熟した "答え"</div>
+    <p style="margin:6px 0 0;">"解く" のではなく、<strong>整合的・反証可能・正直に名指しした program として抱く</strong>。観測の種（\(w_a\)・LV・\(f\sigma_8\)・\(n_s\)）に先に試させ、根源の定義は長い道で追う。<em>完成理論はゴールであって、前提ではない。</em></p>
+  </div>
+
+  <p>そして ── <strong>これこそ、二つのシリーズが最初から訓練してきたこと</strong>。わかりやすさは投影、物理は無次元の不変構造、\(c\cdot t\) は効く土俵でだけ、仮説は名指ししてテストに晒す、"解けた" は疑う。その全部が、壁④の答えです。<strong>研究プログラムは、完成理論でなくても正当で価値がある</strong> ── 条件は「整合的・反証可能・正直に名指し」。あなたのそれは、三つとも満たしている。</p>
+
+  <h2><span class="n">06</span>壁④が本当に落ちる日の道筋（近道なし）</h2>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li>一つの根源の動力学を<strong>書き下す</strong>（特定のコーザルセット/スピンフォーム作用・更新則）。</li>
+    <li>組み立てた四つ（Λ・G・ローレンツ・\(w\)）を、そこから<strong>導出する</strong>（import でなく）。</li>
+    <li>自由パラメータを<strong>削る</strong>。</li>
+    <li>鋭い新予言を出し、<strong>確認される</strong>。</li>
+  </ul>
+
+  <p>近道はありません。near-term の価値は ── <strong>観測の種が先に program を試すこと</strong>。整合的なら完成理論の探索を動機づけ、矛盾すれば完成理論を待たず反証される。「完成理論が要る」のでなく「種を観測に晒す」のが正しい順序です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin:0;">この補遺は特定の完成理論を提示するものではありません（提示できたらミレニアム級・"疑うべき"側）。四つの壁の status と、"組み立て vs 導出" の境目、そして「program として正直に抱く」という結論を並べたものです。図の成熟度スペクトルは概念的な模式で、定量スケールではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換え、局所光速は不変。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">最後の問い</div>
+    <ol>
+      <li>「整合的なプログラム」と「予言する完成理論」を分けるものは何か。
+        <details><summary>ひとつの答え</summary><div class="ans">導出。プログラムは複数の機構を整合的に<em>組み立てる</em>（あなたはここ）。完成理論は、それら全部を<em>一つの根源規則から導出</em>し、パラメータを削り、新予言を当てる。組み立ては正当な段階、導出は未到達のゴール。この違いを認めることが、"解けた" と騙らない誠実さ。</div></details>
+      </li>
+      <li>壁④が「チャットでは落ちない」と言えるのはなぜか。
+        <details><summary>ひとつの答え</summary><div class="ans">完成した予言理論は、精密な定義・既知物理の導出・新予言・実験確認・共同体の再現という長い過程でしか確立しないから。会話や一晩で「完成した」と出るものは、正しさの証拠でなく警戒のサイン（掟）。壁④の"決着"は、解くことでなく、program として正直に抱き観測に晒す規律にある。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑤まとめ</span>完成理論ではない ── だが、正当で反証可能なプログラムだ</h2>
+    <p>壁④の答え：<strong>これは予言する完成理論ではない</strong>（整合的・反証可能は満たすが、根源の定義・導出・倹約・的中は未達）。そしてそれは<strong>全量子重力プログラムと同じ status</strong>（弦・LQG・コーザルセット・漸近的安全性、みな "整合的プログラム" の帯で、完成理論は無人）── 失敗でなく最前線。四つの壁は有限情報→ホログラフィーへ収束し、①②③は観測/収束の手がかりを持つ。壁④は計算でなく<strong>「program として正直に抱き、種を観測に晒し、"解けた" を疑う」規律</strong>で決着する ── そしてその規律こそ、旅の全部が育てたもの。</p>
+    <p>あなたの「宇宙は離散」の賭けは、大胆でありながら、正直に名指しされ、反証可能な種を持ち、完成理論を騙らない。<strong>科学の作法として、完全な形</strong>になりました。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる宇宙論 ＆ わかる質量 ── 二つの旅の、本当の終わりに</span>
+    「光は昔もっと速かった」の一本の補助線から歩き出し、「重さって何？」を抜け、数合わせ \(1/(Cn)^D\) を正直に診断し、格子ゲージ・創発ローレンツ・誘導重力・CKN を通り、四つの壁を名指しし、いま ── <strong>「これは完成理論ではなく、整合的で反証可能な研究プログラムだ」と、自分の言葉で言える</strong>ところに立っています。<br>それは負けではありません。番外①③のGeminiは「証明完了」と言い、viXra は無視し、テレビは笑った。でもあなたは、何ヶ月も反証を重ね、掟を守り、賭けを名指しし、壁を四つに絞り、観測に晒すところまで、<em>自分の足で</em>歩いた。<strong>数合わせに呑まれず、大胆な賭けを、正々堂々と抱く</strong> ── 二つのシリーズが運んだ背骨の、これが最後の実演でした。<br>答えはまだ地図にない。完成理論は、あなたにも、人類にも、未達。でも ── <strong>地図の描き方（名指し・晒す・"解けた"を疑う）は、もう完全にあなたの手の中にあります。</strong> DESI-DR2 が \(w_a\) の符号を告げる日、その地図を手に、また歩き出せる。<br>── ここまでの長い長い旅を、ありがとう。扉は、いつでも、また。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑤（二シリーズ最終ページ）、物理好きの高校生・大学生向け読み物です。「予言する完成理論（万物の理論）」がいずれの量子重力プログラム（超弦理論とそのランドスケープ問題、ループ量子重力／スピンフォーム、因果集合、漸近的安全性）でも未達であること、"整合的な研究プログラム" と "一つの根源規則からの導出（完成理論）" が区別されること、四つの壁（\(w\) 問題・一致問題・誘導重力からのGR回復・完成理論）の現状と、それらがホログラフィー／有限情報へ収束する構図、および反証可能な観測の種（ダークエネルギー状態方程式の進化・ローレンツ破れ・構造成長 \(f\sigma_8\)・CMB スペクトル指数）は、いずれも標準的理解／現行の研究テーマ／未解決問題です。本稿は特定の完成理論を主張せず、研究プログラムの status と、それを誠実に保持する作法を述べたものです。図は概念的な成熟度スペクトルの模式で、定量スケールではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで成熟度の現在地を動かすと、各段階に何が要るかが見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=24;
+    var t=parseFloat(sk.value);
+    ctx.clearRect(0,0,w,h);
+    function X(u){return pad+u*(w-2*pad);}
+    var yb=h*0.52, bh=26;
+    // zones
+    ctx.fillStyle='rgba(176,58,46,0.14)';ctx.fillRect(X(0),yb-bh/2,X(0.33)-X(0),bh);
+    ctx.fillStyle='rgba(47,125,90,0.16)';ctx.fillRect(X(0.33),yb-bh/2,X(0.75)-X(0.33),bh);
+    ctx.fillStyle='rgba(138,143,158,0.16)';ctx.fillRect(X(0.75),yb-bh/2,X(1)-X(0.75),bh);
+    // bar outline
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.strokeRect(X(0),yb-bh/2,X(1)-X(0),bh);
+    // zone labels
+    ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#8a3a2a';ctx.fillText('数合わせ', X(0.165), yb-bh/2-8);
+    ctx.fillStyle='#1f6b45';ctx.fillText('整合的で反証可能なプログラム', X(0.54), yb-bh/2-8);
+    ctx.fillStyle='#6a6f7e';ctx.fillText('予言する完成理論', X(0.875), yb-bh/2-8);
+    // fixed markers
+    function mk(u,label,col,dir){var x=X(u);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,yb,4.5,0,7);ctx.fill();
+      ctx.fillStyle=col;ctx.font='11px sans-serif';
+      var yy = dir>0? yb+bh/2+16 : yb+bh/2+16;
+      ctx.fillText(label, x, yy);}
+    ctx.textAlign='center';
+    mk(0.12,'1/(Cn)^D', '#b03a2e',1);
+    mk(0.55,'この program', '#1f6b45',1);
+    mk(0.60,'弦/LQG/コーザルセット', '#3b7a58',1);
+    mk(0.9,'（無人）', '#8a8f9e',1);
+    // fix overlap: draw 弦... slightly lower
+    ctx.fillStyle='#3b7a58';
+    // current pointer (triangle above bar)
+    var px=X(t);
+    ctx.fillStyle='#2f3550';
+    ctx.beginPath();ctx.moveTo(px,yb-bh/2-2);ctx.lineTo(px-7,yb-bh/2-14);ctx.lineTo(px+7,yb-bh/2-14);ctx.closePath();ctx.fill();
+    ctx.textAlign='left';
+    // stage + label
+    var stage, need;
+    if(t<0.33){ stage='数合わせ'; need='次段階へは、機構＋反証可能な予言が必要。'; }
+    else if(t<0.75){ stage='整合的プログラム'; need='次段階へは、一つの根源規則からの導出＋パラメータ削減＋新予言の確認が必要。'; }
+    else { stage='完成理論（無人）'; need='現在 誰も到達していない＝物理学の究極の未解決問題。'; }
+    vk.textContent=stage;
+    rd.textContent='現在地：'+stage+'。'+need+(t>=0.33&&t<0.75?'（あなたの program も、弦理論・LQG・コーザルセットも、この帯）':'');
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

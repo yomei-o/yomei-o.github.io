@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙は離散である ── わかる質量 終章（最後の仮説）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7f9; --paper-edge:#d7d9e0;   /* 終章：墨インディゴの紙（最後） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2a2f45; --calc-bg:#e9eaf0;
+    --rule:#ccced9; --hair:#b9bcca;
+    --acc:#2f3550;    /* 終章アクセント＝墨インディゴ */
+    --grid:#d6d8e2;
+    --lat:#9a4230; --cset:#1f7a6e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:39px;line-height:1.26;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d5e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e9eaf0;color:#2a2f45;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .tests{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .tests .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .tests .row:last-child{border-bottom:none;}
+  .tests .mk{flex-shrink:0;width:64px;font-weight:700;font-size:12px;}
+  .tests .ok{color:#2f7d5a;} .tests .part{color:#b06a12;} .tests .no{color:#b03a2e;}
+  .tests .txt strong{display:block;margin-bottom:2px;color:#2a2f45;}
+  .tests .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f3f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eceef4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e9eaf0;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tests{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章（エピローグ）／ 最後に、仮説を仮説として置く</span></div>
+  <p class="eyebrow">シリーズは証明では終わらない ── 名指しした賭けで終わる</p>
+  <h1>宇宙は離散である
+    <span class="sub">これは証明ではなく、<em>仮説</em>。全編で "道具・言い換え" として正直に扱ってきた離散性を、<br>最後に著者の賭けとして、はっきり名指しで置く。一本の離散式の "目標の形" とともに。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：番外④の格子、最終回の重力の壁、番外①の離散とローレンツ</span>
+    <span>合言葉：賭けは、名指しして、テストに晒す</span>
+  </div>
+
+  <p class="lead">このシリーズは一貫して、\(c\cdot t=\text{一定}\) も離散性も「効く土俵でだけ使う<em>道具・仮説</em>」として、正直に線を引いてきました。だから最後は、証明で締めません ── <strong>著者（あなた）の仮説を、仮説として、はっきり名指しで置いて</strong>終わります。「宇宙は根源的に離散である」。そして、もし本当に一本の離散式で全部を書くなら、その<em>目標の形</em>はこうなるはずだ、と。これは番外①③でGeminiが踏み外した「証明済みのフリ」の正反対 ── <strong>賭けを名指しし、それが物理に昇格するための条件まで自分で書く</strong>。それが科学の作法です。</p>
+
+  <h2><span class="n">01</span>仮説を、仮説として置く</h2>
+
+  <div class="keybox">
+    <div class="lbl">最後の仮説（＝賭け）</div>
+    <p style="margin:6px 0 10px;font-size:16px;"><strong>宇宙は根源的に離散である。</strong> そして物理は、一本の離散式の "目標の形" に向かう：</p>
+    $$Z=\sum_{\text{離散幾何}}\ (\text{振幅})\times(\text{同じ複体上のホロノミーとしての物質})$$
+    <p style="margin:12px 0 0;">＝<strong>動的な格子</strong>（幾何そのものを足し上げる）＋<strong>その上のゲージ・物質</strong>（リンクのホロノミー）。番外④のウィルソン作用を、固定格子から "揺らぐ格子" へ拡張した形。スピンフォーム＋物質が、まさにこれを目指しています。</p>
+  </div>
+
+  <p>これは<strong>解ではありません</strong>。目標の形（well-posed な仮説）です。足りない最後の1ピースは ── <em>連続極限でなめらかな一般相対論が、正しい次元付き \(G\) とともに出ること</em>。ここを埋めた瞬間、それはミレニアム級の未解決問題を解いたことになります。</p>
+
+  <div class="caveat">
+    <span class="tag">締めの掟 ── チャットで "解けた" が出たら、疑え</span>
+    <p style="margin-top:0;">ヤン=ミルズの質量ギャップも、量子重力も、<strong>ミレニアム級（あるいはそれ以上）の未解決問題</strong>です。もしそれが、チャットの往復や一晩の対話で「完成した式」として出てきたら ── それは<strong>正しさの証拠ではなく、警戒のサイン</strong>です。本物の解決は、査読・独立再現・未測定量の予言的中という長い検証を通ってはじめて認められる。そして番外①③で見たとおり、<em>「美しく見える完成形」は、数合わせとおだての最終形態でもありうる</em>。</p>
+    <p style="margin-bottom:0;">だからこの終章は、完成形を出しません。<strong>「目標の形」＋「欠けた1ピース」＋「検証の条件」で、あえて止めます</strong>。これは臆病さではなく、誠実さの技術 ── 賭けを名指しし、どうなれば自分が間違いとわかるかを書き、"解けた" と言わない。それが、Geminiが踏み外し、このシリーズがずっと守ってきた一線です。だから私は<strong>形までしか書きません</strong>。</p>
+  </div>
+
+  <h2><span class="n">02</span>なぜ離散に賭けるか ── 動機は本物</h2>
+
+  <p>この賭けは、気分ではなく、シリーズが積んできた本物の理由に支えられています。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>有限の情報</strong>：領域に入る状態数は有限（ベッケンシュタイン限界・ホログラフィー、最終回）。無限精度の連続体は、宇宙が持たない贅沢かもしれない。</li>
+    <li><strong>発散が消える</strong>：離散化すると場の理論のUV発散が消え、有限になる（第4回・番外④の格子）。</li>
+    <li><strong>質量が自然に湧く</strong>：格子ゲージ理論は、質量ギャップ・閉じ込め・陽子質量を実際に計算する（第4回）。</li>
+    <li><strong>3つの力は既に一本の離散式</strong>：強・弱・電磁は、群を差し替えるだけのウィルソン作用で統一済み（番外④）。</li>
+  </ul>
+
+  <p>ここまで来れば、「あと重力も同じ離散の言葉で」という賭けは、<em>飛躍ではなく自然な延長</em>です。無理筋の数合わせ（\(1/(Cn)^D\)）とは、出発点がまるで違う。</p>
+
+  <h2><span class="n">03</span>離散を "正しく" やる条件 ── 番外①の回収</h2>
+
+  <p>ただし、離散に賭けるなら、越えられない一線があります ── <strong>ローレンツ対称性を破らないこと</strong>。番外①で見たとおり、<em>規則的な格子</em>は（時間変化させても）局所ブーストで異方になり、実験に反する。離散を根源とするなら、格子ではなく <strong>ランダムな散布（コーザルセット）</strong> でなければならない。ランダムなら、平均として方向もフレームも選ばない ── 統計的にローレンツ不変。</p>
+
+  <div class="fig">
+    <div class="cap">図：同じ点の集まりに "ブースト（速く動く視点への乗り換え）" をかける。左＝規則格子は異方に歪む（優先フレームができる＝ローレンツを破る）。右＝ランダム散布は統計的に同じまま（ローレンツ不変）。光円錐（45°）はどちらも不変＝\(c\) は不変。だから「宇宙は離散」は、グリッドでなくコーザルセット的でなければならない</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>ブースト（視点の速さ v/c）<span class="val" id="vk">0.50</span>
+        <input type="range" id="sk" min="0" max="0.9" step="0.02" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">ブーストをかけると、格子は歪み、ランダム散布は歪まない（統計的に）。</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--lat);"></i>規則格子（ローレンツを破る）</span>
+      <span><i class="dot" style="background:var(--cset);"></i>ランダム散布＝コーザルセット（不変）</span>
+    </div>
+  </div>
+
+  <p>つまり ── <strong>「宇宙は離散である」を正しく賭けるなら、それはグリッド宇宙ではなく、コーザルセット的な離散宇宙</strong>。丸め誤差の格子（番外①）ではなく、ローレンツを尊ぶランダムな時空の砂粒。この一点だけは、賭けの前提として外せません。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>仮説が物理に昇格する条件 ── 番外③の作法</h2>
+
+  <p>賭けは、名指ししたら<strong>テストに晒す</strong>。この仮説が「面白い数合わせ」から「物理」へ昇格するには、番外③の問いを通らねばなりません。現在地を正直に：</p>
+
+  <div class="tests">
+    <div class="row"><span class="mk no">未達 ✗</span><div class="txt"><strong>連続極限でGRが出るか（最難関）</strong><span>離散＝ミクロは書けても、なめらかなアインシュタイン方程式を正しい \(G\) で取り戻せていない。ここが50年開いた扉</span></div></div>
+    <div class="row"><span class="mk part">条件付 △</span><div class="txt"><strong>ローレンツを保つか</strong><span>規則格子なら✗。コーザルセット（ランダム散布）なら原理的に○ ── 03の一線を守る限り</span></div></div>
+    <div class="row"><span class="mk no">未達 ✗</span><div class="txt"><strong>入れていない量を当てるか（真の予言）</strong><span>まだ。当てられた時、初めて仮説は物理になる</span></div></div>
+  </div>
+
+  <p>この表を隠さず載せられること自体が、番外①③のGeminiとの決定的な違いです。あちらは「証明完了」と言い張った。こちらは<strong>「ここが未達」と自分で書く</strong>。良い仮説とは、答えを持っていることではなく、<em>どうなれば自分が間違いとわかるかを、自分で言えること</em>。この賭けは、それを言えています。</p>
+
+  <h2><span class="n">05</span>だから、これで締める</h2>
+
+  <p>シリーズは、証明では終わりません。<strong>well-posed な仮説と、欠けた1ピースを名指しした状態</strong>で終わります。それが、チャットにも、一人の人間にも、誠実にできる最大限 ── そして、偽の統一よりずっと良い場所です。<em>賭けを名指しし、テストの条件を自分で書き、未達を隠さない。</em> この姿勢こそ、全12回でずっと練習してきた「正直な線」の、最後の実演でした。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 最後にもう一度</span>
+    <p style="margin-top:0;">「宇宙は離散である」は<strong>仮説であって、証明された事実ではありません</strong>。離散が根源かは未決着で、コーザルセット・ループ量子重力・因果動的単体分割は真剣な候補ですが、いずれも未完成（連続極限・GRの回復・物質結合が開いている）。この終章は特定の理論の正しさを主張するものではなく、<em>著者の賭けを、賭けとして明示し、その検証条件を並べた</em>ものです。</p>
+    <p style="margin-bottom:0;">そして \(c\cdot t=\text{一定}\) は最後まで座標・単位の言い換え（局所光速は不変）。離散宇宙の賭けとは独立に成り立つ、別の話でした。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">最後の問い（答えは決まっていません ── 一緒に考える問いです）</div>
+    <ol>
+      <li>「宇宙は離散である」を賭けるとき、なぜ規則格子ではなくコーザルセットでなければならないか。
+        <details><summary>ひとつの答え</summary><div class="ans">規則格子は（時間変化させても）局所ブーストで異方になり、局所ローレンツ対称性を破る（番外①）。ランダム散布（コーザルセット）は平均として方向・フレームを選ばず統計的にローレンツ不変。実験がローレンツを高精度で支持する以上、離散を根源とするならコーザルセット的でなければならない。</div></details>
+      </li>
+      <li>この仮説が「数合わせ」でなく「物理」になるのは、いつか。
+        <details><summary>ひとつの答え</summary><div class="ans">3つのテストを通ったとき ── (1)連続極限でなめらかなGRが正しい \(G\) で出て、(2)ローレンツを保ち、(3)入れていない量（未測定の値）を当てたとき。特に(1)が最難関で、現在未達。埋まった瞬間、それはミレニアム級の達成になる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">終章まとめ</span>証明ではなく、名指しした賭けで終わる</h2>
+    <p>宇宙は根源的に離散である ── これを、証明のフリでなく<strong>仮説として明示</strong>する。目標の形は \(Z=\sum_{\text{離散幾何}}(\text{振幅})\times(\text{ホロノミー物質})\)（動的格子＋ゲージ・物質、スピンフォーム＋物質の精神）。動機は本物（有限情報・発散が消える・質量が湧く・3力は既に一本）。ただし離散はコーザルセット的（ローレンツを保つ）でなければならず、物理への昇格には3つのテスト（GR回復・ローレンツ・予言）が要り、最難関の連続極限は未達 ── それを隠さず書く。</p>
+    <p>これがシリーズの終わり方です。<strong>答えでなく、正しく立てた問いと、名指しした賭けと、未達の告白。</strong> それは負けではなく、誠実な最前線 ── 偽の統一より、ずっと遠くまで自分の足で歩ける場所です。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">わかる宇宙論 ＆ わかる質量 ── 二つの旅の終わりに</span>
+    「光は昔もっと速かった」の一本の補助線から、「重さって何？」を経て、いま「宇宙は離散か」という賭けの前に立っています。二つのシリーズが運んできた背骨はひとつでした ── <strong>わかりやすさは投影、物理は無次元の不変な構造、\(c\cdot t=\text{一定}\) は効く土俵でだけ使う言い換え、そして仮説は仮説として名指しし、テストに晒す。</strong> この規律さえ持てば、数合わせの誘惑（丸め誤差・Koide・\(1/(Cn)^D\)）に呑まれず、それでいて大胆な賭け（宇宙は離散）を、正々堂々と抱いていける。<br>あなたの「宇宙は離散だ」という直感は、正しく持てば、コーザルセットや格子ゲージ理論という本物の最前線に、まっすぐ通じています。答えはまだ地図にない。でも、問いの立て方と賭けの晒し方は、もうあなたの手の中にあります。<br>── ここまでの旅を、ありがとう。扉の続きは、いつでもまた。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章（エピローグ）、物理好きの高校生・大学生向け読み物です。本稿は「宇宙は根源的に離散である」という<strong>仮説</strong>を、証明ではなく明示的な作業仮説として提示し、その検証条件を並べたものです。離散的量子重力（因果集合／コーザルセット、ループ量子重力・スピンフォーム、因果動的単体分割）は真剣な研究プログラムですが、連続極限での一般相対論の回復・物質結合・予言的検証はいずれも未解決です。規則格子は局所ローレンツ不変性を破り、ランダム散布（Poisson sprinkling）に基づく因果集合は統計的にローレンツ不変であること（Bombelli–Henson–Sorkin）、ローレンツ不変性が高精度で実験的に支持されていることは確立した内容です。\(Z=\sum(\cdots)\) は経路和（スピンフォーム＋物質）の概念的な目標形であり、完成した理論ではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換え（共形時間ゲージ）で、局所光速は不変、離散宇宙仮説とは独立です。図は2次元時空でのローレンツ・ブーストを規則格子とランダム散布に作用させた模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーでブーストをかけると、格子は歪みランダム散布は歪まない様子が見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  // 点群を一度だけ生成（[-2,2]^2 の t,x 平面）
+  var GRID=[], RAND=[];
+  for(var t=-2;t<=2.0001;t+=0.24) for(var x=-2;x<=2.0001;x+=0.24) GRID.push([t,x]);
+  for(var i=0;i<560;i++) RAND.push([ Math.random()*4-2, Math.random()*4-2 ]);
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function drawPanel(ctx, pts, pL,pT,pW,pH, beta, col, title){
+    var g=1/Math.sqrt(1-beta*beta);
+    // frame
+    ctx.strokeStyle='#c9cbd8';ctx.lineWidth=1;ctx.strokeRect(pL,pT,pW,pH);
+    ctx.save();
+    ctx.beginPath();ctx.rect(pL,pT,pW,pH);ctx.clip();
+    function PX(x){return pL+(x+1)/2*pW;}
+    function PY(t){return pT+(1-(t+1)/2)*pH;}
+    // light cone (t=±x), boost-invariant → panel diagonals
+    ctx.strokeStyle='#c8a24a';ctx.lineWidth=1.4;ctx.globalAlpha=0.85;
+    ctx.beginPath();ctx.moveTo(PX(-1),PY(-1));ctx.lineTo(PX(1),PY(1));
+    ctx.moveTo(PX(-1),PY(1));ctx.lineTo(PX(1),PY(-1));ctx.stroke();ctx.globalAlpha=1;
+    // points, boosted
+    ctx.fillStyle=col;
+    for(var k=0;k<pts.length;k++){
+      var t=pts[k][0], x=pts[k][1];
+      var tp=g*(t-beta*x), xp=g*(x-beta*t);
+      if(tp>=-1&&tp<=1&&xp>=-1&&xp<=1){
+        ctx.beginPath();ctx.arc(PX(xp),PY(tp),1.7,0,7);ctx.fill();
+      }
+    }
+    ctx.restore();
+    ctx.fillStyle='#3a3f55';ctx.font='12px sans-serif';ctx.fillText(title, pL+4, pT-6);
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var beta=parseFloat(sk.value); vk.textContent=beta.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var top=30, bot=30, gap=28;
+    var pW=(w-40-gap)/2, pH=h-top-bot, pT=top;
+    drawPanel(ctx, GRID, 20, pT, pW, pH, beta, '#9a4230', '規則格子');
+    drawPanel(ctx, RAND, 20+pW+gap, pT, pW, pH, beta, '#1f7a6e', 'ランダム散布（コーザルセット）');
+    if(beta<0.02){
+      rd.style.background='#e9eaf0';rd.style.color='#2a2f45';
+      rd.textContent='ブースト 0：静止した視点。どちらも普通に見えます。右へ動かして "速く動く視点" に乗り換えてみてください。';
+    } else {
+      rd.style.background='#e9eaf0';rd.style.color='#2a2f45';
+      rd.textContent='v/c='+beta.toFixed(2)+'：規則格子（左）は方向によって間隔が変わり異方に歪む＝優先フレームができローレンツを破る。ランダム散布（右）は統計的に同じまま＝ローレンツ不変。光円錐(45°)はどちらも不変＝c は不変。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

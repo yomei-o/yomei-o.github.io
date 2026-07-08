@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>質量ゼロは、対称性が守っている ── わかる質量 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fb; --paper-edge:#e2dcee;   /* 第2回：菫（すみれ）の紙 */
+    --side:#4f4a72; --side-bg:#efedf5;
+    --warn:#8a4b2f;
+    --calc:#5a3f8a; --calc-bg:#eee9f6;
+    --rule:#d6cfe4; --hair:#c3bad6;
+    --acc:#6b4fa0;    /* 第2回アクセント＝菫（対称性） */
+    --grid:#ded7ee;
+    --heavy:#6b4fa0; --flat:#2f7d5a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd2ef 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#2a2740;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d5cae8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#eee9f6;color:#5a3f8a;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 3人の見張り番リスト */
+  .guards{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .guards .row{display:flex;gap:14px;padding:15px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .guards .row:last-child{border-bottom:none;}
+  .guards .mk{flex-shrink:0;width:20px;font-weight:700;font-size:15px;color:var(--acc);}
+  .guards .txt strong{display:block;margin-bottom:2px;color:#2a2740;}
+  .guards .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f4fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a2f52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#f0ecf8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#eee9f6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3a2f52;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.guards{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 2 回 ／ ゼロには、見張り番がいた</span></div>
+  <p class="eyebrow">なぜ光は "床ゼロ" でいられるのか ── 質量を禁じているものの正体</p>
+  <h1>質量ゼロは、<br>対称性が守っている
+    <span class="sub">第1回で「質量＝消せないエネルギーの床」。放っておくと床は湧いてしまう。<br>ゼロは特別で、<em>対称性</em>が能動的に守っている ── 3人の見張り番の話。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の「質量＝床」、掛け算、対称の感覚</span>
+    <span>合言葉：質量²＝ポテンシャルの底の曲がり</span>
+  </div>
+
+  <p class="lead">第1回で、質量とは「運動量を抜いても残るエネルギーの<em>床</em>」でした。光はその床がゼロだから止まれない。では ── <strong>なぜ光の床は、厳密にゼロでいられるのか。</strong> 素朴には「ゼロ＝何もない＝当たり前」と思いがちですが、物理はむしろ逆。<em>放っておくと質量は湧いてしまう。</em> ゼロは特別な状態で、<strong>対称性が能動的に守っている</strong>のです。今回は、ゼロを守る3人の見張り番を紹介します。</p>
+
+  <h2><span class="n">01</span>まず「質量が湧く」のが普通、と知る</h2>
+
+  <p>問いをひっくり返します。ふつう「なぜ重いのか」を問いますが、正しくはこうです ── <em>何が、質量が湧くのを禁じているのか。</em> 場の理論では、禁じる理由がなければ質量項はふつうに現れてしまう。だから<strong>ゼロを保つには"理由"が要る</strong>。その理由が対称性です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の見取り図</div>
+    <p style="margin:6px 0 0;">質量ゼロ ＝ 対称性が「質量項」を<strong>禁じている</strong>状態。<br>質量が点く ＝ その見張り番が外れる／破れる。</p>
+  </div>
+
+  <h2><span class="n">02</span>見張り番① ゲージ対称性 ── 光子・グルーオンがゼロ</h2>
+
+  <p>光子（電磁場 \(A_\mu\)）の質量項は、書くとこうなります。</p>
+
+  <div class="keybox">
+    <div class="lbl">光子に質量を与える"はず"の項</div>
+    $$m^2 A_\mu A^\mu$$
+  </div>
+
+  <p>ところがこれは、ゲージ変換 \(A_\mu \to A_\mu + \partial_\mu\lambda\) をすると<strong>形が変わってしまう＝ゲージ不変でない</strong>。電磁気の理論はこのゲージ変換で不変でなければならないので、<em>そもそもこの質量項を書き込めない</em>。だから光子は質量ゼロ。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>光子</strong>（電磁気の U(1)）・<strong>グルーオン</strong>（強い力の SU(3)）── 対称性が破れていない → 質量ゼロ。</li>
+    <li><strong>W・Z が重い</strong>のは、電弱の対称性がヒッグスで<em>自発的に破れ</em>、縦波モードを食べたから（→ 第3回）。破れずに残った組み合わせが、質量ゼロの光子。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第1回の回収）</span>
+    第1回で「止まれる粒子は縦波が1つ生える（偏光が2→3に増える）」と言いました。ゲージ対称性は、実は<strong>記述の"冗長さ"</strong>で、その余分な縦波を消しています。だから<em>ゲージ対称性がある＝縦波がない＝止まれない＝質量ゼロ</em>。「対称性が質量を禁じる」と「静止系がない」は、同じことの表と裏だったのです。
+  </div>
+
+  <h2><span class="n">03</span>見張り番② カイラル対称性 ── フェルミオンがゼロ</h2>
+
+  <p>電子のようなフェルミオンの質量項（ディラック質量）は、<strong>左巻きと右巻きを混ぜ合わせる</strong>形をしています。</p>
+
+  <div class="keybox">
+    <div class="lbl">フェルミオンに質量を与える項（左右を混ぜる）</div>
+    $$m\,\bar\psi\psi = m(\bar\psi_L\psi_R + \bar\psi_R\psi_L)$$
+  </div>
+
+  <p>もし左巻きと右巻きが<em>違う対称性を背負っている</em>なら（＝カイラル対称性）、この混合項は禁じられます。標準模型はまさにこれで、<strong>電弱対称性が破れる前は、すべてのフェルミオンが質量ゼロ</strong>。質量が入るのは、ヒッグスと結合してから ── \(m_f = y_f\,v/\sqrt2\)（→ 第3回でくわしく）。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声（第5回への布石）</span>
+    湯川結合 \(y_f\) が小さければ質量は小さい。しかも「小さいことがカイラル対称性で守られている」ので、<em>技術的には自然</em>です。電子が軽く、ニュートリノが桁外れに軽い（→ 第5回）のは、この見張り番のおかげで許されている。
+  </div>
+
+  <h2><span class="n">04</span>見張り番③ ゴールドストンの定理 ── 質量ゼロのスカラー</h2>
+
+  <p>3人目は独立した機構です。<strong>連続的な"大域"対称性が自発的に破れると、破れた向きひとつにつき、厳密に質量ゼロの粒子（南部＝ゴールドストン粒子）が1つ現れる</strong>。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li>物性の<strong>フォノン</strong>や<strong>マグノン</strong>は、厳密に質量ゼロのゴールドストン粒子。</li>
+    <li><strong>パイ中間子</strong>は、強い力のカイラル対称性が"近似的に"破れた<em>擬</em>ゴールドストンで、だから他のハドロン（〜1 GeV）より桁違いに軽い（約140 MeV）。「軽さ」まで対称性で説明できる実例です。</li>
+  </ul>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>質量²は「ポテンシャルの底の曲がり」だった</h2>
+
+  <p>3人の見張り番に共通する正体を、一枚の絵で。場のエネルギー（ポテンシャル \(V\)）の谷底で、<strong>質量² ＝ 底の"曲がり具合"（曲率）</strong>です。急な谷は強い復元力＝重い。平らな谷は復元力ゼロ＝<em>質量ゼロ</em>。ゴールドストン粒子とは、まさにこの<strong>"平らな方向"</strong>のこと。</p>
+
+  <div class="keybox">
+    <div class="lbl">質量の、もう一つの顔</div>
+    $$m^2 \propto \left.\frac{d^2V}{d\phi^2}\right|_{\text{谷底}}\qquad(\text{平らな方向}\ \Rightarrow\ m=0)$$
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：ポテンシャル \(V(\phi)\) の谷底の"曲がり" k が質量²。スライダーで k を下げていくと、底が平らになり、復元力が消えて質量ゼロ（＝対称な方向＝ゴールドストン）に近づく</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>谷の曲がり k（＝質量²・右ほど急な谷）<span class="val" id="vk">1.00</span>
+        <input type="range" id="sk" min="0" max="1.5" step="0.02" value="1.0">
+      </label>
+    </div>
+    <div class="readout" id="rd">谷の曲がり k を動かすと、質量が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--heavy);"></i>ポテンシャル V(φ)</span>
+      <span><i class="swatch" style="background:var(--flat);"></i>平らな基準線（k=0＝質量ゼロ）</span>
+    </div>
+  </div>
+
+  <p>k を 0 にすると、谷は真っ平ら。ボール（場）は左右どちらへ動いても<em>戻される力を受けない</em> ── これが「止まれない・エネルギーの床がゼロ」の、ポテンシャル側の姿です。対称性は、この<strong>"平らな方向"を作り出すこと</strong>で質量ゼロを守っているのです。</p>
+
+  <h2><span class="n">06</span>だから、ゼロは自明ではない ── そして質量が"点く"とき</h2>
+
+  <p>まとめると、質量ゼロは3人の見張り番の帰結でした。</p>
+
+  <div class="guards">
+    <div class="row"><span class="mk">①</span><div class="txt"><strong>ゲージ対称性</strong><span>質量項 \(m^2A_\mu A^\mu\) がゲージ不変でない → 光子・グルーオンがゼロ。</span></div></div>
+    <div class="row"><span class="mk">②</span><div class="txt"><strong>カイラル対称性</strong><span>左右を混ぜる質量項が禁じられる → フェルミオンがゼロ（ヒッグス前）。</span></div></div>
+    <div class="row"><span class="mk">③</span><div class="txt"><strong>大域対称性の破れ（ゴールドストン）</strong><span>破れた"平らな方向"に質量ゼロのスカラーが現れる。</span></div></div>
+  </div>
+
+  <p>そして<strong>質量が"点く"とは、見張り番が外れる／破れること</strong>。次回のヒッグス機構は、①の対称性をわざと自発的に破って、W・Z に縦波を食べさせ、フェルミオンには湯川で床を与える手口です。第1回の「消せない床」で言えば ── <em>ゼロの床は対称性が守り、有限の床は対称性が破れて湧く</em>。これがこのシリーズの背骨の、二枚目のカードです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">今回も合言葉 \(c\cdot t=\text{一定}\) は<strong>あえて前面に出していません</strong>。対称性が質量を禁じる／許すのは、\(c\cdot t\) と無関係の標準物理だからです。無理に効かせないのが姉妹シリーズ番外③の教訓。このレンズが正当に効くのは、スケールが創発する第4回以降。</p>
+    <p style="margin-bottom:0;">「光子は厳密にゼロ」は理論上の帰結で、実験は上限を押し下げているだけ（光子質量 \(<\) およそ \(10^{-18}\) eV）。またグルーオンは<strong>閉じ込め</strong>で自由には飛べず、「質量ゼロ」はあくまでラグランジアン上の話 ── 束ねると質量スケールが湧きます。これは第4回「質量ギャップ」への布石です。図は \(V=\tfrac12 k\phi^2\) の模式図で、k を質量²に見立てています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>光子に質量項 \(m^2A_\mu A^\mu\) を書けない理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">この項がゲージ変換 \(A_\mu\to A_\mu+\partial_\mu\lambda\) で形を変えてしまい、ゲージ不変でないから。電磁気の理論はゲージ不変でなければならないので、質量項は許されず、光子は質量ゼロになる。</div></details>
+      </li>
+      <li>「質量² ＝ ポテンシャルの底の曲がり」を使って、ゴールドストン粒子が質量ゼロである理由を説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">対称性が自発的に破れると、ポテンシャルに"平らな方向"（回すだけでエネルギーが変わらない方向）ができる。平らな方向は曲率ゼロ、つまり質量²＝0。その方向の揺れがゴールドストン粒子で、だから厳密に質量ゼロ。</div></details>
+      </li>
+      <li>パイ中間子が他のハドロンより「軽い」のはなぜか、対称性の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">強い力のカイラル対称性が"近似的に"破れているため、パイ中間子はほぼゴールドストン粒子（擬ゴールドストン）。完全に平らなら質量ゼロ、少しだけ傾いているので少しだけ質量を持つ ── だから約140 MeV と、他のハドロン（〜1 GeV）より桁違いに軽い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>ゼロは、対称性が守る特別な状態</h2>
+    <p>質量ゼロは自明ではなく、3人の見張り番の帰結だった ── ①ゲージ対称性（光子・グルーオン）、②カイラル対称性（フェルミオン）、③大域対称性の破れ（ゴールドストン）。共通の正体は「質量²＝ポテンシャルの底の曲がり」で、対称性が作る<em>平らな方向</em>が質量ゼロを守っている。</p>
+    <p>第1回の「消せない床」に、二枚目のカードが加わりました ── <strong>ゼロの床は対称性が守り、有限の床は対称性が破れて湧く</strong>。では、その"破れ"はどう起き、床はどう湧くのか。次回、いよいよ質量の湧き方を見ます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第3回</span>
+    「質量は、二通りに湧く」。見張り番が外れると、床が湧く。電子は<strong>ヒッグス</strong>から直接もらい（\(m_f=y_f v/\sqrt2\)）、陽子は<strong>閉じ込め</strong>のエネルギーから生まれる（99%！）。同じ「質量」でも、湧き方はまったく違う。二つの起源を見分けます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第2回、物理好きの高校生・大学生向け読み物です。ゲージ不変性が質量項 \(m^2A_\mu A^\mu\) を禁じること（光子・グルーオンの masslessness）、カイラル対称性がフェルミオンの裸の質量を禁じ質量がヒッグス湯川結合 \(m_f=y_f v/\sqrt2\) から生じること、南部・ゴールドストンの定理（自発的に破れた連続大域対称性ごとに質量ゼロのボソンが現れる）、パイ中間子が擬南部・ゴールドストン粒子であること、質量² が真空でのポテンシャルの2階微分に対応することは、いずれも確立した物理です。図は \(V=\tfrac12 k\phi^2\) の模式図で、\(k\) を質量²に見立てています。光子質量の実験上限はおよそ \(10^{-18}\) eV、グルーオンは閉じ込めのため自由粒子として現れません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで谷の曲がり（＝質量²）を動かせます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var PHI=2.8, VMAX=6;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var k=parseFloat(sk.value); vk.textContent=k.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(phi){return pad+(phi+PHI)/(2*PHI)*(w-pad-14);}
+    function Y(V){return (h-pad)-V/VMAX*(h-pad-16);}
+    // grid
+    ctx.strokeStyle='#ece6f6';ctx.lineWidth=1;
+    for(var g=1;g<=5;g++){var yy=Y(g);ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#c3bad6';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6480';ctx.font='12px sans-serif';
+    ctx.fillText('場 φ →', w-90, h-pad+18);
+    ctx.save();ctx.translate(14,h/2+10);ctx.rotate(-Math.PI/2);ctx.fillText('エネルギー V', 0,0);ctx.restore();
+    // flat reference (k=0, massless) at V=0 baseline slightly raised
+    ctx.strokeStyle='#2f7d5a';ctx.setLineDash([5,4]);ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(w-8,Y(0));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a';ctx.font='11px sans-serif';ctx.fillText('平ら＝質量ゼロ（対称な方向）', pad+8, Y(0)-6);
+    // potential V=0.5 k phi^2
+    ctx.strokeStyle='#6b4fa0';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var phi=-PHI;phi<=PHI+1e-9;phi+=0.03){var V=0.5*k*phi*phi; if(V>VMAX)V=VMAX;
+      var x=X(phi),y=Y(V);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // ball at bottom (phi=0)
+    ctx.fillStyle='#6b4fa0';ctx.beginPath();ctx.arc(X(0),Y(0)-6,7,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // restoring-force arrows (only if k>0.03), at phi=+-1
+    if(k>0.03){
+      [-1,1].forEach(function(s){
+        var phi=s*1.0, V=0.5*k*phi*phi; if(V>VMAX)V=VMAX;
+        var x=X(phi),y=Y(V);
+        ctx.fillStyle='#9a7fc0';ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+        // arrow pointing toward center
+        ctx.strokeStyle='#8a6fb0';ctx.lineWidth=1.6;ctx.beginPath();
+        ctx.moveTo(x,y-12);ctx.lineTo(x-s*22,y-12);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x-s*22,y-12);ctx.lineTo(x-s*14,y-16);ctx.lineTo(x-s*14,y-8);ctx.closePath();ctx.fillStyle='#8a6fb0';ctx.fill();
+      });
+    }
+    // readout
+    var mass=Math.sqrt(k);
+    if(k<0.03){
+      rd.style.background='#e7f1ec';rd.style.color='#1f6b45';
+      rd.textContent='k≈0：谷が真っ平ら。復元力なし → 質量ゼロ。これが対称な"平らな方向"＝ゴールドストン粒子。';
+    } else {
+      rd.style.background='#eee9f6';rd.style.color='#5a3f8a';
+      rd.textContent='谷の曲がり k='+k.toFixed(2)+' → 質量 ∝ √k = '+mass.toFixed(2)+'。矢印は復元力（戻そうとする力）。急な谷ほど重い。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

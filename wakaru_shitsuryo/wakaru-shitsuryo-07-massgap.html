@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動く床と、動かない床 ── わかる質量 第7回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f2; --paper-edge:#e8ddc9;   /* 第7回：動かない床＝銅の紙 */
+    --side:#3f6660; --side-bg:#eef2ee;
+    --warn:#8a4b2f;
+    --calc:#6a4a1e; --calc-bg:#f4ecdb;
+    --rule:#dcd0bd; --hair:#c9bca4;
+    --acc:#7a5a2a;    /* 第7回アクセント＝銅 */
+    --grid:#e6dcc9;
+    --floor:#3a5a80;  /* IRフロア＝第6回の藍（動く床） */
+    --gap:#a83a22;    /* 質量ギャップ＝宇宙論・中性子回の赤錆（動かない床） */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6d8bd 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#23342f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2d5b8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f0ead9;color:#5f471c;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 段のはしご */
+  .ladder{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .ladder .row{display:flex;gap:14px;padding:12px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.6;}
+  .ladder .row:last-child{border-bottom:none;}
+  .ladder .row.hi{background:#f4eede;}
+  .ladder .m{flex-shrink:0;width:120px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;}
+  .ladder .txt{color:var(--ink-soft);}
+  .ladder .txt b{color:#2c2a24;font-weight:600;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f0e7d3;color:#5f471c;font-weight:700;}
+  table.verdict .v-ok{color:#2f7d5a;font-weight:700;}
+  table.verdict .v-bad{color:var(--gap);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#faf5ea;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3714;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf9,#f4ecdb);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f0e7d3;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3714;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.ladder,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">第 7 回 ／ 二つの床 ── そして、それが表現によらない一枚の地図だと分かる</span></div>
+  <p class="eyebrow">連続と離散は、同じ物理の二つの表現 ── 観測量はどちらでも一致しなければならない</p>
+  <h1>動く床と、動かない床
+    <span class="sub">第6回のIRフロアは \(1/t\) で下がる<em>動く床</em>。今回はもう一つの床、<strong>ヤン=ミルズの質量ギャップ</strong>＝時間に乗らない<em>動かない床</em>に会う。中性子がその不動を証言し ── そして最後に、この "二つの床" が<strong>連続でも離散でも同じ一枚の地図</strong>だと分かる。変わって見えたら、それは表現に溶ける言葉だ。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の次元的移行 Λ、第6回の \(m_{\min}=\hbar H/c^2\)、わかる宇宙論・番外④の等価原理</span>
+    <span>フック式：観測量か、表現に溶ける言葉か</span>
+  </div>
+
+  <p class="lead">第6回で、質量には<strong>下の壁</strong>があると分かりました ── \(m_{\min}\sim\hbar H/c^2\sim10^{-33}\) eV。しかもこの床は、宇宙が育って \(H\) が下がるほど、\(1/t\) で<em>下がっていく</em>。あなたが言ったとおり ── <strong>膨張しているから、時間とともに "見える最小質量" が決まり、下がる。</strong>今回はまず、この <em>動く床</em> のとなりに、まったく別の "最小の質量" ── <strong>ヤン=ミルズの質量ギャップ</strong>（第4回で出た、閉じ込めが生む \(\Lambda\)）を置きます。二つは同じ式から出るのに、片方は動き、片方は動かない。中性子がその違いを証言する。<em>── ただし、この "二つの床" という見方は、宇宙を<strong>連続</strong>という一つの表現で描いた話。</em>最後に、離散という別の表現に移して確かめます ── そして、<strong>観測にかかるものは何一つ変わらない</strong>ことを見ます。変わって見えたら、それは表現に溶ける言葉だ、と。</p>
+
+  <h2><span class="n">01</span>二つの「最小の質量」── 同じ一本の式、逆の端</h2>
+
+  <p>質量 \(m\) の粒子には、量子力学的な広がりの目安<strong>コンプトン波長</strong> \(\lambda_C=\hbar/(mc)\) があります。軽いほど波長は長い。この一本の式に、二つの<em>長さ</em>を入れてみます。</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ式に、二つの長さを入れる ── \(m=\hbar/(c\,\lambda_C)\)</div>
+    <p style="margin:6px 0 0;">
+    ① \(\lambda_C=\) <span style="color:var(--gap);font-weight:700;">閉じ込めの長さ（\(\approx1\) fm、陽子サイズ）</span> → \(m\approx\) <strong>0.2 GeV</strong>（質量ギャップ）<br>
+    ② \(\lambda_C=\) <span style="color:var(--floor);font-weight:700;">宇宙の地平線（\(c\,t\approx138\) 億光年）</span> → \(m\approx\) <strong>\(10^{-33}\) eV</strong>（IRフロア）</p>
+  </div>
+
+  <p>数字で確かめましょう。\(\hbar c=197\) MeV·fm という便利な換算を使うと、\(\lambda_C=1\) fm に対応する質量は \(mc^2=\hbar c/\lambda_C=197\ \text{MeV·fm}/1\ \text{fm}\approx200\) MeV。まさに<strong>クォークを閉じ込める強い力のスケール \(\Lambda_{\rm QCD}\)</strong> です。いっぽう \(\lambda_C=c\,t\) を入れると、第6回の \(m_{\min}=\hbar/(c^2t)=\hbar H/c^2\approx1.4\times10^{-33}\) eV に戻る。</p>
+
+  <p>この二つは、<strong>41桁</strong>離れています。同じ「コンプトン波長＝長さ」という一本の式なのに、入れる長さが <em>内側（1 fm）</em> か <em>外側（宇宙の端）</em> かで、これほど違う。第6回§05で見た「最小の質量は、いつも最大を指す」の構図が、ここでも効いている ── ギャップは<strong>内側の閉じ込め長</strong>を、IRフロアは<strong>外側の地平線</strong>を指しているのです。</p>
+
+  <h2><span class="n">02</span>時計は \(t\) ではなく \(H\) ── 無次元 \(N\) で読む</h2>
+
+  <p>ここで、姉妹シリーズの掟を思い出します（わかる宇宙論・番外④）── <strong>「光速が遅くなる／\(c\cdot t=\)一定」は座標の言い換えであって、物理は無次元量で読む。</strong>だから「見えるか凍るか」も、次元のついた \(m\) や \(t\) ではなく、<em>無次元の比</em>で判定しなければなりません。その比が、これです。</p>
+
+  <div class="keybox">
+    <div class="lbl">見える／凍るを決める無次元量</div>
+    $$N\equiv\frac{mc^2/\hbar}{H}=\frac{\text{質量の振動数}}{\text{ハッブル率}}$$
+    <p style="margin:10px 0 0;">\(N>1\)：宇宙が変わる前に<strong>振動できる＝ゼロと区別して見える</strong>。<br>\(N<1\)：ハッブル摩擦に押さえられて<strong>凍る＝ゼロと区別できない</strong>。<br>境目 \(N=1\) が、まさに \(m_{\min}=\hbar H/c^2\)。</p>
+  </div>
+
+  <p>これは第6回の運動方程式 \(\ddot\phi+3H\dot\phi+(mc^2/\hbar)^2\phi=0\) そのもの ── 復元力の速さ \(mc^2/\hbar\) が、ハッブル摩擦 \(H\) に勝てるかどうか。そして \(N\) は<strong>無次元</strong>だから、\(c\) が動くゲージで読もうが空間が伸びると読もうが、値は変わらない。第6回§06の「単位の罠」を、原理から回避できる。<em>時計として \(t\) を素朴に使うと罠にはまる。\(H\) との比 \(N\) で読むのが正しい。</em></p>
+
+  <div class="aside">
+    <span class="tag">なぜ \(t\) より \(H\) なのか</span>
+    わかる宇宙論・番外①「ハッブル定数は定数じゃない」で見たとおり、\(H=\dot a/a\) は時間とともに下がる量（\(H\approx1/t\)）。そして第6回のハッブル摩擦にじかに現れるのも \(t\) ではなく \(H\) です。だから "見える最小質量" の自然な形は \(m_{\min}=\hbar H/c^2\)。\(H_0=67.4\) km/s/Mpc \(=2.18\times10^{-18}\) s\(^{-1}\) を入れると \(1.44\times10^{-33}\) eV ── 第6回の値にぴたり一致します。
+  </div>
+
+  <h2><span class="n">03</span>動く床 ── IRフロアは \(H\) とともに下がる</h2>
+
+  <p>\(N=1\) の線、すなわち \(m_{\min}=\hbar H/c^2\) は、\(H\) が下がれば下がります。宇宙が若いほど \(H\) は大きく（\(H\approx1/t\)）、床は高かった。数字で並べてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 床の高さの移り変わり</span>
+    <p class="lbl">\(m_{\min}=\hbar H/c^2\)、\(H\approx1/t\) を各時代に入れる</p>
+    $$\text{BBN}\ (t\approx100\,\text{s}):\quad m_{\min}\approx\hbar/t\approx6.6\times10^{-18}\ \text{eV}$$
+    $$\text{今}\ (t\approx4.4\times10^{17}\,\text{s}):\quad m_{\min}\approx1.5\times10^{-33}\ \text{eV}$$
+    <p style="margin-bottom:14px;">BBN の頃の床は、今より<strong>15桁も高かった</strong>。宇宙が育つにつれ、床はどんどん下がり、より軽い質量まで "見える" ようになってきた ── <em>膨張は低質量の味方</em>（第6回§06）。これが <strong>動く床</strong> です。</p>
+  </div>
+
+  <h2><span class="n">04</span>動かない床 ── ヤン=ミルズの質量ギャップ</h2>
+
+  <p>では、もう一つの床 ── 質量ギャップは、時間とともにどう動くのか。答えは<strong>動かない</strong>。理由は第4回で見た<strong>次元的移行</strong>にあります。強い力の結合は距離とともに走り、古典的には目盛りのない（スケール不変な）理論から、量子効果で一つの尺度 \(\Lambda\) が湧く。</p>
+
+  <div class="keybox">
+    <div class="lbl">ギャップの出どころは次元的移行（第4回）── 宇宙論は入らない</div>
+    $$\Lambda=\mu\,\exp\!\Big(-\frac{1}{2b_0\,g^2(\mu)}\Big)\qquad\Rightarrow\qquad \Delta\sim\Lambda\approx0.2\ \text{GeV}$$
+  </div>
+
+  <p>この式に、宇宙年齢 \(t\) も膨張率 \(H\) も<strong>一切入っていません</strong>。ギャップは、無限に広い平らな時空（数学者が問う土俵）での、理論そのものの内在的な性質。だから宇宙が膨張しても、\(\Lambda\) は動かない。無次元 \(N\) で見ると、これは一目瞭然です。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── ギャップの \(N\) は、いつも桁外れに大きい</span>
+    <p class="lbl">\(N_{\rm gap}=(\Delta/\hbar)/H\)、\(\Delta=0.2\) GeV → \(\Delta/\hbar=3.0\times10^{23}\) s\(^{-1}\)</p>
+    $$\text{今}:\ N_{\rm gap}=\frac{3.0\times10^{23}}{2.2\times10^{-18}}\approx1.4\times10^{41}$$
+    <p style="margin-bottom:14px;">今の \(N_{\rm gap}\approx10^{41}\) は、\(\S01\) で出た「41桁の比」と<strong>同じ数</strong>です（\(N_{\rm gap}=\Delta/m_{\min}\) だから当然）。BBN の頃でさえ \(N_{\rm gap}\approx10^{25}\)。ギャップは、宇宙のどの時代でも床の遥か上にいた ── <em>一度も床に近づいたことがない。</em></p>
+  </div>
+
+  <p>ギャップが床に触れる（\(N_{\rm gap}=1\)）のは、\(H=\Delta/\hbar\)、つまり \(t=\hbar/\Delta\approx3\times10^{-24}\) 秒のとき。これは<strong>宇宙全体がわずか 1 fm だった頃</strong> ── QCD相転移（\(\sim10^{-5}\) 秒）よりさらに前、BBN（100秒）の遥か手前で、私たちが観測できる領域の完全に外側です。だから<em>観測できる宇宙の全歴史を通じて、ギャップは動かない床であり続けた</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：横軸＝宇宙の年齢 \(t\)（対数）、縦軸＝質量（対数）。<span style="color:var(--floor);font-weight:700;">藍＝IRフロア \(\hbar/(c^2t)\)</span> は \(1/t\) で下がる<em>動く床</em>。<span style="color:var(--gap);font-weight:700;">赤錆＝質量ギャップ \(\Delta\)</span> は水平な<em>動かない床</em>。スライダーで "今" を動かすと、下の床だけが下がる。二つが出会うのは宇宙が 1 fm の頃だけ</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>いまの宇宙の年齢 \(t\)（\(\log_{10}\) 秒。100秒〜今）<span class="val" id="vt">17.6</span>
+        <input type="range" id="st" min="2" max="17.64" step="0.01" value="17.64">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--floor);"></i>IRフロア＝動く床（\(H\) とともに \(1/t\) で降下）</span>
+      <span><i class="swatch" style="background:var(--gap);"></i>質量ギャップ＝動かない床（\(\Lambda\)）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>中性子が「動かなさ」を証言する ── 二つの第7回が握手する</h2>
+
+  <p>「ギャップは動かない」── これは本当に、観測で確かめられるのでしょうか。確かめられます。しかも、姉妹シリーズ「わかる宇宙論」の<strong>第7回</strong>が、すでにやっている。同じ番号どうしの握手です。</p>
+
+  <p>質量ギャップのスケール \(\Lambda_{\rm QCD}\) は、陽子や中性子の質量、そして中性子崩壊の \(Q\) 値（中性子と陽子＋電子の質量エネルギー差）を決めています。もしギャップが宇宙とともに \(1/t\) で下がっていたなら、\(\Lambda_{\rm QCD}\) も \(Q\) も、BBN の頃と今とで桁ちがいに変わっていたはず。ところが ──</p>
+
+  <div class="keybox">
+    <div class="lbl">わかる宇宙論・第7回「中性子は、正直な証人」より</div>
+    <p style="margin:6px 0 0;">138億年前のヘリウム生成量は、BBN 期の \(Q\) が今と <strong>\(0.34\%\) 以内</strong>で一致していたことを要求する（崩壊率の5乗の増幅で、窓はこれほど狭い）。</p>
+  </div>
+
+  <p>つまり、\(\Lambda_{\rm QCD}\)（＝質量ギャップのスケール）は、BBN 以降の138億年で<strong>0.34%も動いていない</strong>。もし \(1/t\) で下がっていたら桁で変化して、宇宙のヘリウムは今の量で残らなかった ── <strong>中性子とヘリウムが、それを棄却している</strong>。中性子崩壊は、質量ギャップが宇宙時間に乗らない<em>内在的な床</em>であることの、実データによる証言なのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>見方を変える ── 連続と離散は、同じ物理の二つの表現</h2>
+
+  <p>ここまでは、宇宙を<em>連続</em>という一つの表現で描いてきました。ここで、このシリーズの土台（わかる宇宙論・番外④）を思い出します ── <strong>「空間が伸びる」と「光速が遅くなる」が等価だったように、連続と離散も、同じ物理の二つの表現にすぎない。</strong>だとしたら、観測にかかるもの（観測量）は、どちらの表現で計算しても<strong>ぴたりと一致しなければならない</strong>。片方だけで結論が変わったら、それは物理ではなく、表現に溶ける言葉です。</p>
+
+  <p>いちばん確かな例が、質量ギャップそのものです。ヤン=ミルズのギャップ \(\Delta\) を、空間を<strong>格子（離散）</strong>に刻んで計算し、格子間隔をゼロに送る（連続極限）と ── <em>連続表現で計算した \(\Delta\) と同じ値</em>になる。離散は<strong>正則化＝計算の足場（表現）</strong>であって、\(\Delta\) は表現によらない不変量。<strong>だからこそ格子QCDは信用される</strong>（本シリーズ番外④「4つの力を、一つの離散式で」で見る、ウィルソンの格子ゲージ理論）。離散か連続かは、答えを変えません。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの掟を、質量ギャップに適用する</div>
+    <p style="margin:6px 0 0;">連続表現と離散表現は、同じ物理の言い換え。<strong>観測量は両表現で一致する。</strong>変わって見えたら、それは表現に溶ける言葉 ── 物理ではない。</p>
+  </div>
+
+  <h2><span class="n">07</span>表現によらない量と、表現に溶ける言葉</h2>
+
+  <p>この一本の線で、\(\S01\)–\(\S05\) に出たものを仕分けます。まず、<strong>連続でも離散でも必ず同じ</strong>になるもの ── これが物理です。</p>
+
+  <table class="verdict">
+    <tr><th>表現によらない量（＝物理）</th><th>なぜ表現によらないか</th></tr>
+    <tr><td><strong>閾値 \(\hbar H/c^2(t)\)</strong>：これ以下の質量は \(N=(mc^2/\hbar)/H<1\) で観測に効かない</td><td>無次元 \(N\)（宇宙年齢に1回振動できるか）は表現不変。連続でも離散でも同じ</td></tr>
+    <tr><td><strong>YM質量ギャップ \(\Delta\sim\Lambda\)</strong></td><td>格子（離散）→連続極限で、連続表現と同じ値。だから格子QCDが成り立つ</td></tr>
+    <tr><td><strong>\(\Delta\) は \(L\to\infty\) で残り、モード間隔 \(\hbar c/L\) は消える</strong></td><td>極限のとり方についての言明で、表現によらない（＝動く床と動かない床の差の正体）</td></tr>
+    <tr><td><strong>閾値の \(1/t\) 依存</strong></td><td>\(N\) の中身がそう振る舞う。膨張で下がる、は両表現で同じ</td></tr>
+  </table>
+
+  <p>いっぽう、連続と離散で<em>言い方だけ</em>違うもの ── これは物理ではなく、表現に溶けます。</p>
+
+  <table class="verdict">
+    <tr><th>溶ける問い</th><th>連続表現の言い方</th><th>離散表現の言い方</th></tr>
+    <tr><td>閾値の下は？</td><td>連続だが凍って不活性</td><td>段が無い</td></tr>
+    <tr><td>IRフロアの身分は？</td><td>操作的な限界</td><td>実在するギャップ</td></tr>
+    <tr><td>時空そのものは？</td><td>連続体</td><td>格子</td></tr>
+  </table>
+
+  <p>この三つは、<strong>どんな観測も区別できません</strong> ── 閾値とは、その分解能そのものだからです。閾値の下に「凍った連続スペクトル」があると言おうが「段が無い」と言おうが、観測結果は寸分違わない。<em>だから「離散にすると床が"実在するギャップ"に変わる」という言い方は、余計です</em> ── 変わったのは言葉だけで、物理（＝閾値の下は観測に効かない）は両表現で同じ。表現の違いを物理の違いにすり替えるのは、本シリーズ番外①（惜しい説の診断）が戒めた、まさにあの罠なのです。</p>
+
+  <div class="aside">
+    <span class="tag">唯一、離散が"物理"になる場所（技術補遺⑮の核心）</span>
+    離散が表現でなく物理になるのは、<strong>「領域は厳密に有限整数個の状態を含む」</strong>が<em>違う観測結果</em>（ポアンカレ再帰・ユニタリ性・\(S=\log(\text{整数})\)）を出すときだけ。でもそれは閾値や \(\Delta\) の<strong>"値"には効きません</strong> ── 値は表現不変。終章「宇宙は離散である」も、"表現が離散"ではなく"有限整数個"という物理命題として賭けている。<strong>表現の離散と、物理の有限性は、別物</strong>です。
+  </div>
+
+  <h2><span class="n">08</span>種明かし ── 「一本のはしご」は、表現によらない地図</h2>
+
+  <p>だから「一本のはしご」の正しい意味は、こうです ── <strong>表現によらない目印を、対数で並べた一枚の地図。</strong>連続で描こうが離散で描こうが、目印は同じ場所に立ちます。</p>
+
+  <div class="ladder">
+    <div class="row"><span class="m">~10²⁸ eV</span><span class="txt"><b>頂上（UVカットオフ）</b>：プランクエネルギー \(E_{\rm Pl}\)</span></div>
+    <div class="row"><span class="m" style="color:var(--gap);">~0.2 GeV</span><span class="txt"><b>YM質量ギャップ Δ</b>：動かない中段。\(L\to\infty\) で残る動力学的な不変量（次元的移行 \(\Lambda\)、第4回）</span></div>
+    <div class="row"><span class="m">~4 meV</span><span class="txt"><b>幾何中心</b> \(\sqrt{E_{\rm IR}\,E_{\rm Pl}}\)：はしごの真ん中の段 ── <b>最終回の meV</b></span></div>
+    <div class="row hi"><span class="m" style="color:var(--floor);">~10⁻³³ eV</span><span class="txt"><b>閾値（動く下端）</b>：\(\hbar H_0/c^2\)。\(t\) が動かす。これ以下は観測に効かない</span></div>
+  </div>
+
+  <p>そして、この地図の上で <strong>\(t\) が動かすのは下端（閾値）だけ、YMギャップ \(\Delta\) は不動</strong>（中性子＋BBN が \(0.34\%\) で証言）── この結論は、<em>連続表現でも離散表現でも、まったく同一</em>です。二つの床の違い（動く／動かない）は、"連続 vs 離散" から来るのではなく、"\(L\to\infty\) で消える下端か、残る中段か"という<strong>表現不変な区別</strong>から来ていた。ここを取り違えないことが、整理の核心です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この回の芯は「連続でも離散でも同じ結論になる」こと ── だから安心して、わかりやすい表現で語ってよい（わかる宇宙論・番外④が保証する"見方の自由"）。ただし、地図が統一するのは目印の<strong>"場所"</strong>であって<strong>"出自"</strong>ではありません。下端（閾値・IR・数える極限で消える）と中段（ギャップ・UV・動力学で残る）は、地図上で並んでも<em>別の物理</em>。「どちらも離散/有限が生むギャップ」と一括りにするのは、避けるべき混同です。</p>
+    <p style="margin-bottom:0;">残る但し書き ── ヤン=ミルズ質量ギャップの数学的存在証明は、クレイ・ミレニアム懸賞問題として未解決（2025年時点）。それは「格子でギャップが見える」ことではなく「連続極限でその不変量 \(\Delta>0\) が残る」ことの証明で、まさに残った難所。そして「有限整数個の状態」（技術補遺⑮）が本当かどうかは未証明の賭けで、たとえ本当でも、変えるのは再帰・ユニタリ性などの別の観測量であって、閾値や \(\Delta\) の値ではありません。終章の掟「チャットで"解けた"が出たら疑う」を、ここでも守ります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の内容で解けます）</div>
+    <ol>
+      <li>\(\hbar c=197\) MeV·fm を使って、コンプトン波長 \(\lambda_C=1\) fm に対応する質量エネルギー \(mc^2\) を求めよ。
+        <details><summary>答えを見る</summary><div class="ans">\(mc^2=\hbar c/\lambda_C=197\ \text{MeV·fm}/1\ \text{fm}\approx200\) MeV。まさに \(\Lambda_{\rm QCD}\)（強い力の閉じ込めスケール）の桁。ギャップのコンプトン波長は陽子サイズ 1 fm。</div></details>
+      </li>
+      <li>「空間を格子（離散）で計算しても連続で計算しても、YMギャップ \(\Delta\) は同じ値になる」── これはこのシリーズのどの原理の帰結か。
+        <details><summary>答えを見る</summary><div class="ans">わかる宇宙論・番外④の等価原理（連続と離散は表現にすぎず、観測量は一致する）。格子QCDが信用される理由でもある ── \(\Delta\) は表現不変な不変量で、離散は連続極限を取るための足場（正則化）にすぎない。</div></details>
+      </li>
+      <li>「離散にすると IRフロアが"実在するギャップ"になる」は、物理的な主張か、それとも表現に溶ける言葉か。理由も。
+        <details><summary>答えを見る</summary><div class="ans">表現に溶ける言葉。閾値の下に「凍った連続スペクトル」があるか「段が無い」かを区別できる観測は存在しない（閾値＝分解能そのもの）。観測量（＝閾値以下は効かない、閾値は \(1/t\) で下がる）は両表現で同じ。だから「実在するギャップか操作的限界か」は物理ではなく言い方の違い。</div></details>
+      </li>
+      <li>「質量ギャップの値は宇宙年齢 \(t\) が決めている」を、中性子の観測1つで棄却せよ。
+        <details><summary>答えを見る</summary><div class="ans">もし値が \(t\) で決まるなら \(\Lambda_{\rm QCD}\)（＝\(Q\) 値のスケール）は \(1/t\) で変化し、BBN→今で桁で動く。だが中性子崩壊率の5乗増幅を通じ、ヘリウム量は BBN 期の \(Q\) が今と 0.34% 以内で一致することを要求する。桁の変化は観測と両立せず、棄却。\(\Delta\) の値は表現にも \(t\) にもよらない不変量。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第7回まとめ</span>連続でも離散でも、同じ一枚の地図</h2>
+    <p>同じ「コンプトン波長＝ある長さ」という一本の式が、二つの "最小の質量" を生む。<span style="color:var(--gap);">内側の1 fm を入れれば質量ギャップ \(\approx0.2\) GeV</span>、<span style="color:var(--floor);">外側の地平線 \(c\,t\) を入れれば IRフロア \(\approx10^{-33}\) eV</span> ── 41桁離れた二つの床。IRフロアは \(H\) とともに \(1/t\) で下がる<strong>動く床</strong>、質量ギャップは次元的移行 \(\Lambda\) が決める<strong>動かない床</strong>で、中性子＋BBN がその不動を \(0.34\%\) で証言する。</p>
+    <p>そして肝心の一点 ── この結論は、宇宙を<strong>連続で描こうが離散で描こうが、まったく同じ</strong>。連続と離散は同じ物理の二つの表現で、観測量は一致しなければならない（わかる宇宙論・番外④）。\(\Delta\) は格子→連続極限で不変、閾値・\(\Delta\)・meV・プランクは表現によらない目印。<em>「離散にすると床が実在ギャップに変わる」は、表現に溶ける言葉にすぎなかった。</em>地図が統一するのは目印の場所であって出自ではなく、下端（IR・数える）と中段（動力学）は別物 ── 過大申告はしません。クレイの連続極限は開いたまま、「有限整数個」は別の観測量に効く賭けです。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告</span>
+    表現としての離散を、四つの力すべてに広げると何が見えるか ── 本シリーズ番外④「4つの力を、一つの離散式で」（格子ゲージ理論）。そして下端（\(10^{-33}\) eV）と頂上（プランク）が幾何中心 \(\sqrt{E_{\rm IR}E_{\rm Pl}}\approx\) meV で握手する最終回、さらに「宇宙は離散である」を"有限整数個"という物理命題として名指しで賭ける終章へ。動く床と動かない床は、その一枚の地図の上で、表現によらず並びます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ第7回、物理好きの高校生・大学生向け読み物です。コンプトン波長 \(\lambda_C=\hbar/(mc)\)、\(\hbar c\approx197\) MeV·fm、強い相互作用の閉じ込めスケール \(\Lambda_{\rm QCD}\)（スキーム・\(N_f\) 依存：\(\Lambda^{(5)}_{\overline{\rm MS}}\approx0.21\) GeV、\(\Lambda^{(3)}\approx0.34\) GeV、FLAG 2024）、純ゲージ \(SU(3)\) の最軽 \(0^{++}\) グルーボール質量（格子で \(\approx1.5\)–\(1.7\) GeV、Morningstar–Peardon 1999 ほか）、次元的移行 \(\Lambda=\mu\exp(-1/2b_0g^2)\)、宇宙論的IRスケール \(m_{\min}=\hbar H_0/c^2\approx1.4\times10^{-33}\) eV（\(H_0=67.4\) km/s/Mpc、Planck 2018）は確立した物理です。連続表現と離散（格子）表現は同じ物理の再パラメータ化であり、観測量（質量ギャップ \(\Delta\)、閾値 \(\hbar H/c^2\)、その \(1/t\) 依存）は両表現で一致します ── これは局所光速・\(\alpha\) 不変と同じ「見方の自由」（わかる宇宙論・番外④）です。「閾値の下が連続か離散か」「時空が連続体か格子か」は観測で区別できず、表現に溶けます。物理として離散が効くのは「領域が有限整数個の状態を含む」（技術補遺⑮）が再帰・ユニタリ性などの別の観測量を変えるときで、閾値や \(\Delta\) の値は変えません。ヤン=ミルズ質量ギャップの数学的存在証明（連続極限で \(\Delta>0\)）はクレイ・ミレニアム懸賞問題として未解決です（2025年時点）。BBN の \(Q\) 値恒常性 \(\lesssim0.34\%\) は姉妹シリーズ第7回の概算窓に基づきます。無次元 \(N=(mc^2/\hbar)/H\) は凍結/振動の境目で、\(c\cdot t=\)一定 は座標・単位の言い換えです。図は対数軸での模式で、\(H\approx1/t\) を用いた概算です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで "今" の宇宙年齢を動かすと、藍の床（IRフロア）だけが下がり、赤錆の床（質量ギャップ）は動かないのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  // 定数（eV, s）
+  var hbar=6.582119569e-16;       // eV*s
+  var Delta=0.2e9;                 // 質量ギャップ eV (0.2 GeV)
+  var logDelta=Math.log(Delta)/Math.LN10;         // ~8.30
+  var logHbar=Math.log(hbar)/Math.LN10;           // ~ -15.18  (E_floor = hbar/t)
+  // 軸レンジ（log10）
+  var TX0=-25, TX1=18;             // t: 1e-25 s 〜 1e18 s
+  var MY0=-35, MY1=10;             // m: 1e-35 eV 〜 1e10 eV
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=52, padB=40, padT=14, padR=12;
+    var logt=parseFloat(st.value); vt.textContent=logt.toFixed(2);
+    function X(lx){return padL+(lx-TX0)/(TX1-TX0)*(w-padL-padR);}
+    function Y(ly){return (h-padB)-(ly-MY0)/(MY1-MY0)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 見える領域（IRフロアより上）を淡く塗る：フロア線 = logHbar - lx
+    ctx.fillStyle='rgba(58,90,128,0.06)';
+    ctx.beginPath();
+    ctx.moveTo(X(TX0),Y(logHbar-TX0)); ctx.lineTo(X(TX1),Y(logHbar-TX1));
+    ctx.lineTo(X(TX1),Y(MY1)); ctx.lineTo(X(TX0),Y(MY1)); ctx.closePath(); ctx.fill();
+    // グリッド（縦：t の10のべき）
+    ctx.font='9.5px sans-serif';
+    for(var lx=-24; lx<=18; lx+=6){
+      var x=X(lx);
+      ctx.strokeStyle='#efe6d3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      ctx.fillStyle='#b3a892';ctx.fillText('10'+sup(lx), x-10, h-padB+13);
+    }
+    // グリッド（横：m の10のべき）
+    for(var ly=-30; ly<=10; ly+=10){
+      var y=Y(ly);
+      ctx.strokeStyle='#efe6d3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#b3a892';ctx.fillText('10'+sup(ly), 6, y+3);
+    }
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#6b6152';ctx.font='11px sans-serif';
+    ctx.fillText('宇宙の年齢 t（秒）→', w-150, h-padB+27);
+    ctx.save();ctx.translate(14,padT+96);ctx.rotate(-Math.PI/2);ctx.fillText('質量 m（eV）', 0,0);ctx.restore();
+    // 質量ギャップ＝水平線（赤錆）
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.8;ctx.beginPath();
+    ctx.moveTo(X(TX0),Y(logDelta));ctx.lineTo(X(TX1),Y(logDelta));ctx.stroke();
+    ctx.fillStyle='#a83a22';ctx.font='11px sans-serif';
+    ctx.fillText('質量ギャップ Δ ~ 0.2 GeV（動かない）', X(TX0)+8, Y(logDelta)-7);
+    // IRフロア＝斜め線（藍）: m = hbar/t → ly = logHbar - lx
+    ctx.strokeStyle='#3a5a80';ctx.lineWidth=2.8;ctx.beginPath();
+    ctx.moveTo(X(TX0),Y(logHbar-TX0));ctx.lineTo(X(TX1),Y(logHbar-TX1));ctx.stroke();
+    ctx.fillStyle='#3a5a80';
+    ctx.fillText('IRフロア ℏ/(c²t)（1/t で下がる）', X(TX1)-210, Y(logHbar-TX1)+16);
+    // 交点（宇宙が1fm, N=1）: logHbar - lx = logDelta → lx = logHbar - logDelta
+    var lxCross=logHbar-logDelta;
+    var cx=X(lxCross), cy=Y(logDelta);
+    ctx.fillStyle='#8a5a2e';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();
+    ctx.font='10px sans-serif';ctx.fillStyle='#8a5a2e';
+    ctx.fillText('宇宙が1 fm（N=1）', cx+7, cy+14);
+    // 現在の t の縦線
+    var mx=X(logt);
+    ctx.strokeStyle='#9c8f78';ctx.setLineDash([4,3]);ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    // 交点マーカー（floor と gap）
+    var lyFloor=logHbar-logt;
+    ctx.fillStyle='#3a5a80';ctx.beginPath();ctx.arc(mx,Y(lyFloor),6,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#a83a22';ctx.beginPath();ctx.arc(mx,Y(logDelta),6,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    var mFloor=Math.pow(10,lyFloor);
+    rd.innerHTML='t = 10<sup>'+logt.toFixed(1)+'</sup> 秒 ('+tLabel(logt)+') → IRフロア m_min ≈ '+fmt(mFloor)+' eV。'
+      +'質量ギャップとの隔たり N_gap = Δ/m_min ≈ 10<sup>'+(logDelta-lyFloor).toFixed(0)+'</sup> 倍。'
+      +'<b>床（藍）は下がり、ギャップ（赤錆）は動かない ── 連続でも離散でも同じ。</b>';
+  }
+  function sup(n){ // 上付き数字（負号対応）
+    var s=(n<0?'⁻':'')+Math.abs(n).toString();
+    var map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+    return s.replace(/[0-9]/g,function(c){return map[c];});
+  }
+  function fmt(x){var e=Math.floor(Math.log(x)/Math.LN10);var m=x/Math.pow(10,e);return m.toFixed(1)+'×10^'+e;}
+  function tLabel(lx){
+    if(lx<3) return 'BBN の頃';
+    if(lx<8) return '初期宇宙';
+    if(lx<15) return '銀河ができる頃';
+    return '今';
+  }
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

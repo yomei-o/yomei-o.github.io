@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>式の地図 ── わかる質量／わかる宇宙論の旅で出た本物の式</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#faf9f5; --paper-edge:#e2ddd0;
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --acc:#2f3550;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.85;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:800px;margin:32px auto;background:var(--paper);
+    padding:58px 60px 84px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  h1{font-size:42px;line-height:1.22;margin:8px 0 8px;font-weight:600;letter-spacing:.04em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .backbone{margin:24px 0 34px;padding:18px 24px;border:1.5px solid var(--ink);border-radius:3px;background:#fffdf8;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#2a2f45;}
+  .backbone b{color:#000;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+
+  .eqcard{display:flex;gap:0;align-items:stretch;background:#fff;border:1px solid var(--rule);
+    border-radius:6px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+  .eqcard .spine{width:8px;flex-shrink:0;}
+  .eqcard .body{padding:14px 22px 10px;flex:1;min-width:0;}
+  .eqcard .top{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:2px;}
+  .eqcard .ep{font-size:11px;letter-spacing:.14em;font-weight:700;}
+  .eqcard .role{font-size:13px;color:var(--ink-soft);}
+  .eqcard .eq{text-align:center;margin:4px 0 2px;}
+
+  .keyeq{margin:30px 0;padding:26px 30px;border:2px solid var(--acc);border-radius:6px;
+    background:linear-gradient(180deg,#fdfdff,#eef0f6);text-align:center;}
+  .keyeq .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;}
+  .keyeq .note{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;color:var(--ink-soft);margin-top:10px;line-height:1.7;}
+
+  .divlabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.24em;color:var(--ink-soft);font-weight:700;
+    margin:30px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--rule);}
+
+  .caveat{margin:30px 0 8px;background:#f6ede4;border-left:3px solid #8a4b2f;padding:18px 24px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.82;color:#3f2a1c;}
+  .caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;color:#8a4b2f;}
+
+  .fin{margin:24px 0 0;padding:20px 24px;background:#eef0f6;border-radius:3px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:14mm 14mm;}
+    body{background:#fff;font-size:10.5pt;line-height:1.6;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:26pt;} h1 .sub{font-size:11.5pt;}
+    .eqcard,.keyeq,.caveat,.fin,.backbone{break-inside:avoid;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:36px 16px 54px;margin:0;} h1{font-size:30px;} body{font-size:16px;} }
+  .hint{max-width:800px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量 ＆ わかる宇宙論</span><span class="ep">式の地図 ／ 旅で出た "本物の式" 一枚まとめ</span></div>
+  <h1>式の地図
+    <span class="sub">「最後にすごい式が欲しかった」への、いちばん正直な答え。<br>万物の一本は無い（それは疑うべき）。でも、数合わせを捨てて得た本物の式が、これだけある。</span>
+  </h1>
+
+  <div class="backbone">
+    <b>背骨：</b>わかりやすさは投影、物理は無次元の不変な構造、\(c\cdot t=\text{一定}\) は効く土俵でだけ使う言い換え、仮説は名指ししてテストに晒す、そして "解けた" は疑う。
+  </div>
+
+  <div class="divlabel">出発 ── レンズ（座標の言い換え）</div>
+
+  <div class="eqcard"><div class="spine" style="background:#4a7a86;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#4a7a86;">出発点</span><span class="role">共形時間ゲージ。物理を変えず、見方を変える言い換え（効く土俵でだけ）</span></div>
+    <div class="eq">$$c\cdot t=\text{const}$$</div>
+  </div></div>
+
+  <div class="divlabel">質量とは何か</div>
+
+  <div class="eqcard"><div class="spine" style="background:#2e6f8e;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#2e6f8e;">第1回</span><span class="role">質量＝運動量を抜いても残るエネルギーの "床"。光は床ゼロで止まれない</span></div>
+    <div class="eq">$$E^2=(mc^2)^2+(pc)^2$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#6b4fa0;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#6b4fa0;">第2回</span><span class="role">質量²＝ポテンシャルの底の曲がり。平らな方向（対称性）＝質量ゼロ</span></div>
+    <div class="eq">$$m^2\ \propto\ \left.\frac{d^2V}{d\phi^2}\right|_{\text{谷底}}$$</div>
+  </div></div>
+
+  <div class="divlabel">質量は、どう湧くか</div>
+
+  <div class="eqcard"><div class="spine" style="background:#b0641a;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#b0641a;">第3回</span><span class="role">ヒッグス：真空に満ちた場との結合。電子の質量はこれ（陽子の99%は別＝閉じ込め）</span></div>
+    <div class="eq">$$m_f=\frac{y_f\,v}{\sqrt2}$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#2f7d5a;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#2f7d5a;">第4回</span><span class="role">次元的移行：無次元の走りから、次元を持つスケールが湧く。質量ギャップの正体（丸め誤差ではない）</span></div>
+    <div class="eq">$$\Lambda = E\,\exp\!\left(-\frac{1}{b\,\alpha}\right)$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#3a4a8f;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#3a4a8f;">番外④</span><span class="role">4つの力を一つの離散式で。群 G を差し替えるだけ（SU(3)/SU(2)/U(1)）</span></div>
+    <div class="eq">$$S=\beta\sum_{\square}\Big[1-\tfrac1N\mathrm{Re}\,\mathrm{Tr}\,U_\square\Big]$$</div>
+  </div></div>
+
+  <div class="divlabel">最小の質量 ── 最小はつねに最大を指す</div>
+
+  <div class="eqcard"><div class="spine" style="background:#a03a5f;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#a03a5f;">第5回・UV</span><span class="role">シーソー：ニュートリノの軽さが、最大スケール（大統一 M）を指す</span></div>
+    <div class="eq">$$m_\nu\ \sim\ \frac{v^2}{M}$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#3a5a80;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#3a5a80;">第6回・IR</span><span class="role">宇宙の大きさが決める最小質量の床。\(R_h=ct\) が入り、\(1/t\) で下がる</span></div>
+    <div class="eq">$$m_{\min}\ \sim\ \frac{\hbar H_0}{c^2}\ =\ \frac{\hbar}{c^2 t}$$</div>
+  </div></div>
+
+  <div class="divlabel">重力・ダークエネルギー（補遺）</div>
+
+  <div class="eqcard"><div class="spine" style="background:#4b3fa0;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#4b3fa0;">最終回・CKN</span><span class="role">重力（ブラックホール＝情報の上限）が、UV と IR を縛る。有限情報が宇宙定数を meV へ抑える</span></div>
+    <div class="eq">$$\rho_\Lambda\ \lesssim\ \frac{M_{\rm Pl}^2}{L^2}\Big|_{L=ct}\ \sim\ (\text{meV})^4$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#3b4668;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#3b4668;">補遺④・誘導重力</span><span class="role">物質ループから重力が湧く。\(G\) は自然にプランク的</span></div>
+    <div class="eq">$$\frac{1}{G}\ \sim\ N\,\Lambda_{\rm cut}^2$$</div>
+  </div></div>
+
+  <div class="eqcard"><div class="spine" style="background:#b0521f;"></div><div class="body">
+    <div class="top"><span class="ep" style="color:#b0521f;">補遺②・w(a)</span><span class="role">共形時間カットオフのダークエネルギー。\(w_0\approx-0.8\)（DESIと大きさ一致）── 加速膨張データで白黒がつく予言</span></div>
+    <div class="eq">$$w(a)=-1+\frac{2}{3n}\,\frac{\sqrt{\Omega_{\rm de}}}{a}$$</div>
+  </div></div>
+
+  <div class="keyeq">
+    <div class="lbl">もし一本だけ持って帰るなら ── 本物で、全部を束ねる一行</div>
+    $$\text{meV}\ \sim\ \sqrt{\,m_{\rm IR}\times M_{\rm Pl}\,}\ =\ \sqrt{\,\frac{\hbar H_0}{c^2}\times M_{\rm Pl}\,}$$
+    <div class="note">宇宙で<strong>一番小さい質量</strong>（IRフロア、\(c\cdot t\) が決める \(\hbar/c^2t\)）と、<strong>一番大きい質量</strong>（プランク）の<strong>幾何平均が meV</strong>。そこにダークエネルギーもニュートリノも座る ── 最小と最大が meV で握手する。\(1/(Cn)^D\) と違い、重力（情報の上限）から導ける本物で、\(c\cdot t\) がちゃんと中に入っている。</div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── なぜ "万物の一本" は無いのか</span>
+    これ全部を予言する<strong>一つの完成式</strong>は、存在しません ── あなたにも、弦理論にも、誰にも（＝壁④）。物質の内容も、ゲージ群も、パラメータ（\(n,\nu,\dots\)）も、まだ導出でなく入力です。もしチャットや一晩で「万物の一本」が出てきたら、それは正しさの証拠ではなく<strong>警戒のサイン</strong>。だからこの地図は、"すごい一本" を騙らず、<em>本物の式の束＋それを繋ぐ一行（meV＝√(最小×最大)）</em>で止めます。数合わせの一本を捨てて、本物の網を得た ── それが、偽の "すごい式" より、ずっとすごい。
+  </div>
+
+  <div class="fin">
+    <span class="lbl">式の地図に寄せて</span>
+    「最後にすごい式が」── その気持ちは物理の王道です（\(E=mc^2\) がマグカップに載るように）。でも、すごい一本を<em>無理に</em>求めた瞬間、それは数合わせ（\(1/(Cn)^D\)）になる。あなたはそれを診断し、捨て、代わりに ── 質量の床、対称性、ヒッグス、次元的移行、格子、シーソー、IRフロア、CKN、誘導重力、\(w(a)\) という<strong>効く式の束</strong>と、<strong>meV＝√(最小×最大)</strong> という繋ぎの一行を手にした。万物の一本は地図に無い。でも、<strong>その地図を自分で描き、"解けた" を騙らずに歩く力は、もうあなたの手の中にあります。</strong>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量／わかる宇宙論」シリーズの式まとめ（式の地図）です。掲載した式はいずれも確立した物理／標準的な関係式（相対論的エネルギー・運動量関係、ヒッグス湯川質量、次元的移行、ウィルソン格子ゲージ作用、シーソー機構、宇宙論的IRスケール、CKNホログラフィック境界、Sakharov 誘導重力、ホログラフィック／アージグラフィック・ダークエネルギーの状態方程式）で、\(\text{meV}\sim\sqrt{m_{\rm IR}M_{\rm Pl}}\) は \(\rho_\Lambda\sim M_{\rm Pl}^2/L^2\)（\(L=\)地平線）の言い換えです。係数にはオーダー1の不定性があります。これら全体を第一原理から導く単一の完成理論（万物の理論）は未達で、本稿はそれを主張しません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで、局所光速は不変です。 ── 印刷／PDF：ブラウザの「印刷」から「PDF に保存」。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。一枚のポスターとして保存できます。</p>
+
+</body>
+</html>

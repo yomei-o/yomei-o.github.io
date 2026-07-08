@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>離散宇宙の一枚 ── わかる質量 終章・技術補遺</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;    /* 補遺：スレート・インディゴ */
+    --grid:#d5d8e4;
+    --uv:#9a4230; --ir:#1f7a6e; --mev:#4b3fa0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 連鎖（assembly） */
+  .chain{margin:26px 0;}
+  .chain .step{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border:1px solid var(--rule);
+    border-radius:6px;margin-bottom:10px;background:#fbfbfe;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .chain .num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+  .chain .txt strong{display:block;color:#262b40;margin-bottom:2px;}
+  .chain .txt span{color:var(--ink-soft);font-size:13px;}
+  .chain .txt .ref{color:var(--acc);font-size:11.5px;font-weight:700;letter-spacing:.05em;}
+  .chain .arrow{text-align:center;color:var(--hair);font-size:18px;margin:-4px 0 6px;}
+
+  .walls{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .walls .row{display:flex;gap:14px;padding:13px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .walls .row:last-child{border-bottom:none;}
+  .walls .mk{flex-shrink:0;width:22px;font-weight:700;color:#b03a2e;}
+  .walls .txt strong{display:block;color:#262b40;margin-bottom:2px;} .walls .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .pred{margin:24px 0;border:1px solid #bcd6c6;border-radius:5px;overflow:hidden;background:#f2f8f4;}
+  .pred .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid #cfe3d6;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .pred .row:last-child{border-bottom:none;}
+  .pred .mk{flex-shrink:0;width:22px;font-weight:700;color:#1f6b45;}
+  .pred .txt strong{display:block;color:#194a34;margin-bottom:2px;} .pred .txt span{color:#3a5a48;font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#ecedf4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.walls,.pred,.chain .step{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺 ／ 何ヶ月も歩いた道の、一枚の地図</span></div>
+  <p class="eyebrow">「宇宙は離散」の賭けを、有限情報から GR まで一本に組む ── 証明でなく、反証可能な設計図</p>
+  <h1>離散宇宙の一枚
+    <span class="sub">有限情報 → ホログラフィックに meV → 誘導重力で \(G\) → 創発ローレンツをグラビトンが継承。<br>四つの壁と、二つの反証可能な予言。数合わせではなく、名指しした最前線の地図。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：終章（宇宙は離散）、最終回（CKN）、第4回（走り）、第6回（IRフロア）</span>
+    <span>これは解ではなく、well-posed な仮説＋壁＋予言</span>
+  </div>
+
+  <p class="lead">終章で「宇宙は離散」を仮説として名指ししました。この補遺は、その賭けを<strong>技術的に一枚へ組み上げる</strong>ものです ── 有限情報がホログラフィックに宇宙定数を meV へ抑え、物質ループが重力を誘導し、その重力が物質の創発ローレンツを継ぐ。第4・6回・最終回・終章が、ここで一点に集まります。ただし念のため最初に ── <strong>これは完成した理論ではなく、スケーリング論法の網</strong>。だから「解けた」とは言わず、<em>組み上がる形・残る壁・晒せる予言</em>の三つを、正直に並べます。</p>
+
+  <h2><span class="n">01</span>一枚の連鎖 ── 全部が「有限情報＋物質ループ」から出る</h2>
+
+  <div class="chain">
+    <div class="step"><span class="num">1</span><div class="txt"><strong>宇宙は離散＝有限情報</strong><span>領域あたりの自由度が有限（ベッケンシュタイン限界）。ローレンツを保つにはコーザルセット的（＝ランダム散布）。</span> <span class="ref">終章／番外①</span></div></div>
+    <div class="arrow">↓</div>
+    <div class="step"><span class="num">2</span><div class="txt"><strong>ホログラフィックに真空エネルギーが meV へ</strong><span>有限自由度 → CKN 境界 \(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\)、\(L=\)地平線 \(=ct\) → \((\text{meV})^4\)。素朴な \(M_{\rm Pl}^4\) にならない。</span> <span class="ref">最終回（CKN）</span></div></div>
+    <div class="arrow">↓</div>
+    <div class="step"><span class="num">3</span><div class="txt"><strong>物質ループが重力を誘導（Sakharov）</strong><span>物質を積分すると \(R\) 項が湧く：\(1/G\sim N\,\Lambda_{\rm cut}^2\)。カットオフ＝離散の粒 \(\sim M_{\rm Pl}\) だから \(G\) は自然にプランク的。</span> <span class="ref">最終回・重力の壁の裏返し</span></div></div>
+    <div class="arrow">↓</div>
+    <div class="step"><span class="num">4</span><div class="txt"><strong>グラビトンが「創発ローレンツ」を継ぐ</strong><span>物質は相互作用する IR 固定点で速度異方性が irrelevant → ローレンツ創発。重力は物質から誘導されるので、そのローレンツ不変性を自動継承。</span> <span class="ref">M2／第4回（走り）</span></div></div>
+  </div>
+
+  <p>結果、<strong>\(\Lambda\)（meV）・\(G\)（プランク）・ローレンツ（創発）が、すべて「有限情報＋物質ループ」から出る</strong>。バラバラの謎の定数ではなく、一つの前提（離散＝有限情報）の帰結として繋がる ── これが、あなたの賭けの技術的な一枚です。</p>
+
+  <h2><span class="n">02</span>宇宙定数問題は「どのカットオフか」だった</h2>
+
+  <p>CC問題の核心を、一つの図で。真空エネルギーの見積もりは、<em>どのスケールで切るか</em>で天と地です。</p>
+
+  <div class="fig">
+    <div class="cap">図：真空エネルギー \(\rho_\Lambda^{1/4}\) を "IRカットオフ \(L\)" の関数で。\(L=\)プランク長（UV）で見積もると \(\sim10^{28}\) eV＝観測の \(10^{120}\) 倍（大惨事）。有限情報＝ホログラフィーが \(L=\)地平線（\(=ct\)）を選ぶと、meV に落ちて観測と一致。スライダーで \(L\) を動かす</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>IRカットオフ L（左＝プランク長、右＝宇宙の地平線）<span class="val" id="vk">10²⁶ m</span>
+        <input type="range" id="sk" min="-35" max="26" step="0.5" value="26">
+      </label>
+    </div>
+    <div class="readout" id="rd">L を動かすと、真空エネルギーの見積もりが変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--uv);"></i>UV側（プランク）＝大惨事</span>
+      <span><i class="swatch" style="background:var(--mev);"></i>観測 meV 帯</span>
+      <span><i class="swatch" style="background:var(--ir);"></i>IR側（地平線=ct）</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">誘導重力：\(G\) はタダ、\(\Lambda\) が地獄 ── でも有限情報が救う</div>
+    $$\frac{1}{G}\sim N\,\Lambda_{\rm cut}^2\ (\text{良い}\sim M_{\rm Pl}^2),\qquad \Lambda_{\rm naive}\sim \Lambda_{\rm cut}^4\ (\text{地獄}\sim M_{\rm Pl}^4)$$
+    $$\xrightarrow{\text{有限情報＝ホログラフィー}}\quad \rho_\Lambda\lesssim\frac{M_{\rm Pl}^2}{L^2}\Big|_{L=ct}\sim(\text{meV})^4$$
+  </div>
+
+  <p>同じ物質ループが \(G\) と \(\Lambda\) を生むから、\(\Lambda\) だけ手で消せない。でも ── <strong>離散＝有限自由度なら、真空エネルギーはそもそも \(M_{\rm Pl}^4\) まで積み上がれない</strong>。ホログラフィックに \(M_{\rm Pl}^2/L^2\) で頭打ち。あなたの「有限情報」の賭けが、\(10^{120}\) の過剰計上を<em>原理的に禁じる</em> ── これがこの一枚の心臓です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>まだ動かない、四つの壁（正直に）</h2>
+
+  <p>組み上がった。でも、越えられていない壁が四つ、はっきり立っています。誰も越えていない。</p>
+
+  <div class="walls">
+    <div class="row"><span class="mk">✗</span><div class="txt"><strong>\(w\) 問題</strong><span>\(L=1/H\) の holographic \(\Lambda\) は状態方程式 \(w\approx0\)（物質的）で加速膨張を出せない。要・事象の地平線か動的機構。</span></div></div>
+    <div class="row"><span class="mk">✗</span><div class="txt"><strong>why-now（一致問題）</strong><span>なぜ holographic 値が <em>今</em> 観測値 meV に一致するのか。</span></div></div>
+    <div class="row"><span class="mk">✗</span><div class="txt"><strong>誘導重力 → 本当の GR</strong><span>\(R\) 項だけでなく、正しいアインシュタイン方程式・正しい \(G\)・制御された高次曲率項を出せるか（前回の (B)＝大スケールでのGR再現）。</span></div></div>
+    <div class="row"><span class="mk">✗</span><div class="txt"><strong>予言する完成理論ではない</strong><span>ここまでは整合的なスケーリング論法の網であって、第一原理から数値を出す理論ではない。</span></div></div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">締めの掟（再掲）── チャットで "解けた" が出たら、疑え</span>
+    <p style="margin:0;">この四つを閉じたら、それは<strong>ミレニアム級（あるいはそれ以上）の達成</strong>。もしチャットや一晩の対話で「四つとも埋まった、完成式です」と出てきたら、それは正しさの証拠ではなく<strong>警戒のサイン</strong>。だからこの補遺は、完成形を出さず「組み上がる形＋四つの壁＋晒せる予言」で止めます。臆病さではなく、誠実さの技術。</p>
+  </div>
+
+  <h2><span class="n">04</span>だが ── 反証可能な予言が、二つ出る</h2>
+
+  <p>ここが数合わせ（\(1/(Cn)^D\)）との決定的な違い。この一枚は、<strong>外れうる予言</strong>を持っています。良い仮説は、自分の壊れ方を言える。</p>
+
+  <div class="pred">
+    <div class="row"><span class="mk">i</span><div class="txt"><strong>極小のローレンツ破れ（現在の上限のすぐ下）</strong><span>M2 の速度収束が対数的で完全に消えないため、残留 LV が残る。→ 真空複屈折（GRB偏光）、種の最大速度差（宇宙線・ニュートリノ）、原子時計の方向依存。</span></div></div>
+    <div class="row"><span class="mk">ii</span><div class="txt"><strong>時間変化するダークエネルギー（\(w\neq-1\)）</strong><span>holographic \(\Lambda\propto1/L^2\propto1/t^2\)（\(c\cdot t\) 側の帰結）で薄まる。→ <strong>DESI（2024）が evolving dark energy を示唆</strong>し始めている。</span></div></div>
+  </div>
+
+  <p>次世代がこの二つを一段深く測れば、<strong>あなたの離散宇宙は、当たるか外れるかが決まります</strong>。番外③の「入れていない量を当てるか？」に、この一枚は堂々イエスと答えられる。数合わせには、これができなかった。</p>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ「有限情報」が宇宙定数問題の取っ手になるのか、一言で。
+        <details><summary>ひとつの答え</summary><div class="ans">領域あたりの自由度が有限（ホログラフィー）なら、真空エネルギーは素朴な \(M_{\rm Pl}^4\) まで積み上がれず、\(M_{\rm Pl}^2/L^2\)（\(L=\)地平線）で頭打ちになる。離散＝有限情報が、\(10^{120}\) の過剰計上を原理的に禁じる。</div></details>
+      </li>
+      <li>この一枚が「数合わせ」でなく「物理」の候補である理由は。
+        <details><summary>ひとつの答え</summary><div class="ans">外れうる予言を持つから ── (i) 上限直下の極小ローレンツ破れ、(ii) 時間変化するダークエネルギー \(w\neq-1\)。次世代の観測（GRB偏光・宇宙線・原子時計・DESI）で検証・反証できる。$(Cn)^D$ の数合わせにはこれがなかった。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺まとめ</span>賭けは、名指しした最前線に着地した</h2>
+    <p>「宇宙は離散＝有限情報」から、一枚が組み上がる ── 有限情報がホログラフィックに \(\Lambda\) を meV へ抑え（CKN・最終回）、物質ループが \(G\) を誘導し（Sakharov）、その重力が物質の創発ローレンツを継ぐ（M2・第4回）。\(\Lambda\)・\(G\)・ローレンツが一つの前提から出る。だが四つの壁（\(w\)／why-now／GR回復／完成理論でない）は未踏で、閉じればミレニアム級 ── だから "解けた" とは言わない。代わりに、二つの反証可能な予言（極小LV／\(w\neq-1\)）を晒す。</p>
+    <p>数合わせから始まった問いは、ここまで詰めて、<strong>物理学の本物の最前線の、名指しできる四つの壁と、実験で試せる二つの予言</strong>に凝縮した。偽の統一なら、とっくに「完成」と言えた。でもあなたは、反証を重ね、掟を守り、賭けを晒すところまで歩いた。<em>これが、離散宇宙の賭けがたどり着ける、いちばん遠くて、いちばん正直な場所です。</em></p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">二つのシリーズの、本当の最後に</span>
+    「光は昔もっと速かった」から歩き出し、「重さって何？」を抜け、「宇宙は離散か」の賭けを名指しし、いま <strong>有限情報から GR まで一枚に組み、四つの壁と二つの予言で締める</strong>ところに立っています。運んできた背骨はひとつ ── <strong>わかりやすさは投影、物理は無次元の不変な構造、\(c\cdot t=\text{一定}\) は効く土俵でだけ、仮説は名指ししてテストに晒す、そして "解けた" は疑う。</strong> この規律があれば、数合わせに呑まれず、それでいて大胆な賭けを、正々堂々と抱いて、実験の射程まで運んでいける。<br>あなたの道は、viXra に無視されても、テレビが何と言っても、<em>物理学の本物の最前線に、正しい作法で、まっすぐ通じていました</em>。答えはまだ地図にない。でも、地図の描き方は、もうあなたの手の中にあります。<br>── ここまでの長い旅を、ありがとう。扉の続きは、いつでも。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺、物理好きの高校生・大学生向け読み物です。本稿は「宇宙は離散＝有限情報」という<strong>作業仮説</strong>のもとで、Sakharov の誘導重力（\(1/G\sim N\Lambda_{\rm cut}^2\)、\(\Lambda_{\rm ind}\sim\Lambda_{\rm cut}^4\)）、Cohen–Kaplan–Nelson のホログラフィック UV-IR 境界（\(\rho_\Lambda\lesssim M_{\rm Pl}^2/L^2\)、\(L=\)地平線で \((\text{meV})^4\)）、相互作用する IR 固定点での創発ローレンツ（速度異方性の marginal irrelevance）を、一つの整合的な描像として組み上げたものです。宇宙定数問題（素朴な真空エネルギーと観測の約120桁のずれ）、その候補機構（SUSY・ユニモジュラー重力・vacuum energy sequestering・degravitation・ホログラフィー）、$w$（状態方程式）問題、誘導重力からの一般相対論回復、ローレンツ破れの実験的制約（真空複屈折・種の速度差・共鳴器/原子時計）、DESI（2024）の進化するダークエネルギーの示唆は、いずれも実在の研究テーマ／未解決問題です。本稿は特定理論の正しさを主張するものではなく、作業仮説とその検証条件・反証可能な予言を並べた設計図です。図は \(\rho_\Lambda^{1/4}\sim\sqrt{M_{\rm Pl}\,\hbar c/L}\) の模式で、係数にはオーダー1の不定性があります。局所光速は不変、\(c\cdot t=\text{一定}\) は座標・単位の言い換えです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで IRカットオフ L を動かすと、真空エネルギーが大惨事(プランク)から meV(地平線)へ落ちる様子が見えます。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  // log10(rho^{1/4} / eV) = 10.69 - 0.5 * log10(L/m)  [M_Pl=1.22e28 eV, hbar c=1.97e-7 eV m]
+  var XL=-35, XR=26, YB=-4, YT=29;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rho14(x){ return 10.69 - 0.5*x; } // log10 eV
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50;
+    var x=parseFloat(sk.value);
+    vk.innerHTML='10<sup>'+x.toFixed(0)+'</sup> m';
+    ctx.clearRect(0,0,w,h);
+    function X(xx){return pad+(xx-XL)/(XR-XL)*(w-pad-14);}
+    function Y(yy){return (h-pad)-(yy-YB)/(YT-YB)*(h-pad-16);}
+    // meV band (rho^1/4 in [10^-3.2, 10^-2] eV)
+    ctx.fillStyle='rgba(75,63,160,0.12)';
+    var yb1=Y(-2), yb2=Y(-3.2);
+    ctx.fillRect(pad, yb1, w-8-pad, yb2-yb1);
+    ctx.fillStyle='#4b3fa0';ctx.font='11px sans-serif';ctx.fillText('観測 meV 帯', pad+6, yb1-4);
+    // grid + y labels
+    ctx.font='10px sans-serif';
+    for(var yv=-3;yv<=27;yv+=6){var y=Y(yv);ctx.strokeStyle='#e6e7ef';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#a2a6bb';ctx.fillText('10^'+yv+' eV', 6, y+4);}
+    // axes
+    ctx.strokeStyle='#b8bcca';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,10);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#5b6078';ctx.font='12px sans-serif';
+    ctx.fillText('IRカットオフ L（m, 右ほど大きい）→', w-260, h-pad+18);
+    ctx.save();ctx.translate(16,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('真空エネルギー ρ_Λ^{1/4}', 0,0);ctx.restore();
+    // x endpoints labels
+    ctx.fillStyle='#9a4230';ctx.font='11px sans-serif';ctx.fillText('プランク長(UV)', X(-35)+2, h-pad-6);
+    ctx.fillStyle='#1f7a6e';ctx.fillText('地平線=ct(IR)', X(26)-70, h-pad-6);
+    // curve
+    ctx.strokeStyle='#3b4668';ctx.lineWidth=2.8;ctx.beginPath();
+    for(var xx=XL;xx<=XR+1e-9;xx+=0.4){var yy=rho14(xx);var px=X(xx),py=Y(yy);
+      if(xx===XL)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    // Planck disaster marker
+    ctx.fillStyle='#9a4230';ctx.beginPath();ctx.arc(X(-35),Y(rho14(-35)),4.5,0,7);ctx.fill();
+    ctx.fillStyle='#9a4230';ctx.fillText('~10^28 eV（10^120倍）', X(-35)+6, Y(rho14(-35))+2);
+    // current marker
+    var yy=rho14(x), mx=X(x), my=Y(yy);
+    ctx.strokeStyle='#9296ac';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(mx,10);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#3b4668';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // readout
+    var val=yy;
+    var eVstr = (val>=-3.5&&val<3)? (Math.pow(10,val+3)).toPrecision(2)+' meV' : '10^'+val.toFixed(1)+' eV';
+    if(x<=-30){
+      rd.style.background='#f4ece9';rd.style.color='#8a3a2a';
+      rd.textContent='L≈プランク長（UVカットオフ）：ρ_Λ^{1/4} ~ 10^'+val.toFixed(0)+' eV ＝ 観測の約10^120倍。素朴な誘導Λの大惨事＝宇宙定数問題。→ 右へ動かして IRカットオフ(地平線)へ。';
+    } else if(val<=-2 && val>=-3.5){
+      rd.style.background='#ece9f4';rd.style.color='#3b3566';
+      rd.textContent='L≈地平線=ct（IRカットオフ）：ρ_Λ^{1/4} ≈ '+eVstr+' ＝ 観測と一致！ 有限情報＝ホログラフィーがΛをmeVへ抑えた。';
+    } else {
+      rd.style.background='#e8eaf1';rd.style.color='#2d3550';
+      rd.textContent='L=10^'+x.toFixed(0)+' m → ρ_Λ^{1/4} ≈ '+eVstr+'。カットオフを地平線まで下げるほど、真空エネルギーは meV へ落ちる。';
+    }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

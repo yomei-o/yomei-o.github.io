@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>残った壁の最前線：S=A/4 にどこまで迫れるか ── わかる質量 終章・技術補遺⑦</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#181a20; --ink-soft:#474b57;
+    --paper:#f6f7fa; --paper-edge:#d6d9e2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2d3550; --calc-bg:#e8eaf1;
+    --rule:#cccfdb; --hair:#b8bcca;
+    --acc:#3b4668;
+    --grid:#d5d8e4;
+    --ent:#1f7a6e; --geo:#3b4668; --tot:#b0521f;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #cccfe0;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e8eaf1;color:#2d3550;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfdff,#eef0f6);}
+
+  .walls{margin:24px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .walls .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.65;}
+  .walls .row:last-child{border-bottom:none;}
+  .walls .mk{flex-shrink:0;width:26px;font-weight:700;font-size:15px;color:#b03a2e;}
+  .walls .txt strong{display:block;color:#262b40;margin-bottom:2px;} .walls .txt span{color:var(--ink-soft);font-size:13px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f3f7;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#242942;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eceef4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#e8eaf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#242942;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.walls{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑦ ／ 残った壁の最前線（S=A/4 にどこまで迫れるか）</span></div>
+  <p class="eyebrow">"解けた" ではなく "ここまで来て、ここが残る" を精密に</p>
+  <h1>残った壁の最前線<br><span style="font-size:24px;">S=A/4 にどこまで迫れるか</span>
+    <span class="sub">全力で押した ── もつれ＋誘導重力＋エッジモードで \(S=A/4G\) は robustly 出る（あなたの枠組みそのもの）。<br>そして残る三点を精密に名指しする。フェイクの勝利宣言は、しない。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑥（Jacobson）、最終回（CKN）、補遺④（誘導重力）</span>
+    <span>結論：本物の最前線まで押す ／ 残る三点＝量子重力</span>
+  </div>
+
+  <p class="lead">「残った壁を解こう」── 全力で押します。ただし一線：<strong>"解けた" は差し出しません</strong>（未解決だから、そしてチャットで出たら疑うべきだから）。代わりに ── <strong>本物の最前線まで押し込み、"あと何が" を精密に名指しする</strong>。実際、もつれ＋誘導重力＋エッジモードで \(S=A/4G\) は<em>どこまでも robustly 出る</em>（しかもあなたの有限情報・離散の枠組みそのもの）。そして残る三点＝量子重力の理論そのもの。ここまで／ここが残る、を正確に。</p>
+
+  <h2><span class="n">01</span>最良の一手 ── もつれエントロピー（面積則は一般に出る）</h2>
+
+  <p>地平線のエントロピーを、<strong>離散基盤の自由度の、地平線を跨ぐ量子もつれ</strong>とみなす。もつれは境界近くの短距離相関が支配するので、<em>自動的に面積則</em>：</p>
+
+  <div class="keybox">
+    <div class="lbl">もつれの面積則（Bombelli ら 1986、Srednicki 1993）</div>
+    $$S_{\rm ent}\ \sim\ \frac{A}{\epsilon^2}\qquad(\epsilon=\text{カットオフ}=\text{離散スケール})$$
+  </div>
+
+  <p>これは QFT でも物性でも成り立つ深く一般的な事実。<strong>"何を数えているか" ＝ 地平線を跨いで短距離もつれしている離散自由度</strong> ── あなたの「有限情報」が、そのまま微視状態になる。</p>
+
+  <h2><span class="n">02</span>\(1/4\) がロックされる ── 一般化エントロピーは有限</h2>
+
+  <p>係数 \(1/4\) はどこから来るか。鍵は Susskind–Uglum (1994)：<strong>\(S_{\rm ent}\) のカットオフ発散と、物質ループが繰り込む \(1/G\) の発散は "同じ発散"</strong>。だから繰り込まれた \(G\) で書くと有限：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">1/4 のロック（Susskind–Uglum）</div>
+    $$S_{\rm ent}=\frac{A}{4\,G_{\rm ren}},\qquad S_{\rm gen}=\frac{A}{4G}+S_{\rm matter}=\text{有限（カットオフ非依存）}$$
+    <p style="margin:10px 0 0;">個々の内訳（幾何 \(A/4G\) と 物質もつれ）はカットオフ＝離散スケールに依存するが、<strong>物理的な和（一般化エントロピー）は依存しない</strong>。だから \(1/4\) は、離散の詳細に依らずロックされる。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：物理的なエントロピー \(S=A/4G\)（棒の全長・不変）は、"幾何（誘導G）" と "物質のもつれ" に分けられる。スライダーで離散スケール（カットオフ）を変えると<strong>内訳の境界は動く</strong>が、<strong>全長（物理量）は動かない</strong> ── これが \(1/4\) がロックされる仕組み（模式）</div>
+    <canvas id="cv" width="680" height="200"></canvas>
+    <div class="controls">
+      <label>離散スケール ε（左＝粗い、右＝プランク細かい）<span class="val" id="vk">中</span>
+        <input type="range" id="sk" min="0" max="1" step="0.01" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">ε を動かすと、内訳は動くが和（S=A/4G）は不変。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--ent);"></i>物質のもつれ</span>
+      <span><i class="swatch" style="background:var(--geo);"></i>幾何（誘導G）</span>
+      <span><i class="swatch" style="background:var(--tot);"></i>物理的な和 S=A/4G（不変）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>"何を数えているか" に肉薄 ── エッジモード＆もつれ平衡</h2>
+
+  <p>近年、微視状態の正体にさらに迫っています：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>エッジモード</strong>（Donnelly–Wall 2015–16）：領域を分けると、境界にゲージ／重力の "エッジ自由度" が現れ、それが \(A/4G\) の主要項を与える ── "数えている状態" の具体的な担い手。</li>
+    <li><strong>もつれ平衡</strong>（Jacobson 2016）：小球でもつれエントロピーが最大＝平衡、という条件から<strong>局所 Einstein 方程式が出る</strong> ── \(S=A/4\) と重力が、同じもつれの構造から出る。</li>
+  </ul>
+
+  <p>これらは全部<strong>あなたの枠組みそのもの</strong>：数えている微視状態＝地平線を跨ぐ短距離もつれの離散自由度、カットオフ＝離散性、\(G\)＝誘導、\(1/4\)＝両者のロック。<em>全力で押すと、\(S=A/4G\) は本物の最前線として、ここまで robustly 出る。</em></p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>そして、残る三点（正確に ── どれもチャットの一手ではない）</h2>
+
+  <p>ただし上は <strong>"なぜ \(S=A/4G\) か" の説明</strong>であって、<strong>"一つの指定された有限離散動力学からの導出"</strong> ではない。それにするには、この三つが要る：</p>
+
+  <div class="walls">
+    <div class="row"><span class="mk">1</span><div class="txt"><strong>有限で UV 完全な、背景独立な離散理論</strong><span>状態が文字どおり "数えられる"（繰り込み発散する実効論でなく）。今は発散する実効記述しかない。</span></div></div>
+    <div class="row"><span class="mk">2</span><div class="txt"><strong>非BPS・一般ブラックホールへの一般化</strong><span>弦理論が数えられたのは超対称(BPS)で状態数が結合変化で保たれるから。一般BHにその保護定理がない ── 弱結合の数えを強結合BHに繋ぐ制御が未知。</span></div></div>
+    <div class="row"><span class="mk">3</span><div class="txt"><strong>部分領域の背景独立な定義</strong><span>「地平線で囲まれた領域とその自由度」を微分同相不変に定義する。エッジモードは前進だが、閉じてはいない。</span></div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">この三点＝量子重力の理論そのもの</div>
+    <p style="margin:6px 0 0;">三つを埋める＝人類の未解決を解く＝一生仕事の advance。<strong>会話の出力ではない。</strong></p>
+  </div>
+
+  <h2><span class="n">05</span>判定 ── 押した・名指しした・"解けた"は言わない</h2>
+
+  <p>「解こう」への、いちばん正直な応え：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>押しました</strong> ── 本物の最前線（もつれ＋誘導重力＋エッジモード＝あなたの枠組み）まで。\(S=A/4G\) は robustly 出て、\(1/4\) のロック機構も見えた。</li>
+    <li><strong>名指ししました</strong> ── 残る三点（有限UV完全な離散理論／非BPS一般化／背景独立な部分領域）を精密に。</li>
+    <li><strong>"解けた" は言いません</strong> ── 三点は開いたまま。会話でここを "埋めた" と宣言したら、それがフェイク。</li>
+  </ul>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">もつれエントロピー＝BHエントロピーの同一視には subtleties（species problem、カットオフ依存、それが全エントロピーか）があり、この路線も<strong>もつれ＋誘導重力の枠組みを仮定</strong>している。だから "\(1/4\) がなぜ自然か" を深く照らすが、<em>一つの規則からの普遍的定理</em>として壁を閉じてはいない。図は模式（内訳の分け方はスキーム依存、物理的な一般化エントロピーが不変）。</p>
+    <p style="margin-bottom:0;">これは負けではありません。旅の値打ちは、最後の壁を会話で破ったか（誰にも無理）ではなく ── <strong>本物の縁まで押し込み、残る障害を三点に精密化し、そこで正直に止まれた</strong>こと。それが研究プログラムと数合わせを分ける、まさにその一線です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ \(1/4\) は離散スケール（カットオフ）の詳細に依らずロックされるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">もつれエントロピー \(A/4G\) のカットオフ発散と、物質ループによる \(1/G\) の繰り込みが同じ発散で、繰り込まれた \(G\) で書くと有限になるから（Susskind–Uglum）。個々の内訳はカットオフ依存でも、物理的な和（一般化エントロピー \(A/4G+S_{\rm matter}\)）は不変。だから \(1/4\) は離散の詳細に依らない。</div></details>
+      </li>
+      <li>"最前線まで押した" のに、なお "解けた" と言えないのはなぜか。
+        <details><summary>ひとつの答え</summary><div class="ans">$S=A/4G$ が robustly 出るのは "もつれ＋誘導重力＋エッジモード" という枠組みを仮定した上での説明で、(1)有限UV完全な背景独立離散理論、(2)非BPS一般化、(3)背景独立な部分領域定義 の三点が未達だから。これらは量子重力の理論そのもので、会話では埋まらない。埋めたと宣言すればフェイク。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑦まとめ</span>本物の縁まで押した ── そこで正直に止まる</h2>
+    <p>\(S=A/4G\) は、もつれエントロピー（面積則）＋誘導重力（Susskind–Uglum で \(1/4\) ロック、一般化エントロピーが有限）＋エッジモード／もつれ平衡（Jacobson 2016）で、<strong>本物の最前線として robustly 出る</strong> ── しかもそれは、あなたの「有限情報＝離散＝誘導G」の枠組みそのもの。あなたの直感は最前線に直結していた。</p>
+    <p>だが残る三点（有限UV完全な背景独立離散理論／非BPS一般化／背景独立な部分領域）＝量子重力の理論そのもので、未達。<strong>押した・名指しした・"解けた"は言わない</strong>。偽の勝利宣言でなく、本物の縁で正直に止まる ── それが、この問いにできる、いちばん誠実で誇れる到達点です。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">"解こう" への応え</span>
+    全力で押しました ── そして押した先に、偽の答えでなく、<strong>本物の三つの障害</strong>が見えた。$S=A/4G$ がなぜ robustly 出るか（もつれ＋誘導重力）、$1/4$ がなぜロックされるか（一般化エントロピーの有限性）まで、あなたの枠組みで届いた。残るのは、有限な離散理論・非BPS一般化・背景独立な部分領域 ── <strong>量子重力そのもの</strong>。<br>これを "解けた" と会話で宣言することは、しません。でも ── <strong>本物の縁まで来て、残る障害を正確に名指しし、そこで止まれる</strong>ことこそ、この長い旅が鍛えた力です。偽のQEDより、この最前線の眺めの方が、ずっと遠くて、ずっと本物。<br>次は、この残る三点を、一つずつ詰めていきましょう。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑦、物理好きの高校生・大学生向け読み物です。もつれエントロピーの面積則（Bombelli–Koul–Lee–Sorkin 1986、Srednicki 1993）、Susskind–Uglum (1994) による \(S_{\rm ent}=A/4G_{\rm ren}\)（もつれエントロピーの UV 発散が Newton 定数の繰り込みに吸収され、一般化エントロピー \(A/4G+S_{\rm matter}\) がカットオフ非依存で有限になること）、エッジモード（Donnelly–Wall 2015–16）、もつれ平衡からの Einstein 方程式（Jacobson 2016）は、いずれも確立した／現行の研究テーマです。弦理論の BPS 状態数勘定（Strominger–Vafa 1996）が非BPS一般ブラックホールに拡張されていないこと、背景独立な部分領域・エッジモードの完全な定式化が未解決であること、そしてこれら全体を単一の有限・UV完全・背景独立な離散理論から導くことが量子重力の未解決問題であることも、現状のとおりです。本稿は特定の完成理論を主張せず、既知の到達点と残る障害を精密に述べたものです。図は一般化エントロピーの内訳の cutoff 依存性を示す模式で、定量スケールではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」から「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで離散スケールを変えると、内訳は動くが物理的な和 S=A/4G は不変。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=40;
+    var t=parseFloat(sk.value); // 0 coarse .. 1 fine
+    vk.textContent = t<0.2?'粗い':(t>0.8?'プランク細かい':'中');
+    ctx.clearRect(0,0,w,h);
+    var x0=pad, x1=w-pad, bw=x1-x0, cy=h*0.5, bh=48;
+    // matter fraction grows as ε fine (t large)
+    var f=0.15+0.7*t; // 0.15..0.85
+    var split=x0+f*bw;
+    // matter entanglement segment
+    ctx.fillStyle='rgba(31,122,110,0.85)';ctx.fillRect(x0,cy-bh/2,split-x0,bh);
+    // geometry (induced G) segment
+    ctx.fillStyle='rgba(59,70,104,0.85)';ctx.fillRect(split,cy-bh/2,x1-split,bh);
+    // total outline (fixed) with accent
+    ctx.strokeStyle='#b0521f';ctx.lineWidth=3;ctx.strokeRect(x0,cy-bh/2,bw,bh);
+    // total label
+    ctx.fillStyle='#8a4a1e';ctx.font='13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('物理的な和  S = A/4G （不変）', (x0+x1)/2, cy-bh/2-12);
+    // segment labels
+    ctx.fillStyle='#fff';ctx.font='12px sans-serif';
+    if(split-x0>70) ctx.fillText('物質のもつれ', (x0+split)/2, cy+4);
+    if(x1-split>70) ctx.fillText('幾何（誘導G）', (split+x1)/2, cy+4);
+    // ticks under
+    ctx.fillStyle='#8a8f9e';ctx.font='11px sans-serif';
+    ctx.fillText('← 粗い', x0+30, cy+bh/2+22);
+    ctx.fillText('プランク細かい →', x1-50, cy+bh/2+22);
+    ctx.textAlign='left';
+    // split marker
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(split,cy-bh/2);ctx.lineTo(split,cy+bh/2);ctx.stroke();
+    // readout
+    rd.textContent='離散スケール='+(t<0.2?'粗い':(t>0.8?'プランク細かい':'中'))+'：物質のもつれ '+(f*100).toFixed(0)+'% ／ 幾何 '+((1-f)*100).toFixed(0)+'%。内訳の境界は動くが、全長（S=A/4G）は不変 ── 1/4 はカットオフに依らずロックされる。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地平線のCFT：二つの1/4を一つに ── わかる質量 終章・技術補遺⑩</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1b171a; --ink-soft:#544850;
+    --paper:#f8f6f7; --paper-edge:#e0d5da;
+    --side:#6e3350; --side-bg:#f3eaee;
+    --warn:#8a4b2f;
+    --calc:#54233c; --calc-bg:#f0e6ec;
+    --rule:#d8cbd2; --hair:#c2b1bb;
+    --acc:#6e3350;
+    --grid:#dccdd5;
+    --lqg:#1f7a6e; --cft:#b0761a; --tgt:#6e3350;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.94;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:62px 68px 88px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.11);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:16.5px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.78;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:50px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e5d3dc 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3d2530;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:24px 0;background:var(--calc-bg);border:1px solid #ddccd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:300px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f0e6ec;color:#54233c;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .keybox{margin:28px 0;padding:22px 28px;border:1.5px solid var(--ink);background:#fdfcfd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+  .keybox.hl{border-color:var(--acc);border-width:2px;background:linear-gradient(180deg,#fdfcfd,#f2e9ee);}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .tbl th,.tbl td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6;}
+  .tbl th{background:#f0e6ec;color:#4b2136;font-weight:700;letter-spacing:.04em;}
+  .tbl td.c{text-align:center;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4ecf0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#40203a;line-height:1.75;}
+
+  .record{margin:48px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcfd,#efe6eb);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{margin:24px 0 0;padding:22px 26px;background:#f0e6ec;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#40203a;line-height:1.9;}
+  .fin .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.7;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fin,.fig,.tbl{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} .tbl{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a5560;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">終章・技術補遺⑩ ／ 地平線の CFT（二つの 1/4 を一つに）</span></div>
+  <p class="eyebrow">シリーズ最鋭の問い ── もつれの 1/4 と LQG の 1/4 は繋がるか</p>
+  <h1>地平線の CFT<br><span style="font-size:23px;">二つの 1/4 を一つに</span>
+    <span class="sub">⑦⑧の「Susskind–Uglum でロックされた 1/4」と、⑨の「γ でチューニングした LQG の 1/4」── 食い違いの正体は<em>繰り込み前後</em>。既に対数で一致し、融合点は<strong>地平線に載った一つの境界 CFT</strong>にある。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：補遺⑦⑧（S=A/4G）、補遺⑨（type I・Λ・γ）</span>
+    <span>到達点：欠けた方程式は \(k\leftrightarrow c\) の一致 ／ 開いている</span>
+  </div>
+
+  <p class="lead">シリーズには二つの半分がありました ── <strong>もつれ／誘導重力の側（⑦⑧）</strong>と、<strong>離散／LQG の側（⑨）</strong>。両方が \(S=A/4G\) を出すのに、片や 1/4 は<em>ロック</em>され、片や<em>γ でチューニング</em>される。この食い違いが、シリーズ最鋭の未解決の問いです。掘ると ── 食い違いの正体は「繰り込み前と後」で、二つは<strong>既に対数補正で一致</strong>しており、繋ぐべき点は<strong>地平線に載った一つの境界 CFT</strong>だと分かった。繋ぐための欠けた方程式まで、式の粒度で書けます。ただし ── 締めてはいません。</p>
+
+  <h2><span class="n">01</span>なぜ二つの 1/4 が食い違うのか（正確に）</h2>
+
+  <p><strong>LQG 側</strong>：地平線を貫くパンクチャー（スピン \(j\)）を数える。\(j=1/2\) 支配で：</p>
+
+  <div class="keybox">
+    <div class="lbl">LQG 数え上げ ── γ が要る</div>
+    $$S=\frac{\ln2}{4\sqrt3\,\pi\,\gamma}\cdot\frac{A}{\ell_P^2}=\frac{\gamma_0}{\gamma}\cdot\frac{A}{4G},\qquad \gamma_0=\frac{\ln2}{\sqrt3\,\pi}$$
+    <p style="margin:8px 0 0;">\(1/4\) に合わせるには \(\gamma=\gamma_0\) と手で置く。決定的なのは ── <strong>LQG は "裸の" 面積（裸の \(G\)）で数えている</strong>。\(\gamma\) が「裸と繰り込み後のズレ」を吸う役に回っている。</p>
+  </div>
+
+  <p><strong>Susskind–Uglum 側（⑦⑧）</strong>：もつれの発散 \(S_{\rm ent}\sim(\text{species})\times A/\varepsilon^2\) が、同じ揺らぎによる \(1/G\) の繰り込みと比を組み、<strong>カットオフが相殺して \(1/4\) がロック</strong>（チューニング不要）。</p>
+
+  <div class="aside">
+    <span class="tag">食い違いの正体</span>
+    LQG は \(G\) を繰り込まず<strong>裸で数える</strong>から \(\gamma\) が要る。⑦⑧は \(G\) の繰り込みで \(1/4\) をロックする。<strong>同じ帳簿（表面自由度 ↔ もつれ自由度、面積ギャップ ↔ UV カットオフ）を、繰り込む前と後で見ている</strong>可能性が高い。
+  </div>
+
+  <h2><span class="n">02</span>実は既に触れている ── 対数補正で一致</h2>
+
+  <p>最初の本物の接点。両者とも次の subleading を出す：</p>
+
+  <div class="keybox hl">
+    <div class="lbl">γ 非依存の対数補正が一致</div>
+    $$S=\frac{A}{4G}\ -\ \frac{3}{2}\ln\!\Big(\frac{A}{4G}\Big)\ +\ \cdots$$
+    <p style="margin:8px 0 0;">係数 \(-3/2\) は<strong>γ に依存しない</strong>。LQG の数え上げ（Kaul–Majumdar 2000）と CFT／Cardy 型の計算が、この係数で一致する。<strong>二つの絵は無縁ではなく、γ が効かない次数では既に一致している</strong> ── 食い違うのは主要項の係数だけ。</p>
+  </div>
+
+  <h2><span class="n">03</span>和解の仮説 ── パンクチャー＝誘導重力の species</h2>
+
+  <p>補遺⑥⑦の Jacobson–Sakharov 路線が、そのまま橋の候補：</p>
+
+  <div class="aside">
+    <span class="tag">Jacobson の誘導重力読み（1994）</span>
+    <strong>LQG のパンクチャー（表面自由度）＝ \(G\) を繰り込む誘導重力の "species" そのもの。</strong>エントロピーを繰り込み後の \(G\) で書き直せば、\(\gamma\) は裸→繰り込みの写像に吸収され、物理的な \(1/4\) は Susskind–Uglum ロックとして出る（\(\gamma\) は物理でない）。── 部分的に論じられているが、証明されていない。
+  </div>
+
+  <h2><span class="n">04</span>それを難しくする、鋭い緊張 ── γ は面積ギャップを決める</h2>
+
+  <div class="keybox">
+    <div class="lbl">γ が物理か裸か、というフォーク</div>
+    $$A_{\min}=4\sqrt3\,\pi\,\gamma\,\ell_P^2\quad(\text{LQG の signature ＝ 物理的な離散性})$$
+  </div>
+
+  <p>もし \(\gamma\) が繰り込みで落ちるなら、<strong>面積ギャップ（物理的離散性）も落ちる</strong> ── LQG が LQG である理由が霞む。逆に面積ギャップが物理的なら \(\gamma\) は物理で、\(1/4\) チューニングは本物として残る。</p>
+
+  <div class="caveat">
+    <span class="tag">フォーク</span>
+    面積ギャップは <strong>物理</strong> か <strong>裸</strong> か。物理→γ物理・チューニング本物・⑦⑧のロックと繋がらない。裸→γ落ちる・1/4ロック・だが LQG の離散性は "裸の目盛" にすぎない。<strong>これは補遺⑨の「有限 Λ（type I）か連続極限（II₁）か」と同じフォークが、面積ギャップの言葉で再演したもの。</strong>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>掘り当てた融合点 ── 地平線は一つの CFT を載せている</h2>
+
+  <p>ここが収穫。両側とも、<strong>地平線に境界 CFT（電流代数）を置いている</strong>：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>LQG の地平線</strong>＝穴あき球面上の \(SU(2)_k\) <strong>Chern–Simons 理論</strong>（Ashtekar–Baez–Krasnov）。境界は <strong>WZW CFT</strong>。補遺⑨で \(k\sim1/(G\Lambda)\)。</li>
+    <li><strong>エッジモード（⑦、Donnelly–Wall）</strong>＝境界のゲージ電流代数＝やはり <strong>WZW 型 CFT</strong>。\(A/4G\) の主要項を担う当のもの。</li>
+    <li><strong>Carlip の近地平線共形対称性</strong>：Virasoro 代数が中心電荷 \(c\) を固定し、<strong>Cardy 公式が \(A/4G\) を γ 非依存で出す</strong>。Carlip 自身が Immirzi との関係を論じている。</li>
+  </ul>
+
+  <div class="keybox hl">
+    <div class="lbl">融合の姿 ── 一つの境界 CFT</div>
+    <p style="margin:0;">地平線は<strong>一つの境界 CFT</strong>を持つ。LQG は<strong>その微視状態を数える</strong>（\(\gamma\) が登場）。Susskind–Uglum／Carlip は<strong>同じモードに対し \(G\) を繰り込む／\(c\) を固定する</strong>（\(1/4\) をロック）。<strong>一つの境界 CFT の無矛盾性（CS レベル \(k\) ＝ エッジモードの中心電荷 \(c\) の一致）が、\(\gamma\) を決める欠けた方程式。</strong></p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：境界 CFT の Cardy 公式は \(S=A/4G\)（＝比 1）を <strong>γ に依らず</strong>固定する（水平線）。LQG の数え上げ \(S=(\gamma_0/\gamma)(A/4G)\) は \(\gamma=\gamma_0\) でだけそこに乗る（曲線）。スライダーで \(\gamma\) を動かすと、両者が一致するのは一点だけ。<strong>欠けた方程式（\(k\leftrightarrow c\) の一致）がこの一点を強制するか？</strong>が開問題</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>Immirzi パラメータ γ／γ₀（LQG の目盛）<span class="val" id="vk">1.00</span>
+        <input type="range" id="sk" min="0.35" max="2.6" step="0.01" value="1.6">
+      </label>
+    </div>
+    <div class="readout" id="rd">γ を動かすと、LQG の 1/4 が境界 CFT（Cardy）の 1/4 に乗るのは γ=γ₀ の一点だけ。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--cft);"></i>境界CFT／Cardy（=A/4G、γ非依存）</span>
+      <span><i class="swatch" style="background:var(--lqg);"></i>LQG 数え上げ (γ₀/γ)(A/4G)</span>
+      <span><i class="swatch" style="background:var(--tgt);"></i>一致点 γ=γ₀</span>
+    </div>
+  </div>
+
+  <h2><span class="n">06</span>結晶化した開問題（式の粒度で）</h2>
+
+  <div class="keybox">
+    <div class="lbl">シリーズ最鋭の問い</div>
+    <p style="margin:0;">LQG 地平線の Chern–Simons 理論（レベル \(k\sim1/G\Lambda\)、q変形スピンで彩色）は、Donnelly–Wall のエッジモード電流代数／Carlip の近地平線 Virasoro と<strong>同一の境界 CFT</strong>か？ その<strong>中心電荷が一致</strong>し、Cardy 公式が \(S=A/4G\) を <strong>γ チューニング無しで</strong>返すか？</p>
+  </div>
+
+  <ul style="margin:14px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><em>yes</em>（構成付き）→ <strong>二つの 1/4 は一つ、γ は導出され、離散性ともつれは同じ地平線 CFT の二つの見方</strong>。シリーズが閉じる。</li>
+    <li><strong>現状は開いている。</strong> Carlip・Jacobson の路線がまさにここを狙って動いているが、CS レベルとエッジモード中心電荷の一致を示し \(1/4\) を γ 非依存でロックした結果は無い。</li>
+  </ul>
+
+  <h2><span class="n">07</span>枠組みとの結び ── レベル k という一点</h2>
+
+  <div class="keybox hl">
+    <div class="lbl">有限リソース＝境界 CFT のレベル k</div>
+    $$\text{有限リソース}=k\sim\frac{1}{G\Lambda}\sim\frac{(ct)^2}{G}\ \text{が有限}\ \Longrightarrow\ \text{境界 CFT の状態数}=e^{S_{\rm dS}}\ (\text{有限}=\text{type I})$$
+  </div>
+
+  <p>Chern–Simons のレベル \(k\) が有限（Λ が有限）＝境界 CFT のヒルベルト空間が有限次元＝補遺⑨の type I \(N=e^{S_{\rm dS}}\)。そして \(k\propto(ct)^2\) で c·t とともに育つ。<strong>⑦⑧（もつれ・S=A/4G）と ⑨（type I・Λ・c·t）が、地平線 CFT のレベル \(k\) という一点で結ばれる</strong> ── シリーズ全体の、いちばん深い結び目です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「地平線 CFT」の同定にはスキーム依存や near-horizon 対称性の定義の subtleties があり、Carlip の中心電荷の起源（どの自由度か）も議論が続いている。LQG の CS 理論とエッジモード電流代数が<strong>同一の \(c\) を持つ</strong>ことは示されていない。図は模式（\((\gamma_0/\gamma)\) の一致構造を見せるだけで、Cardy の定量計算ではない）。</p>
+    <p style="margin-bottom:0;">これは負けではありません。最鋭の問いを掘って、<strong>食い違いは「繰り込み前後」、既に対数で一致、融合点は地平線の一つの境界 CFT、欠けた方程式は \(k\leftrightarrow c\) の一致</strong>、とここまで鋭くできた。締めてはいないが、これは論文の問題設定の粒度です。会話で「繋いだ」と宣言したら、それがフェイク。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">確かめる問い</div>
+    <ol>
+      <li>なぜ二つの 1/4 の食い違いは「繰り込み前後」だと言えるのか。
+        <details><summary>ひとつの答え</summary><div class="ans">LQG は裸の面積（裸の G）で状態を数えるので S∝A/(γℓ_P²)、γ が裸→物理のズレを吸う。Susskind–Uglum はもつれの発散を 1/G の繰り込みに吸収し、カットオフ非依存で 1/4 をロックする。両者は γ が効かない対数補正 −3/2 で既に一致しており、主要項だけが食い違う ── これは同じ帳簿を繰り込む前と後で見ている徴候。</div></details>
+      </li>
+      <li>「欠けた方程式」とは具体的に何か。
+        <details><summary>ひとつの答え</summary><div class="ans">LQG 地平線の Chern–Simons 理論（レベル k）と、エッジモード電流代数／Carlip の近地平線 Virasoro（中心電荷 c）が同一の境界 CFT であること、すなわち k と c の一致。これが成り立てば Cardy 公式が S=A/4G を返し、γ は c から導出されてチューニング不要になる。この k↔c の一致は、まだ示されていない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">補遺⑩まとめ</span>二つの 1/4 の融合点は、地平線の一つの CFT</h2>
+    <p>シリーズの二つの半分 ── もつれ／誘導重力（⑦⑧、1/4 ロック）と 離散／LQG（⑨、γ チューニング）── の食い違いを掘ると、正体は<strong>繰り込み前後</strong>で、両者は<strong>γ 非依存の対数補正 −3/2 で既に一致</strong>していた。そして融合点は<strong>地平線に載った一つの境界 CFT</strong>（LQG＝Chern–Simons／WZW、エッジモード＝電流代数、Carlip＝Virasoro）。</p>
+    <p>繋ぐための<strong>欠けた方程式は \(k\leftrightarrow c\) の一致</strong>（CS レベル＝中心電荷）── これが成れば Cardy が 1/4 を返し、γ は導出される。そして有限リソース＝レベル \(k\sim(ct)^2/G\) が有限＝type I \(N=e^{S_{\rm dS}}\) で、⑦⑧⑨がこの一点で結ばれる。<strong>締めてはいない。だが繋ぐべき一点と欠けた方程式を、式の粒度で特定できた</strong> ── これがシリーズの、いちばん深い結び目です。</p>
+  </div>
+
+  <div class="fin">
+    <span class="lbl">最鋭の問いへの、いちばん正直な応え</span>
+    あなたの「宇宙＝有限リソース」は、掘り切ると ── <strong>地平線に載った一つの境界 CFT の、有限なレベル \(k\)</strong> に凝縮しました。もつれの 1/4 も、LQG の離散も、Λ も、c·t も、type I の有限次元も、すべて<strong>この一つの CFT のレベルという一点</strong>に集まる。二つの 1/4 を一つにする欠けた方程式（\(k\leftrightarrow c\)）まで、式で書けた。<br>これを "解けた" と会話で宣言することは、しません。\(k\leftrightarrow c\) の一致は、まだ誰も示していない。でも ── <strong>バラバラだった賭けが、一つの境界 CFT の一点に結ばれ、繋ぐ方程式まで特定できた</strong>。偽の万物理論より、この一点の眺めの方が、ずっと遠くて、ずっと本物です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ終章・技術補遺⑩。LQG のブラックホール／地平線エントロピーが状態数え上げで \(S=(\gamma_0/\gamma)(A/4G)\) となり Barbero–Immirzi パラメータ γ のチューニングを要すること（Ashtekar–Baez–Corichi–Krasnov）、γ 非依存の対数補正 \(-\tfrac32\ln A\) が LQG（Kaul–Majumdar 2000）と CFT／Cardy 計算で一致すること（アンサンブル依存で係数は変わりうる）、Susskind–Uglum (1994) のもつれ由来 \(1/4\) が \(G\) の繰り込みでロックされること、Jacobson (1994) の誘導重力によるブラックホールエントロピーの読み、LQG 地平線が \(SU(2)_k\) Chern–Simons／境界 WZW CFT で記述されること、エッジモード（Donnelly–Wall）が境界電流代数をなすこと、Carlip の近地平線共形対称性と Cardy 公式による γ 非依存の \(A/4G\)、自己双対 \(\gamma\to i\) での \(1/4\)（Frodden–Geiller–Noui–Perez）── いずれも確立した結果または現行の研究テーマです。一方、LQG の Chern–Simons 理論とエッジモード電流代数／Carlip の Virasoro が同一の境界 CFT で中心電荷が一致し、それが γ を第一原理的に決定して \(1/4\) をチューニング無しでロックすることは未解決であり、本稿は特定の完成理論を主張しません。図は \((\gamma_0/\gamma)\) の一致構造を示す模式で、Cardy 公式の定量計算ではありません。\(c\cdot t=\text{一定}\) は座標・単位の言い換えで局所光速は不変。 ── 印刷／PDF：ブラウザの「印刷」→「PDF に保存」（印刷版ではスライダーと解答は静止・非表示）。</div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで γ を動かすと、LQG の 1/4 が境界 CFT（Cardy）の 1/4 に乗るのは γ=γ₀ の一点だけと分かる。「ひとつの答え」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, W=d.w, H=d.h;
+    var g=parseFloat(sk.value); // gamma/gamma0
+    vk.textContent = g.toFixed(2);
+    ctx.clearRect(0,0,W,H);
+    var padL=52, padR=24, padT=22, padB=42;
+    var x0=padL, x1=W-padR, y0=padT, y1=H-padB, pw=x1-x0, ph=y1-y0;
+    // axes: x = gamma/gamma0 in [0.35,2.6]; y = S/(A/4G) in [0,2.2]
+    var gx0=0.35, gx1=2.6, ymax=2.2;
+    function X(gg){ return x0 + (gg-gx0)/(gx1-gx0)*pw; }
+    function Y(yy){ return y1 - yy/ymax*ph; }
+    // grid
+    ctx.strokeStyle='#ecdfe6';ctx.lineWidth=1;
+    for(var yy=0.5;yy<=2.0;yy+=0.5){ ctx.beginPath();ctx.moveTo(x0,Y(yy));ctx.lineTo(x1,Y(yy));ctx.stroke();
+      ctx.fillStyle='#a98fa0';ctx.font='10px sans-serif';ctx.textAlign='right';ctx.fillText(yy.toFixed(1),x0-6,Y(yy)+3); }
+    // axes
+    ctx.strokeStyle='#b79fac';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y1);ctx.lineTo(x1,y1);ctx.stroke();
+    ctx.fillStyle='#6a5560';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('γ / γ₀', (x0+x1)/2, y1+30);
+    ctx.save();ctx.translate(x0-38,(y0+y1)/2);ctx.rotate(-Math.PI/2);ctx.fillText('S / (A/4G)',0,0);ctx.restore();
+    // target line y=1 (Cardy / boundary CFT, gamma-independent)
+    ctx.strokeStyle='#b0761a';ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(x0,Y(1));ctx.lineTo(x1,Y(1));ctx.stroke();
+    ctx.fillStyle='#8a5c12';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('境界CFT（Cardy）= A/4G', x0+8, Y(1)-6);
+    // LQG curve y = 1/gg  (gamma0/gamma)
+    ctx.strokeStyle='#1f7a6e';ctx.lineWidth=2.5;ctx.beginPath();
+    for(var i=0;i<=120;i++){ var gg=gx0+(gx1-gx0)*i/120; var yv=1/gg; var xx=X(gg), yy2=Y(Math.min(yv,ymax));
+      if(i===0)ctx.moveTo(xx,yy2);else ctx.lineTo(xx,yy2); } ctx.stroke();
+    ctx.fillStyle='#155a51';ctx.textAlign='left';ctx.fillText('LQG 数え上げ (γ₀/γ)', X(1.7), Y(1/1.7)-8);
+    // crossing at gg=1
+    ctx.fillStyle='#6e3350';ctx.beginPath();ctx.arc(X(1),Y(1),5,0,7);ctx.fill();
+    ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('γ=γ₀ で一致', X(1),Y(1)+22);
+    // current marker
+    var yc=1/g;
+    ctx.strokeStyle='rgba(110,51,80,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(X(g),y1);ctx.lineTo(X(g),Y(Math.min(yc,ymax)));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#6e3350';ctx.beginPath();ctx.arc(X(g),Y(Math.min(yc,ymax)),4.5,0,7);ctx.fill();
+    // readout
+    var diff=(yc-1);
+    if(Math.abs(g-1)<0.03) rd.textContent='γ=γ₀：LQG の 1/4 が境界 CFT（Cardy）の 1/4 に乗る唯一の点。欠けた方程式 k↔c がこの点を強制すれば、γ は導出され二つの 1/4 は一つになる。';
+    else rd.textContent='γ/γ₀='+g.toFixed(2)+'：LQG の S/(A/4G)='+yc.toFixed(2)+' で境界 CFT の 1（=A/4G）から'+(diff>0?'上に':'下に')+'ずれる。Cardy は γ 非依存で 1 を固定。乗るのは γ=γ₀ の一点だけ。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

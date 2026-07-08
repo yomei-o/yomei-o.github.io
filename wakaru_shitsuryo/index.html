@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>わかる質量 ── シリーズ目次</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f3; --paper-edge:#e5ddce;
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --e1:#2e6f8e;  /* 第1回：スチールブルー */
+    --e2:#6b4fa0;  /* 第2回：菫 */
+    --e3:#b0641a;  /* 第3回：琥珀 */
+    --e4:#2f7d5a;  /* 第4回：緑（走る結合） */
+    --e5:#a03a5f;  /* 第5回：赤紫（UV） */
+    --e6:#3a5a80;  /* 第6回：藍（IR） */
+    --e7:#7a5a2a;  /* 第7回：銅（動かない床） */
+    --ef:#4b3fa0;  /* 最終回：藍紫 */
+    --b1:#9a4230;  /* 番外①：赤錆 */
+    --b2:#1f7a6e;  /* 番外②：ティール */
+    --b3:#46617f;  /* 番外③：青灰 */
+    --b5:#5a4a70;  /* 番外⑤：すみれ灰 */
+    --intro:#4a7a86; /* 導入：やわらかいスチール */
+    --accent:#2e6f8e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px 80px;}
+
+  header{background:var(--paper);border-bottom:1px solid var(--paper-edge);
+    padding:56px 0 40px;margin-bottom:40px;box-shadow:0 10px 40px rgba(0,0,0,.05);}
+  .head-in{max-width:820px;margin:0 auto;padding:0 40px;}
+  .kicker{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.34em;color:var(--accent);font-weight:700;margin:0 0 16px;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;}
+  .kicker a{color:var(--ink-soft);text-decoration:none;letter-spacing:.1em;font-size:11.5px;border-bottom:1px solid var(--hair);}
+  .kicker a:hover{color:var(--accent);}
+  h1{font-size:44px;line-height:1.2;margin:0 0 14px;font-weight:600;letter-spacing:.03em;}
+  .tagline{font-size:17px;color:var(--ink-soft);max-width:640px;line-height:1.8;margin:0;}
+  .meta{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:22px;
+    padding-top:18px;border-top:2px solid var(--ink);display:flex;gap:22px;flex-wrap:wrap;}
+
+  .dlbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+    padding:20px 24px;margin-bottom:36px;}
+  .dlbar .txt{flex:1;min-width:200px;}
+  .dlbar .txt strong{display:block;font-size:15px;margin-bottom:2px;}
+  .dlbar .txt span{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer;
+    background:var(--ink);color:#fff;border:none;border-radius:5px;
+    padding:14px 26px;transition:transform .1s ease,opacity .2s ease;white-space:nowrap;}
+  .btn:hover{transform:translateY(-1px);} .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:.55;cursor:progress;transform:none;}
+  .dlnote{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;width:100%;}
+
+  .cards{display:flex;flex-direction:column;gap:16px;}
+  a.card,div.card{display:flex;gap:22px;align-items:stretch;text-decoration:none;color:inherit;
+    background:var(--paper);border:1px solid var(--rule);border-radius:6px;overflow:hidden;
+    transition:transform .12s ease,box-shadow .2s ease,border-color .2s ease;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.10);border-color:var(--hair);}
+  .card.soon{opacity:.6;cursor:default;}
+  .spine{width:8px;flex-shrink:0;}
+  .card-body{padding:22px 24px 20px;flex:1;min-width:0;}
+  .card-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+  .epno{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;font-weight:700;}
+  .badge{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:10.5px;letter-spacing:.1em;font-weight:700;padding:2px 9px;border-radius:20px;
+    background:#efe9dc;color:var(--ink-soft);}
+  .badge.live{background:#e2eef2;color:#1f5b6e;}
+  .badge.open{background:#f7e7e4;color:#a5311f;}
+  .badge.soon{background:#eceae2;color:#7a7566;}
+  .card-title{font-size:22px;font-weight:600;letter-spacing:.02em;margin:0 0 8px;line-height:1.35;}
+  .card-desc{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;color:var(--ink-soft);line-height:1.75;margin:0;}
+  .card-eq{font-style:italic;color:var(--ink);}
+  .arrow{align-self:center;padding-right:22px;color:var(--hair);font-size:22px;flex-shrink:0;}
+
+  .divlabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.24em;color:var(--ink-soft);font-weight:700;
+    margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule);}
+
+  .spine-band{background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+    padding:18px 24px;margin-bottom:30px;font-size:14.5px;color:var(--ink-soft);line-height:1.8;}
+  .spine-band strong{color:var(--ink);}
+
+  footer{margin-top:48px;padding-top:22px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;}
+
+  @media (max-width:640px){
+    .head-in{padding:0 22px;} h1{font-size:32px;}
+    a.card,div.card{gap:0;} .card-body{padding:18px 18px 16px;} .arrow{display:none;}
+    .btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <p class="kicker"><span>物理好きの高校生・大学生のための読み物シリーズ</span><a href="../index.html">姉妹シリーズ「わかる宇宙論」→</a></p>
+    <h1>わかる質量</h1>
+    <p class="tagline">「重さって、そもそも何？」という一言から出発して、質量ゼロを守る対称性、ヒッグスと閉じ込め、最小の質量、そして最小と最大が出会う meV まで ── 同じ一つの背骨でたどる、質量の物語。姉妹シリーズ「わかる宇宙論」の合言葉 c・t＝一定 のレンズを、"効く回だけ" 正直に使います。</p>
+    <div class="meta">
+      <span>全 14 話予定（導入＋本編7＋最終1＋番外5）</span>
+      <span>各話：日常語 → 数式 → 種明かし → 練習問題</span>
+      <span>印刷・PDF化対応</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="spine-band">
+    <strong>このシリーズの背骨：</strong>質量とは「止まれること」＝消せないエネルギーの床。<strong>ゼロの床は対称性が守り、有限の床は"走り"が生み、その最小は宇宙の大きさが決める。</strong>そして最小の質量は、いつも最大のスケールを指している。
+  </div>
+
+  <div class="dlbar">
+    <div class="txt">
+      <strong>公開済みの回を一括ダウンロード</strong>
+      <span>下のボタンで、公開済みの回（導入＋第1〜7回＋最終回＋番外①〜⑤＋終章＋技術補遺①〜⑮＋式の地図）を1つの ZIP にまとめて保存できます。</span>
+      <div class="dlnote" id="dlnote"></div>
+    </div>
+    <button class="btn" id="zipbtn">↓ ZIP で一括ダウンロード</button>
+  </div>
+
+  <div class="divlabel">本編（公開済み）</div>
+  <div class="cards">
+
+    <a class="card" href="wakaru-shitsuryo-01-tomareru.html">
+      <div class="spine" style="background:var(--e1);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e1);">第 1 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">止まれること、それが質量</div>
+        <p class="card-desc">光は止まれない、だから質量ゼロ。質量とは "運動量を全部抜いても残るエネルギーの床"。一本の式が光と物質を同時に説明する。<span class="card-eq">E² = (mc²)² + (pc)²</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-02-taisho.html">
+      <div class="spine" style="background:var(--e2);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e2);">第 2 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">質量ゼロは、対称性が守っている</div>
+        <p class="card-desc">ゼロは自明ではなく、3人の見張り番（ゲージ・カイラル・ゴールドストン）の帰結。質量²は "ポテンシャルの底の曲がり" だった。<span class="card-eq">質量² ∝ 底の曲がり</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-03-waku.html">
+      <div class="spine" style="background:var(--e3);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e3);">第 3 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">質量は、二通りに湧く</div>
+        <p class="card-desc">電子はヒッグスから、陽子は閉じ込めから。あなたの体重の99%は、有名なヒッグスではなく閉じ込めのエネルギーだった。<span class="card-eq">m = y·v/√2 ／ 陽子の99%</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-04-scale.html">
+      <div class="spine" style="background:var(--e4);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e4);">第 4 回</span><span class="badge live">動く図つき</span><span class="badge open">c・t が効く</span></div>
+        <div class="card-title">スケールなき理論から、スケールが湧く</div>
+        <p class="card-desc">閉じ込め側の "99%" の正体を、走る結合と次元的移行で。古典的に目盛りのない世界（＝c・t が効く土俵）が、量子効果で重さの尺度を生む。質量ギャップの正体。<span class="card-eq">無次元の走り → Λ</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-05-neutrino.html">
+      <div class="spine" style="background:var(--e5);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e5);">第 5 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">最小の質量・UV編：ニュートリノはなぜ軽い</div>
+        <p class="card-desc">シーソー機構。最小の質量が、最大のスケール（大統一）を指す。振動・宇宙論・KATRIN・0νββ ── 絶対値をどう測るか。<span class="card-eq">m_ν ~ v² / M</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-06-irfloor.html">
+      <div class="spine" style="background:var(--e6);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e6);">第 6 回</span><span class="badge live">動く図つき</span><span class="badge open">c・t が効く</span></div>
+        <div class="card-title">最小の質量・IR編：宇宙の大きさが決める床</div>
+        <p class="card-desc">質量に下の壁はあるか。ハッブル摩擦で "凍る／振動する" の境目が、宇宙が許す最小質量。R_h=ct が正当に入り、床は 1/t で下がる。<span class="card-eq">m_min ~ ℏ / (c²t)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-07-massgap.html">
+      <div class="spine" style="background:var(--e7);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e7);">第 7 回</span><span class="badge live">動く図つき</span><span class="badge open">表現不変で読む</span></div>
+        <div class="card-title">動く床と、動かない床</div>
+        <p class="card-desc">IRフロアは宇宙とともに 1/t で下がる"動く床"、ヤン=ミルズの質量ギャップは時間に乗らない"動かない床"。中性子が不動を証言し、最後に "二つの床" が連続でも離散でも同じ一枚の地図だと分かる ── 変わって見えたら、表現に溶ける言葉。<span class="card-eq">m_min=ℏH/c² ／ 観測量か表現か</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="divlabel">最終回</div>
+  <div class="cards">
+    <a class="card" href="wakaru-shitsuryo-final-mev.html">
+      <div class="spine" style="background:var(--ef);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--ef);">最終回</span><span class="badge live">動く図つき</span><span class="badge open">未踏の領域</span></div>
+        <div class="card-title">最小と最大が、meV で握手する</div>
+        <p class="card-desc">最小の質量（宇宙の大きさ）と最大のスケール（プランク）が、meV という一点で出会う。重力が課す UV-IR 境界、暗黒次元、そして宇宙定数問題 ── 開いたままの最後の扉。<span class="card-eq">ρ_Λ ≲ M_Pl²/L² ⇒ meV = √(UV·IR)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="divlabel">番外編</div>
+  <div class="cards">
+
+    <a class="card" href="wakaru-shitsuryo-bangai1-marume.html">
+      <div class="spine" style="background:var(--b1);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--b1);">番外 ①</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">質量ギャップは「丸め誤差」か</div>
+        <p class="card-desc">"有限計算機の丸め誤差＝質量ギャップ" という惜しい説を、正直に診断する。何が魅力的で、どこで飛躍したか ── 正しい版は第4回の次元的移行。<span class="card-eq">惜しい説の診断</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-bangai2-hozon.html">
+      <div class="spine" style="background:var(--b2);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--b2);">番外 ②</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">質量は保存しない</div>
+        <p class="card-desc">「速く動くと重くなる（相対論的質量）」という誤解を解く。増えるのはエネルギーで、質量そのものは速度によらない。E=mc² の正しい読み方。<span class="card-eq">m は不変、E は増える</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-bangai3-koide.html">
+      <div class="spine" style="background:var(--b3);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--b3);">番外 ③</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">世代とKoide公式</div>
+        <p class="card-desc">電子・ミュオン・タウの質量比が 2/3 に一致する不思議。数合わせの誘惑と、"なぜそれは予言ではないのか（循環）" を正直に。<span class="card-eq">(Σm)/(Σ√m)² = 2/3 ?</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-bangai4-koushi.html">
+      <div class="spine" style="background:#3a4a8f;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3a4a8f;">番外 ④</span><span class="badge live">動く図つき</span><span class="badge open">本編級</span></div>
+        <div class="card-title">4つの力を、一つの離散式で</div>
+        <p class="card-desc">数合わせの 1/(Cn)^D ではなく、群とループで。格子ゲージ理論＝ウィルソン作用が、強・弱・電磁を一本に統一（群を差し替えるだけ）。重力は開いた扉。第4回・最終回・番外①を束ねる回。<span class="card-eq">S = β Σ[1 − (1/N)ReTr U□]</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-bangai5-hyogen.html">
+      <div class="spine" style="background:var(--b5);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--b5);">番外 ⑤</span><span class="badge live">動く図つき</span><span class="badge open">本編級</span></div>
+        <div class="card-title">「最小の質量」は一語で六つ</div>
+        <p class="card-desc">質量ギャップ・IRフロア・凍結・モード間隔・離散・有限 ── 専門家も混ぜる六つを、「観測量か、表現に溶ける言葉か」の一本の線で仕分ける。五つのすり替えの診断と、連続⇄離散トグルの図つき。<span class="card-eq">観測量か、表現に溶ける言葉か</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="divlabel">終章（エピローグ）</div>
+  <div class="cards">
+    <a class="card" href="wakaru-shitsuryo-epilogue-risan.html">
+      <div class="spine" style="background:#2f3550;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2f3550;">終章</span><span class="badge live">動く図つき</span><span class="badge open">最後の仮説</span></div>
+        <div class="card-title">宇宙は離散である</div>
+        <p class="card-desc">証明でなく、名指しした賭けで締める。一本の離散式の "目標の形"、離散はコーザルセット的でなければならない理由、そして「チャットで"解けた"が出たら疑え」という掟。二つのシリーズの終わりに。<span class="card-eq">Z = Σ_離散幾何 (振幅)×(ホロノミー物質)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺</span><span class="badge live">動く図つき</span><span class="badge open">最前線の地図</span></div>
+        <div class="card-title">離散宇宙の一枚</div>
+        <p class="card-desc">「宇宙は離散」の賭けを、有限情報からGRまで一本に組む。ホログラフィックにΛをmeVへ→誘導重力でG→創発ローレンツを継承。四つの壁と、二つの反証可能な予言（極小LV／w≠−1）。<span class="card-eq">ρ_Λ ≲ M_Pl²/L² ⇒ 有限情報が宇宙定数を抑える</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi2.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺②</span><span class="badge live">動く図つき</span><span class="badge open">観測で決着</span></div>
+        <div class="card-title">壁①の決着：w(a)</div>
+        <p class="card-desc">c·t（共形時間）カットオフの w(a) を書き下し、加速膨張データと対決。w₀≈−0.8 は DESI と一致、だが進化 w_a の符号は逆 ── 反証可能な予言に凝縮。<span class="card-eq">w(a) = −1 + (2/3n)·√Ω_de / a</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi3.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺③</span><span class="badge live">動く図つき</span><span class="badge open">観測で決着</span></div>
+        <div class="card-title">壁②の決着：なぜ今か</div>
+        <p class="card-desc">一致問題(why-now)。有限情報は ρ_Λ〜ρ_crit で "大きさ" を自然に緩和（ΛCDMより有利）。だが "なぜ今" は壁①と連結 ── 相互作用DEが両立の本命、構造成長 fσ8 で反証可能。<span class="card-eq">ρ_Λ/ρ_m ∝ a³ ／ ρ_Λ〜M_Pl²H²〜ρ_crit</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi4.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺④</span><span class="badge live">動く図つき</span><span class="badge open">理論整合の壁</span></div>
+        <div class="card-title">壁③の決着：誘導重力→GR</div>
+        <p class="card-desc">誘導重力は本物のGRを出すか。観測スケールではスケール分離でGR回復（等価原理継承）。核はWW定理→ホログラフィック創発（finaleに収束）。R²→スタロビンスキーがCMBの手がかり。<span class="card-eq">1/G 〜 NΛ_cut² ／ ズレ 〜 (μ/M_Pl)²</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi5.html">
+      <div class="spine" style="background:#2f3550;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2f3550;">終章・技術補遺⑤</span><span class="badge live">動く図つき</span><span class="badge open">二シリーズ最終</span></div>
+        <div class="card-title">壁④＋四つの壁のスコアカード</div>
+        <p class="card-desc">これ全部を予言する一つの完成理論にできるか。正直な答え＝まだ・チャットでは無理。だが "整合的で反証可能なプログラム" は完成（全QGと同じ最前線）。四つの壁のスコアカードで二シリーズを締める。<span class="card-eq">組み立て(assembly) vs 導出(derivation)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi6.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺⑥</span><span class="badge live">動く図つき</span><span class="badge open">賭けの実現</span></div>
+        <div class="card-title">有限情報からEinstein方程式</div>
+        <p class="card-desc">「導けるでしょ」に本物で応える回。Jacobson(1995)＝面積エントロピー＋ウンルー温度＋クラウジウスから完全なEinstein方程式を導出（あなたの賭けの文献上の実現）。ただし壁③は閉じない＝面積エントロピーの微視的起源が残る、と正直に。<span class="card-eq">δQ=TδS ⇒ R_ab−½Rg_ab+Λg_ab=8πG T_ab</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi7.html">
+      <div class="spine" style="background:#3b4668;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3b4668;">終章・技術補遺⑦</span><span class="badge live">動く図つき</span><span class="badge open">残った壁の最前線</span></div>
+        <div class="card-title">S=A/4 にどこまで迫れるか</div>
+        <p class="card-desc">残った壁を全力で押す回。もつれ＋誘導重力＋エッジモードで S=A/4G は robustly 出る（1/4がロックされる仕組みも）。だが残る三点＝量子重力そのもの。"解けた"でなく"ここまで/ここが残る"を精密に。<span class="card-eq">S_gen = A/4G + S_matter = 有限（cutoff非依存）</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi8.html">
+      <div class="spine" style="background:#4a3d6b;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#4a3d6b;">終章・技術補遺⑧</span><span class="badge live">動く図つき</span><span class="badge open">理論的到達点</span></div>
+        <div class="card-title">残った壁を一本に：宇宙は type I か</div>
+        <p class="card-desc">三点を根まで降りたら一本に凝縮した回。代数の型の梯子（III₁連続→II半古典→I離散）＝離散仮説の三段。重力がIII→IIを架け S_gen が落ちる（2022本物）。残る一段＝面積に離散＋有界スペクトル。あなたの賭け＝「基盤はtype I」。<span class="card-eq">type II∞ →(離散+有界)→ type I, dim=e^(A/4G)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi9.html">
+      <div class="spine" style="background:#2b6272;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2b6272;">終章・技術補遺⑨</span><span class="badge live">動く図つき</span><span class="badge open">構想篇</span></div>
+        <div class="card-title">4D・dS の舞台：Λ という一本のツマミ</div>
+        <p class="card-desc">残った壁を「立たせるなら」の舞台を構想する回。de Sitter では Λ が三役（離散・上限・有限次元）を兼ねる。背骨の一箇所は厳密＝II₁は有限I_NのΛ→0極限＝連続極限こそがtype Iを壊す犯人。w=−1かw≠−1かで観測に割れる。提案する設計図であって建てた理論ではない。<span class="card-eq">A_dS=12π/Λ, N=e^(S_dS), II₁=lim I_N</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi10.html">
+      <div class="spine" style="background:#6e3350;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#6e3350;">終章・技術補遺⑩</span><span class="badge live">動く図つき</span><span class="badge open">最鋭の問い</span></div>
+        <div class="card-title">地平線の CFT：二つの 1/4 を一つに</div>
+        <p class="card-desc">シリーズ二つの半分を融合する回。もつれ/誘導重力の「ロックされた1/4」（⑦⑧）とLQGの「γチューニングの1/4」（⑨）の食い違いは繰り込み前後。既に対数−3/2で一致。融合点＝地平線の一つの境界CFT（Chern-Simons/WZW/Virasoro）。欠けた方程式＝k↔cの一致。<span class="card-eq">S=(γ₀/γ)(A/4G)　vs　Cardy: S=A/4G</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi11.html">
+      <div class="spine" style="background:#8a5320;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#8a5320;">終章・技術補遺⑪</span><span class="badge live">動く図つき</span><span class="badge open">有限性の代償と予言</span></div>
+        <div class="card-title">Boltzmann brain と w の緩和</div>
+        <p class="card-desc">「有限」はタダの仮定でなく双刃の予言、という回。有限次元⟹ユニタリ性を救う（良い刃）が離散スペクトル・Poincaré再帰・Boltzmann brainを強制（悪い刃）。だが代償を避ける論理がw>−1の緩和を要求＝c·t・DESIと一本に。弱点が反証可能な予言に昇格。<span class="card-eq">t_rec~e^(S_dS)　BB回避 → w>−1</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi12.html">
+      <div class="spine" style="background:#3a4250;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3a4250;">終章・技術補遺⑫</span><span class="badge live">動く図つき</span><span class="badge open">旅の俯瞰・締め</span></div>
+        <div class="card-title">残る穴の地図：確かめた／試せる／鋭く開いた／ただ一つの穴</div>
+        <p class="card-desc">25本の登攀を四段に仕分ける締めの回。確かめた(II₁=lim I_N,S=A/4G)／試せる(w≠−1,離散スペクトル)／鋭く開いた(地平線CFT k↔c)／ただ一つの穴(背景独立な有限動力学=QG動力学)。残る亀裂①③④＋観測者は全部この一つの穴に落ちる。信念を論文粒度の地図に変えた。<span class="card-eq">settled / testable / sharp open / the one hole</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi13.html">
+      <div class="spine" style="background:#2b3a4a;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2b3a4a;">終章・技術補遺⑬</span><span class="badge live">動く図つき</span><span class="badge open">最深部・全糸の収束</span></div>
+        <div class="card-title">地平線でひとつに：QG動力学の穴が結ぶ最後の点</div>
+        <p class="card-desc">「ただ一つの穴」(QG動力学)を掘り切る最深部の回。動力学の隅(有限Λ変形因果スピンフォーム)を半古典に落とすとエントロピーの隅と地平線で出会う。エッジモード＝パンクチャー＝地平線CS＝背景独立な領域＝一つの物で⑦⑧⑨⑩が統一。A/4Gは出る(γ依存)、S_out/type II・k↔cは開く。穴は地平線の一つの結び目に絞れた。<span class="card-eq">地平線CS: dim~e^(A/4G)=type I,　k↔c → Cardy A/4G</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi14.html">
+      <div class="spine" style="background:#3a3566;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#3a3566;">終章・技術補遺⑭</span><span class="badge live">動く図つき</span><span class="badge open">最深の結節点</span></div>
+        <div class="card-title">面積はブースト：地平線コーナーの SL(2,R)</div>
+        <p class="card-desc">障害B（エントロピーはどこに住むか）を掘り切る回。面積＝地平線コーナーの SL(2,R) のブースト生成子＝Casimir（Wieland）、離散系列表現が境界から離散面積を出す。この SL(2,R) がモジュラー流=type II(⑧⑩)・自己双対の1/4(⑩)・Λ切り詰めのtype I(⑨)を一点に束ねる。LQG=コーナー対称性の量子化。<span class="card-eq">{A,η}∝8πG　面積=ブースト=モジュラー流　SL(2,R)⋉Diff(S²)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-shitsuryo-hoi15.html">
+      <div class="spine" style="background:#2c2e3a;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2c2e3a;">終章・技術補遺⑮</span><span class="badge live">動く図つき</span><span class="badge open">シリーズの締め</span></div>
+        <div class="card-title">剥ぎきった核心：表現に溶けないもの</div>
+        <p class="card-desc">飾りを一枚ずつ剥ぐ締めの回。c·t=const（座標）・連続/離散（表現）・面積スペクトルの離散性（Dirac観測量論争）・type I（枠組み語）は剥ぐと表現に溶ける。最後に溶けない核心＝「領域は厳密に有限整数個の状態を含む」＝違う予言（再帰・ユニタリ性・S=log整数）をする物理命題。表現に溶けないが今は観測の縁の外。<span class="card-eq">剥ぐ → 溶けない核心 = 厳密な有限性の帰結</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="divlabel">式の地図（ポスター・まとめ）</div>
+  <div class="cards">
+    <a class="card" href="wakaru-shitsuryo-shikimap.html">
+      <div class="spine" style="background:#2f3550;"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:#2f3550;">式の地図</span><span class="badge">1枚ポスター</span></div>
+        <div class="card-title">旅で出た "本物の式" 一枚まとめ</div>
+        <p class="card-desc">万物の一本は無い（＝疑うべき）。でも数合わせを捨てて得た本物の式が、これだけある ── 床・対称性・ヒッグス・次元的移行・格子・シーソー・IRフロア・CKN・誘導重力・w(a)、そして繋ぎの一行。<span class="card-eq">meV 〜 √(最小 × 最大)</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="divlabel">導入版（一般向け・数式ひかえめ）</div>
+  <div class="cards">
+    <a class="card" href="wakaru-shitsuryo-00-nyumon.html">
+      <div class="spine" style="background:var(--intro);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--intro);">導入版</span></div>
+        <div class="card-title">重さって、そもそも何？（やさしい版）</div>
+        <p class="card-desc">数式を使わず、語りと種明かしだけで「重さの正体」をつかむ版。まず全体の地図を見たい人・人に見せたい人向け。</p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <footer>
+    「わかる質量」シリーズ ／ 姉妹シリーズ「わかる宇宙論」の質量編です。各話は、わかりやすい語りと、それが物理的に何を意味するかの「種明かし」を必ずセットで運びます。「光速が遅くなる」等の表現は理解のための等価な言い換え（投影）であり、局所的な光速や無次元定数 α は不変です。合言葉 c・t＝一定 は座標・単位の選び方であって、質量を新しく作り出す魔法ではなく、"効く回だけ" 正直に使います。E=mc² の質量は静止質量（不変質量）を指します。 ── 各ページはブラウザの「印刷 → PDF に保存」で PDF 化できます。この目次と各話 HTML は同じフォルダに置いてください（リンクが相対パスのため）。
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var FILES = [
+    "wakaru-shitsuryo-00-nyumon.html",
+    "wakaru-shitsuryo-01-tomareru.html",
+    "wakaru-shitsuryo-02-taisho.html",
+    "wakaru-shitsuryo-03-waku.html",
+    "wakaru-shitsuryo-04-scale.html",
+    "wakaru-shitsuryo-05-neutrino.html",
+    "wakaru-shitsuryo-06-irfloor.html",
+    "wakaru-shitsuryo-07-massgap.html",
+    "wakaru-shitsuryo-final-mev.html",
+    "wakaru-shitsuryo-bangai1-marume.html",
+    "wakaru-shitsuryo-bangai2-hozon.html",
+    "wakaru-shitsuryo-bangai3-koide.html",
+    "wakaru-shitsuryo-bangai4-koushi.html",
+    "wakaru-shitsuryo-bangai5-hyogen.html",
+    "wakaru-shitsuryo-epilogue-risan.html",
+    "wakaru-shitsuryo-hoi.html",
+    "wakaru-shitsuryo-hoi2.html",
+    "wakaru-shitsuryo-hoi3.html",
+    "wakaru-shitsuryo-hoi4.html",
+    "wakaru-shitsuryo-hoi5.html",
+    "wakaru-shitsuryo-hoi6.html",
+    "wakaru-shitsuryo-hoi7.html",
+    "wakaru-shitsuryo-hoi8.html",
+    "wakaru-shitsuryo-hoi9.html",
+    "wakaru-shitsuryo-hoi10.html",
+    "wakaru-shitsuryo-hoi11.html",
+    "wakaru-shitsuryo-hoi12.html",
+    "wakaru-shitsuryo-hoi13.html",
+    "wakaru-shitsuryo-hoi14.html",
+    "wakaru-shitsuryo-hoi15.html",
+    "wakaru-shitsuryo-shikimap.html"
+  ];
+  var btn=document.getElementById('zipbtn'), note=document.getElementById('dlnote');
+
+  btn.addEventListener('click', function(){
+    if(typeof JSZip==='undefined'){
+      note.textContent='ネットに接続できないため ZIP を作れません。各カードを開いて個別に保存してください。';
+      return;
+    }
+    btn.disabled=true; var orig=btn.textContent; btn.textContent='まとめています…';
+    note.textContent='';
+    var zip=new JSZip();
+    var folder=zip.folder('wakaru-shitsuryo');
+    var done=0, failed=[];
+    function finalize(){
+      if(failed.length===FILES.length){
+        note.textContent='ファイルを読み込めませんでした。この目次を各話 HTML と同じフォルダに置いた状態で、ローカルまたはサーバー経由で開いてください。';
+        btn.disabled=false; btn.textContent=orig; return;
+      }
+      zip.generateAsync({type:'blob'}).then(function(blob){
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a');
+        a.href=url; a.download='wakaru-shitsuryo-series.zip';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        btn.disabled=false; btn.textContent='✓ ダウンロード完了';
+        note.textContent = failed.length? ('注：'+failed.length+' 件は読み込めませんでした（'+failed.join(', ')+'）。') : ('公開済み '+FILES.length+' ファイルを wakaru-shitsuryo-series.zip に保存しました。');
+        setTimeout(function(){btn.textContent=orig;},2500);
+      }).catch(function(){
+        btn.disabled=false; btn.textContent=orig;
+        note.textContent='ZIP の生成に失敗しました。各カードから個別に保存してください。';
+      });
+    }
+    FILES.forEach(function(fn){
+      fetch(fn).then(function(r){ if(!r.ok) throw new Error(); return r.text(); })
+        .then(function(txt){ folder.file(fn, txt); })
+        .catch(function(){ failed.push(fn); })
+        .finally(function(){ done++; if(done===FILES.length) finalize(); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

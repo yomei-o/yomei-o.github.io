@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>重さって、そもそも何？ ── わかる質量 導入版</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f4; --paper-edge:#e6ddd2;   /* 導入版：温かい紙 */
+    --side:#3f6a72; --side-bg:#eef3f3;
+    --warn:#8a4b2f;
+    --rule:#d9d0c3; --hair:#c8bfb2;
+    --acc:#4a7a86;    /* 導入アクセント＝やわらかいスチールティール */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:720px;margin:32px auto;background:var(--paper);
+    padding:60px 64px 84px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 20px;font-weight:600;}
+  h1{font-size:38px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:48px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe4e6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .keybox{margin:28px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfa;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:6px;}
+  .keybox .big{font-size:18px;line-height:1.7;}
+
+  .maplist{margin:22px 0;padding:0;list-style:none;}
+  .maplist li{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;line-height:1.7;padding:10px 0 10px 30px;border-bottom:1px solid var(--rule);position:relative;}
+  .maplist li:last-child{border-bottom:none;}
+  .maplist li::before{content:"›";position:absolute;left:6px;top:9px;color:var(--acc);font-weight:700;font-size:17px;}
+  .maplist b{font-weight:700;color:#25303a;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:44px 0;font-size:12px;}
+  .record{margin:50px 0 8px;padding:28px 32px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f2ece3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#eef3f3;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f3a40;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:54px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:22pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.next{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:720px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる質量</span><span class="ep">導入版 ／ やさしい版・数式なし</span></div>
+  <p class="eyebrow">体重計の数字の裏で、ほんとうは何が起きているのか</p>
+  <h1>重さって、そもそも何？
+    <span class="sub">「重い」の正体を、式を使わずに種明かし。<br>この一本が、シリーズ全体の地図になります。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：なし（読むだけ）</span>
+    <span>合言葉：重さ＝止まれること</span>
+  </div>
+
+  <p class="lead">体重計に乗ると数字が出る。買い物袋は、重いと腕が痛い。でも ── <em>「重さ」って、そもそも何でしょう。</em> 当たり前すぎて、ふだん誰も問いません。このシリーズ「わかる質量」は、その当たり前を一枚ずつはがしていきます。まずは数式ぬきで、全体の地図を広げます。</p>
+
+  <h2><span class="n">01</span>「重い」とは、動かしにくいこと</h2>
+
+  <p>重い荷物は、押してもなかなか動き出しません。そして、動いているものが重いと、今度はなかなか止まりません。「重さ」の正体のひとつは、この<em>動かしにくさ（慣性）</em>です。軽いものはひょいと動き、重いものはどっしり構えて、速度を変えるのに手間がかかる。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声</span>
+    重さにはもう一つ「重力に引かれやすさ」という顔もあります。面白いことに、この二つ（動かしにくさ／引かれやすさ）はぴったり同じ。それがアインシュタインの重力理論の出発点でした。今回は「動かしにくさ」の顔だけを追います。
+  </div>
+
+  <h2><span class="n">02</span>光は、止まれない</h2>
+
+  <p>ここで、重さゼロの代表 ── 光を見ます。光は、生まれた瞬間から最高速度で走っています。<em>ゆっくりの光も、止まっている光も、この世に存在しません。</em> どんなに追いかけても、光は必ず同じ速さで逃げていく。</p>
+
+  <p>これが決定的なヒントです。<strong>止まれないもの＝重さゼロ。止まれるもの＝重さを持つ。</strong> 重さとは、つきつめれば「<em>止まれること</em>」なんです。</p>
+
+  <div class="keybox">
+    <div class="lbl">重さの正体（言葉だけ）</div>
+    <p class="big" style="margin:6px 0 0;">止まれる　＝　重さがある<br>止まれない（いつも光速）　＝　重さゼロ</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>重さは、閉じ込められたエネルギー</h2>
+
+  <p>止まれるものの中には、何が詰まっているのでしょう。答えは ── <em>エネルギー</em>です。止まっているものの中に、エネルギーがぎゅっと閉じ込められている。それが重さの正体。有名な <strong>E＝mc²</strong> という式は、むずかしく見えて、言っていることはシンプルです ── 「<em>重さとは、閉じ込められたエネルギーだ</em>」。</p>
+
+  <p>しかも、その圧縮率がすさまじい。角砂糖ひとつぶんの重さを、もし全部エネルギーに変えられたら、街ひとつを動かせるほどの力になります。重さとは、それほど濃く圧縮された<strong>エネルギーの塊</strong>なのです。</p>
+
+  <h2><span class="n">04</span>あなたの体重の99%は「勢い」だった</h2>
+
+  <p>いちばんの種明かしがこれです。<em>あなたの体重のほとんどは、体をつくる部品の重さの「合計」ではありません。</em></p>
+
+  <p>体は原子でできていて、原子の芯には陽子や中性子があります。その陽子の重さの<strong>約99%</strong>は、中で暴れるクォークを縛りつけている力の「勢い（エネルギー）」が、E＝mc² で重さに化けたもの。部品そのものの重さは、ほんの1%ほどにすぎません。つまり重さは、<em>「部品の足し算」ではなく「閉じ込められた勢い」</em>だったのです。</p>
+
+  <h2><span class="n">05</span>このシリーズで追うこと</h2>
+
+  <p>「重さはどこから来るのか」を、姉妹シリーズ「わかる宇宙論」の合言葉 <strong>c・t＝一定</strong>（光速 × 宇宙年齢 ＝ 一定）というレンズで、順番にたどります。</p>
+
+  <ul class="maplist">
+    <li><b>ゼロの重さは、対称性が守っている</b> ── なぜ光は、重さゼロでいられるのか。</li>
+    <li><b>重さは二通りに湧く</b> ── ヒッグスからもらう重さと、閉じ込めから生まれる重さ。</li>
+    <li><b>スケールなき世界から、重さの尺度が湧く</b> ── 何もないところに「重さの目盛り」が現れる不思議。</li>
+    <li><b>最小の重さは、宇宙の大きさが決める</b> ── そして最小の重さは、宇宙で<em>最大</em>のスケールを指している。</li>
+    <li><b>最小と最大が、meV で握手する</b> ── ぜんぶが一点で出会う、最果ての扉。</li>
+  </ul>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">このシリーズでも「光速が遅くなる」などの表現は、わかりやすくするための<strong>等価な言い換え（投影）</strong>です。局所的に測る光速や、単位の消えた比（微細構造定数 α）は不変。<strong>c・t＝一定 は座標・単位の選び方</strong>であって、質量そのものを新しく作り出す魔法ではありません。</p>
+    <p style="margin-bottom:0;">だからこのレンズが<em>正当に効くところ</em>と、<em>効かせてはいけないところ</em>を、各回できちんと線引きします。「効かないのに効かせる」ことをしない ── それがこのシリーズの誠実さです。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">導入まとめ</span>重さとは「止まれること」だった</h2>
+    <p>重さの正体は、動かしにくさ（慣性）。その本質は「止まれること」で、止まれないもの（いつも光速の光）は重さゼロ。そして止まっているものの中には、E＝mc² のとおり<strong>エネルギーが閉じ込められている</strong>。重さは「部品の足し算」ではなく、閉じ込められた勢いそのもの ── あなたの体重の99%が、その証拠でした。</p>
+    <p>この地図を手に、次回から一枚ずつ確かめていきます。まず追うのは、この導入でいちばん軽く流した一点 ── <em>「止まれる＝重い」を、ちゃんと式にするとどうなるか</em>。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第1回</span>
+    「止まれること、それが質量」。今回の合言葉を、今度はきちんと式で。E＝mc² の本当の意味と、"運動量を全部抜いても残るエネルギー" としての質量。たった一本の式が、光と物質を同時に説明します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる質量」シリーズ導入版、物理好きの高校生・一般向けの読み物です。姉妹シリーズ「わかる宇宙論」と同じく、わかりやすい語りと、それが物理的に何を意味するかの「種明かし」をセットで運びます。「光速が遅くなる」等の表現は理解のための等価な言い換え（投影）であり、局所的な光速や無次元定数 α は不変です。E＝mc² の質量は静止質量（不変質量）を指します。 ── このページはブラウザの「印刷 → PDF に保存」で PDF 化できます。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）から「PDF に保存」を選んでください。</p>
+
+</body>
+</html>
