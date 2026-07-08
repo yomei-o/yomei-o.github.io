@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略δ・摂動論 強結合ギャップの摂動論、どこで収束が切れるか ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --elec:#2f6d8a; --mag:#a5473a; --conv:#2f7d5a; --brk:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:28px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--conv);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:20pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:21px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略δ・摂動論（さらに具体化）</span></div>
+  <p class="eyebrow">電気カシミアギャップ＋磁気の小摂動 ── 収束展開でギャップが体積に一様に生き残る、その境界</p>
+  <h1>強結合ギャップの摂動論 ── どこで収束が切れるか
+    <span class="sub">分解 \(H=\underbrace{\tfrac{g^2}{2}\sum \mathbf E^2}_{\text{電気・対角・frustration-free}}-\underbrace{\tfrac{1}{g^2}\sum\mathrm{Tr}\,U_\square}_{\text{磁気・非対角}}\)。強結合で磁気は小摂動。<br><strong>ギャップの摂動論</strong>（Kirkwood–Thomas／Datta–Fernández–Fröhlich）が、電気カシミアギャップ \(\Delta_0\sim g^2\) の生き残りを<em>体積に一様に</em>厳密化。収束が切れるのは \(g_c=O(1)\)、連続 \(g\to0\) はその向こう。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：摂動論がゲージにどう乗り、どこで破れるか（数式あり）</span>
+    <span>核心：小パラメータ ∼1/g⁴ ／ 破れ＝g_c（電気~g² と磁気~1/g² が拮抗）</span>
+  </div>
+
+  <p class="lead">前回、手δの勝てる一部品は「強結合の<em>ギャップの摂動論</em>で条件付き定理を落とす」でした。この回はそれを<strong>もう一段具体化</strong>します ── ハミルトニアンを電気（対角・frustration-free）と磁気（非対角・摂動）に分け、Kennedy–Tasaki／Datta–Fernández–Fröhlich 型の<strong>収束するギャップ展開</strong>が、電気カシミアギャップの生き残りをどう保証するか。そして<em>どこで収束が切れるか</em> ── その境界 \(g_c\) が、まさにクロスオーバーの無人地帯であり、連続極限がその向こう側にあることを、式で見ます。</p>
+
+  <h2><span class="n">01</span>分解 ── 電気（frustration-free）＋磁気（摂動）</h2>
+
+  <div class="keybox">
+    <div class="lbl">Kogut–Susskind を二つに割る</div>
+    $$H=\underbrace{\tfrac{g^2}{2}\sum_\ell \mathbf E_\ell^2}_{H_0:\ \text{対角・frustration-free}}\ -\ \underbrace{\tfrac{1}{g^2}\sum_\square \mathrm{Tr}\,U_\square}_{V:\ \text{非対角(プラケット)}}$$
+    <p style="margin:10px 0 0;">\(H_0\)（電気）はフラックス基底で<strong>対角</strong> ── 基底状態＝フラックス真空（全リンク \(\mathbf E=0\)）、各項を同時最小化＝<em>frustration-free</em>。ガウス則より最小の励起は<strong>閉じたフラックスループ</strong>で、その電気エネルギー＝<strong>カシミアギャップ \(\Delta_0\sim g^2\)</strong>。\(V\)（磁気）はプラケットで、フラックスを動かす非対角摂動。</p>
+  </div>
+
+  <div class="calc">
+    <span class="tag">小パラメータ ── 強結合で磁気は小さい</span>
+    $$\frac{\text{磁気の係数}}{\text{電気ギャップ}}\ \sim\ \frac{1/g^2}{g^2}\ =\ \frac{1}{g^4}\ \xrightarrow{\ g\to\text{大}\ }\ 0$$
+    <p style="margin-bottom:14px;">強結合（\(g\) 大）では \(V\) は \(H_0\) の<strong>小摂動</strong>（相対比 \(\sim1/g^4\)）。だから「ギャップの摂動論」の土俵に乗る ── frustration-free な \(H_0\) の大きなギャップ \(\Delta_0\) が、小さい \(V\) で壊れずに残るか、を問う。</p>
+  </div>
+
+  <h2><span class="n">02</span>ギャップの摂動論 ── 体積に一様に生き残る</h2>
+
+  <p>frustration-free（または古典的）ハミルトニアンの<strong>ギャップが小摂動で生き残る</strong>ことを、<em>体積によらず一様に</em>示す収束展開があります ── Kirkwood–Thomas、Datta–Fernández–Fröhlich、Kennedy–Tasaki、Yarotsky。</p>
+
+  <div class="keybox">
+    <div class="lbl">ギャップの摂動展開（模式）</div>
+    $$\Delta(g)\ \ge\ \Delta_0-O\!\Big(\tfrac{1}{g^4}\Big)\ >\ 0\qquad(g>g_c,\ \textbf{体積に一様})$$
+    <p style="margin:10px 0 0;">量子ポリマー／クラスター展開で、摂動の効果を"つながり"に分解し、収束半径内で厳密に評価。<strong>核心＝評価が系のサイズによらず一様</strong> ── だから <em>これ一発で \(L\to\infty\) の持続が落ちる</em>（前回の一部品の後半）。強結合の\(H_0\)のカシミアギャップが、磁気を着ても \(>0\) で残る。下の図で、収束域と破れる境界を。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：収束 vs 結合。<span style="color:var(--elec);font-weight:700;">電気ギャップ \(\Delta_0\sim g^2\)（強結合で大）</span>と<span style="color:var(--mag);font-weight:700;">磁気 \(\sim1/g^2\)（連続へ向かい大）</span>。左＝強結合＝<span style="color:var(--conv);font-weight:700;">摂動論が収束（体積に一様なギャップ）</span>、右＝連続へ＝<span style="color:var(--brk);font-weight:700;">破れる</span>。境界 \(g_c\)＝両者が拮抗するクロスオーバー。連続 \(g\to0\) は右端</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>結合（左：強結合 g大 → 右：連続 g→0）<span class="val" id="vx">強結合</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.18">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>電気ギャップ Δ₀~g²</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>磁気 ~1/g²</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>どこで収束が切れるか ── \(g_c\) の三つの顔</h2>
+
+  <table class="dt">
+    <tr><th></th><th>破れる理由</th><th>中身</th></tr>
+    <tr><td class="id">①</td><td class="open">小パラメータが1を超える</td><td>\(1/g^4\) が \(g\) を下げると増大。収束半径 \(g_c\)（\(1/g_c^4\sim O(1)\)、\(g_c=O(1)\)）でポリマー展開が発散。</td></tr>
+    <tr><td class="id">②</td><td class="open">電気と磁気が拮抗</td><td>電気ギャップ \(\Delta_0\sim g^2\) は縮み、磁気 \(\sim1/g^2\) は増える。\(g_c\) で<strong>同程度</strong>＝どちらも支配しない<em>クロスオーバー無人地帯</em>（＝継ぎ目の residue D のハミルトニアン版）。摂動論は"一方が優勢"を要るので破れる。</td></tr>
+    <tr><td class="id">③</td><td class="open">連続は向こう側</td><td>連続極限は \(g\to0\)（漸近自由・\(a\to0\)）＝<strong>\(g_c\) の反対側</strong>。展開が収束する強結合は、連続から最も遠い。</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>それでも足りない ── 強結合ギャップ ≠ 連続の質量ギャップ</h2>
+
+  <p>正直に、決定的な限界を。摂動論が出すのは<strong>強結合での格子ギャップ</strong>（\(\Delta_{\rm lattice}\sim O(1)\)、\(g\) 大で固定）。だが連続の物理質量ギャップは：</p>
+
+  <div class="calc">
+    <span class="tag">スケーリングが合わない</span>
+    $$\Delta_{\rm phys}=\frac{\Delta_{\rm lattice}}{a},\qquad \text{連続では}\ \Delta_{\rm lattice}\sim a\Lambda\to0\ (\text{漸近スケーリング})$$
+    <p style="margin-bottom:14px;">強結合の \(\Delta_{\rm lattice}\sim O(1)\) は、連続が要求する \(a\Lambda\to0\) の<strong>スケーリングに従わない</strong>。つまり摂動論のギャップは<em>Q1レベル（格子は強結合で gapped）</em>＝Osterwalder–Seiler と同格で、<strong>連続の質量ギャップそのものではない</strong>。物理ギャップは \(g_c\) を越えた先（連続）にある。</p>
+  </div>
+
+  <p>ではこの手の値は？ ── (1) <strong>体積に一様</strong>（\(L\to\infty\) 持続をハミルトニアンで一発）、(2) <strong>スペクトルギャップを直接</strong>（③≡B・RPタダ）、(3) <strong>アンカー</strong>：強結合で確実な正のギャップ ── これを<em>手γ（解析性）で \(g_c\) を越えて連続へ延ばす</em>出発点にする。強結合の摂動論は"連続への橋"の<strong>片方の橋脚</strong>です。</p>
+
+  <h2><span class="n">05</span>判定 ── 勝てる部分は落ちる、連続は g_c の壁の先</h2>
+
+  <div class="keybox">
+    <div class="lbl">(b) の具体化の判定（過大申告なし）</div>
+    <p style="margin:0;">ギャップの摂動論は、<strong>強結合で・体積に一様な・スペクトルギャップを、収束展開で厳密に出す</strong>（＝手δ後半＋Osterwalder–Seiler をハミルトニアンで一挙に）。<em>これは本物の部分成果</em>。収束が切れるのは \(g_c=O(1)\)：①小パラメータ \(1/g^4>1\)、②電気~g² と磁気~1/g² が拮抗（クロスオーバー無人地帯）、③連続は反対側。<strong>連続の質量ギャップに届くには \(g_c\) を越える＝a→0のQ3＝解析性(γ)や非摂動が要る。</strong>摂動論は連続への橋の片脚。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Kogut–Susskind の電気（カシミア、frustration-free、\(\Delta_0\sim g^2\)、最小励起＝ガウス則を満たす閉フラックスループ）／磁気（プラケット、非対角）分解、強結合での相対摂動 \(\sim1/g^4\)、量子ハミルトニアンのギャップの収束摂動展開（Kirkwood–Thomas、Datta–Fernández–Fröhlich、Kennedy–Tasaki、Yarotsky）と体積一様性、強結合での格子ギャップの厳密性（Osterwalder–Seiler のハミルトニアン版）、物理ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\) と連続の漸近スケーリング \(\Delta_{\rm lattice}\sim a\Lambda\)、SU(2)/SU(3) のバルク相転移の不在は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>強結合の摂動論は連続の質量ギャップを与えず、\(g_c\) を越えて連続へ延ばすことは未達で、4次元YMは未解決</strong>（2025年時点）。式中の指数（\(1/g^4\) など）や \(g_c\) の値は規格化・定式化に依存する模式で、収束半径の厳密な位置・ゲージ拘束下での展開の実行には固有の技術が要ります。「強結合の摂動論が(b)の現実的中身」「連続への橋の片脚」は筆者の見立てで、反証されうる意見です。図は収束域と破れの境界を示す概念的模式で、実際のギャップ・収束半径の計算ではありません。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>強結合で磁気項が"小摂動"になるのはなぜか。電気項の役割は？
+        <details><summary>答えを見る</summary><div class="ans">磁気の係数 \(1/g^2\) と電気ギャップ \(\Delta_0\sim g^2\) の比が \(1/g^4\)。\(g\) 大でこれが小さく、磁気は電気に対する小摂動。電気項 \(H_0\) は対角・frustration-free で、基底＝フラックス真空、ガウス則を満たす最小の閉フラックスループの電気エネルギー＝カシミアギャップ \(\Delta_0\) を持つ。この \(\Delta_0\) が"守るべきギャップ"。</div></details>
+      </li>
+      <li>ギャップの摂動論の"体積一様性"が、なぜ手δの後半を落とすのか。
+        <details><summary>答えを見る</summary><div class="ans">Kirkwood–Thomas／Datta–Fernández–Fröhlich の展開は、ギャップ下限を系のサイズによらず一様に与える。だから「箱の一様ギャップ ⟹ L→∞ で持続」の後半（無限体積持続）が、この一発で落ちる。frustration-free な電気項＋小磁気摂動という強結合の構造に、まさに合う。</div></details>
+      </li>
+      <li>収束が切れる \(g_c\) の三つの顔と、連続極限の位置は？
+        <details><summary>答えを見る</summary><div class="ans">① 小パラメータ \(1/g^4\) が1を超える（収束半径）。② 電気 \(\sim g^2\) と磁気 \(\sim1/g^2\) が拮抗＝どちらも支配しないクロスオーバー無人地帯。③ 連続極限は \(g\to0\)＝\(g_c\) の反対側で、収束する強結合から最も遠い。だから摂動論の強結合ギャップは連続の質量ギャップでなく、\(g_c\) を越える（解析性γ・非摂動）のが残る壁。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">δ・摂動論まとめ</span>片脚は確実に立つ、橋の向こうが g_c の先</h2>
+    <p>\(H\) を電気（対角・frustration-free・カシミアギャップ \(\Delta_0\sim g^2\)）＋磁気（非対角・強結合で小摂動 \(\sim1/g^4\)）に分け、<strong>ギャップの摂動論</strong>（Kirkwood–Thomas／Datta–Fernández–Fröhlich）で \(\Delta(g)\ge\Delta_0-O(1/g^4)>0\) を<em>体積に一様</em>に。＝手δ後半（\(L\to\infty\) 持続）＋強結合ギャップを一挙に落とす本物の部分成果。RPタダ・スペクトルギャップ直接（③≡B）。</p>
+    <p>収束が切れるのは \(g_c=O(1)\)：①小パラメータ \(1/g^4>1\)、②電気~g² と磁気~1/g² が拮抗（クロスオーバー無人地帯）、③連続 \(g\to0\) は反対側。しかも強結合ギャップ（\(\Delta_{\rm lattice}\sim O(1)\)）は連続の漸近スケーリング \(a\Lambda\to0\) に従わず、<strong>連続の質量ギャップそのものではない</strong>（Q1レベルのアンカー）。連続へは \(g_c\) を越える＝a→0のQ3＝解析性(γ)・非摂動が要る。<em>強結合の摂動論は、連続への橋の確実な片脚</em>。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-d-persist.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← δ・一部品</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">橋の片脚は立つ</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略δ・摂動論（さらに具体化）、物理好きの高校生・大学生向け読み物。Kogut–Susskind ハミルトニアンの電気（カシミア \(\tfrac{g^2}{2}\sum\mathbf E^2\)、対角・frustration-free、基底＝フラックス真空、最小励起＝ガウス則を満たす閉フラックスループ、ギャップ \(\Delta_0\sim g^2\)）／磁気（\(\tfrac{1}{g^2}\sum\mathrm{Tr}\,U_\square\)、非対角）分解、強結合での相対摂動 \(\sim1/g^4\)、量子スピン系のギャップの収束摂動展開（Kirkwood–Thomas、Datta–Fernández–Fröhlich、Kennedy–Tasaki、Yarotsky）と体積一様なギャップ下限、強結合での格子ギャップの厳密性（Osterwalder–Seiler）、物理ギャップと格子ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\)・漸近スケーリング \(\Delta_{\rm lattice}\sim a\Lambda\)、SU(2)/SU(3) のバルク相転移の不在は、いずれも確立した事実・道具です。強結合の摂動論は連続の質量ギャップを与えず、収束半径 \(g_c\) を越えて連続極限へ延ばすこと、および4次元YMの質量ギャップは未解決です（2025年時点）。指数や \(g_c\) の値は規格化・定式化に依存する模式で、ゲージ拘束下での展開の実行には固有の技術を要します。手法の位置づけ・「連続への橋の片脚」は筆者の見立てで反証されうる意見を含みます。図は収束域と破れの境界の概念的模式で、実際の計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では結合を動かすと、電気ギャップと磁気が g_c で拮抗し、摂動論の収束域（強結合）と破れ（連続へ）が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'), rd=document.getElementById('rd');
+  var XC=0.5; // g_c（電気=磁気の交差）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // x: 0=強結合(g大) .. 1=連続(g→0)
+  function elec(x){ return 0.15+1.15*(1-x); }  // Δ0 ~ g^2 : 強結合(左)で大
+  function mag(x){ return 0.15+1.15*x; }        // 磁気 ~ 1/g^2 : 連続(右)で大
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=46, padR=14, padT=18, padB=42;
+    var x=parseFloat(sx.value);
+    vx.textContent = x<0.4?'強結合（g大）':(x<0.6?'g_c 近傍':'連続へ（g→0）');
+    var YMAX=1.5;
+    function X(xx){return padL+xx*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 収束域（左, 緑）／破れ（右, 赤）を薄く
+    ctx.fillStyle='rgba(47,125,90,0.08)';ctx.fillRect(X(0),padT,X(XC)-X(0),(h-padB)-padT);
+    ctx.fillStyle='rgba(165,71,58,0.08)';ctx.fillRect(X(XC),padT,X(1)-X(XC),(h-padB)-padT);
+    ctx.fillStyle='#245c43';ctx.font='11px sans-serif';ctx.fillText('摂動論が収束（強結合）', X(0.03), padT+13);
+    ctx.fillStyle='#7a2f1c';ctx.fillText('破れる（連続へ）', X(0.63), padT+13);
+    // g_c 縦線
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([5,4]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(X(XC),padT);ctx.lineTo(X(XC),h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a9791a';ctx.font='bold 11px sans-serif';ctx.fillText('g_c（電気=磁気）', X(XC)+4, h-padB-6);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← 強結合 g大        結合        連続 g→0 →', padL+8, h-padB+26);
+    ctx.save();ctx.translate(14,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('エネルギースケール', 0,0);ctx.restore();
+    // 電気ギャップ Δ0 ~ g^2（青）
+    ctx.strokeStyle='#2f6d8a';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var xx=0;xx<=1.0001;xx+=0.01){var X1=X(xx),Y1=Y(elec(xx));if(f){ctx.moveTo(X1,Y1);f=false;}else ctx.lineTo(X1,Y1);}
+    ctx.stroke();
+    ctx.fillStyle='#2f6d8a';ctx.font='11px sans-serif';ctx.fillText('電気ギャップ Δ₀~g²', X(0.04), Y(elec(0.04))-8);
+    // 磁気 ~ 1/g^2（赤）
+    ctx.strokeStyle='#a5473a';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var x2=0;x2<=1.0001;x2+=0.01){var X2=X(x2),Y2=Y(mag(x2));if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();
+    ctx.fillStyle='#a5473a';ctx.fillText('磁気 ~1/g²', X(0.78), Y(mag(0.78))-8);
+    // カーソル
+    var mx=X(x);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f6d8a';ctx.beginPath();ctx.arc(mx,Y(elec(x)),5,0,7);ctx.fill();
+    ctx.fillStyle='#a5473a';ctx.beginPath();ctx.arc(mx,Y(mag(x)),5,0,7);ctx.fill();
+    // readout
+    if(x<XC-0.05){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>強結合</b>：電気ギャップ Δ₀~g² が磁気~1/g² を圧倒（比 ~1/g⁴ 小）。<b>ギャップの摂動論が収束し、体積に一様なスペクトルギャップが厳密に出る</b>（手δ後半＋強結合ギャップ）。連続への橋の片脚。';
+    } else if(x<XC+0.05){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='<b>g_c 近傍（クロスオーバー）</b>：電気~g² と磁気~1/g² が拮抗＝どちらも支配しない<b>無人地帯</b>。小パラメータ ~1/g⁴ が1に達し、<b>摂動論の収束半径</b>。ここが破れの境界。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>連続へ（g→0）</b>：磁気が優勢、摂動論は破れる。<b>物理質量ギャップはここ（連続）にあるが、摂動論の外</b>。到達＝g_c を越える＝a→0のQ3＝解析性(γ)・非摂動が要る。';
+    }
+  }
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

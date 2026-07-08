@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁2・漸近スケーリングの厳密化 Balaban と BBS ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --good:#2f7d5a; --bad:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:27px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--good);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">壁2・漸近スケーリングの厳密化</span></div>
+  <p class="eyebrow">連続ギャップに要るもう一本の柱 ── β→∞ で相関長が"正しい速さ"で伸びる、を厳密に</p>
+  <h1>壁2 ── 漸近スケーリングの厳密化（Balaban と BBS）
+    <span class="sub">ATI（壁1）が「有限βに転移なし＝解析的に地続き」を担うなら、壁2は<strong>β→∞ での<em>スケーリング</em></strong>を担う：<br>\(\ln\xi(\beta)\sim \beta/(4Nb_0)\)（＝\(\Delta_{\rm lattice}\sim a\Lambda\)）を厳密に。速すぎればギャップ消滅、遅すぎれば発散。<br>道具は<strong>Balaban の紫外安定性</strong>（＝本物の厳密な漸近自由）と<strong>BBS の厳密RG</strong>。壁1より発達、なお未完。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：連続ギャップの"スケーリングの柱"と、その厳密RG道具（史実つき）</span>
+    <span>核心：ln ξ の傾きは RG が決める／Balaban は有限体積で紫外安定性を厳密化済み</span>
+  </div>
+
+  <p class="lead">壁1（ATI・χ≤K）は「有限βに臨界点が無い＝強結合と連続が解析的に地続き」を担いました。でもそれだけでは連続の質量ギャップは出ない ── <em>強結合ギャップ ≠ 連続ギャップ</em>の残りです。もう一本の柱が壁2：<strong>β→∞ で相関長が"漸近自由の速さちょうど"で伸びる</strong>こと。速すぎれば物理ギャップは消え、遅すぎれば発散する。ちょうどの速さ \(\ln\xi\sim\beta/(4Nb_0)\) を厳密に示す ── その道具が、実はYMに最も肉薄した厳密結果 <strong>Balaban の紫外安定性</strong>と、4次元の対数スケーリングを厳密に捉えた <strong>BBS の現代RG</strong> です。壁1より道具は発達している、だがなお未完。正直に降ります。</p>
+
+  <h2><span class="n">01</span>柱の中身 ── 相関長が"正しい速さ"で伸びる</h2>
+
+  <div class="keybox">
+    <div class="lbl">連続ギャップが有限正になる条件</div>
+    $$\Delta_{\rm phys}=\frac{\Delta_{\rm lattice}(\beta)}{a(\beta)}\ \xrightarrow{\ \beta\to\infty\ }\ \text{有限・正}\quad\Longleftrightarrow\quad \Delta_{\rm lattice}(\beta)\sim a(\beta)\,\Lambda$$
+    $$\text{同値：}\quad \ln\xi(\beta)=\ln\frac{1}{\Delta_{\rm lattice}}\ \sim\ \frac{\beta}{4Nb_0}\quad(\textbf{漸近スケーリング},\ b_0=\tfrac{11N}{48\pi^2})$$
+    <p style="margin:10px 0 0;">\(a(\beta)\sim\Lambda^{-1}e^{-\beta/4Nb_0}\)（漸近自由）。物理ギャップが有限正であるには、格子ギャップが<strong>ちょうどこの速さ</strong>で 0 に近づかねばならない。\(\ln\xi\) の<em>傾き</em>は RG（β関数の係数 \(b_0,b_1\)）が決める ── それを格子理論について厳密に示すのが壁2。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：\(\ln\xi(\beta)\) vs \(\beta\)。<span style="color:var(--good);font-weight:700;">漸近スケーリング（傾き \(1/4Nb_0\) の直線に漸近＝目標）</span>／<span style="color:var(--bad);font-weight:700;">排除すべき逸脱（傾きが違う＝\(\Delta_{\rm phys}\) が 0 か ∞ に）</span>。トグルで比較</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>結合 β（右へ＝連続 β→∞）<span class="val" id="vx">0.30</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.30">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bG">漸近スケーリング（目標）</button>
+        <button class="tbtn" id="bB">逸脱（排除したい）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>ln ξ ~ β/4Nb₀（目標）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>逸脱</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>RG予言の傾き</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>道具① Balaban ── 本物の厳密な漸近自由</h2>
+
+  <div class="keybox">
+    <div class="lbl">Balaban の紫外安定性（1980年代）</div>
+    <p style="margin:0;">Balaban は一連の論文で、<strong>有限体積の格子ヤン=ミルズの紫外安定性を厳密に証明</strong>した ── 分配関数の上下限が \(a\to0\) に<em>一様</em>に成り立つ。手法は<strong>ゲージ共変なブロックスピンRG＋背景場</strong>（＝戦略②b・②cで触れた共変FRD・背景場分割の源流）。これは事実上、<strong>格子YMの漸近自由を厳密に確立した結果</strong> ── \(a\to0\) の極限が摂動的（漸近自由）フローで制御されることを示す。壁2の傾きを支える最深の一歩。</p>
+  </div>
+
+  <div class="caveat" style="margin-top:16px;">
+    <span class="tag">Balaban が"完成"でない理由</span>
+    <p style="margin:0;">Balaban が示したのは (i) <strong>有限体積</strong>の (ii) <strong>安定性評価</strong>であって、(iii) <em>質量ギャップ</em>でも (iv) <em>無限体積の連続測度＋公理</em>でもない。技術的にも巨大で、後続が扱いやすい形に整えるのが難しかった。<strong>漸近スケーリングの傾きは支えるが、ギャップと無限体積が残る</strong> ── ここが壁2の未完部分。</p>
+  </div>
+
+  <h2><span class="n">03</span>道具② BBS ── 4次元で対数スケーリングを厳密に</h2>
+
+  <div class="keybox">
+    <div class="lbl">Bauerschmidt–Brydges–Slade の厳密RG</div>
+    <p style="margin:0;">BBS は、<strong>4次元の臨界 \(|\phi|^4\)／弱自己回避歩行</strong>で、<em>対数補正つきの臨界スケーリングを厳密に</em>導いた（有限レンジ分解＋"相互作用座標"の綺麗なフロー）。4次元＝<strong>限界次元</strong>で marginal な（対数的な）スケーリングを厳密RGが捉えられることの<em>証明された雛形</em>。YMの漸近スケーリング（これも 4次元の marginal な流れ）と同型の難しさ ── <strong>BBSの綺麗な機械を Balaban のゲージ共変設定に載せる</strong>のが夢の合わせ技。</p>
+  </div>
+
+  <h2><span class="n">04</span>壁1と壁2 ── 二本の柱の分担</h2>
+
+  <table class="dt">
+    <tr><th></th><th>壁1（ATI・χ≤K）</th><th>壁2（漸近スケーリング）</th></tr>
+    <tr><td class="id">担当</td><td>有限βに臨界点なし＝<strong>解析的に地続き</strong>（相転移の不在）</td><td>β→∞ で<strong>正しい速さ</strong>で伸びる（\(\Delta_{\rm lattice}\sim a\Lambda\)）</td></tr>
+    <tr><td class="id">道具</td><td class="open">非可換相関不等式（三つの扉・乏しい）</td><td class="open">Balaban 紫外安定性・BBS 厳密RG（発達・未完）</td></tr>
+    <tr><td class="id">難所</td><td>クロスオーバー窓の一様性</td><td>ギャップ＋無限体積＋連続公理</td></tr>
+    <tr><td class="id">両方で</td><td colspan="2" class="ok">地続き（壁1）＋正しい速さ（壁2）＝ <strong>連続の質量ギャップ \(\Delta_{\rm phys}>0\)</strong></td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>全ての道が集まる ── 厳密くりこみ群</h2>
+
+  <div class="keybox">
+    <div class="lbl">最後の合流</div>
+    <p style="margin:0;">壁2の道具（Balaban／BBS）は<strong>厳密くりこみ群</strong>。そして壁1の最有力の扉②（Langevin動力学の一様LSIを Polchinski フローで）も<strong>厳密くりこみ群</strong>。さらに戦略②（現代RGのゲージ移植）・②b（共変FRD）・②c（背景場）も皆ここ。<em>地図の全ての川が、最後にもう一度この一点＝厳密RGに注ぐ</em>。ヤン=ミルズの連続ギャップは、「ゲージ共変・反射正値・4次元の marginal スケーリングを同時に扱える一本の厳密RG」を作れるか、に凝縮する。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 柱は立て方が見えた、屋根はまだ</h2>
+
+  <div class="keybox">
+    <div class="lbl">壁2 の判定（過大申告なし）</div>
+    <p style="margin:0;">連続ギャップの第二の柱＝<strong>漸近スケーリング \(\ln\xi\sim\beta/4Nb_0\) の厳密化</strong>。道具は壁1より発達：<strong>Balaban が有限体積の紫外安定性（＝厳密な漸近自由）を証明済み</strong>、<strong>BBS が4次元の対数スケーリングを厳密化</strong>。だが Balaban はギャップ・無限体積・連続公理が残り、BBS はゲージ・非可換への移植が要る。<strong>柱の立て方は見えたが、屋根（＝壁1と繋いで連続ギャップ）はまだ</strong>。そして壁1扉②も壁2も戦略②系も、全て<em>厳密くりこみ群</em>に集まる ── そこが最後の一点。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">物理ギャップと格子ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\)、漸近自由による格子間隔の走り \(a(\beta)\sim\Lambda^{-1}e^{-\beta/4Nb_0}\)（\(b_0=11N/48\pi^2\)、Gross–Wilczek・Politzer 1973）と漸近スケーリング \(\ln\xi\sim\beta/4Nb_0\)、Balaban による有限体積格子ヤン=ミルズの紫外安定性のゲージ共変ブロックスピンRGによる厳密証明（1980年代）、Bauerschmidt–Brydges–Slade による4次元臨界 \(|\phi|^4\)・弱自己回避歩行の対数補正つき臨界スケーリングの厳密RG、有限レンジ分解は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>Balaban の結果は有限体積の安定性評価であって質量ギャップでも無限体積の連続構成でもなく、BBS の機械のゲージ・非可換への移植、漸近スケーリングの完全な厳密化、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。式中の傾き \(1/4Nb_0\)・2ループ補正は規格化・スキーム依存で、図は \(\ln\xi\) の漸近直線への接近を示す概念的模式（実際の計算値ではない）。「壁2は壁1より道具が発達」「全て厳密RGに集まる」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>壁2が担うのは何か。なぜ壁1だけでは足りないか。
+        <details><summary>答えを見る</summary><div class="ans">壁1（ATI）は「有限βに臨界点なし＝強結合と連続が解析的に地続き」を担う。だが連続の物理ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\) が有限正になるには、格子ギャップが β→∞ で"漸近自由の速さちょうど" \(\Delta_{\rm lattice}\sim a\Lambda\)（\(\ln\xi\sim\beta/4Nb_0\)）で 0 に近づく必要がある。速すぎれば \(\Delta_{\rm phys}\to0\)、遅すぎれば \(\to\infty\)。この"正しい速さ"を担うのが壁2。二本で連続ギャップ。</div></details>
+      </li>
+      <li>Balaban の紫外安定性は何を示し、何を残したか。
+        <details><summary>答えを見る</summary><div class="ans">示したもの：有限体積の格子YMの紫外安定性を、ゲージ共変ブロックスピンRG＋背景場で厳密に（分配関数の評価が \(a\to0\) に一様）＝事実上、格子YMの漸近自由を厳密に確立。残したもの：有限体積の安定性であって(i)質量ギャップでも(ii)無限体積の連続測度＋公理でもない。技術的にも巨大。だから漸近スケーリングの傾きは支えるが、ギャップと無限体積が壁2の未完部分。</div></details>
+      </li>
+      <li>「全ての道が厳密くりこみ群に集まる」とはどういうことか。
+        <details><summary>答えを見る</summary><div class="ans">壁2の道具（Balaban／BBS）は厳密RG。壁1の最有力の扉②（Langevin動力学の一様LSIをPolchinskiフローで）も厳密RG。戦略②（現代RG移植）・②b（共変FRD）・②c（背景場）も皆RG。つまり地図の全ての川が最後に厳密RGへ注ぐ。連続ギャップは「ゲージ共変・反射正値・4次元marginalスケーリングを同時に扱える一本の厳密RGを作れるか」に凝縮する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">壁2・まとめ</span>スケーリングの柱、そして厳密RGへの合流</h2>
+    <p>連続ギャップの第二の柱＝<strong>漸近スケーリング \(\ln\xi(\beta)\sim\beta/4Nb_0\)（\(\Delta_{\rm lattice}\sim a\Lambda\)）の厳密化</strong>。速すぎればギャップ消滅、遅すぎれば発散、ちょうどで \(\Delta_{\rm phys}>0\)。道具は壁1より発達：<strong>Balaban が有限体積の紫外安定性（＝厳密な漸近自由）をゲージ共変RGで証明済み</strong>、<strong>BBS が4次元の対数スケーリングを厳密化</strong>（雛形）。だが Balaban はギャップ・無限体積・連続公理が、BBS はゲージ・非可換移植が残る。</p>
+    <p>壁1（地続き）＋壁2（正しい速さ）＝連続の質量ギャップ。そして<strong>壁1扉②・壁2・戦略②系が全て"厳密くりこみ群"に集まる</strong> ── 地図の全ての川の最後の合流点。YMの連続ギャップは「ゲージ共変・反射正値・4次元marginalスケーリングを同時に扱える一本の厳密RG」に凝縮する。柱の立て方は見えた、屋根はまだ。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-gammaD-clustering.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← γ補³・χ≤K</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="yangmills-senryaku-kabe1-lsi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">壁1扉②・RG-LSI →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 壁2・漸近スケーリングの厳密化、物理好きの高校生・大学生向け読み物。物理ギャップと格子ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\)、漸近自由による格子間隔の走り \(a(\beta)\sim\Lambda^{-1}e^{-\beta/4Nb_0}\)（\(b_0=11N/48\pi^2\)、Gross–Wilczek・Politzer 1973）と漸近スケーリング \(\ln\xi\sim\beta/4Nb_0\)、Balaban による有限体積格子ヤン=ミルズの紫外安定性のゲージ共変ブロックスピンRG＋背景場による厳密証明（1980年代）、Bauerschmidt–Brydges–Slade による4次元臨界 \(|\phi|^4\)・弱自己回避歩行の対数補正つき臨界スケーリングの厳密RGと有限レンジ分解は、いずれも確立した事実・道具です。Balaban の結果は有限体積の安定性評価であって質量ギャップでも無限体積の連続構成でもなく、BBS の機械のゲージ・非可換への移植、漸近スケーリングの完全な厳密化、4次元YMの存在＋質量ギャップは未解決です（2025年時点）。傾き・2ループ補正はスキーム依存で、図は概念的模式であり実際の計算値ではありません。見立ては筆者のもので反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では結合 β を動かし、ln ξ が RG予言の傾き（漸近スケーリング）に漸近する目標と、排除すべき逸脱をトグルで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'),
+      bG=document.getElementById('bG'), bB=document.getElementById('bB'), rd=document.getElementById('rd');
+  var mode='G';
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var SLOPE=5.2; // RG予言の傾き（模式）
+  // 目標：ln ξ が漸近直線 SLOPE*β に接近（低βで曲がり、高βで直線）
+  function lnxiG(b){ return SLOPE*b - 0.8*Math.exp(-3*b) + 0.8; }
+  // 逸脱：傾きがずれる（例：速すぎ＝より急）
+  function lnxiB(b){ return (SLOPE*1.7)*b - 0.8*Math.exp(-3*b) + 0.8; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var b=parseFloat(sx.value); vx.textContent=b.toFixed(2);
+    var YMAX=9.5;
+    function X(bb){return padL+bb*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('β（→ 連続 β→∞）', w-160, h-padB+26);
+    ctx.save();ctx.translate(16,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('ln ξ(β)＝ln(1/Δ_lattice)', 0,0);ctx.restore();
+    // RG予言の傾き（金の破線）
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([6,4]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(X(0),Y(0.8));ctx.lineTo(X(1),Y(SLOPE*1+0.8));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.font='11px sans-serif';ctx.fillText('RG予言の傾き 1/4Nb₀', X(0.55), Y(SLOPE*0.62+0.8)-6);
+    // 目標 or 逸脱
+    var fn=(mode==='G')?lnxiG:lnxiB;
+    ctx.strokeStyle=(mode==='G')?'#2f7d5a':'#a5473a';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var bb=0;bb<=1.0001;bb+=0.005){var Xb=X(bb),Yb=Y(fn(bb));if(f){ctx.moveTo(Xb,Yb);f=false;}else ctx.lineTo(Xb,Yb);}
+    ctx.stroke();
+    // カーソル
+    var mx=X(b);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var yv=fn(b);
+    if(yv<=YMAX){ ctx.fillStyle=(mode==='G')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(mx,Y(yv),5,0,7);ctx.fill(); }
+    // readout
+    if(mode==='G'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>漸近スケーリング（目標）</b>：ln ξ が RG予言の傾き 1/4Nb₀ の直線に漸近 ⟹ Δ_lattice~aΛ ⟹ <b>Δ_phys が有限正に収束</b>＝連続の質量ギャップ。Balaban の紫外安定性がこの傾きを支える（有限体積・厳密）。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>逸脱（排除したい）</b>：傾きが RG予言とずれる ⟹ Δ_lattice が速すぎ／遅すぎ ⟹ <b>Δ_phys→0（ギャップ消滅）または →∞</b>。レノルマロン等の非摂動効果でこう曲がらないことを厳密に排除するのが壁2。';
+    }
+  }
+  function setM(x){ mode=x; bG.className='tbtn'+(x==='G'?' on':''); bB.className='tbtn'+(x==='B'?' on':''); draw(); }
+  bG.addEventListener('click',function(){setM('G');});
+  bB.addEventListener('click',function(){setM('B');});
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

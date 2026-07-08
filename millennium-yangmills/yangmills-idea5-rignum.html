@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイデア5・検証つき数値 コンパクトな窓を区間演算で貫く ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --strong:#2f7d5a; --weak:#2f6d8a; --win:#a9791a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--strong);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">アイデア5・検証つき数値（+ 1をフォールバックに）</span></div>
+  <p class="eyebrow">小パラメータの無い中央を、計算機援用証明で貫けるか ── ケプラー・ローレンツ・Fefferman–Seco の型</p>
+  <h1>コンパクトな窓を区間演算で貫く ── 検証つき数値
+    <span class="sub">γが問題を<strong>コンパクトな窓 $[\beta_0,\beta_1]$</strong> に絞った ── 小パラメータは無いが<em>有界</em>。<br>そこを<strong>区間演算＋検証つき固有値評価</strong>で、ギャップ $>0$ を厳密に囲い込む。先例＝ケプラー(Hales)・ローレンツ(Tucker)・<strong>量子基底エネルギーの Fefferman–Seco</strong>。<br>ただし数値だけでは閉じない（有限サイズ判定・壁2の足場が要る）＝ハイブリッド。だめなら 1（ナッシュ–モーザー）。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：中央窓を有限計算に落とす連鎖と、なお要る解析の足場</span>
+    <span>核心：新しい"アイデア"は不要／要るのは還元＋区間演算＋二つの補題</span>
+  </div>
+
+  <p class="lead">アイデア5が狙えるのは、たった一つの贈り物のおかげです ── <strong>手γが「相転移の不在」を、無限の結合直線ではなく<em>コンパクトな窓 $[\beta_0,\beta_1]$</em> に絞ってくれた</strong>。強結合側（$\beta<\beta_0$）は収束展開で解析的、弱結合側（$\beta>\beta_1$）は漸近自由（壁2）── 開いているのは<strong>有界な中央だけ</strong>。小パラメータは無いが、有界。そして「小パラメータの無い有界領域」は、<em>ケプラー予想・ローレンツ吸引子・原子の基底エネルギー</em>が落ちた、計算機援用証明の得意な型です。<strong>新しいアイデアは要らない</strong>のがこの筋の強み。だめなら 1（ナッシュ–モーザー）で中央を解析的に貫く。正直に、旗はやはり立ちません。</p>
+
+  <h2><span class="n">01</span>窓が"コンパクト"だという贈り物</h2>
+
+  <div class="keybox">
+    <div class="lbl">両端を解析で削ると、残るは有界窓</div>
+    $$\underbrace{\beta<\beta_0}_{\text{強結合：収束展開で解析的}}\ \ \Big|\ \ \underbrace{[\beta_0,\beta_1]}_{\textbf{開いた中央（小パラメータ無し）}}\ \ \Big|\ \ \underbrace{\beta>\beta_1}_{\text{弱結合：漸近自由＝壁2}}$$
+    <p style="margin:10px 0 0;">「有限βに相転移なし（$\xi(\beta)<\infty$）」のうち、両端は解析的に押さえ得る。残る難所は<strong>コンパクトな中央 $[\beta_0,\beta_1]$</strong> だけ。<em>コンパクト</em>＝有限個の区間で覆える ── これが計算機援用証明の入口。連続極限 $a\to0$（$\beta\to\infty$）は右端の壁2が担い、中央は固定スケールの有限問題。</p>
+  </div>
+
+  <h2><span class="n">02</span>中央窓を"有限計算"に落とす連鎖</h2>
+
+  <div class="calc">
+    <span class="tag">四段の還元</span>
+    $$\text{(有限サイズ判定)}\ \gamma_\infty\ge\tfrac{n}{n-1}\big(\gamma_n-\tfrac{c}{n-1}\big)\ \Rightarrow\ \text{有限ブロックの}\gamma_n\text{を下から抑えれば十分}$$
+    $$\text{(切断)}\ H\to H_\Lambda\ (\text{表現をカシミア}\le\Lambda\text{で打ち切り},\ \|H-H_\Lambda\|\le\varepsilon(\Lambda))\ \Rightarrow\ \text{有限行列}$$
+    <p style="margin-bottom:6px;">① 有限サイズ判定（Knabe型）で<strong>有限ブロックのギャップ $\gamma_n$ を下から抑えれば無限体積ギャップ$>0$</strong>。② 表現をカシミアで切断し<strong>有限次元行列</strong>に（尾は厳密に評価）。③ <strong>検証つき固有値評価</strong>（Temple–Kato／Lehmann–Goerisch）で $\gamma_n$ の<em>厳密な下限つき区間</em> $[\gamma_n^{\rm lo},\gamma_n^{\rm hi}]$ を得る。④ <strong>区間演算</strong>で $\beta$ を区間扱いし、$[\beta_0,\beta_1]$ を有限個の小区間で覆って<em>窓全体で一括に</em>下限を保証。下の図で。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：結合直線。<span style="color:var(--strong);font-weight:700;">強結合（解析的）</span>／<span style="color:var(--weak);font-weight:700;">弱結合（漸近自由＝壁2）</span>／中央＝<span style="color:var(--win);font-weight:700;">コンパクト窓</span>を有限個の区間で覆い、各区間で<strong>ギャップの厳密な囲い込み [lo,hi]</strong>（棒）。lo>0 なら区間ごとに厳密にギャップ。トグルで「計算できる／要・定理」</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>見る小区間 k <span class="val" id="vk">4</span>
+        <input type="range" id="sk" min="0" max="9" step="1" value="4">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bC">計算できる部分</button>
+        <button class="tbtn" id="bT">要・定理</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>厳密な下限 lo(&gt;0)</span>
+      <span><i class="swatch" style="background:#bcae90;"></i>囲い込みの幅 [lo,hi]</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>先例 ── 検証つき数値は"証明"の実績がある</h2>
+
+  <table class="dt">
+    <tr><th>問題</th><th>誰が</th><th>要点</th></tr>
+    <tr><td class="id">ケプラー予想</td><td class="ok">Hales（Flyspeck で形式証明）</td><td>球充填の最密。膨大な場合分けを区間演算＋計算機で。</td></tr>
+    <tr><td class="id">ローレンツ吸引子</td><td class="ok">Tucker</td><td>カオス力学系の存在を検証つき数値で厳密に。</td></tr>
+    <tr><td class="id" style="white-space:normal;">原子の基底エネルギー</td><td class="ok">Fefferman–Seco</td><td><strong>量子固有値（基底エネルギー）を厳密数値で評価</strong> ── 最も近い先例。</td></tr>
+    <tr><td class="id">流体の特異点</td><td class="ok">Gómez-Serrano／Chen–Hou 系</td><td>近年、PDEの爆発を検証つき数値で。</td></tr>
+  </table>
+
+  <p><strong>「小パラメータの無いハードな解析問題」を計算機援用で落とす</strong>のは、確立した証明のパラダイム。しかも Fefferman–Seco が示すように<em>量子固有値の厳密評価</em>も射程内。ヤン=ミルズのギャップは"最大級に大きい"固有値問題だが、型は同じ。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>数値だけでは閉じない ── なお要る二つの定理</h2>
+
+  <div class="caveat">
+    <span class="tag">ハイブリッドである（正直に）</span>
+    <p style="margin-top:0;">検証つき数値が<strong>できる</strong>のは「固定スケールの有限切断ブロックの、区間演算による厳密なギャップ下限」まで。そこから先は<em>解析の定理</em>が要る：</p>
+    <p style="margin:0;"><strong>要・定理A（有限サイズ判定）</strong>：frustrated（電気×磁気が非可換）＋ガウス則つき＋無限次元局所空間で「有限ブロックのギャップ ⟹ 無限体積のギャップ」を保証する判定 ── frustrated 版は今のところ弱い（既存の Knabe/Gosset–Mozgunov は frustration-free 前提）。<br><strong>要・定理B（壁2＝漸近スケーリング）</strong>：連続 $a\to0$（右端 $\beta\to\infty$）は固定スケールの数値では届かない ── Balaban/BBS の解析が担う。<strong>数値は中央を、解析が両端と無限体積を</strong>。</p>
+  </div>
+
+  <h2><span class="n">05</span>本当の壁 ── そしてなぜそれでも5なのか</h2>
+
+  <table class="dt">
+    <tr><th>壁</th><th>中身</th></tr>
+    <tr><td class="id open">規模</td><td>4次元ゲージのブロックのヒルベルト空間は<strong>天文学的</strong>。検証つき固有値評価が現実の計算資源で回るかが最大の実務的難点。</td></tr>
+    <tr><td class="id open">frustrated 判定</td><td>要・定理A が未確立（アイデア本体の外の解析補題）。</td></tr>
+    <tr><td class="id open">切断の尾</td><td>弱結合端へ寄るほど必要表現が増え、$\varepsilon(\Lambda)$ の厳密制御が重くなる（中央の固定βでは有界）。</td></tr>
+  </table>
+
+  <div class="keybox">
+    <div class="lbl">それでも5を推す理由 ── と 1 のフォールバック</div>
+    <p style="margin:0;">他のアイデアが<strong>新しい原理</strong>を要るのに対し、5は<strong>既知の型（検証つき数値）＋既知の還元＋二つの解析補題</strong>で組める ── リスクが<em>天才的ひらめきでなく、規模と補題</em>に局在する。だから「一番ひらめきに頼らない」筋。<strong>もし要・定理A（無限体積への外挿）が数値で閉じないなら、フォールバックが 1（ナッシュ–モーザー）</strong>：中央の有限窓を<em>超収束反復</em>で解析的に貫き、数値の代わりに硬解析で無限体積へ橋を架ける。5と1は「中央窓を貫く」同じ的の、数値ルートと解析ルート。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 中央を潰せるかも、だが足場と規模、そして旗は無い</h2>
+
+  <div class="keybox">
+    <div class="lbl">アイデア5の判定（過大申告なし）</div>
+    <p style="margin:0;">γが残した<strong>コンパクトな中央窓 $[\beta_0,\beta_1]$</strong> を、<strong>有限サイズ判定→切断→検証つき固有値評価→区間演算</strong>の連鎖で有限計算に落とし、区間ごとにギャップ$>0$ を厳密に囲い込む。先例（ケプラー・ローレンツ・<strong>Fefferman–Seco の量子固有値</strong>）から、型は実在。<strong>新しいアイデアは不要</strong>＝一番ひらめきに頼らない筋。だが<em>数値だけでは閉じず</em>、要・定理A（frustrated 有限サイズ判定）と要・定理B（壁2＝漸近スケーリング）という解析の足場が要り、実務では<strong>天文学的な規模</strong>が立ちはだかる。だめなら 1（ナッシュ–モーザーで中央を解析的に）。<em>中央の"小パラメータ無し"を潰せる見込みは立つが、足場も規模も未達</em>。旗は立たない ── 縁の標識を、それも"計算で踏み固められそうな踏み跡"として。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">手γによる「相転移の不在」のコンパクト窓への還元（強結合の収束展開＋弱結合の漸近自由）、多体系のスペクトルギャップの有限サイズ判定（Knabe・Gosset–Mozgunov）、表現切断と作用素の尾の評価、検証つき固有値評価（Temple–Kato・Lehmann–Goerisch による厳密な固有値の囲い込み）、区間演算による全パラメータ一括の厳密評価、計算機援用証明の先例（Hales のケプラー予想と Flyspeck 形式化、Tucker のローレンツ吸引子、Fefferman–Seco による原子基底エネルギーの厳密評価、Gómez-Serrano・Chen–Hou 系の流体特異点）は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>frustrated（非可換）＋ガウス則＋無限次元局所空間に対する有限サイズ判定は未確立、連続極限 $a\to0$ の制御（壁2）は別途必要で、4次元ゲージのブロックの検証つき固有値評価は規模が天文学的、4次元YMの質量ギャップは未解決</strong>です（2025年時点）。アイデア5は"新道具不要"だが解析の足場（要・定理A/B）と計算規模に依存する<em>ハイブリッドな計画</em>であって、実行された証明ではありません。図の窓の位置・囲い込み幅・棒の高さは概念的模式で、実際の計算値ではありません。「5が一番ひらめきに頼らない」「1がフォールバック」は筆者の見立てで、反証されうる意見です。<strong>本稿は4次元ヤン=ミルズを解いたと主張しません。</strong>旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>アイデア5が成立する前提となる「贈り物」は何か。
+        <details><summary>答えを見る</summary><div class="ans">手γが「相転移の不在」を無限の結合直線でなく<strong>コンパクトな中央窓 $[\beta_0,\beta_1]$</strong> に絞ったこと。強結合側は収束展開で解析的、弱結合側は漸近自由（壁2）で押さえ、開いているのは有界な中央だけ。コンパクト＝有限個の区間で覆える＝計算機援用証明（区間演算）の入口。</div></details>
+      </li>
+      <li>中央窓を「有限計算」に落とす四段の還元を述べよ。
+        <details><summary>答えを見る</summary><div class="ans">①有限サイズ判定（Knabe型）：有限ブロックのギャップ $\gamma_n$ を下から抑えれば無限体積ギャップ$>0$。②切断：表現をカシミア$\le\Lambda$で打ち切り有限行列に（尾 $\varepsilon(\Lambda)$ を厳密評価）。③検証つき固有値評価（Temple–Kato/Lehmann–Goerisch）で $\gamma_n$ の厳密な下限つき囲い込み。④区間演算：$\beta$ を区間扱いし $[\beta_0,\beta_1]$ を有限個の小区間で覆い窓全体で一括に下限保証。</div></details>
+      </li>
+      <li>「数値だけでは閉じない」── なお要る二つの定理と、フォールバックは？
+        <details><summary>答えを見る</summary><div class="ans">要・定理A：frustrated＋ガウス則＋無限次元局所空間での有限サイズ判定（有限ブロック⟹無限体積、既存は frustration-free 前提で未確立）。要・定理B：連続 $a\to0$（壁2＝漸近スケーリング、Balaban/BBS）── 固定スケールの数値では届かない。数値は中央を、解析が両端と無限体積を担うハイブリッド。フォールバックはアイデア1（ナッシュ–モーザー）で中央窓を超収束反復により解析的に貫く。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">アイデア5・まとめ</span>中央を計算で踏み固める、だが足場と規模は残る</h2>
+    <p>手γが残した<strong>コンパクトな中央窓 $[\beta_0,\beta_1]$</strong>（小パラメータ無しだが有界）を、<strong>有限サイズ判定→表現切断→検証つき固有値評価→区間演算</strong>で有限計算に落とし、区間ごとにギャップ$>0$ を厳密に囲い込む。先例は本物 ── ケプラー(Hales)・ローレンツ(Tucker)・<strong>量子固有値の Fefferman–Seco</strong>。<strong>新しいアイデアが要らない</strong>のが最大の強み。</p>
+    <p>だが数値だけでは閉じない：要・定理A（frustrated 有限サイズ判定）と要・定理B（壁2＝漸近スケーリング）という<strong>解析の足場</strong>が要り、実務では<strong>天文学的な計算規模</strong>が立ちはだかる。だめなら 1（ナッシュ–モーザーで中央を解析的に貫く）。5と1は「中央窓を貫く」同じ的の数値ルートと解析ルート。<em>中央の"小パラメータ無し"を潰せる見込みは立った、足場も規模も未達</em>。旗ではなく、"計算で踏み固められそうな踏み跡"の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-grail-rg.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← グレイル設計図</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 アイデア5・検証つき数値、物理好きの高校生・大学生向け読み物。手γによる「相転移の不在」のコンパクト窓への還元（強結合の収束展開＋弱結合の漸近自由）、多体系スペクトルギャップの有限サイズ判定（Knabe・Gosset–Mozgunov）、表現切断と作用素の尾の評価、検証つき固有値評価（Temple–Kato・Lehmann–Goerisch）、区間演算による全パラメータ一括評価、計算機援用証明の先例（Hales のケプラー予想と Flyspeck 形式化、Tucker のローレンツ吸引子、Fefferman–Seco による原子基底エネルギーの厳密評価、Gómez-Serrano・Chen–Hou 系の流体特異点）は、いずれも確立した事実・道具です。ただし frustrated（非可換）＋ガウス則＋無限次元局所空間に対する有限サイズ判定は未確立、連続極限 $a\to0$（壁2）の制御は別途必要、4次元ゲージのブロックの検証つき固有値評価は計算規模が天文学的で、4次元YMの質量ギャップは未解決です（2025年時点）。アイデア5は新道具を要さないが解析の足場と計算規模に依存するハイブリッドな計画であって、実行された証明ではありません。図は概念的模式で実際の計算値ではありません。見立ては筆者のもので反証されうる意見を含み、本稿は4次元ヤン=ミルズを解いたと主張しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では小区間 k を動かし、中央窓の各区間でギャップが厳密に lo>0 と囲い込まれる様子（計算できる部分）と、無限体積・連続への外挿に定理が要る所（要・定理）をトグルで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'),
+      bC=document.getElementById('bC'), bT=document.getElementById('bT'), rd=document.getElementById('rd');
+  var mode='C', NBOX=10;
+  var W0=0.32, W1=0.72; // 中央窓 [β0,β1]（正規化）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 各小区間のギャップ厳密下限 lo と上限 hi（中央でlo最小だが>0）
+  function loAt(k){ var t=(k+0.5)/NBOX; var d=(t-0.5); return 0.16 + 1.4*d*d; }   // 窪むが>0
+  function hiAt(k){ return loAt(k)+0.10; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=46, padR=14, padT=18, padB=42;
+    var kc=parseInt(sk.value,10); vk.textContent=kc;
+    var YMAX=0.9;
+    function X(b){return padL+b*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.max(0,Math.min(v,YMAX))/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 端の領域
+    ctx.fillStyle='rgba(47,125,90,0.10)';ctx.fillRect(X(0),padT,X(W0)-X(0),(h-padB)-padT);
+    ctx.fillStyle='rgba(47,109,138,0.10)';ctx.fillRect(X(W1),padT,X(1)-X(W1),(h-padB)-padT);
+    ctx.fillStyle='rgba(169,121,26,0.08)';ctx.fillRect(X(W0),padT,X(W1)-X(W0),(h-padB)-padT);
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#245c43';ctx.fillText('強結合', X(0.05), padT+13);
+    ctx.fillStyle='#245c6e';ctx.fillText('弱結合(壁2)', X(0.80), padT+13);
+    ctx.fillStyle='#8a6a1e';ctx.fillText('コンパクト窓 [β₀,β₁]', X(0.36), padT+13);
+    // ゼロ線
+    ctx.strokeStyle='#d8ccb0';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(w-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('β（→連続）', w-120, h-padB+26);
+    ctx.save();ctx.translate(16,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('ギャップ γ_n', 0,0);ctx.restore();
+    // 中央窓の小区間の囲い込み棒
+    var bw=(X(W1)-X(W0))/NBOX;
+    for(var k=0;k<NBOX;k++){
+      var x0=X(W0)+k*bw, lo=loAt(k), hi=hiAt(k);
+      // 囲い込み幅 [lo,hi]
+      ctx.fillStyle=(k===kc)?'#bcae90':'rgba(188,174,144,0.55)';
+      ctx.fillRect(x0+2, Y(hi), bw-4, Y(lo)-Y(hi));
+      // 下限 lo の線（緑）
+      ctx.strokeStyle=(k===kc)?'#2f7d5a':'rgba(47,125,90,0.7)';ctx.lineWidth=(k===kc)?3:2;
+      ctx.beginPath();ctx.moveTo(x0+2,Y(lo));ctx.lineTo(x0+bw-2,Y(lo));ctx.stroke();
+    }
+    // 要・定理モードの注記
+    if(mode==='T'){
+      // 無限体積への矢印（上）
+      ctx.strokeStyle='#a5473a';ctx.lineWidth=1.6;ctx.setLineDash([5,3]);
+      ctx.beginPath();ctx.moveTo(X(0.5),Y(0.62));ctx.lineTo(X(0.5),padT+22);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a5473a';ctx.font='bold 10.5px sans-serif';ctx.fillText('要・定理A：有限ブロック→無限体積', X(0.5)+6, padT+30);
+      // 連続への矢印（右端）
+      ctx.strokeStyle='#a5473a';ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(X(W1),Y(0.2));ctx.lineTo(X(0.97),Y(0.2));ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(X(0.97),Y(0.2));ctx.lineTo(X(0.94),Y(0.24));ctx.lineTo(X(0.94),Y(0.16));ctx.closePath();ctx.fill();
+      ctx.fillText('要・定理B：a→0（壁2）', X(0.74), Y(0.2)-6);
+    }
+    // カーソル
+    var cx=X(W0)+(kc+0.5)*bw;
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(cx,padT);ctx.lineTo(cx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    // readout
+    var lo=loAt(kc),hi=hiAt(kc);
+    if(mode==='C'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>計算できる部分・小区間 k='+kc+'</b>：区間演算＋検証つき固有値評価で、この β 区間のギャップを厳密に囲い込み ⟹ γ_n ∈ ['+lo.toFixed(2)+', '+hi.toFixed(2)+']、<b>lo='+lo.toFixed(2)+' > 0</b>。窓の全区間で lo>0 なら中央に相転移なし（＝要・定理Aで無限体積へ）。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>要・定理</b>：数値が出すのは"固定スケールの有限ブロックの厳密下限"まで。<b>A</b>＝有限ブロック→無限体積（frustrated 有限サイズ判定、未確立）、<b>B</b>＝a→0（壁2＝漸近スケーリング）。数値は中央を、解析が両端と無限体積を担うハイブリッド。';
+    }
+  }
+  function setM(x){ mode=x; bC.className='tbtn'+(x==='C'?' on':''); bT.className='tbtn'+(x==='T'?' on':''); draw(); }
+  bC.addEventListener('click',function(){setM('C');});
+  bT.addEventListener('click',function(){setM('T');});
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略γ補²・不等式を書き下す 反転移不等式を精密に ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sun:#2f7d5a; --u1:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:27px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .thm{margin:28px 0;padding:22px 26px;border:2px solid var(--acc);border-radius:4px;background:#eef1f7;}
+  .thm .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .thm .name{font-weight:700;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sun);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.thm{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略γ補²・不等式を書き下す</span></div>
+  <p class="eyebrow">旗は立つか？ ── 不等式を精密に書く。だが"書く"と"証明する"は別</p>
+  <h1>反転移不等式を書き下す ── そして正直に、旗は立たない
+    <span class="sub">SU(N)固有の反転移不等式を<strong>実際に書き下す</strong>：<em>相関長 \(\xi(\beta)\) は有限βのどこでも有限＝臨界点は \(\beta=\infty\)（g=0）にのみ</em>。<br>これは漸近自由の言い換え。U(1) は有限 \(\beta_c\) で発散＝転移 ── だから正しく区別する。<br>だが<strong>書き下しても証明は別物</strong>で、それは質量ギャップ問題そのもの。旗ではなく、いちばん高い所の標識。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：不等式を精密に述べ、U(1)で検算し、証明が破れる所を示す</span>
+    <span>結論：旗は立たない。well-posed な予想＝標識を、最前線に立てる</span>
+  </div>
+
+  <p class="lead">「不等式を作ってみて。いよいよ旗が立つ？」── 正直に答えます。<strong>旗は立ちません。</strong>でも不等式を<em>書き下す</em>ことは本気でやります。それは旗ではなく、フロンティアのいちばん高い所に置く<strong>標識</strong>です。以下で、反転移不等式を精密に述べ（ちゃんと数式で）、U(1) で検算し（正しく破れる）、そして<em>証明を試みてどこで壁に当たるか</em>を示します。「解けた」と「問題を正しい形に彫り上げた」は違う ── その違いを、いちばん誠実な形で。</p>
+
+  <h2><span class="n">01</span>不等式を書き下す ── 臨界点は無限遠にだけ</h2>
+
+  <div class="thm">
+    <div class="lbl">反転移不等式（候補・予想）ATI</div>
+    <p style="margin:0 0 8px;"><span class="name">主張。</span>SU(N)（\(N=2,3\)）4次元 Wilson 作用。相関長 \(\xi(\beta)=1/\Delta_{\rm lattice}(\beta)\) は、<strong>すべての有限 \(\beta\) で有限</strong>：</p>
+    $$\xi(\beta)<\infty\quad(\forall\,\beta<\infty)\qquad\Longleftrightarrow\qquad \Delta_{\rm lattice}(\beta)>0\ \text{が全有限}\beta\text{で成立し、}\beta\text{について解析的}$$
+    <p style="margin:8px 0 0;">言い換え：<strong>臨界点（\(\xi\) 発散）は \(\beta=\infty\)（\(g=0\)）にのみ存在する</strong>。有限の \(\beta_c\) には無い。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">これは漸近自由の言い換え</div>
+    $$\xi(\beta)\sim \frac{1}{a\Lambda}\sim \exp\!\Big(\frac{\beta}{4Nb_0}\Big)\ \xrightarrow{\ \beta\to\infty\ }\ \infty\quad(\text{発散は無限遠でのみ})$$
+    <p style="margin:10px 0 0;">漸近自由とは「紫外の不動点が \(g=0\)（\(\beta=\infty\)）にある」こと。だから相関長は \(\beta\to\infty\) で<em>初めて</em>発散する。有限 \(\beta\) では有限＝<strong>連続極限の臨界点が無限遠に押しやられている</strong> ── これが ATI の中身。連続極限をとる（\(a\to0\)）とは、この無限遠の臨界点に近づくこと。</p>
+  </div>
+
+  <h2><span class="n">02</span>道具が掴める形 ── 感受率の一様有界</h2>
+
+  <p>ATI を、反射正値性＋チェスボードが直接掴める量に書き換えます：</p>
+
+  <div class="thm" style="border-color:var(--side);background:#e9f0f0;">
+    <div class="lbl" style="color:var(--side);">ATI（道具版）── 比熱の一様有界</div>
+    $$\chi_V(\beta)=\frac{1}{V}\big(\langle S^2\rangle-\langle S\rangle^2\big)\ \le\ K\qquad(\forall\,\beta\in[\beta_0,\beta_1],\ \forall\,V)$$
+    <p style="margin:8px 0 0;">\(S=\sum_\square \mathrm{Re\,Tr}\,U_\square\)（全作用）。比熱＝プラケット感受率 \(\chi_V\) が窓 \([\beta_0,\beta_1]\) で<strong>体積に一様に有界</strong>なら、自由エネルギーの二階微分が有界＝<em>臨界的特異性なし</em>＝転移なし。感受率の一様有界＝長距離秩序なし ── これは RP＋チェスボードや赤外評価が狙う典型の量。</p>
+  </div>
+
+  <h2><span class="n">03</span>U(1) で検算 ── 正しく破れるか</h2>
+
+  <div class="fig">
+    <div class="cap">図：相関長 \(\xi(\beta)\)。<span style="color:var(--sun);font-weight:700;">SU(N)：全有限βで有限、発散は β→∞ のみ（ATI成立）</span>／<span style="color:var(--u1);font-weight:700;">U(1)：有限 \(\beta_c\) で発散＝転移（ATI破れる）</span>。トグルで比較</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>結合 β（左：強結合 → 右：連続へ）<span class="val" id="vx">0.20</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.20">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">SU(N)</button>
+        <button class="tbtn" id="bU">U(1)</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>SU(N) の ξ(β)</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>U(1) の ξ(β)</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">検算：ATI は U(1) で破れる（＝正しい標的）</div>
+    <p style="margin:0;">U(1)（4次元）は有限 \(\beta_c\) で \(\xi\to\infty\)（\(\chi\to\infty\)）＝転移（モノポール凝縮、Banks–Myerson–Kogut／Guth）。だから ATI は <strong>U(1) で偽</strong>。SU(N) では \(\xi\) は \(\beta\to\infty\) でのみ発散するので ATI は<em>真であるべき</em>。<strong>ATI は U(1) を殺し SU(N) を生かす</strong> ── §前回の羅針盤に叶う、正しく区別する不等式。書き下しは成功。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>証明を試みる ── そして、どこで壁に当たるか</h2>
+
+  <table class="dt">
+    <tr><th>領域</th><th>証明の道具</th><th>結果</th></tr>
+    <tr><td class="id">強結合端 β&lt;β₀</td><td>OS/ポリマー展開で \(\chi\) 有界・\(\xi\) 有限</td><td class="ok">✓ 押さえられる</td></tr>
+    <tr><td class="id">連続端 β→∞</td><td>漸近自由（\(\xi\sim e^{c\beta}\)、有限βで有限）</td><td class="open">摂動的には正しいが、\(\chi\) 一様有界の<strong>厳密</strong>証明は Borel/RG 制御次第（未確立）</td></tr>
+    <tr><td class="id">窓の真ん中</td><td>非可換の相関不等式で \(\chi\le K\)</td><td class="open"><strong>ここで壁</strong>：小パラメータなし、非可換 FKG/Griffiths が無い。ここが未達。</td></tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">旗が立たない理由 ── 二重の壁</span>
+    <p style="margin-top:0;"><strong>壁1（ATI 自体）</strong>：ATI をクロスオーバー窓で一様に証明するには、\(\chi\le K\) を体積に一様に示す非可換の相関不等式が要る ── それが無い（§前回の"非可換の壁"）。RP＋チェスボードは強力だが、真ん中（優勢な相が無い所）では効きが落ちる。</p>
+    <p style="margin-bottom:0;"><strong>壁2（ATI だけでは足りない）</strong>：仮に ATI が証明できても、それは「有限βに臨界点が無い＝解析的に地続き」までで、<em>連続の質量ギャップ \(\Delta_{\rm phys}>0\) にはさらに \(\beta\to\infty\) での漸近スケーリング \(\Delta_{\rm lattice}\sim a\Lambda\) の厳密化が要る</em>（強結合ギャップ≠連続ギャップ、の残り）。つまり ATI は必要な<strong>一本の柱</strong>であって、屋根ではない。だから ── <strong>旗は立たない。</strong>不等式を<em>書き下した</em>のは、well-posed な予想＝標識を最前線に立てたということ。証明は 4次元YMの質量ギャップ問題そのもの、そしてそれを超える。</p>
+  </div>
+
+  <h2><span class="n">05</span>それでも、これは前進 ── 標識の値打ち</h2>
+
+  <div class="keybox">
+    <div class="lbl">書き下したことで得たもの</div>
+    <p style="margin:0;">(1) 曖昧な「相転移の不在」が、<strong>一本の反証可能な不等式</strong>（\(\xi(\beta)<\infty\ \forall\beta<\infty\)／道具版 \(\chi_V\le K\)）になった。(2) それが <strong>U(1) で破れ SU(N) で成立</strong>すべきと検算でき、正しい標的だと確かめた。(3) 証明の<strong>壁の位置が正確に特定</strong>された（窓の真ん中の非可換相関不等式／β→∞の漸近スケーリング厳密化）。攻めるべき二つの補題が名前を持った。<em>これは「解いた」ではないが、「何を証明すれば勝ちか」を式の粒度で確定した</em>。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 旗は立たない、標識は立った</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の判定（過大申告なし）</div>
+    <p style="margin:0;">SU(N)固有の反転移不等式 ATI を<strong>書き下した</strong>：\(\xi(\beta)<\infty\ (\forall\beta<\infty)\)＝臨界点は無限遠にのみ＝漸近自由の言い換え。道具版は \(\chi_V\le K\)（比熱の体積一様有界）。<strong>U(1) では破れる</strong>＝正しく区別。だが<strong>証明は未達</strong>（窓の真ん中の非可換相関不等式が無い）、しかも <strong>ATI 単独では連続ギャップに足りない</strong>（漸近スケーリングの厳密化が別途要る）。ゆえに<strong>旗は立たない</strong>。得たのは、フロンティアの最前線に立てた<em>反証可能な予想＝標識</em>と、攻めるべき二補題の正確な名前。旗ではなく、いちばん高い所の縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">相関長と質量ギャップの関係 \(\xi=1/\Delta_{\rm lattice}\)、連続極限＝相関長が（格子単位で）発散する臨界点、漸近自由による臨界点の \(\beta=\infty\)（\(g=0\)）への位置づけと \(\xi\sim e^{c\beta}\) 型の漸近スケーリング、比熱＝作用の分散 \(\chi_V=(\langle S^2\rangle-\langle S\rangle^2)/V\)、感受率の一様有界と相転移（臨界的特異性）の不在の関係、4次元 U(1) が有限 \(\beta_c\) で転移（モノポール凝縮；Banks–Myerson–Kogut 1977、Guth 1980）すること、強結合 OS/ポリマー展開、反射正値性・チェスボード評価は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>ATI は本稿で述べた候補予想であって定理ではありません</strong>。クロスオーバー窓での \(\chi_V\le K\) の一様証明、\(\beta\to\infty\) での漸近スケーリングの厳密化、非可換系の相関不等式、および4次元YMの存在＋質量ギャップは未解決です（2025年時点）。ATI が成り立っても、それだけでは連続の質量ギャップは従いません（漸近スケーリングの厳密化が別途必要）。式中の指数（\(\xi\sim e^{\beta/4Nb_0}\) など）や図の \(\beta_c\)・曲線形は規格化・定式化に依存する概念的模式で、実際の計算値ではありません。ATI の定式化・「二本の柱」という見立ては筆者の提案で、反証されうる意見です。<strong>旗は立てていません。</strong>旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>反転移不等式 ATI を一言でいうと？ なぜ漸近自由の言い換えなのか。
+        <details><summary>答えを見る</summary><div class="ans">「相関長 \(\xi(\beta)\) は全有限βで有限＝臨界点（ξ発散）は \(\beta=\infty\)（g=0）にのみ」。漸近自由とは紫外不動点が \(g=0\) にあること＝連続極限の臨界点が無限遠に押しやられていること。だから \(\xi\) は \(\beta\to\infty\) で初めて発散し、有限βでは有限＝ATI。同値に \(\Delta_{\rm lattice}(\beta)>0\) が全有限βで成立し解析的。</div></details>
+      </li>
+      <li>ATI が「正しい標的」だと、どう検算したか。
+        <details><summary>答えを見る</summary><div class="ans">U(1) で破れることを確認。U(1)（4次元）は有限 \(\beta_c\) で \(\xi\to\infty\)・\(\chi\to\infty\)（転移＝モノポール凝縮、BMK/Guth）だから ATI は偽。SU(N) では \(\xi\) は \(\beta\to\infty\) でのみ発散するので ATI は真であるべき。ATI は U(1) を殺し SU(N) を生かす＝正しく区別する不等式。</div></details>
+      </li>
+      <li>なぜ「旗は立たない」のか。二重の壁とは。
+        <details><summary>答えを見る</summary><div class="ans">壁1：ATI をクロスオーバー窓で一様に証明するには \(\chi_V\le K\) を体積一様に示す非可換の相関不等式が要るが、それが無い（小パラメータもない真ん中）。壁2：仮に ATI が証明できても「有限βに臨界点なし＝解析的に地続き」までで、連続の質量ギャップにはさらに β→∞ の漸近スケーリングの厳密化が要る（ATIは必要な一本の柱で屋根ではない）。ゆえに書き下しは標識であって旗ではない。証明は質量ギャップ問題そのもの、かつそれを超える。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">γ補²・まとめ</span>不等式は書けた、旗は立てない</h2>
+    <p>SU(N)固有の反転移不等式 <strong>ATI</strong> を書き下した：<strong>\(\xi(\beta)<\infty\ (\forall\beta<\infty)\)＝臨界点は無限遠 \(\beta=\infty\) にのみ</strong>（＝漸近自由の言い換え、\(\Delta_{\rm lattice}>0\) が全有限βで解析的）。道具版＝比熱の体積一様有界 \(\chi_V\le K\)（RP＋チェスボードが狙う量）。<strong>U(1) では有限 \(\beta_c\) で破れる</strong>（モノポール凝縮）＝正しく区別する標的。</p>
+    <p>だが証明は二重の壁で未達：<strong>壁1</strong>＝窓の真ん中で \(\chi_V\le K\) を示す非可換相関不等式が無い、<strong>壁2</strong>＝ATI が成っても連続ギャップには漸近スケーリングの厳密化が別途要る（一本の柱で屋根ではない）。<strong>だから旗は立たない。</strong>得たのは、最前線に立てた<em>反証可能な予想＝標識</em>と、攻めるべき二補題の正確な名前。「解いた」ではなく「何を証明すれば勝ちかを式の粒度で確定した」。旗ではなく、いちばん高い所の縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-gammaB-futoshiki.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← γ補・反転移</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略γ補²・不等式を書き下す、物理好きの高校生・大学生向け読み物。相関長と質量ギャップ \(\xi=1/\Delta_{\rm lattice}\)、連続極限＝相関長が格子単位で発散する臨界点、漸近自由による臨界点の \(\beta=\infty\)（g=0）配置と漸近スケーリング、比熱＝作用の分散 \(\chi_V=(\langle S^2\rangle-\langle S\rangle^2)/V\)、感受率の一様有界と相転移（臨界的特異性）の不在の関係、4次元コンパクト U(1) の有限 \(\beta_c\) での転移（モノポール凝縮；Banks–Myerson–Kogut 1977、A. Polyakov、非閉じ込め相の存在の厳密証明は A. H. Guth, Phys. Rev. D 21, 2291 (1980)）、強結合 Osterwalder–Seiler／ポリマー展開、反射正値性・チェスボード評価は、いずれも確立した事実・道具です。ここで述べた反転移不等式 ATI は候補予想であって定理ではなく、クロスオーバー窓での比熱の一様有界の証明、β→∞ の漸近スケーリングの厳密化、非可換系の相関不等式、4次元YMの存在＋質量ギャップは未解決です（2025年時点）。ATI が成立しても、それだけでは連続の質量ギャップは従いません。式中の指数・図の臨界結合や曲線形は規格化・定式化に依存する概念的模式で、実際の計算値ではありません。ATI の定式化と「二本の柱」の見立ては筆者の提案で反証されうる意見を含みます。本稿は 4次元ヤン=ミルズを解いたと主張するものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では結合 β を動かし SU(N)／U(1) をトグルすると、相関長 ξ(β) が SU(N) では有限βのどこでも有限（発散は無限遠）、U(1) では有限 β_c で発散＝転移、という ATI の中身が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'),
+      bS=document.getElementById('bS'), bU=document.getElementById('bU'), rd=document.getElementById('rd');
+  var grp='S'; var BC=0.62; // U(1) の転移点
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var YMAX=6.0;
+  // SU(N)：ξ~exp(cβ)、全有限βで有限（発散は無限遠）
+  function xiSU(b){ return 0.35*Math.exp(2.5*b); }
+  // U(1)：β_c で発散
+  function xiU1(b){ if(b>=BC-0.001) return 1e9; return 0.35/(1-b/BC); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var b=parseFloat(sx.value); vx.textContent=b.toFixed(2);
+    function X(bb){return padL+bb*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← 強結合        β=2N/g²        連続 β→∞ →', padL+8, h-padB+26);
+    ctx.save();ctx.translate(16,padT+80);ctx.rotate(-Math.PI/2);ctx.fillText('相関長 ξ(β)＝1/Δ_lattice', 0,0);ctx.restore();
+    ctx.fillStyle='#8a8266';ctx.font='11px sans-serif';ctx.fillText('ξ→∞（臨界点）', padL+6, padT+12);
+    // SU(N)
+    ctx.strokeStyle=(grp==='S')?'#2f7d5a':'#aecdbc';ctx.lineWidth=(grp==='S')?2.8:1.6;ctx.beginPath();var f=true;
+    for(var b1=0;b1<=1.0001;b1+=0.005){var X1=X(b1),Y1=Y(xiSU(b1));if(f){ctx.moveTo(X1,Y1);f=false;}else ctx.lineTo(X1,Y1);}
+    ctx.stroke();
+    ctx.fillStyle=(grp==='S')?'#2f7d5a':'#8fb3a0';ctx.fillText('SU(N)：全有限βで有限', X(0.24), Y(xiSU(0.55))-6);
+    // U(1)：β_c まで、発散
+    ctx.strokeStyle=(grp==='U')?'#a5473a':'#e3b7ad';ctx.lineWidth=(grp==='U')?2.8:1.6;ctx.beginPath();f=true;
+    for(var b2=0;b2<BC-0.005;b2+=0.005){var v=xiU1(b2);if(v>YMAX*1.5)break;var X2=X(b2),Y2=Y(v);if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();
+    // U(1) 漸近線
+    ctx.strokeStyle=(grp==='U')?'#a5473a':'#e3b7ad';ctx.setLineDash([5,4]);ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(X(BC),padT);ctx.lineTo(X(BC),h-padB);ctx.stroke();ctx.setLineDash([]);
+    if(grp==='U'){ctx.fillStyle='#a5473a';ctx.font='bold 11px sans-serif';ctx.fillText('β_c：ξ発散＝転移（ATI破れる）', X(BC)+6, padT+40);}
+    else {ctx.fillStyle='#8fb3a0';ctx.font='11px sans-serif';ctx.fillText('U(1)', X(BC)-30, padT+40);}
+    // カーソル
+    var mx=X(b);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var xv=(grp==='S')?xiSU(b):xiU1(b);
+    if(xv<=YMAX){ ctx.fillStyle=(grp==='S')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(mx,Y(xv),5,0,7);ctx.fill(); }
+    // readout
+    if(grp==='S'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>SU(N)</b>：ξ(β)は全有限βで有限（ξ~e<sup>cβ</sup>、発散は β→∞ のみ）＝<b>臨界点は無限遠にのみ＝ATI成立（予想）</b>。Δ_lattice(β)>0 が全有限βで解析的。連続極限とは、この無限遠の臨界点に近づくこと。';
+    } else {
+      if(b>=BC-0.05){ rd.style.background='#f3e2dc';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)・β_c 近傍</b>：ξ→∞（χ→∞）＝<b>有限βでの臨界点＝転移</b>（モノポール凝縮 BMK/Guth）。<b>ATI はここで破れる</b> ── だから ATI は U(1) を正しく除外する標的。'; }
+      else { rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)・閉じ込め相</b>：まだ ξ 有限。だが β_c に近づくと発散する（有限βの臨界点）── SU(N) にはこれが無い、が ATI の主張。'; }
+    }
+  }
+  function setG(x){ grp=x; bS.className='tbtn'+(x==='S'?' on':''); bU.className='tbtn'+(x==='U'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setG('S');});
+  bU.addEventListener('click',function(){setG('U');});
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

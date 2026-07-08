@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略γ補・反転移不等式 SU(N)固有の構造でクロスオーバー窓を割る ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sun:#2f7d5a; --u1:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:27px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sun);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略γ補・反転移不等式（現実的な勝ちB）</span></div>
+  <p class="eyebrow">U(1)に無く SU(N)にある構造 ── 漸近自由が相境界を禁じる、その不等式を探す</p>
+  <h1>SU(N)固有の反転移 ── 漸近自由が"中間の不動点"を禁じる
+    <span class="sub">手γ の現実的な勝ち(B)：<strong>相転移を禁じる SU(N)固有の構造を、不等式として取り出す</strong>。<br>鍵＝<em>反転移 ⟺ 結合直線上でβ関数が中間の零点（不動点）を持たない</em>（漸近自由の単調フロー＝ひとつの相）。<br>U(1) は \(g_c\) に不動点（モノポール凝縮＝相境界）を持つ ── だから区別できる。羅針盤は U(1) 対照。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：U(1)と分かつ構造を名指し、窓の解析性の攻め口に（史実つき）</span>
+    <span>核心：中間の不動点の不在＝反転移／道具＝RP・チェスボード・零点なし領域</span>
+  </div>
+
+  <p class="lead">手γ で、連続への渡りは「結合直線上に相転移が無い＝ \(\Delta(\beta)\) が解析的」に凝縮しました。現実的な勝ち(B)は、それを<strong>SU(N)固有の"反転移不等式"を探す</strong>作業に翻訳することです。羅針盤は U(1) 対照 ── U(1) は転移を持ちギャップを失い、SU(N) は持たず残す。だから探すべきは、<em>U(1) には無く SU(N) にある構造</em>。それは何か、そしてそれを RP・チェスボード・零点なし領域の道具で、クロスオーバー窓にどう当てるか。名指しできる機構（モノポール凝縮の不在）まで、正直に降ります。</p>
+
+  <h2><span class="n">01</span>U(1)と分かつもの ── 漸近自由（反遮蔽）</h2>
+
+  <div class="keybox">
+    <div class="lbl">β関数の符号が運命を分ける</div>
+    $$\text{SU}(N):\ \beta(g)=-b_0\,g^3+\cdots\ (b_0>0,\ \textbf{漸近自由})\qquad \text{U}(1):\ \beta(g)=+b_0'\,g^3+\cdots\ (\textbf{遮蔽})$$
+    <p style="margin:10px 0 0;">SU(N) は非可換（構造定数 \(f^{abc}\neq0\)＝グルオン自己相互作用）で<strong>反遮蔽</strong> ── \(g\to0\) が紫外の不動点、フローは強結合から連続へ<em>単調</em>。U(1) は<strong>遮蔽</strong>で \(g\to0\) が<em>赤外</em>の自由相（クーロン相・質量ゼロの光子）。この符号差が、相構造を分ける根源。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">U(1) の転移の正体＝モノポール凝縮</div>
+    <p style="margin:0;">4次元コンパクト U(1) の閉じ込め相↔クーロン相の転移は、<strong>磁気モノポールの凝縮</strong>で駆動される（Banks–Myerson–Kogut 1977；Polyakov）。強結合ではモノポールが凝縮し閉じ込め、弱結合で希薄化してクーロン相へ ── その境界が相転移（非閉じ込め相の存在は Guth 1980 が厳密証明）。<strong>SU(N) にはこの零温度でのバルク脱閉じ込め凝縮が無い</strong>。反転移不等式は、<em>まさにこの差</em>を掴まえねばならない。</p>
+  </div>
+
+  <h2><span class="n">02</span>RG言語 ── 反転移 ⟺ 中間に不動点なし</h2>
+
+  <p>相転移＝結合直線上の<strong>相境界（セパラトリクス）</strong>＝β関数の<strong>中間の零点（自明でない不動点）</strong>。だから：</p>
+
+  <div class="calc">
+    <span class="tag">反転移の RG 版</span>
+    $$\textbf{反転移}\ \Longleftrightarrow\ \beta(g)\ \text{が}\ (0,\infty)\ \text{に中間の零点を持たない}\ \Longleftrightarrow\ \text{フローが単調＝ひとつの相}$$
+    <p style="margin-bottom:14px;">SU(N) は \(\beta<0\) が続き、\(g=0\)（紫外）以外に不動点が無い ⟹ 強結合と連続は<strong>ひとつの相</strong>で地続き ⟹ \(\Delta(\beta)\) 解析的。U(1) は \(g_c\) に不動点（相境界）があり<strong>二相</strong>に割れる ⟹ 非解析＝ギャップ喪失。下の図で、この"中間の零点の有無"を。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：β関数 \(\beta(g)=dg/d\ln\mu\)。<span style="color:var(--sun);font-weight:700;">SU(N)：\(\beta<0\) 全域（漸近自由）、\(g=0\) 以外に零点なし＝相境界なし</span>／<span style="color:var(--u1);font-weight:700;">U(1)：\(g_c\) に零点（不動点＝相境界）＝二相</span>。零点＝相境界＝非解析点</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>結合 g <span class="val" id="vx">0.20</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.20">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">SU(N)</button>
+        <button class="tbtn" id="bU">U(1)</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>SU(N) β(g)</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>U(1) β(g)</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>不等式を作る道具 ── と、非可換の壁</h2>
+
+  <table class="dt">
+    <tr><th>道具</th><th>効き方</th><th>状況</th></tr>
+    <tr><td class="id">相関不等式</td><td>Griffiths/FKG で単調性→転移の排除（Ising等で強力）</td><td class="open">非可換では文字が負にもなり FKG 等が<strong>ほぼ使えない</strong> ── これが最大の壁。SU(N)固有版を作るのが的。</td></tr>
+    <tr><td class="id">RP＋チェスボード</td><td>反射正値性（Osterwalder–Seiler・タダ）→ 局所"悪い"配置の確率評価</td><td class="ok">使える。転移の存在証明に強い道具を、<strong>秩序変数/無秩序変数（'t Hooft ループ）</strong>に転用。</td></tr>
+    <tr><td class="id">零点なし領域</td><td>クラスター展開＋補間法(Barvinok)で分配関数の零点を実軸から排除→解析性</td><td class="open">両端（強・弱結合）から収束するが、<strong>クロスオーバー窓の真ん中は届かない</strong>。</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>名指しできる標的 ── 無秩序作用素の不等式</h2>
+
+  <div class="keybox">
+    <div class="lbl">具体的な"反転移不等式"の候補</div>
+    <p style="margin:0;"><strong>「SU(N) では、't Hooft ループ（＝磁気的無秩序作用素／モノポール）が、クロスオーバー窓を通じて<em>凝縮しない</em>（＝面積則を保つ／脱閉じ込めが起きない）」</strong>を、RP＋チェスボードで一様に示す。これが立てば相境界は無い＝反転移。<strong>U(1) では逆にモノポールが凝縮する</strong>ので、この不等式は U(1) で<em>破れる</em> ── つまり<u>正しく U(1) を区別する</u>。羅針盤に叶う標的。</p>
+  </div>
+
+  <p>言い換えれば、反転移不等式の中身は <strong>「非可換性 \(f^{abc}\neq0\)（反遮蔽）が、U(1) にあるモノポール凝縮の相境界を消す」</strong>を、無秩序作用素の一様評価として厳密化すること。機構は明快（漸近自由→競合する赤外不動点なし→脱閉じ込め凝縮なし）、あとはそれを<em>不等式</em>にできるか。</p>
+
+  <h2><span class="n">05</span>現実的な勝ち ── 三つの部分成果</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙える部分成果（過大申告なし）</div>
+    <p style="margin:0 0 8px;"><strong>(i) 一つの単調性／無秩序不等式</strong>：弦張力 \(\sigma(\beta)\) の単調性・凸性、または 't Hooft ループの一様な面積則を、SU(N)固有の構造から一つ厳密に。あれば大突破。</p>
+    <p style="margin:0 0 8px;"><strong>(ii) 窓のコンパクト化＋両端から圧縮</strong>：零点なし領域を強・弱結合から補間法で伸ばし、<strong>残る非解析の可能性を有界窓 \([\beta_0,\beta_1]\) の中に測定的に閉じ込める</strong>（無限の直線→測れる隙間）。</p>
+    <p style="margin:0;"><strong>(iii) U(1) 対照を証明の制約に</strong>：候補不等式は必ず「U(1) で破れる／SU(N) で成立」を確認 ── 破れない"証明"は誤り。反遮蔽・\(f^{abc}\)・赤外不動点の不在に依拠しているかを常にチェック。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 機構は名指せた、不等式はまだ</h2>
+
+  <div class="keybox">
+    <div class="lbl">(B) の判定</div>
+    <p style="margin:0;">(B)＝手γ の「相転移の不在」を、<strong>SU(N)固有の反転移不等式</strong>を探す作業に翻訳。RG言語では<em>β関数が中間の不動点を持たない（漸近自由の単調フロー）</em>＝ひとつの相＝解析的。名指しできる標的＝<strong>無秩序作用素（'t Hooft ループ／モノポール）がクロスオーバー窓を通じ凝縮しない</strong>（U(1) では凝縮＝正しく区別）。道具は RP＋チェスボードが使え、相関不等式は<strong>非可換の壁</strong>で乏しい。機構（反遮蔽→競合IR不動点なし→脱閉じ込め凝縮なし）は明快だが、<em>それを厳密な一様不等式にすること、窓の解析性はなお Q3-級で未達</em>。だが標的が<strong>反証可能な形</strong>に名指せた。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">SU(N) の漸近自由（\(\beta=-b_0g^3\)、\(b_0>0\)、非可換 \(f^{abc}\neq0\) による反遮蔽；Gross–Wilczek・Politzer 1973）と U(1) の遮蔽（正のβ・ランダウ極・赤外クーロン不動点）、相転移＝β関数の中間の零点（相境界）、4次元コンパクト U(1) の閉じ込め↔クーロン転移がモノポール凝縮で駆動されること（Banks–Myerson–Kogut 1977；Polyakov；非閉じ込め相の存在の厳密証明は Guth 1980）、反射正値性とチェスボード評価（Osterwalder–Seiler、Fröhlich–Israel–Lieb–Simon）、't Hooft の秩序・無秩序作用素、Griffiths/FKG 相関不等式が主にアーベル系で成立すること、零点なし領域（Lee–Yang／クラスター展開／補間法）は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>SU(N)固有の反転移不等式（単調性・無秩序作用素の一様評価）は未確立、非可換系の相関不等式は極めて乏しく、クロスオーバー窓での解析性・零点排除、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。「反転移⟺中間の不動点の不在」は純粋YMでの描像で、フェルミオンを多数加えた"共形窓"では中間不動点が現れます（本稿は純粋ゲージが念頭）。図のβ関数の形・\(g_c\) は符号と不動点構造の対照を示す<strong>概念的模式</strong>で、実際の計算ではありません。「無秩序作用素の不等式が現実的な標的」「三つの部分成果」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「反転移」を RG（β関数）の言葉でいうと？
+        <details><summary>答えを見る</summary><div class="ans">相転移＝結合直線上の相境界（セパラトリクス）＝β関数の中間の零点（自明でない不動点）。だから反転移⟺β(g)が(0,∞)に中間の零点を持たない＝フローが単調＝ひとつの相。SU(N)は\(\beta<0\)が続き\(g=0\)以外に不動点なし→強結合と連続が地続き→\(\Delta(\beta)\)解析的。U(1)は\(g_c\)に不動点があり二相に割れる。</div></details>
+      </li>
+      <li>SU(N) と U(1) を分かつ根源の構造は何か。それはなぜ反転移不等式の鍵になるか。
+        <details><summary>答えを見る</summary><div class="ans">非可換性 \(f^{abc}\neq0\)（グルオン自己相互作用）による<strong>反遮蔽＝漸近自由</strong>（β<0）。U(1)は遮蔽（β>0）で赤外クーロン不動点＝別の相を持つ。U(1)の転移はモノポール凝縮（Banks–Myerson–Kogut/Polyakov）で駆動されるが、SU(N)には零温度のバルク脱閉じ込め凝縮が無い。反転移不等式は<strong>この差＝U(1)に有りSU(N)に無い構造</strong>を掴まえねばならず、U(1)で破れSU(N)で成立することが正しさの試金石。</div></details>
+      </li>
+      <li>名指しできる"反転移不等式"の具体的候補と、使える／使えない道具は？
+        <details><summary>答えを見る</summary><div class="ans">候補＝「SU(N)では 't Hooft ループ（磁気的無秩序作用素／モノポール）がクロスオーバー窓を通じ凝縮しない（面積則を保つ・脱閉じ込めなし）」を RP＋チェスボードで一様に示す。U(1)では凝縮するので破れる＝正しく区別。使える道具＝反射正値性＋チェスボード（Osterwalder–Seiler、FILS）。使えない／乏しい＝非可換系の相関不等式（Griffiths/FKGは負の文字で崩れる）＝最大の壁。零点なし領域は両端から届くが窓の真ん中は届かない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">γ補・まとめ</span>U(1)に無い構造を、不等式として掴まえる</h2>
+    <p>手γ の勝ち(B)＝<strong>SU(N)固有の反転移不等式</strong>を探す。RG言語では<em>β関数が中間の不動点を持たない（漸近自由の単調フロー）＝ひとつの相＝解析的</em>。U(1) は \(g_c\) に不動点（モノポール凝縮＝相境界、Banks–Myerson–Kogut/Guth）を持ち二相＝ギャップ喪失。だから探すべきは<strong>U(1)に無く SU(N)にある構造</strong>＝非可換の反遮蔽。</p>
+    <p>名指しできる標的＝<strong>無秩序作用素（'t Hooft ループ）がクロスオーバー窓で凝縮しない</strong>を RP＋チェスボードで一様に（U(1)では破れる＝試金石）。相関不等式は非可換の壁で乏しい。現実的な勝ち＝(i)一つの単調性／無秩序不等式、(ii)窓のコンパクト化＋両端から圧縮、(iii)U(1)対照を証明の制約に。<em>機構は名指せた（反遮蔽→競合IR不動点なし→脱閉じ込め凝縮なし）、厳密な不等式はまだ</em>。標的が反証可能な形になった ── 旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-gamma-kaiseki.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← γ・解析性</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略γ補・反転移不等式（現実的な勝ちB）、物理好きの高校生・大学生向け読み物。SU(N) の漸近自由（\(\beta=-b_0g^3\)、非可換 \(f^{abc}\neq0\) の反遮蔽；Gross–Wilczek・Politzer 1973）、U(1) の遮蔽・ランダウ極・赤外クーロン不動点、相転移＝β関数の中間の零点（相境界）、4次元コンパクト U(1) の閉じ込め↔クーロン転移がモノポール凝縮で駆動されること（Banks–Myerson–Kogut 1977；A. Polyakov；非閉じ込め相の存在の厳密証明は A. H. Guth, Phys. Rev. D 21, 2291 (1980)）、反射正値性とチェスボード評価（Osterwalder–Seiler、Fröhlich–Israel–Lieb–Simon）、't Hooft の秩序・無秩序作用素、Griffiths/FKG 相関不等式が主にアーベル系で成立すること、Lee–Yang 零点なし領域（クラスター展開・補間法／Barvinok）は、いずれも確立した事実・道具です。SU(N)固有の反転移不等式（単調性・無秩序作用素の一様評価）は未確立、非可換系の相関不等式は極めて乏しく、クロスオーバー窓での解析性・零点排除、4次元YMの質量ギャップは未解決です（2025年時点）。「反転移⟺中間の不動点の不在」は純粋ゲージでの描像で、多数のフェルミオンを加えた共形窓では中間不動点が現れ得ます。図のβ関数の形・臨界結合は符号と不動点構造の対照を示す概念的模式で、実際の計算ではありません。標的・部分成果の選定は筆者の見立てで反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では結合 g を動かし SU(N)／U(1) をトグルすると、β関数の中間の零点（＝相境界）の有無で相構造が分かれる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'),
+      bS=document.getElementById('bS'), bU=document.getElementById('bU'), rd=document.getElementById('rd');
+  var grp='S'; var GC=0.5; // U(1) の中間不動点
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // β(g)：SU(N)は全域<0（漸近自由・零点はg=0のみ）、U(1)はg_cで零点（中間不動点）
+  function betaSU(g){ return -1.15*g*g*g; }
+  function betaU1(g){ return 1.9*g*(g-GC); } // 零点 g=0, g=GC
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var g=parseFloat(sx.value); vx.textContent=g.toFixed(2);
+    var YMAX=0.5, YMIN=-0.5;
+    function X(gg){return padL+gg*(w-padL-padR);}
+    function Y(v){var t=(v-YMIN)/(YMAX-YMIN);return (h-padB)-t*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // ゼロ線
+    ctx.strokeStyle='#cabfa3';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(w-padR,Y(0));ctx.stroke();
+    ctx.fillStyle='#8a8266';ctx.font='11px sans-serif';ctx.fillText('β=0（不動点）', w-padR-96, Y(0)-6);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← 連続 g→0        結合 g        強結合 →', padL+8, h-padB+26);
+    ctx.save();ctx.translate(16,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('β(g)=dg/d ln μ', 0,0);ctx.restore();
+    // 両方薄く
+    // SU(N)
+    ctx.strokeStyle=(grp==='S')?'#2f7d5a':'#aecdbc';ctx.lineWidth=(grp==='S')?2.8:1.6;ctx.beginPath();var f=true;
+    for(var g1=0;g1<=1.0001;g1+=0.01){var X1=X(g1),Y1=Y(betaSU(g1));if(f){ctx.moveTo(X1,Y1);f=false;}else ctx.lineTo(X1,Y1);}
+    ctx.stroke();
+    ctx.fillStyle=(grp==='S')?'#2f7d5a':'#8fb3a0';ctx.font='11px sans-serif';ctx.fillText('SU(N)：β<0（漸近自由）', X(0.52), Y(betaSU(0.62))+16);
+    // U(1)
+    ctx.strokeStyle=(grp==='U')?'#a5473a':'#e3b7ad';ctx.lineWidth=(grp==='U')?2.8:1.6;ctx.beginPath();f=true;
+    for(var g2=0;g2<=1.0001;g2+=0.01){var X2=X(g2),Y2=Y(betaU1(g2));if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();
+    ctx.fillStyle=(grp==='U')?'#a5473a':'#cf9a8f';ctx.fillText('U(1)：β>0（遮蔽）', X(0.66), Y(betaU1(0.82))-8);
+    // U(1) の中間不動点マーク
+    if(grp==='U'){
+      ctx.fillStyle='#a5473a';ctx.beginPath();ctx.arc(X(GC),Y(0),6,0,7);ctx.fill();
+      ctx.strokeStyle='#a5473a';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(X(GC),padT);ctx.lineTo(X(GC),h-padB);ctx.stroke();ctx.setLineDash([]);
+      ctx.font='bold 11px sans-serif';ctx.fillText('g_c：中間の不動点＝相境界（モノポール凝縮）', X(GC)+8, padT+30);
+    } else {
+      ctx.fillStyle='#2f7d5a';ctx.font='bold 11px sans-serif';ctx.fillText('中間の零点なし＝相境界なし＝ひとつの相', X(0.14), padT+30);
+    }
+    // g=0 不動点
+    ctx.fillStyle='#8a8266';ctx.beginPath();ctx.arc(X(0),Y(0),4,0,7);ctx.fill();
+    // カーソル
+    var mx=X(g);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var by=(grp==='S')?betaSU(g):betaU1(g);
+    ctx.fillStyle=(grp==='S')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(mx,Y(by),5,0,7);ctx.fill();
+    // readout
+    if(grp==='S'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>SU(N)</b>：β(g)<0 が全域（漸近自由、反遮蔽 f<sup>abc</sup>≠0）。g=0（紫外）以外に不動点なし ⟹ <b>相境界なし＝ひとつの相＝Δ(β)解析的</b>。強結合のギャップが連続まで地続き。反転移不等式が狙う姿。';
+    } else {
+      if(Math.abs(g-GC)<0.05){ rd.style.background='#f3e2dc';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)・g_c＝中間の不動点</b>：ここが<b>相境界（セパラトリクス）＝非解析点</b>。モノポールの凝縮↔希薄化の境。SU(N)にはこれが無い ── だから反転移不等式は U(1) で破れねばならない。'; }
+      else { rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)</b>：β(g)>0（遮蔽）、g_c に<b>中間の不動点</b>あり ⟹ 二相（クーロン相／閉じ込め相）に割れる ⟹ 連続は質量ゼロの光子。転移はモノポール凝縮（Banks–Myerson–Kogut/Polyakov）。'; }
+    }
+  }
+  function setG(x){ grp=x; bS.className='tbtn'+(x==='S'?' on':''); bU.className='tbtn'+(x==='U'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setG('S');});
+  bU.addEventListener('click',function(){setG('U');});
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>この理論で解けるか ── サンプリング定理は効くか ／ ミレニアム問題を解くぞ 番外編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --recon:#26456e; --samp:#a9791a; --trueC:#b0a48c;
+    --ok:#2f7d5a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">番外編（自己診断）</span></div>
+  <p class="eyebrow">「離散＝連続、十分細かく標本化すれば同じ」を、ヤン=ミルズに正直に当てる</p>
+  <h1>この理論で解けるか ── サンプリング定理は効くか
+    <span class="sub">姉妹シリーズの理論 ── <strong>離散と連続は表現で観測量は一致／十分細かく標本化すれば離散＝連続</strong> ── をQ3に当てると、5か所で折れる。<br>そして<em>折れる場所が、そっくりそのままクレイ問題(Q3)</em>。この理論は問題を消さず、<strong>壁の在処を正確に指す診断器</strong>だった。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：自作理論を自分で反証する（数式あり）</span>
+    <span>核心：Nyquist \(f_s>2f_{\max}\) の前提＝帯域制限、をQFTは満たさない</span>
+  </div>
+
+  <p class="lead">ここまで（挑戦編）で、他人の攻め方を地図にしました。この番外編は<strong>自分の理論を、自分で反証</strong>します ── 姉妹シリーズ「わかる質量」番外⑤・「宇宙は計算機」で立てた、<em>「離散と連続は同じ物理の二つの表現で、十分細かく標本化すれば区別できない（サンプリング定理）」</em>という理論。これをヤン=ミルズのQ3（連続極限の厳密構成）に当てれば、Q3は表現の言い換えに溶けて解ける ── ように見える。本当か。正直にやると、<strong>5か所で必ず折れます</strong>。しかも折れる場所は、全部Q3そのもの。掟どおり、旗ではなく標識を立てます。</p>
+
+  <h2><span class="n">01</span>誘惑 ── なぜ「解けそう」に見えるか</h2>
+
+  <div class="keybox">
+    <div class="lbl">魅力的だが、罠のある筋</div>
+    <p style="margin:0;">Q3の難所は連続極限だけ。だが<strong>離散＝連続（表現不変）</strong>で、しかもサンプリング定理より<strong>十分細かく標本化すれば情報は失われない</strong>。ならば<em>格子（離散）はそのまま連続理論</em>で、Q1・Q2（格子で完了）が答え。連続極限の厳密証明は不要、Q3は言い換えに溶ける ── 格子の質量ギャップ＝連続の質量ギャップ。</p>
+  </div>
+
+  <p>もっともらしい。だが、サンプリング定理には<strong>効くための前提</strong>があり、ヤン=ミルズはそれを満たしません。まずその前提を、図で確かめます。</p>
+
+  <h2><span class="n">02</span>サンプリング定理の前提＝"帯域制限"</h2>
+
+  <p>ナイキスト＝シャノンの定理は、こう言います ── <em>信号の周波数成分が \(f_{\max}\) までに収まる（帯域制限）なら、\(f_s>2f_{\max}\) で標本化すれば完全に復元できる。</em></p>
+
+  <div class="keybox">
+    <div class="lbl">サンプリング定理（前提つき）</div>
+    $$f_s>2f_{\max}\ \Rightarrow\ \text{標本から連続信号を完全再構成}\qquad(\textbf{前提：帯域制限 }f_{\max}<\infty)$$
+  </div>
+
+  <p>下の図で、信号の最高周波数 \(f_{\max}\) をスライダーで上げてみてください。<strong>ナイキスト \(f_s/2\) の内側</strong>なら、標本（点）から元の信号（濃い線）が<em>完全に再構成</em>されます（離散＝連続）。だが<strong>ナイキストを超えた瞬間</strong>、<em>エイリアシング</em>が起き、再構成は真の信号と食い違う（離散≠連続）── サンプリング定理が使えなくなる。</p>
+
+  <div class="fig">
+    <div class="cap">図：標本化と再構成。スライダーで信号の最高周波数を上げる。<span style="color:#2f7d5a;font-weight:700;">ナイキスト内＝帯域制限＝離散＝連続（完全再構成）</span>、<span style="color:#a5473a;font-weight:700;">超えると＝エイリアシング＝離散≠連続</span>。QFTのUV・臨界極限は、この"超えた側"</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>信号の最高周波数 \(f_{\max}\)（ナイキスト \(f_s/2=8\)）<span class="val" id="vf">3.0</span>
+        <input type="range" id="sf" min="1" max="14" step="0.1" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#b0a48c;"></i>真の信号</span>
+      <span><i class="dot" style="background:#a9791a;"></i>標本（格子）</span>
+      <span><i class="swatch" style="background:#26456e;"></i>標本からの再構成</span>
+    </div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">ここが急所 ── QFTには \(f_{\max}\) が無い</span>
+    <p style="margin:6px 0 0;">格子（間隔 \(a\)）は運動量 \(\sim\pi/a\) で切る＝<strong>帯域制限された近似</strong>。だが本物のQFTは、いくらでも高い運動量のモードを持つ（<strong>帯域制限されない</strong>）。連続極限 \(a\to0\) とは、\(f_{\max}\to\infty\) にして<em>捨てた無限のUVモードを戻す</em>こと ── 繰り込みの全難所がここ。<strong>\(f_{\max}=\infty\) だから、Nyquist の前提が最初から成り立たない。</strong></p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">よくある鋭い疑問 ── 「高周波の光は電子になる＝帯域端では？」</span>
+    もっともな直感ですが、それは<strong>上限（帯域端）にはなりません</strong>。<br>
+    ① <strong>1個の光子は周波数に上限がない</strong>：ガンマ線・宇宙線と、いくらでも高エネルギーの光子が実在。しかも<em>孤立した光子はどんな高周波でも光子のまま</em>（エネルギー・運動量保存から、真空中の1光子は単独で \(e^+e^-\) に崩壊できない）。<br>
+    ② <strong>対生成は"限界"でなく新チャンネルのしきい値</strong>：\(\gamma\gamma\to e^+e^-\)（\(\sqrt{s}>2m_ec^2\)）や \(\gamma+\text{核}\) のように<em>相手が要り</em>、生成物は電子1個でなく \(e^+e^-\) ペア。しかも対生成・真空偏極・走る結合は、ループで<strong>無限に高いモードを足して初めて計算できる</strong> ── その現象こそ、<em>帯域が無限に伸びている証拠</em>で、天井の証拠ではない。<br>
+    ③ <strong>上限がありうる唯一の候補はプランク離散</strong>（\(f_{\max}\sim1/\ell_{\rm Pl}\)）── だが未証明・\(\sim10^{19}\) GeV（QCDの遥か上で無関係）・クレイ問題は平坦な連続極限を要求＝禁じ手。しかも純ヤン=ミルズは<strong>漸近自由</strong>で、高周波ほど<em>むしろ素直な波</em>（波が粒に化ける話すら起きない）。<br>
+    だから帯域端があるのは<strong>"下"（ギャップ \(\Delta\)）だけで、"上"には無い</strong>。じつは「高周波で波が粒になる＝上限」という直感は、<em>"時空はプランクで離散"という賭けの言い直し</em> ── もし本当なら"帯域制限が効く側"に話が移るが、今は未証明で、平坦時空のこの問題では持ち込めません。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>折れる5点 ── そのままQ3の中身</h2>
+
+  <table class="dt">
+    <tr><th></th><th>折れる断層</th><th>なぜ</th></tr>
+    <tr><td class="id">①</td><td class="bad">帯域制限が無い</td><td>QFTは \(f_{\max}=\infty\)（UVモードが無限）。格子は捨てているだけ。Nyquist の前提が不成立</td></tr>
+    <tr><td class="id">②</td><td class="bad">連続極限＝臨界点＝全スケールに構造</td><td>\(a\to0\) で相関長 \(\xi\to\infty\)、スケール不変で最高振動数が無い。"十分細かく"が永遠に来ない</td></tr>
+    <tr><td class="id">③</td><td class="bad">「観測量が一致」は循環</td><td>離散＝連続の一致こそがQ3。それを仮定してQ3を消すのは循環論法</td></tr>
+    <tr><td class="id">④</td><td class="bad">U(1)反例</td><td>コンパクトU(1)は格子で閉じ込め・ギャップ、連続極限で自由・質量ゼロ。離散≠連続が実在する</td></tr>
+    <tr><td class="id">⑤</td><td class="bad">固定信号でなくRGフロー</td><td>\(a\to0\) で裸の結合 \(g(a)\) をチューニング（漸近自由）。標本化率で"信号そのもの"が変わる</td></tr>
+  </table>
+
+  <p>おまけに ── 正則格子は<strong>ローレンツ不変性を破り</strong>、細かくしても復活せず、厳密なローレンツ対称は \(a\to0\) の極限でだけ。サンプリング再構成は"関数"は返しても、"<em>ローレンツ不変なQFT（OS公理を満たす）</em>"は返しません（第8回・番外⑤の縁）。<strong>5点＋1、すべてが第4回のQ3の内訳そのもの</strong>です。</p>
+
+  <h2><span class="n">04</span>正直な収穫 ── この理論が"効く範囲"を正しく教える</h2>
+
+  <p>ではこの理論は無力か。いいえ ── <strong>どこまで効くかを、正確に教えてくれます</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">効くのはIR側（ギャップがある世界）</div>
+    $$\Delta>0\ \Rightarrow\ \xi=\frac{\hbar c}{\Delta}<\infty\ (\text{相関長有限})\ \Rightarrow\ \text{低エネルギーは実効的に帯域制限}$$
+    <p style="margin:10px 0 0;">質量ギャップがあれば相関長は有限＝<em>長距離（IR）には最高スケールがある</em>＝実効的に帯域制限。だから格子QCDのIR観測量（ハドロン質量）はよく収束し、サンプリングの直感が効く。<strong>この理論が正しく働くのは、こちら側。</strong></p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">皮肉な循環 ── そして低次元</span>
+    帯域制限を使うには<strong>ギャップ \(\Delta>0\) が要る</strong>。だがギャップの<em>存在</em>は、UV・臨界・連続極限の問題（\(f_{\max}=\infty\) 側）。<strong>"効かせたい道具"の前提が、証明したい結論そのもの</strong>。── なお2次元・3次元は劣臨界＝実効的に帯域制限が効く側で、だから実際に構成できた（第7回）。次元が上がるほど帯域端が消え、4次元でちょうど臨界。この理論は「次元で効き方が変わる」ことまで正しく予言します。</p>
+  </div>
+
+  <h2><span class="n">05</span>判定 ── 解かない。だが壁の在処を正確に指す</h2>
+
+  <div class="keybox">
+    <div class="lbl">この理論の判定（過大申告なし）</div>
+    <p style="margin:0;">「離散＝連続／十分細かく標本化」理論は、ヤン=ミルズを<strong>解かない</strong>。折れる5点（帯域制限なし・臨界で全スケール・一致は循環・U(1)反例・RGフロー）は、<em>そっくりそのままQ3</em>。だからこの理論は問題を<strong>消す</strong>のでなく、<strong>難しさがどこに宿るか（UV・臨界・ローレンツ）を正確に指す標識</strong>として働く。効くのはIR（ギャップがある側）まで ── ギャップの存在自体はサンプリングでは取れない。</p>
+  </div>
+
+  <p>これは敗北ではありません。<em>綺麗な自作理論を、自分で正直に折り、その折れ目から問題の核心を照らし出した</em> ── このシリーズの「旗でなく縁の標識を」の、一番きれいな実演です。良い理論は、解けないときにこそ、<strong>どこが本当に難しいかを教えてくれる</strong>。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ナイキスト＝シャノンの標本化定理（帯域制限 \(f_{\max}<\infty\) と \(f_s>2f_{\max}\)）、格子の運動量カットオフ \(\sim\pi/a\)、連続極限＝相関長発散の臨界点、走る結合による裸パラメータのチューニング（漸近自由）、コンパクトU(1)の相転移（格子で閉じ込め／連続で自由光子）、正則格子のローレンツ対称の破れと連続極限での回復、ギャップ \(\Delta>0\) と相関長 \(\xi=\hbar c/\Delta\)、劣臨界での構成（2D/3D）は、いずれも確立した事実です。</p>
+    <p style="margin-bottom:0;">この回は<strong>4次元ヤン=ミルズを解いていません</strong>（2025年時点、未解決）。むしろ自作理論が<em>解けないこと</em>を示し、その理由がQ3と一致することを確認した回です。「離散＝連続」「サンプリングで同じ」は、帯域制限（＝有限のUV／ギャップのある IR）という条件つきでのみ真で、無条件の定理ではありません。図は標本化とエイリアシングの模式（1次元信号）で、場の理論の無限自由度・繰り込みの困難そのものを表すものではなく、"帯域制限が破れると離散≠連続になる"という一点だけを示します。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「離散＝連続だから、格子のギャップ＝連続のギャップ。Q3は解けた」── どこが誤りか。
+        <details><summary>答えを見る</summary><div class="ans">サンプリング定理は帯域制限（\(f_{\max}<\infty\)）が前提。QFTはUVモードが無限（\(f_{\max}=\infty\)）で前提を満たさない。さらに「離散＝連続の一致」こそがQ3で、それを仮定するのは循環。U(1)は格子と連続でギャップが食い違う反例。よって"解けた"にならない。</div></details>
+      </li>
+      <li>この理論が正しく効くのはどんな場合か。なぜ皮肉な循環になるか。
+        <details><summary>答えを見る</summary><div class="ans">ギャップ \(\Delta>0\) があり相関長 \(\xi=\hbar c/\Delta\) が有限＝低エネルギーが実効的に帯域制限される場合（IR観測量、2D/3D）。皮肉：帯域制限を使うにはギャップが要るが、ギャップの存在自体はUV・臨界の問題＝証明したい結論。前提と結論が同じ。</div></details>
+      </li>
+      <li>この番外の結論を一言で。シリーズの掟とどう合うか。
+        <details><summary>答えを見る</summary><div class="ans">「離散＝連続／サンプリング」理論はYMを解かないが、折れる5点がそのままQ3で、難しさの在処（UV・臨界・ローレンツ）を正確に指す診断器になる。＝旗（解けた）を立てず、縁の標識を立てる、というシリーズの掟の実演。良い理論は解けないときにこそ核心を照らす。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外まとめ</span>綺麗な理論を、自分で折る</h2>
+    <p>「離散＝連続、十分細かく標本化すれば同じ」をQ3に当てると解けそうに見える。だが<strong>サンプリング定理は帯域制限が前提</strong>で、QFTは \(f_{\max}=\infty\)（UVモード無限）＝前提を満たさない。折れる5点 ── ①帯域制限なし ②連続極限＝臨界で全スケール ③一致は循環 ④U(1)反例 ⑤RGフロー（＋ローレンツ破れ）── は、そのまま第4回のQ3の内訳。</p>
+    <p>効くのは<strong>IR側（ギャップがあり相関長有限＝実効的に帯域制限）</strong>まで。だが皮肉なことに、帯域制限を使うにはギャップが要り、そのギャップの存在こそがUV・臨界の未解決問題。<em>この理論はYMを解かない ── が、壁の在処を正確に指す診断器</em>。旗ではなく縁の標識を、という掟の一番きれいな実演でした。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-08-yoko.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第8回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">自作理論の自己診断</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 番外編（自己診断）、物理好きの高校生・大学生向け読み物。ナイキスト＝シャノンの標本化定理（帯域制限 \(f_{\max}<\infty\)、\(f_s>2f_{\max}\)）とエイリアシング、格子ゲージ理論の運動量カットオフ \(\sim\pi/a\)、連続極限＝相関長が発散する二次臨界点、漸近自由による裸パラメータのくりこみ群フロー、コンパクトU(1)の閉じ込め／非閉じ込め相転移（格子で閉じ込め・連続で自由光子）、正則格子でのローレンツ対称性の破れと連続極限での回復、質量ギャップ \(\Delta>0\) と相関長 \(\xi=\hbar c/\Delta\)、劣臨界での構成的成功（2D/3D）は、いずれも確立した事実です。本稿は姉妹シリーズ「わかる質量」番外⑤・「宇宙は計算機」の"離散と連続は表現・サンプリングで同じ"という枠組みを、ヤン=ミルズ問題(Q3)に対して自己反証したもので、4次元ヤン=ミルズの存在と質量ギャップは未解決です（2025年時点）。「離散＝連続」「標本化で同じ」は帯域制限（有限のUV／ギャップのあるIR）という条件下でのみ成り立ち、無条件の定理ではありません。図は1次元信号の標本化・再構成・エイリアシングの模式で、"帯域制限が破れると離散≠連続になる"一点のみを示し、場の理論の無限自由度・繰り込みの困難そのものは表しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで最高周波数を上げると、ナイキストを超えた瞬間に再構成が破綻（エイリアシング）する様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sf=document.getElementById('sf'), vf=document.getElementById('vf'), rd=document.getElementById('rd');
+  var Ns=16, NYQ=Ns/2; // 標本数 → ナイキスト = f_s/2 = 8（1区間あたりの周期数）
+  function sig(t,F){ return 0.85*Math.sin(2*Math.PI*F*t) + 0.35*Math.sin(2*Math.PI*2*t); }
+  function sinc(x){ if(Math.abs(x)<1e-9) return 1; var px=Math.PI*x; return Math.sin(px)/px; }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=20, padR=14, padT=16, padB=40;
+    var F=parseFloat(sf.value); vf.textContent=F.toFixed(1);
+    function X(t){return padL+t*(w-padL-padR);}      // t in [0,1]
+    function Y(v){return (h-padB)/2+padT/2 - v*((h-padB-padT)/2)/1.4;}
+    ctx.clearRect(0,0,w,h);
+    // 中心線
+    ctx.strokeStyle='#e7ddc9';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(w-padR,Y(0));ctx.stroke();
+    // 標本
+    var samp=[];
+    for(var n=0;n<Ns;n++){ var tn=n/Ns; samp.push({t:tn,v:sig(tn,F)}); }
+    // 真の信号（濃いグレー）
+    ctx.strokeStyle='#b0a48c';ctx.lineWidth=2;ctx.beginPath();var f=true;
+    for(var t=0;t<=1.0001;t+=0.004){ var x=X(t),y=Y(sig(t,F)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 再構成（sinc補間、帯域 f_s/2）
+    ctx.strokeStyle='#26456e';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var t2=0;t2<=1.0001;t2+=0.004){
+      var r=0; for(var m=0;m<Ns;m++){ r+=samp[m].v*sinc(Ns*t2-m); }
+      var x2=X(t2),y2=Y(r); if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);
+    }
+    ctx.stroke();
+    // 標本点
+    for(var k=0;k<Ns;k++){ ctx.fillStyle='#a9791a';ctx.beginPath();ctx.arc(X(samp[k].t),Y(samp[k].v),4.5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke(); }
+    // ラベル
+    ctx.fillStyle='#6a6552';ctx.font='11px sans-serif';
+    ctx.fillText('標本間隔＝格子 a（ナイキスト f_s/2 = '+NYQ+'）', padL+2, h-padB+22);
+    // 判定
+    var band = F<NYQ-0.05;
+    if(band){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='f_max = '+F.toFixed(1)+' < ナイキスト '+NYQ+'：<b>帯域制限内 ── 再構成が真の信号に一致（離散＝連続）</b>。サンプリング定理が成立。＝IR・低次元・ギャップのある低エネルギー側。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='f_max = '+F.toFixed(1)+' > ナイキスト '+NYQ+'：<b>エイリアシング ── 再構成が真の信号とズレる（離散≠連続）</b>。標本は"嘘の低周波"に見える。＝QFTのUV・連続極限＝臨界。<b>ここがヤン=ミルズの壁。</b>';
+    }
+  }
+  sf.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  setTimeout(draw,50); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

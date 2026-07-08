@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイデア1・ナッシュ–モーザー 有限窓を超収束反復で貫く ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --nm:#2f7d5a; --naive:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--nm);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">アイデア1・ナッシュ–モーザー（6を組む）</span></div>
+  <p class="eyebrow">有限窓の"悪いスケール"を、超収束反復で貫く ── 6が供給する一段の縮小を組み上げる</p>
+  <h1>有限窓を超収束反復で貫く ── ナッシュ–モーザー
+    <span class="sub">クロスオーバー＝<strong>$\sim\log(1/a)$ 段の"小パラメータ無し"スケール</strong>。素朴な反復は誤差が累積して発散。<br><strong>ナッシュ–モーザー／KAM の超収束</strong>（誤差が二乗で潰れる）なら、有限段の悪いスケールを貫ける。<br>各段の縮小評価は<strong>アイデア6（反射カップリング）</strong>が供給 ── 6→1 の合わせ技。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：有限窓＝ハード反復への読み替えと、循環を破る筋（6を部品に）</span>
+    <span>核心：超収束が線形の誤差累積に勝つ／各段の可逆性を6で供給する</span>
+  </div>
+
+  <p class="lead">クロスオーバーの正体は「<strong>$\sim\log(1/a)$ 段の、小パラメータの無い"周辺（marginal）スケール"を、一様に越える</strong>」こと。素朴な反復では各段で $O(1/\log)$ の誤差が出て<em>累積し発散</em>する（door②の凸性崩れ、壁2の誤差蓄積は皆これ）。ここで別分野の技を輸入します ── <strong>ナッシュ–モーザー／KAM の超収束反復</strong>。誤差を各段で<em>二乗</em>に潰す（$\varepsilon\to\varepsilon^2$）から、微分の損失（marginality）を呑み込んで有限段を貫ける。KAM が"小さな分母"（共鳴＝まさに marginal）を超収束で越えたのと同じ構図。そして各段に要る"縮小率"は、前回の<strong>アイデア6（反射カップリング）</strong>が供給する ── 6と1の合わせ技です。射程と、循環という穴を正直に。</p>
+
+  <h2><span class="n">01</span>なぜ素朴な反復は死ぬか ── 誤差の累積</h2>
+
+  <div class="keybox">
+    <div class="lbl">marginal ＝ 各段で微分を失う</div>
+    $$\text{素朴：}\ \varepsilon_{n+1}\approx \varepsilon_n+\delta\ \Rightarrow\ \varepsilon_N\approx N\delta\sim \log(1/a)\cdot\delta\ \xrightarrow{\ a\to0\ }\ \infty$$
+    <p style="margin:10px 0 0;">クロスオーバーの各段は小パラメータが無く、一段ごとに $O(\delta)$ の誤差（＝微分の損失、marginal な流れ）。段数は $\sim\log(1/a)$。<strong>素朴な線形反復では誤差が段数に比例して溜まり、$a\to0$ で発散</strong>。door② の凸性崩れも、壁2の誤差蓄積も、この"線形累積"の顔。だから<em>反復のやり方</em>を変える。</p>
+  </div>
+
+  <h2><span class="n">02</span>超収束 ── 誤差を二乗で潰す</h2>
+
+  <div class="calc">
+    <span class="tag">ナッシュ–モーザー（平滑化つきニュートン反復）</span>
+    $$u_{n+1}=u_n-\,\mathcal S_n\,DF(u_n)^{-1}F(u_n),\qquad \|\varepsilon_{n+1}\|\le C\,\|\varepsilon_n\|^{\,2-\theta}$$
+    <p style="margin-bottom:14px;">解きたいのは $F(u)=0$（＝RGフローが不変領域に留まる自己無撞着方程式）。線形化 $DF^{-1}$ が微分を失っても、<strong>各段で平滑化 $\mathcal S_n$ を挟むニュートン反復</strong>が<em>超収束</em>（誤差が概ね二乗で減る）。二重指数で潰れるので、微分損失（marginality）を呑み込む。<strong>ナッシュの等長埋め込み・KAM の不変トーラス</strong>が同じ超収束で"小さな分母（共鳴＝marginal）"を越えた ── その構図をクロスオーバーに。下の図で線形累積と超収束を対比。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：反復段 $n$（横、$\sim\log(1/a)$ まで）と誤差 $\varepsilon_n$（縦・対数）。<span style="color:var(--naive);font-weight:700;">素朴な反復＝線形に累積して発散</span>／<span style="color:var(--nm);font-weight:700;">ナッシュ–モーザー＝二乗で超収束、有限窓を貫く</span>。トグルで対比、スライダーで段を進める</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>反復段 n（〜log(1/a) 段）<span class="val" id="vn">3</span>
+        <input type="range" id="sn" min="0" max="16" step="1" value="3">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bN">ナッシュ–モーザー</button>
+        <button class="tbtn" id="bS">素朴な反復</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>超収束（ε→ε²）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>線形累積（ε→ε+δ）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>各段に要る"可逆性" ── ここを6が供給する</h2>
+
+  <div class="keybox">
+    <div class="lbl">循環と、その破り方</div>
+    <p style="margin:0;">ナッシュ–モーザーの心臓は<strong>各段での線形化 $DF(u_n)^{-1}$ の評価</strong>＝一段の粗視化（ゆらぎ積分）が可逆で縮小すること＝<em>一スケールのスペクトルギャップ</em>。だがそれは今証明したい当のもの ── <strong>循環</strong>。破り方：一スケールの縮小は<em>弱結合の一段</em>なら出せる。それを供給するのが<strong>アイデア6（反射カップリング）</strong>── 反射カップリングは"非凸でも一段の縮小率 $c>0$"を与えるので、<strong>6が1の各段の可逆性を埋める</strong>。6（一段の縮小）＋1（超収束で組む）＝クロスオーバー窓を貫く合わせ技。</p>
+  </div>
+
+  <h2><span class="n">04</span>KAMとの対応 ── marginal ＝ 小さな分母</h2>
+
+  <table class="dt">
+    <tr><th>KAM／ナッシュ–モーザー</th><th>ヤン=ミルズのクロスオーバー</th></tr>
+    <tr><td class="id">小さな分母（共鳴）</td><td>marginal な流れ（対数スケーリング・小パラメータ無し）</td></tr>
+    <tr><td class="id">非共鳴（ディオファントス条件）</td><td>漸近自由（結合が単調に対数で走る＝"非共鳴"の役）</td></tr>
+    <tr><td class="id">超収束ニュートン＋平滑化</td><td>RGステップの超収束反復＋スケール平滑化</td></tr>
+    <tr><td class="id">各段の線形可逆性</td><td class="open">一スケールのギャップ（＝6が供給）</td></tr>
+    <tr><td class="id">tame 評価（補間ノルム）</td><td class="open">ゲージ共変・RP保存の"正しいノルム"（未整備）</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>穴 ── 循環・ノルム・そして無限段</h2>
+
+  <div class="caveat">
+    <span class="tag">正直な穴</span>
+    <p style="margin-top:0;"><strong>穴1（循環）</strong>：各段の線形可逆性＝一スケールギャップを供給できて初めて回る。6が強い非凸で率を失えば、1も各段の部品を失う ── <strong>6の成否に依存</strong>。<br><strong>穴2（正しいノルム）</strong>：ナッシュ–モーザーは"tame 評価"（平滑化・補間の効くノルム）が命。<strong>ゲージ共変・RP保存の効果作用に対する正しい関数空間</strong>は未整備（Hairer が正則構造で"正しい空間"を見つけたのが勝因だったのと同じ難しさ）。<br><strong>穴3（無限段）</strong>：$\log(1/a)\to\infty$（$a\to0$）で段数が無限。超収束でも、tame 評価の定数が段によらず一様でないと詰む。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 有限窓＝ハード反復への読み替え、鍵は6と正しいノルム</h2>
+
+  <div class="keybox">
+    <div class="lbl">アイデア1の判定（過大申告なし）</div>
+    <p style="margin:0;">クロスオーバーの困難（$\sim\log(1/a)$ 段の marginal スケールを一様に越える）を、<strong>ナッシュ–モーザー／KAM の超収束反復</strong>という、別分野が"小さな分母（marginal）"を落とした実績のある型に読み替える。素朴な線形累積を、誤差二乗の超収束が呑み込む。各段の可逆性（一スケールギャップ）は<strong>アイデア6（反射カップリング）が供給</strong>＝6→1の合わせ技。漸近自由が"非共鳴（ディオファントス）条件"の役。<strong>穴</strong>：循環（6依存）、ゲージ共変・RP保存の正しいノルム（未整備）、無限段での tame 定数の一様性。<em>読み替えは的確だが、6の成否と"正しい空間"に賭けが移る</em>。旗は立たない ── 縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">クロスオーバーが $\sim\log(1/a)$ 段の marginal（小パラメータ無し）スケールであること、素朴な線形反復での誤差の線形累積、ナッシュ–モーザーの平滑化つきニュートン反復と超収束（二乗収束）による微分損失の吸収、その応用（Nash の等長埋め込み、KAM の不変トーラスと小さな分母・ディオファントス条件）、tame 評価（補間ノルム）の必要性、一スケールの縮小率を反射カップリング（アイデア6）が与えうること、漸近自由の対数的な単調フローは、いずれも確立した概念・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>各段の一スケールギャップの一様供給（＝6の未達部分）、ゲージ共変・RP保存の効果作用に対する tame 評価の効く関数空間、$a\to0$（無限段）での定数の一様性、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。アイデア1は"有限窓＝ハード反復"という読み替えと 6→1 の組み方を示す<em>設計</em>であって、実行された証明ではありません。KAMとの対応（marginal＝小さな分母、漸近自由＝非共鳴）は示唆的な類比で、厳密な同一視ではありません。図の誤差曲線は超収束と線形累積の対比を示す概念的模式で、実際の計算値ではありません。見立ては筆者のもので反証されうる意見を含みます。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>なぜ素朴な反復はクロスオーバーで死に、超収束はなぜ貫けるのか。
+        <details><summary>答えを見る</summary><div class="ans">クロスオーバーは小パラメータの無い marginal スケールが $\sim\log(1/a)$ 段。素朴な線形反復は各段で $O(\delta)$ の誤差（微分損失）が出て段数に比例して累積し、$a\to0$ で発散。ナッシュ–モーザーの超収束は誤差を各段で概ね二乗に潰す（$\varepsilon\to\varepsilon^{2-\theta}$）ので、二重指数で減り、有限（そして log(1/a)）段の微分損失を呑み込んで貫ける。KAMが小さな分母を超収束で越えたのと同じ。</div></details>
+      </li>
+      <li>ナッシュ–モーザーの循環とは何か、どう破るか。
+        <details><summary>答えを見る</summary><div class="ans">各段のニュートン補正に線形化作用素の逆 $DF(u_n)^{-1}$ が要り、それは一スケールの粗視化の可逆性＝一スケールのスペクトルギャップ＝今証明したいものそのもの（循環）。破り方：一スケール（弱結合の一段）の縮小率はアイデア6（反射カップリング）が"非凸でも $c>0$"として供給できる。6が各段の可逆性を埋め、1が超収束でそれを窓全体に組み上げる＝6→1の合わせ技。</div></details>
+      </li>
+      <li>KAMとの対応で、marginal と漸近自由は何の役を演じるか。残る穴は？
+        <details><summary>答えを見る</summary><div class="ans">marginal な流れ（対数スケーリング・小パラメータ無し）＝KAMの「小さな分母（共鳴）」。漸近自由（結合が単調に対数で走る）＝「非共鳴（ディオファントス条件）」の役。残る穴：(1)循環＝6の成否に依存、(2)ゲージ共変・RP保存の"正しいノルム"（tame 評価が効く関数空間）が未整備、(3)a→0（無限段）で tame 定数が段によらず一様である保証。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">アイデア1・まとめ</span>有限窓＝ハード反復、6を各段に組む</h2>
+    <p>クロスオーバー（$\sim\log(1/a)$ 段の marginal スケール）を貫く困難を、<strong>ナッシュ–モーザー／KAM の超収束反復</strong>に読み替える。素朴な線形累積（$\varepsilon_N\sim N\delta\to\infty$）を、誤差二乗の超収束（$\varepsilon\to\varepsilon^{2-\theta}$）が呑み込む ── KAMが"小さな分母（＝marginal）"を越えたのと同じ構図で、漸近自由が"非共鳴条件"の役。</p>
+    <p>心臓＝各段の線形可逆性（一スケールギャップ）は<strong>アイデア6（反射カップリング）が供給</strong>＝<strong>6→1 の合わせ技</strong>。穴：循環（6依存）、ゲージ共変・RP保存の<em>正しいノルム</em>（tame 評価、未整備＝Hairer的難しさ）、無限段での定数一様性。<em>読み替えは的確、賭けは6の成否と"正しい空間"に移る</em>。旗ではなく、縁の標識を ── 5（数値）が中央を計算で踏み固め、6+1（反射×超収束）が解析で貫く、二つのルートが同じ中央窓を狙う。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-idea6-eberle.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← アイデア6・反射カップリング</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 アイデア1・ナッシュ–モーザー、物理好きの高校生・大学生向け読み物。クロスオーバーが $\sim\log(1/a)$ 段の marginal（小パラメータ無し）スケールであること、素朴な線形反復での誤差の線形累積、ナッシュ–モーザーの平滑化つきニュートン反復と超収束（二乗収束）による微分損失の吸収、その応用（Nash の等長埋め込み、KAM の不変トーラス・小さな分母・ディオファントス条件、Hörmander らの一般化）、tame 評価（補間ノルム）の必要性、一スケールの縮小率を反射カップリング（アイデア6）が与えうること、漸近自由の対数的単調フローは、いずれも確立した概念・道具です。ただし各段の一スケールギャップの一様供給（6の未達部分）、ゲージ共変・RP保存の効果作用に対する tame 評価の効く関数空間、$a\to0$（無限段）での定数の一様性、4次元YMの質量ギャップは未解決です（2025年時点）。アイデア1は"有限窓＝ハード反復"の読み替えと 6→1 の組み方を示す設計であって、実行された証明ではありません。KAMとの対応は示唆的な類比で厳密な同一視ではありません。図は概念的模式で実際の計算値ではありません。見立ては筆者のもので反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では反復段 n を進め、素朴な反復（線形に累積して発散）とナッシュ–モーザー（二乗で超収束、有限窓を貫く）をトグルで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sn=document.getElementById('sn'), vn=document.getElementById('vn'),
+      bN=document.getElementById('bN'), bS=document.getElementById('bS'), rd=document.getElementById('rd');
+  var mode='N', NMAX=16;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 誤差（対数で描く用に log10）。素朴：線形累積で増大。NM：二乗で超収束。
+  function errNaive(n){ return 0.15 + 0.11*n; }          // 線形に増える（発散）
+  function errNM(n){ var e=0.6; for(var k=0;k<n;k++){ e=0.9*e*e; } return Math.max(e,1e-9); } // ε→ε²
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=52, padR=14, padT=18, padB=42;
+    var nc=parseInt(sn.value,10); vn.textContent=nc;
+    // y 軸：log10(err) を [-9, 0.4] にマップ
+    var YLO=-9, YHI=0.5;
+    function X(n){return padL+(n/NMAX)*(w-padL-padR);}
+    function Y(logv){return (h-padB)-((logv-YLO)/(YHI-YLO))*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（10^k）
+    ctx.font='10px sans-serif';
+    for(var gy=0;gy>=-9;gy-=3){var y=Y(gy);ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#a89e86';ctx.fillText('10^'+gy, 6, y+3);}
+    // しきい（許容誤差）
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([5,4]);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(padL,Y(-6));ctx.lineTo(w-padR,Y(-6));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.fillText('許容誤差', w-padR-70, Y(-6)-4);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('反復段 n（〜log(1/a)）→', w-220, h-padB+26);
+    ctx.save();ctx.translate(14,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('誤差 ε_n（対数）', 0,0);ctx.restore();
+    // 素朴（赤）
+    ctx.strokeStyle=(mode==='S')?'#a5473a':'#e3b7ad';ctx.lineWidth=(mode==='S')?2.8:1.6;ctx.beginPath();var f=true;
+    for(var n1=0;n1<=NMAX;n1++){var lv=Math.log(errNaive(n1))/Math.LN10;var Xn=X(n1),Yn=Y(Math.max(lv,YLO));if(f){ctx.moveTo(Xn,Yn);f=false;}else ctx.lineTo(Xn,Yn);}
+    ctx.stroke();
+    // NM（緑）
+    ctx.strokeStyle=(mode==='N')?'#2f7d5a':'#aecdbc';ctx.lineWidth=(mode==='N')?2.8:1.6;ctx.beginPath();f=true;
+    for(var n2=0;n2<=NMAX;n2++){var lv2=Math.log(errNM(n2))/Math.LN10;var Xn2=X(n2),Yn2=Y(Math.max(lv2,YLO));if(f){ctx.moveTo(Xn2,Yn2);f=false;}else ctx.lineTo(Xn2,Yn2);}
+    ctx.stroke();
+    // カーソルと現在値
+    var cx=X(nc);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(cx,padT);ctx.lineTo(cx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var cur=(mode==='N')?errNM(nc):errNaive(nc), lcur=Math.log(cur)/Math.LN10;
+    ctx.fillStyle=(mode==='N')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(cx,Y(Math.max(lcur,YLO)),5,0,7);ctx.fill();
+    // readout
+    if(mode==='N'){
+      var ok=errNM(nc)<1e-6;
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>ナッシュ–モーザー・n='+nc+'</b>：誤差 ε≈'+errNM(nc).toExponential(1)+'（ε→ε² の超収束）。'+(ok?'許容以下＝<b>窓を貫いた</b>。':'あと数段で許容以下へ。')+' 各段の縮小はアイデア6（反射カップリング）が供給。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>素朴な反復・n='+nc+'</b>：誤差 ε≈'+errNaive(nc).toFixed(2)+'（線形に累積）。段数 ~log(1/a) に比例して増え、<b>a→0 で発散</b>。door②の凸性崩れ・壁2の誤差蓄積と同じ顔 ── これを超収束で置き換える。';
+    }
+  }
+  function setM(x){ mode=x; bN.className='tbtn'+(x==='N'?' on':''); bS.className='tbtn'+(x==='S'?' on':''); draw(); }
+  bN.addEventListener('click',function(){setM('N');});
+  bS.addEventListener('click',function(){setM('S');});
+  sn.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

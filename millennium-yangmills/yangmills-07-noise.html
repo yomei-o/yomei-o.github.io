@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ノイズで場を育てる ── 確率量子化とHairer ／ ミレニアム問題を解くぞ 第7回（挑戦編③）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --hist:#a5622a; --targ:#26456e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:8px 15px;transition:all .12s ease;}
+  .tbtn:hover{background:#eef1f6;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;font-weight:600;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 7 回（挑戦編③・ルートB）</span></div>
+  <p class="eyebrow">経路積分を"ノイズ入りの時間発展"に書き換える ── 新しい数学が3次元を割った</p>
+  <h1>ノイズで場を育てる ── 確率量子化とHairer
+    <span class="sub">場をノイズで揺らし続けると、訪れる頻度が求める測度 \(e^{-S}\) に落ち着く（確率量子化）。<br>だが方程式は<em>荒すぎて</em>そのままでは意味をなさない ── そこを<strong>ハイラーの正則化構造</strong>が飼いならし、<strong>3次元ヤン=ミルズ測度の構成に成功</strong>（2022）。4次元は最前線。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：確率量子化の心臓と、新数学が届いた所（数式あり）</span>
+    <span>核心：\(\partial_\tau A=-\delta S/\delta A+\eta\) ／ 3次元は成功・4次元は壁</span>
+  </div>
+
+  <p class="lead">ルートA（第6回）は「格子で厳密に定義して連続へ登る」道でした。ルートBは、発想からして別物です ── <strong>経路積分を、ノイズ入りの時間発展（確率微分方程式）に書き換える</strong>。場を"仮想の時間"のなかでノイズに揺らされながら育て、落ち着いた先（平衡分布）が、ちょうど求めたい測度 \(e^{-S}\) になるようにする。問題は、その方程式が数学的に<em>荒すぎて</em>、素朴には無意味なこと。それを<strong>近年の新しい数学（ハイラーの正則化構造）</strong>が飼いならし、ついに<strong>3次元ヤン=ミルズ測度を厳密に構成</strong>しました（2022年）。この回は、その心臓と、4次元でぶつかる壁を追います。</p>
+
+  <h2><span class="n">01</span>発想の転換 ── 積分を"確率過程"に書き換える</h2>
+
+  <p>求めたいのは、場 \(A\) にわたる測度 \(\propto e^{-S[A]}\)（の下での平均）。これを直接積分する代わりに、<strong>仮想の時間 \(\tau\)</strong> を導入し、場を次の式で"育て”ます（パリージ＝ウー、1981）：</p>
+
+  <div class="keybox">
+    <div class="lbl">確率量子化（ランジュバン方程式）</div>
+    $$\frac{\partial A}{\partial\tau}=-\frac{\delta S[A]}{\delta A}+\eta,\qquad \langle\eta(\tau,x)\,\eta(\tau',x')\rangle=2\,\delta(\tau-\tau')\,\delta(x-x')$$
+    <p style="margin:10px 0 0;">右辺第1項は<strong>作用を下げる向きのドリフト</strong>（谷へ転がる）、第2項 \(\eta\) は<strong>白色ノイズ</strong>（ランダムに突く）。この二つの綱引きで、\(\tau\to\infty\) の平衡分布が<strong>ちょうど \(\propto e^{-S}\)</strong> になる。<em>測度をサンプルする＝この方程式を平衡まで走らせる。</em></p>
+  </div>
+
+  <p>直感は熱浴と同じ。粒子を熱湯（ノイズ）で揺らしつつポテンシャルの谷（低い作用）へ引くと、居場所の頻度がボルツマン分布 \(e^{-V/T}\) になる ── あれの場の理論版です。下の図で、この"ノイズが測度を作る"を体感できます。</p>
+
+  <div class="fig">
+    <div class="cap">図：ランジュバン・サンプラー。場（点）を<strong>ドリフト（谷へ）＋ノイズ（ランダムに突く）</strong>で動かし続けると、訪れた場所の<span style="color:var(--hist);font-weight:700;">頻度（棒）</span>が、求める測度 <span style="color:var(--targ);font-weight:700;">\(\propto e^{-S}\)（曲線）</span>に近づく。スライダーでノイズの強さを変える</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>ノイズの強さ（温度 T）<span class="val" id="vt">1.0</span>
+        <input type="range" id="st" min="0.3" max="2" step="0.05" value="1">
+      </label>
+      <button class="tbtn" id="br">リセット</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#a5622a;"></i>訪れた頻度（サンプル）</span>
+      <span><i class="swatch" style="background:#26456e;height:3px;"></i>求める測度 \(e^{-S}\)</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>なぜ難しい ── ノイズが荒すぎる（特異なSPDE）</h2>
+
+  <p>絵では点1個ですが、本物は<strong>時空の各点に場がある</strong>。すると白色ノイズ \(\eta\) は<em>関数ですらない</em>（分布＝超関数）ほど荒く、揺らされた場 \(A\) も分布になる。困るのは<strong>非線形項</strong>です ── ヤン=ミルズには \([A,\partial A]\) や \(A^3\) のような<em>場どうしの積</em>がある。</p>
+
+  <div class="calc">
+    <span class="tag">超関数どうしの掛け算は、素朴には無意味（∞）</span>
+    $$\frac{\partial A}{\partial\tau}=\underbrace{\Delta A}_{\text{なめらか化}}\ \underbrace{-\,g\,[A,\partial A]-\cdots}_{\text{分布どうしの積＝発散}}\ +\ \eta$$
+    <p style="margin-bottom:14px;">分布どうしの積は、そのままでは<strong>無限大</strong>になり定義できない（\(\varphi^4\) の \(\varphi^3\) と同じ病）。方程式の<em>中で</em>くりこみ（無限大の差し引き）をしないといけない ── これが「特異な確率偏微分方程式（singular SPDE）」の難所です。</p>
+  </div>
+
+  <h2><span class="n">03</span>新しい数学 ── ハイラーの正則化構造</h2>
+
+  <p>この「荒い分布どうしを、意味をもって掛け算・くりこみする」ための計算体系が、<strong>マルティン・ハイラーの正則化構造（regularity structures, 2014）</strong>。ノイズ自身が作る"荒い部品"を基底にして、場をその部品で<em>テイラー展開のように</em>展開し、積とくりこみを筋道立てて定義します（フィールズ賞、2014）。同じころの<strong>パラ制御計算</strong>（Gubinelli ら）も同趣旨の道具。</p>
+
+  <div class="aside">
+    <span class="tag">何がすごいのか</span>
+    それまで"物理屋の形式的な操作"だった特異SPDEのくりこみが、<strong>数学の定理</strong>になった。KPZ方程式や \(\varphi^4_3\)（3次元スカラー）が、この道具で厳密に構成された ── <em>荒さがちょうど手に負える範囲（劣臨界）にある</em>方程式については。この「劣臨界」という但し書きが、あとで4次元の壁になります。</p>
+  </div>
+
+  <h2><span class="n">04</span>ゲージの難所を越えて ── 3次元ヤン=ミルズ、成功</h2>
+
+  <p>ヤン=ミルズには、もう一つ固有の難所があります ── <strong>ゲージ対称性</strong>。方程式はゲージ変換と両立（共変）でなければならず、しかも物理的な状態は場そのものでなく<em>ゲージ軌道</em>（ゲージ変換で移り合うものを同一視した空間）。測度は、この軌道空間の上で意味づける必要があります。</p>
+
+  <div class="keybox">
+    <div class="lbl">近年の到達点（本物・厳密）</div>
+    <p style="margin:0;"><strong>2次元</strong>ヤン=ミルズ：確率量子化で厳密に構成（Chevyrev ほか）。<br><strong>3次元</strong>ヤン=ミルズ測度：ゲージ共変なランジュバン方程式を正則化構造で制御し、<strong>軌道空間上に構成することに成功</strong>（Chandra–Chevyrev–Hairer–Shen, 2022）。</p>
+    <p style="margin:10px 0 0;">これは"物理屋の近似"ではなく、<strong>数学の定理</strong>。ルートBは、3次元までは<em>本当に頂上近くまで登った</em>のです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>4次元で、何が壊れるか ── 「臨界」の壁</h2>
+
+  <p>では本丸の4次元は？ ここで、§03 の但し書き「劣臨界」が効いてきます。方程式の"荒さ"と次元の関係で、SPDEは<strong>劣臨界・臨界・優臨界</strong>に分かれ、正則化構造が素直に効くのは<strong>劣臨界</strong>まで。</p>
+
+  <div class="keybox">
+    <div class="lbl">なぜ4次元だけ別格か</div>
+    <p style="margin:0;">スカラーで言えば \(\varphi^4_3\)（3次元）は劣臨界＝構成できた。\(\varphi^4_4\)（4次元）は<strong>臨界（周辺的）</strong>で、しかも自明（第4回）。ヤン=ミルズも同じく、4次元は<strong>ちょうど臨界＝繰り込みがぎりぎり</strong>。いまの正則化構造は劣臨界向けで、<em>4次元の臨界SPDEには直接は届かない</em>。多重スケール（くりこみ群に似た）新しい仕掛けが要る。</p>
+  </div>
+
+  <p>さらに ── 仮に4次元で測度を作れても、<strong>OS公理をすべて満たすこと</strong>と<strong>質量ギャップ \(\Delta>0\)</strong> を示すのは、また別の仕事。3次元でも、測度の構成は成っても<em>公理の全確認やギャップまで完全に片付いたわけではない</em>のが正直なところ。ルートBの現在地は「3次元で測度を作った、4次元は臨界の壁の手前」です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">確率量子化＝ランジュバン方程式 \(\partial_\tau A=-\delta S/\delta A+\eta\) と平衡分布 \(\propto e^{-S}\)（Parisi–Wu 1981）、白色ノイズの特異性と非線形項のくりこみ、ハイラーの正則化構造（2014、フィールズ賞）とパラ制御計算（Gubinelli–Imkeller–Perkowski）、\(\varphi^4_3\)・KPZ の構成、2次元・3次元ヤン=ミルズ測度の確率量子化による構成（Chevyrev；Chandra–Chevyrev–Hairer–Shen 2022）、劣臨界／臨界の区別、\(\varphi^4_4\) の臨界性・自明性は、いずれも確立した結果です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>4次元ヤン=ミルズの構成＋質量ギャップは未解決</strong>（2025年時点）。3次元でも「測度の構成」と「OS公理の完全な確認＋\(\Delta>0\) の証明」は同じではなく、後者はなお課題。図のランジュバン・サンプラーは<em>場が1点（1自由度）の場合</em>の模式で、測度 \(e^{-S}\) をノイズがサンプルする心臓部だけを示すもの。本物の場の理論（無限自由度・特異ノイズ）の困難そのものは表していません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>確率量子化は、経路積分の何を、どう置き換えるのか。
+        <details><summary>答えを見る</summary><div class="ans">測度 \(\propto e^{-S}\) の下での積分（平均）を、仮想時間のランジュバン方程式 \(\partial_\tau A=-\delta S/\delta A+\eta\) の平衡分布として置き換える。作用を下げるドリフトと白色ノイズの綱引きで、\(\tau\to\infty\) の分布が \(e^{-S}\) になる ── 走らせれば測度をサンプルできる。</div></details>
+      </li>
+      <li>なぜこの方程式は素朴には意味をなさないのか。
+        <details><summary>答えを見る</summary><div class="ans">白色ノイズ \(\eta\) が超関数ほど荒く、場 \(A\) も分布になる。すると非線形項（\([A,\partial A]\) や \(A^3\) など分布どうしの積）が無限大になり定義できない。方程式の中でくりこみが要る＝特異SPDE。これを厳密に扱うのが正則化構造。</div></details>
+      </li>
+      <li>3次元は構成できたのに、4次元でつまずくのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">SPDEの"荒さ"と次元の関係で、正則化構造が素直に効くのは劣臨界まで。3次元YM（や \(\varphi^4_3\)）は劣臨界で構成できたが、4次元はちょうど臨界（繰り込みがぎりぎり、\(\varphi^4_4\) は自明）で、いまの道具では直接届かない。加えて4次元では測度を作れてもOS公理の完全確認＋\(\Delta>0\) が別途必要。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第7回まとめ</span>ノイズで測度を作る、新しい道</h2>
+    <p>ルートB＝確率量子化。測度 \(\propto e^{-S}\) を、ランジュバン方程式 \(\partial_\tau A=-\delta S/\delta A+\eta\) の平衡として作る（ドリフト＋ノイズ）。難所は、白色ノイズが荒すぎて非線形項（分布の積）が発散すること＝<strong>特異SPDE</strong>。これを<strong>ハイラーの正則化構造</strong>（2014、フィールズ賞）が飼いならした。</p>
+    <p>ゲージ共変な扱いと軌道空間の上で、<strong>2次元・3次元ヤン=ミルズ測度の構成に成功</strong>（Chandra–Chevyrev–Hairer–Shen 2022）── 本物の数学の定理。だが4次元は<strong>臨界</strong>（\(\varphi^4_4\) が自明なのと同根）で、劣臨界向けの現行の道具が直接は届かない。加えて構成できてもOS公理＋\(\Delta>0\) が別途要る。ルートBは3次元まで登った、4次元は臨界の壁の手前 ── 次回は横から攻めるルートC（大N・ホログラフィー・超対称）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-06-kurikomi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第6回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">第8回：横から攻める（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第7回（挑戦編③・ルートB）、物理好きの高校生・大学生向け読み物。確率量子化（Parisi–Wu 1981、ランジュバン方程式 \(\partial_\tau A=-\delta S/\delta A+\eta\)、平衡分布 \(\propto e^{-S}\)）、白色ノイズの特異性と非線形項のくりこみ（特異SPDE）、ハイラーの正則化構造（2014、フィールズ賞）とパラ制御計算（Gubinelli–Imkeller–Perkowski 2015）、\(\varphi^4_3\)・KPZ の厳密構成、2次元・3次元ヤン=ミルズ測度の確率量子化による構成（Chevyrev 2019；Chandra–Chevyrev–Hairer–Shen 2022）、劣臨界／臨界の区別、\(\varphi^4_4\) の臨界性・自明性（Aizenman–Duminil-Copin 2021）は、いずれも確立した結果です。4次元ヤン=ミルズの構成と質量ギャップ \(\Delta>0\) は未解決で（2025年時点）、3次元でも測度の構成とOS公理の完全確認＋ギャップの証明は同一ではありません。図は1自由度のランジュバン過程の模式（ポテンシャル \(V=\tfrac12 x^2\) 相当、平衡はガウス）で、測度 \(e^{-S}\) をノイズがサンプルする心臓部のみを示し、無限自由度・特異ノイズの困難そのものは表しません。乱数は描画のための擬似乱数です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではノイズの強さを変えると、サンプルの頻度（棒）が求める測度 \(e^{-S}\)（曲線）に近づく様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd'), br=document.getElementById('br');
+  var R=4, BINS=90, hist=new Array(BINS).fill(0), total=0, x=0.0, T=1.0, dt=0.02;
+  var ctx=null, W=680, H=300, dpr=1;
+  function init(){
+    dpr=window.devicePixelRatio||1;
+    var cssW=cv.clientWidth||cv.width; W=cssW; H=Math.round(cssW*300/680);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function gauss(){ // Box–Muller
+    var u1=Math.random()||1e-9, u2=Math.random();
+    return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+  }
+  function Vp(x){ return x; }         // V=½x² → V'=x（平衡はガウス、分散 T）
+  function reset(){ hist=new Array(BINS).fill(0); total=0; x=0; }
+  function step(){
+    for(var k=0;k<25;k++){
+      x += -Vp(x)*dt + Math.sqrt(2*T*dt)*gauss();
+      if(x<-R)x=-R; if(x>R)x=R;
+      var b=Math.floor((x+R)/(2*R)*BINS); if(b<0)b=0; if(b>=BINS)b=BINS-1;
+      hist[b]++; total++;
+    }
+  }
+  function render(){
+    if(!ctx) init();
+    var padL=42, padB=34, padT=14, padR=12, w=W, h=H;
+    function X(v){return padL+(v+R)/(2*R)*(w-padL-padR);}
+    function Y(p,pmax){return (h-padB)-(p/pmax)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 目標分布 e^{-V/T} = ガウス（分散 T）を正規化（ピーク基準）
+    var sig=Math.sqrt(T), peak=1;
+    // ヒストグラム正規化（確率密度）: freq/total / binwidth
+    var bw=2*R/BINS, hmaxDens=0, dens=[];
+    for(var i=0;i<BINS;i++){ var dd=total>0? (hist[i]/total)/bw : 0; dens[i]=dd; if(dd>hmaxDens)hmaxDens=dd; }
+    var targMax=1/(Math.sqrt(2*Math.PI)*sig);
+    var pmax=Math.max(hmaxDens, targMax)*1.15 || 1;
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('場の値 x（1自由度）→', w-190, h-padB+24);
+    // ヒストグラム
+    ctx.fillStyle='rgba(165,98,42,0.72)';
+    for(var i2=0;i2<BINS;i2++){ var xx=padL+i2/BINS*(w-padL-padR), bwpx=(w-padL-padR)/BINS;
+      var y=Y(dens[i2],pmax); ctx.fillRect(xx, y, Math.ceil(bwpx), (h-padB)-y);
+    }
+    // 目標曲線
+    ctx.strokeStyle='#26456e';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var v=-R;v<=R+1e-9;v+=0.05){ var g=targMax*Math.exp(-v*v/(2*T)); var px=X(v),py=Y(g,pmax); if(f){ctx.moveTo(px,py);f=false;}else ctx.lineTo(px,py); }
+    ctx.stroke();
+    // 場の点（現在位置）
+    ctx.fillStyle='#a5473a';ctx.beginPath();ctx.arc(X(x),h-padB-6,6,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // ラベル
+    ctx.fillStyle='#26456e';ctx.font='bold 11px sans-serif';ctx.fillText('求める測度 e^{-S}', X(0)+8, Y(targMax,pmax)-6);
+    // readout
+    rd.textContent='ノイズ T='+T.toFixed(2)+'、サンプル数 '+total+'。ノイズで揺らし続けるほど、訪れた頻度（棒）が求める測度 e^{-S}（曲線）に近づく＝測度をサンプルしている。T が大きいほど広く揺れる。';
+  }
+  function loop(){ step(); render(); requestAnimationFrame(loop); }
+  st.addEventListener('input',function(){ T=parseFloat(st.value); vt.textContent=T.toFixed(2); reset(); });
+  br.addEventListener('click',reset);
+  window.addEventListener('resize',function(){ init(); });
+  init(); requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

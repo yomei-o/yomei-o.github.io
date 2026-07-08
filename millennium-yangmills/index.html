@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ミレニアム問題を解くぞ ── 第一部 ヤン=ミルズ問題 ／ 目次</title>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --e1:#26456e; --e2:#2f7d5a; --e3:#a5622a; --e4:#8a3550;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:800px;margin:32px auto;background:var(--paper);
+    padding:58px 64px 78px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .kicker{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.34em;color:var(--gold);font-weight:700;margin:0 0 10px;}
+  h1{font-size:40px;line-height:1.22;margin:0 0 6px;font-weight:700;letter-spacing:.02em;}
+  .part{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:15px;color:var(--acc);font-weight:700;letter-spacing:.1em;margin:2px 0 0;}
+  .tagline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin:16px 0 0;}
+  .backbone{margin:26px 0;padding:18px 24px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;font-size:16px;line-height:1.85;}
+  .backbone .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:6px;}
+  .cards{margin:32px 0 0;display:flex;flex-direction:column;gap:15px;}
+  a.card,div.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule);border-radius:7px;
+    padding:20px 24px;background:#fffdf8;transition:transform .08s,box-shadow .12s;position:relative;overflow:hidden;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.09);}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c,#26456e);}
+  .card .no{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--c,#26456e);font-weight:700;margin-bottom:5px;display:flex;gap:10px;align-items:center;}
+  .badge{font-size:10px;letter-spacing:.08em;font-weight:700;padding:2px 9px;border-radius:20px;background:#e9edf3;color:var(--acc);}
+  .badge.soon{background:#efe9dc;color:#8a7a52;}
+  .badge.live{background:#e3efe8;color:#2f7d5a;}
+  .card h2{font-size:21px;margin:0 0 6px;font-weight:700;letter-spacing:.02em;line-height:1.4;}
+  .card p{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;color:var(--ink-soft);line-height:1.75;}
+  .card.soon{opacity:.62;}
+  .seclabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.22em;color:var(--gold);font-weight:700;margin:14px 0 2px;
+    padding-bottom:5px;border-bottom:1px solid var(--rule);}
+  .seclabel:first-child{margin-top:0;}
+  .oath{margin:32px 0 0;background:#f2ede1;border-left:3px solid var(--gold);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.8;color:#4a3e22;}
+  .oath .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;color:var(--gold);}
+  .sisters{margin:22px 0 0;padding:15px 22px;background:#eef1f5;border-radius:3px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:#2b3644;line-height:1.8;}
+  .sisters .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;}
+  .sisters a{color:var(--acc);font-weight:600;}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;} .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} a.card,div.card{break-inside:avoid;}}
+  @media (max-width:640px){ .sheet{padding:38px 18px 54px;margin:0;} h1{font-size:30px;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <p class="kicker">100万ドルの数学 ── 高校生からの挑戦</p>
+  <h1>ミレニアム問題を解くぞ</h1>
+  <p class="part">第一部 ── ヤン=ミルズ問題と質量ギャップ</p>
+  <p class="tagline">世界に7つ、1問1億円級（100万ドル）の未解決問題がある。その一つ「ヤン=ミルズ問題」を、<strong>高校生でも分かる言葉</strong>で、正体から追う。数式はできるだけ少なく、たとえと動く図で。<br>タイトルは「解くぞ」── でも掟は正直に：<strong>"解けた"の旗は立てない。理解して、"まだ誰も越えていない縁"がどこかを、正確に指す。</strong></p>
+
+  <div class="backbone">
+    <div class="lbl">このシリーズの一行</div>
+    ヤン=ミルズ問題とは ── <strong>「強い力（クォークを陽子に閉じ込める力）の理論を、数学としてちゃんと作れ。そして"質量ギャップ"（ゼロでない最小のエネルギー）があると証明せよ」</strong>。物理は答えを<em>知っている</em>のに、数学が<em>まだ証明できていない</em> ── その谷が、100万ドル。
+  </div>
+
+  <a href="yangmills-map.html" style="display:block;text-decoration:none;margin:24px 0 8px;padding:16px 22px;border:2px solid #a9791a;border-radius:8px;background:linear-gradient(180deg,#faf1d8,#f0e2b8);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;transition:all .12s ease;">
+    <span style="font-size:11px;letter-spacing:.2em;color:#7a5510;font-weight:700;">🗺 全体を俯瞰する</span>
+    <span style="display:block;font-size:17px;font-weight:800;color:#5f4310;margin-top:4px;">戦略地図 ── 全ての道は g_c 峠、そして厳密RGへ</span>
+    <span style="display:block;font-size:13px;color:#6a5316;margin-top:5px;line-height:1.6;">30話を一枚に。問題をQ3に絞り→「RPな転送行列の一様スペクトルギャップ」に束ね→四手で a→0 を攻め→全ての道が峠 g_c に注ぎ→手γが「相転移の不在」に凝縮→道具は皆<strong>一本の厳密くりこみ群</strong>へ→終着点＝四歯車を一つのRGステップに噛ませる設計図。その収束構造を漏斗図で。まずここから。</span>
+  </a>
+
+  <a href="yangmills-goal.html" style="display:block;text-decoration:none;margin:14px 0 8px;padding:15px 22px;border:2px solid #26456e;border-radius:8px;background:#eef1f7;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;">
+    <span style="font-size:11px;letter-spacing:.2em;color:#26456e;font-weight:700;">🎯 ゴールの位置と距離</span>
+    <span style="display:block;font-size:16px;font-weight:800;color:#1f3554;margin-top:4px;">旗が立つ条件と、そこまでの距離を測る</span>
+    <span style="display:block;font-size:13px;color:#3a4a63;margin-top:5px;line-height:1.6;">「旗が立つ気配が無い」── ならゴールを正確に定義して距離を測る。合格条件＝(A)4次元でOS公理を満たす存在＋(B)質量ギャップΔ>0。次元別に測ると D=2到達／D=3途中／<strong>D=4は本体(連続構成・存在・ギャップ)が未踏</strong>。この地図は距離を描いたが縮めていない、と正直に。動く距離メーターつき。</span>
+  </a>
+
+  <div class="cards">
+    <div class="seclabel">入門編 ── ヤン=ミルズ問題とは</div>
+    <a class="card" href="yangmills-01-millennium.html" style="--c:var(--e1);">
+      <div class="no">第 1 回 <span class="badge live">公開</span></div>
+      <h2>100万ドルの問題 ── ヤン=ミルズを一言で</h2>
+      <p>7つのミレニアム問題（うち解けたのは1つだけ）。ヤン=ミルズは一言で「強い力を数学でちゃんと作り、質量ギャップを証明せよ」。そして最大の不思議 ── 物理はほぼ100%確信しているのに、数学の証明はまだゼロ。100万ドルはその谷にある。</p>
+    </a>
+    <a class="card" href="yangmills-02-chikara.html" style="--c:var(--e2);">
+      <div class="no">第 2 回 <span class="badge live">公開</span></div>
+      <h2>力ってなんだ？ ── ヤン=ミルズは"力の設計図"</h2>
+      <p>力とは「場」で、場は<strong>対称性を守るために現れる</strong>（ゲージ原理・共変微分 D<sub>μ</sub>=∂<sub>μ</sub>−igA<sub>μ</sub>）。電磁気＝U(1)、強い力＝SU(3)。非可換 [A<sub>μ</sub>,A<sub>ν</sub>]≠0 だからグルーオンが自己相互作用 ── 閉じ込めと質量ギャップの源。動く図で"順序が効く"を体感。</p>
+    </a>
+    <a class="card" href="yangmills-03-gap.html" style="--c:var(--e3);">
+      <div class="no">第 3 回 <span class="badge live">公開</span></div>
+      <h2>質量ギャップって何？ ── ゼロと"最初の音"のあいだの隙間</h2>
+      <p>ギャップとは真空のすぐ上の最小エネルギー（spec(H)={0}∪[Δ,∞)）＝相関の指数減衰。質量ゼロは 1/r で無限に届き、ギャップは短射程。第2回の宿題「古典ゼロなのに量子ギャップ」の答え＝<strong>走る結合（漸近自由）＋次元的移行 Λ=μe^(−1/2b₀g²)</strong>。動く図で α_s(E) が Λ で発散＝質量スケールが湧く。</p>
+    </a>
+    <a class="card" href="yangmills-04-mondai.html" style="--c:var(--e4);">
+      <div class="no">第 4 回 <span class="badge live">公開</span></div>
+      <h2>なぜ"問題"なのか ── 物理は知ってる、数学が追いつかない</h2>
+      <p>問題は三つに割れる：Q1 格子で見える（厳密）／Q2 連続極限で数値決着／<strong>Q3 連続の厳密構成＋Δ>0 の証明（＝未解決）</strong>。開いているのは Q3 だけ。U(1)反例（ギャップは連続極限で消えうる）、連続極限＝臨界点、そして "解くぞでも旗は立てない" で入門アークを締める。動く図で U(1)⇄SU(3) の連続極限を辿る。</p>
+    </a>
+
+    <div class="seclabel">挑戦編 ── どう攻めるか（Q3への登攀）</div>
+    <a class="card" href="yangmills-05-semekata.html" style="--c:#2f6d8a;">
+      <div class="no">第 5 回（挑戦編①） <span class="badge live">公開</span></div>
+      <h2>攻め方の地図 ── Q3への四つのルート</h2>
+      <p>頂上＝OS公理で4次元YMを構成し、ギャップ＝相関の指数減衰を示す。ルートは<strong>格子×くりこみ群／確率量子化（Hairer）／横から（大N・ホログラフィー・超対称）</strong>。どれも同じ壁＝4次元の連続極限に止まる。動く図の"登攀図"で各ルートの到達点を確認。</p>
+    </a>
+    <a class="card" href="yangmills-06-kurikomi.html" style="--c:#7a4fa0;">
+      <div class="no">第 6 回（挑戦編②） <span class="badge live">公開</span></div>
+      <h2>格子から連続へ、厳密に ── くりこみ群と反射正値性</h2>
+      <p>ルートA。Wilson作用で格子に厳密定義 → <strong>反射正値性→転送行列→ギャップ＝固有値比 Δ=−(1/a)ln(λ₁/λ₀)</strong>。強結合は面積則で厳密（Q1）。連続極限 a→0 をブロック変換のくりこみ群で（Balaban はUVまで、完成は壁）。動く図でブロック変換を体感。</p>
+    </a>
+    <a class="card" href="yangmills-07-noise.html" style="--c:#a5622a;">
+      <div class="no">第 7 回（挑戦編③） <span class="badge live">公開</span></div>
+      <h2>ノイズで場を育てる ── 確率量子化とHairer</h2>
+      <p>ルートB。経路積分をノイズ入りSPDEに（∂A/∂τ=−δS/δA+η、平衡が e^{−S}）。白色ノイズが荒すぎ非線形項が発散＝特異SPDE → <strong>Hairerの正則化構造</strong>で3次元YM測度を構成（2022）。4次元は"臨界"の壁。動く図でランジュバン・サンプラーを体感。</p>
+    </a>
+    <a class="card" href="yangmills-08-yoko.html" style="--c:#8a3550;">
+      <div class="no">第 8 回（挑戦編④・挑戦編 完） <span class="badge live">公開</span></div>
+      <h2>横から攻める ── 大N・ホログラフィー・超対称のいとこ</h2>
+      <p>ルートC。厳密に扱える"いとこ"（大N λ=g²N・AdS/CFT・超対称YM＝Seiberg–Witten）で閉じ込め・ギャップが厳密に起こることを見る。だが本物のN=3・超対称なし・平坦4次元ではない。三ルートは同じ壁で出会う ── いとこ距離マップと総括で挑戦編を締める。</p>
+    </a>
+
+    <div class="seclabel">番外編 ── 自作理論の自己診断</div>
+    <a class="card" href="yangmills-bangai-sampling.html" style="--c:#6a4a2a;">
+      <div class="no">番外編 <span class="badge live">公開</span></div>
+      <h2>この理論で解けるか ── サンプリング定理は効くか</h2>
+      <p>姉妹シリーズの「離散＝連続／十分細かく標本化すれば同じ」をQ3に当て、<strong>自分の理論を自分で反証</strong>。サンプリング定理は帯域制限が前提で、QFTは f_max=∞。折れる5点（帯域制限なし・臨界・循環・U(1)反例・RGフロー）がそのままQ3。効くのはIR側だけ ── 壁の在処を指す診断器。動く図でエイリアシングを体感。</p>
+    </a>
+    <a class="card" href="yangmills-bangai2-chojun.html" style="--c:#4a5a3a;">
+      <div class="no">番外② <span class="badge live">公開</span></div>
+      <h2>超準解析で解けるか ── 無限小の格子は連続か</h2>
+      <p>無限小間隔の超有限格子＋標準部分＝「離散＝連続」の厳密版（Loeb測度で低次元は構成実績）。だが解けない ── しかも今回は<strong>定理で</strong>：超準解析は ZFC の<strong>保存的拡大</strong>で新しい標準定理を生まない。難所（st()の非自明な存在＝一様評価）はそのままQ3。表現を変える道具は、難しさが"中身"にある問題を解けない。動く図で st() の分岐を体感。</p>
+    </a>
+
+    <div class="seclabel">戦略編 ── もし挑むなら（深掘り）</div>
+    <a class="card" href="yangmills-senryaku1-rinkai.html" style="--c:#2f6d8a;">
+      <div class="no">戦略① <span class="badge live">公開</span></div>
+      <h2>臨界の壁 ── 4次元の確率量子化を押す</h2>
+      <p>本命ルートB（確率量子化）を4次元へ。壁の正体は<strong>臨界性</strong>（結合次元4−d、実効結合∼μ^{d−4}、d&lt;4劣臨界→d=4臨界）。希望は<strong>漸近自由</strong> ── 同じ臨界でもφ⁴₄（自明）と違いYM₄は非自明に残る見込み。動く図の次元スライダーで、d=4での枝分かれを体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku2-gendaiRG.html" style="--c:#7a4fa0;">
+      <div class="no">戦略② <span class="badge live">公開</span></div>
+      <h2>現代RGのゲージ移植 ── Balaban を綺麗な道具で</h2>
+      <p>対抗＆①③の共通エンジン。Balaban は4次元格子ゲージのUV安定性を示したが未完・難解。<strong>BBS（現代RG）は4次元臨界＝対数補正までスカラーで綺麗に制御</strong>＝YMと同じ壁を別の場で越えた。心臓＝有限レンジ分解 C=ΣCⱼ ＋局所化。移植の障害は一点＝<strong>ゲージ共変な有限レンジ分解</strong>（継ぎ目の対立B）。動く図でスカラー／ゲージの制御到達を比較。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku2b-kyohen.html" style="--c:#5a6a9c;">
+      <div class="no">戦略②補 <span class="badge live">公開</span></div>
+      <h2>共変FRDは作れそうか ── 共変ヒート核ルート</h2>
+      <p>②の核心の障害を正面から。半分イエス ── FRDは一般化済み（AKM）、Balabanに既に共変分解、そして<strong>共変ヒート核 e^{−tD*D}（正・共変）</strong>から作る有望ルート。谷＝<strong>共変⇒場依存 vs BBSの固定分解</strong>（グレイルのミニチュア）。アーベルは射程内、非アーベルの綺麗な版が勝ち筋。動く図で「分解の固定 vs 場依存」を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku2c-haikei.html" style="--c:#8a5a2e;">
+      <div class="no">戦略②補② <span class="badge live">公開</span></div>
+      <h2>曲率と背景場分割 ── F依存を飼えるか</h2>
+      <p>場依存の正体は<strong>曲率 F</strong>（e^{−tD*D}=自由×[1+tF+…]）── しかも F は非アーベルの自己相互作用の源そのもので消せない。飼い方＝<strong>背景場スケール分離</strong>（小場≈自由でタダ、大場は別枠）＝Balaban・背景場RGの本道で、方向は正しい。だが40年止まる：residue 5つ（大場の入れ子の沼・自己無撞着な背景・Gribov・対数一様・RP）が複合。「消すな飼え」── 方向はいける、実行が沼。動く図で小場/大場を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryakuB-hamilton.html" style="--c:#2c5560;">
+      <div class="no">戦略B <span class="badge live">公開</span></div>
+      <h2>ハミルトニアンで攻める ── RPはタダ、ギャップは多体系の道具で</h2>
+      <p>発想を変える。時間を連続にしたハミルトニアン格子（Kogut–Susskind）なら <strong>H≥0・反射正値性はタダ</strong>、質量ギャップ＝<strong>スペクトルギャップ Δ=E₁−E₀</strong> を直接。目標が「Hのギャップ下限」＝物性・量子多体の成熟した問題形になり、<strong>Knabe・martingale などギャップ証明術を輸入</strong>できる。壁＝非frustration-free・無限次元局所空間・a→0一様（Q3）。過小評価された未踏の輸入。動く図でギャップの直接性を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku3-soukan.html" style="--c:#2f7d5a;">
+      <div class="no">戦略③ <span class="badge live">公開</span></div>
+      <h2>相関長の一様下限で挟む ── 作らずにギャップを直接おさえる</h2>
+      <p>順序を逆に。構成しきる前に、格子間隔に<strong>よらない</strong>相関減衰の下限 ⟨OO⟩≤Ce^{−mr} を直接おさえる（ギャップはIR量・片側不等式でよい）。核は<strong>ウィルソンループ＝ランダム曲面の和</strong>（抑制 vs エントロピー）。だが"一様に"が結局Q3＝①との合わせ技が本命。動く図で面の荒れを体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku3B-tenso.html" style="--c:#4a5a8a;">
+      <div class="no">戦略③≡B <span class="badge live">公開</span></div>
+      <h2>転送行列で束ねる ── RPネイティブ評価の輸入</h2>
+      <p>③（相関の一様下限）と B（スペクトルギャップ）は<strong>転送行列で同じ問題</strong>：相関の指数減衰 ⇄ 固有値ギャップ ⇄ Hのスペクトルギャップ＝同じΔの三つの顔、橋は<strong>反射正値性</strong>（ゲージ格子ではタダ）。標的を「RPな転送行列の一様スペクトルギャップ」に一本化し、<strong>多体ギャップ術＋RPネイティブ評価（チェスボード・赤外）</strong>を同時に渡す。戦場を最良の地形に。動く図で"三つの顔"を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-a0.html" style="--c:#8a3550;">
+      <div class="no">戦略・最終攻略 <span class="badge live">公開</span></div>
+      <h2>a→0 の一様性を割る ── 残ったQ3への四手</h2>
+      <p>一点集約後に残る a→0 の一様性を正面から。正体＝ギャップが<strong>漸近自由の速さちょうど</strong>で閉じること＝無次元くりこみギャップ Ĝ=Δ_phys/Λ が<strong>正の固定点</strong>へ収束。四手：<strong>δ</strong>二重極限を分離（a→0＝箱の繰り込み／L→∞＝多体ギャップ）、<strong>α</strong>Ĝの引き込む固定点、<strong>β</strong>単調量(Fekete)＋強結合アンカー、<strong>γ</strong>解析性で強結合と連続を接続。Q3を最大限に局在化する設計図。動く図で二重極限の分離を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-d-persist.html" style="--c:#2f7d5a;">
+      <div class="no">戦略δ・一部品 <span class="badge live">公開</span></div>
+      <h2>箱→無限体積でギャップ持続 ── 多体系の有限サイズ判定で</h2>
+      <p>手δの<strong>勝てる半分</strong>＝条件付き定理「箱の中で a に一様なギャップ ⟹ L→∞ で持続」。道具＝多体系の<strong>有限サイズ判定</strong>（Knabe・Gosset–Mozgunov・martingale：小ブロックのギャップ＞閾値 ⟹ バルクギャップ）。RPはタダ、ギャップ＝質量ギャップ。壁＝<strong>frustration-freeでない</strong>（電気×磁気非可換）→ 強結合の"ギャップの摂動論"で in-regime に割る。＝戦略⑥の一補題。動く図で判定機構を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-d2-perturb.html" style="--c:#2f6d8a;">
+      <div class="no">戦略δ・摂動論 <span class="badge live">公開</span></div>
+      <h2>強結合ギャップの摂動論 ── どこで収束が切れるか</h2>
+      <p>(b)の具体化。H を電気（対角・frustration-free・カシミアギャップ Δ₀~g²）＋磁気（非対角・強結合で小摂動~1/g⁴）に分け、<strong>ギャップの摂動論</strong>（Kirkwood–Thomas／Datta–Fernández–Fröhlich）で Δ(g)≥Δ₀−O(1/g⁴)>0 を<strong>体積に一様</strong>に。＝L→∞持続＋強結合ギャップを一挙に。収束が切れるのは <strong>g_c=O(1)</strong>（電気~g²と磁気~1/g²が拮抗＝クロスオーバー無人地帯）、連続 g→0 はその向こう。強結合ギャップ≠連続質量ギャップ（アンカー）。動く図で収束域と破れを体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-gamma-kaiseki.html" style="--c:#a9791a;">
+      <div class="no">戦略γ・解析性 <span class="badge live">公開</span></div>
+      <h2>g_c を越える渡し ── 解析性＝相転移の不在</h2>
+      <p>全ての道が集まる峠。<strong>結合直線 β=2N/g² 上でギャップ Δ(β) が解析的（＝バルク相転移が無い）なら、強結合の確実なギャップが連続まで延びる</strong>。試金石は<strong>U(1)対照</strong>：U(1)は相転移を持ちギャップを失う（Guth 1980）、SU(N)は持たず残す ── 手法はこれを区別できねばならない（鍵＝漸近自由）。二端は押さえ得るが真ん中（クロスオーバー）の解析性＝<strong>Q3の言い換え</strong>。勝ち＝全直線を有界な窓に圧縮／SU(N)固有の反転移不等式。動く図で二つの運命を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-gammaB-futoshiki.html" style="--c:#8a6a1e;">
+      <div class="no">戦略γ補・反転移不等式 <span class="badge live">公開</span></div>
+      <h2>SU(N)固有の反転移 ── 漸近自由が"中間の不動点"を禁じる</h2>
+      <p>γの勝ち(B)を具体化。<strong>反転移 ⟺ β関数が結合直線に中間の零点（不動点）を持たない</strong>（漸近自由の単調フロー＝ひとつの相＝解析的）。U(1)は g_c に不動点＝相境界（<strong>モノポール凝縮</strong>；Banks–Myerson–Kogut／Guth）を持ち二相＝ギャップ喪失。名指しできる標的＝<strong>'t Hooftループが窓で凝縮しない</strong>を RP＋チェスボードで一様に（U(1)では破れる＝試金石）。相関不等式は非可換の壁で乏しい。動く図でβの中間零点の有無を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-gammaC-ATI.html" style="--c:#26456e;">
+      <div class="no">戦略γ補²・不等式を書く <span class="badge live">公開</span></div>
+      <h2>反転移不等式を書き下す ── そして正直に、旗は立たない</h2>
+      <p>SU(N)固有の反転移不等式 <strong>ATI を実際に書き下す</strong>：<strong>相関長 ξ(β)&lt;∞（全有限β）＝臨界点は β=∞（g=0）にのみ</strong>（＝漸近自由の言い換え、Δ_lattice&gt;0 が全有限βで解析的）。道具版＝比熱の体積一様有界 χ_V≤K。<strong>U(1)では有限β_cで破れる</strong>＝正しく区別。だが証明は二重の壁（窓の非可換相関不等式が無い／ATI単独では連続ギャップに漸近スケーリング厳密化も要る）で未達 ── <strong>旗は立たない、標識が立つ</strong>。動く図でξの発散構造を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-gammaD-clustering.html" style="--c:#2f7d5a;">
+      <div class="no">戦略γ補³・非可換相関不等式 <span class="badge live">公開</span></div>
+      <h2>χ≤K をどう作るか ── 非可換相関不等式の三つの扉</h2>
+      <p>壁1の正面。<strong>χ_V≤K ⟺ エネルギー相関の一様な可積分クラスタリング</strong>（=Var(S)/V）。古典の Griffiths/FKG は非可換で壊れる（正値性・順序の喪失）。作る扉は三つ：<strong>①熱核の指標係数 c_R&gt;0＋融合 N≥0</strong>の正の重み色フラックス曲面展開（Griffithsの非可換版）、<strong>②Langevin動力学の一様LSIをPolchinski RGで</strong>（①②と合流・最有力／Bauerschmidt–Bodineau–Dagallier）、<strong>③RP＋赤外・比較</strong>。どの扉も強結合で開き窓で閉じる。動く図でχ=相関の積み上げを体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-kabe2-scaling.html" style="--c:#2f6d8a;">
+      <div class="no">壁2・漸近スケーリング <span class="badge live">公開</span></div>
+      <h2>漸近スケーリングの厳密化 ── Balaban と BBS</h2>
+      <p>連続ギャップのもう一本の柱。β→∞ で <strong>ln ξ(β)~β/4Nb₀</strong>（Δ_lattice~aΛ）を厳密に ── 速すぎればギャップ消滅、遅すぎれば発散。道具は壁1より発達：<strong>Balaban の紫外安定性</strong>（有限体積で格子YMの漸近自由を厳密化済み・ゲージ共変RG）、<strong>BBS</strong>（4次元臨界|φ|⁴の対数スケーリングを厳密化・雛形）。だが Balaban はギャップ・無限体積が、BBS はゲージ移植が残る。壁1（地続き）＋壁2（正しい速さ）＝連続ギャップ。全ての道が<strong>厳密くりこみ群</strong>へ。動く図で ln ξ の漸近直線を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-kabe1-lsi.html" style="--c:#2f7d5a;">
+      <div class="no">壁1扉②・RG-LSI 深掘り <span class="badge live">公開</span></div>
+      <h2>Polchinskiフローで一様LSI ── 最有力の扉を一段</h2>
+      <p>χ_V=Var(S)/V だから <strong>Langevin動力学の一様対数ソボレフ（LSI）</strong>があれば χ≤K。それを <strong>Polchinskiフロー＋1スケール凸性の積分</strong>で（Bauerschmidt–Bodineau–Dagallier）。資源＝<strong>コンパクト群の正曲率で単リンクLSIはタダ</strong>（電気カシミアギャップの別の顔）。障害＝(A)群値の結合 (B)ゲージ平坦方向→<strong>共変FRD(②b)が要る</strong> (C)クロスオーバーで凸性崩れ。勝ち＝強結合の一様LSI。①②b・γ・壁2と共に<strong>厳密RG</strong>へ合流。動く図でスケール別LSI寄与を体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-grail-rg.html" style="--c:#a9791a;">
+      <div class="no">戦略・グレイル：一本の厳密RG <span class="badge live">公開</span></div>
+      <h2>一本の厳密くりこみ群を設計する ── 四つの歯車</h2>
+      <p>全ての道が集まる一点。<strong>完成はできない（＝YMを解くこと）が設計図は書ける。</strong>一つのRGステップ T:μ_a↦μ_La が四歯車<strong>（ゲージ共変／反射正値保存／有限レンジ共変分解／1スケール凸性LSI）を同時に</strong>満たすよう仕様を書き、各歯車に既知の部品（Balaban／反射対称ブロッキング／BBS共変FRD／正曲率LSI）を割り当て、log(1/a)段まわして<strong>壁2（漸近スケーリング）＋壁1（χ≤K）を同時に</strong>。残るは<strong>一つの組み合わせ・一様性補題</strong>＝Q3を最大限組み上げた姿。旗は立たない、峠の頂に標識。動く図で四歯車の噛み合いを体感。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-tougou.html" style="--c:#6a4a9c;">
+      <div class="no">戦略・統合 <span class="badge live">公開</span></div>
+      <h2>①＋③の統合像 ── 本命ルートの合体</h2>
+      <p>Q3＝存在＋ギャップを、<strong>①（確率量子化）で存在、③（一様下限）でギャップ</strong>に分業し、<strong>一本のくりこみ群</strong>で継ぐ。橋は<strong>反射正値性</strong>（OS再構成＋転送行列ギャップ）、エンジンは<strong>漸近自由</strong>（UV構成もIR閉じ込めも一本の走りが駆動）。残る継ぎ目＝4次元でこれを同時制御する一本のRG＝Q3の最も鋭い一文。動く図でUV→IRの役割分担を辿る。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku-tsugime.html" style="--c:#8a3550;">
+      <div class="no">戦略・最終 <span class="badge live">公開</span></div>
+      <h2>継ぎ目を掘る ── 4つの対立とグレイル</h2>
+      <p>継ぎ目をさらに掘る。これは4つの難題でなく<strong>4つの対立</strong> ── UV粗視化⊥反射正値性(A)、UV⊥ゲージ共変(B)、ゲージ⊥RP＋Gribov(C)、UV⊥IR＝無人地帯(D)、4次元の対数脆さ(E)。金字塔はどれも必ず一つ落とす。欠けは一個の物＝<strong>RP保存∧ゲージ共変∧対数一様な粗視化</strong>（グレイル）。動く図の対立マトリクスで体感。縁の、そのまた縁。</p>
+    </a>
+    <a class="card" href="yangmills-senryaku6-hodai.html" style="--c:#2c5560;">
+      <div class="no">戦略⑥ <span class="badge live">公開</span></div>
+      <h2>最小の補題に還元する ── 解かずに、正しい形にする</h2>
+      <p>メタ戦略。「L ⟹ 存在＋Δ>0」を定理にし、残りを最小の補題 L 一点に集める。既に何段か還元済み（反射正値性→OS再構成→一様クラスタリング→<strong>一本のRGの一様安定性評価</strong>＝前回のグレイル）。還元は難しさを消さず最もクリーンな一点に集める ── 良い還元と循環（番外①②の言い換え）を分ける掟つき。動く図の還元漏斗で体感。</p>
+    </a>
+
+    <div class="seclabel">アイデア編 ── 峠の向こうへ、新しい原理を（推測・反証されうる意見）</div>
+    <a class="card" href="yangmills-idea5-rignum.html" style="--c:#2f6d8a;">
+      <div class="no">アイデア5 <span class="badge live">公開</span></div>
+      <h2>コンパクトな窓を区間演算で貫く ── 検証つき数値</h2>
+      <p>γが問題を<strong>コンパクトな窓 [β₀,β₁]</strong> に絞った ── 小パラメータは無いが有界。そこを<strong>有限サイズ判定→表現切断→検証つき固有値評価→区間演算</strong>で有限計算に落とし、ギャップ&gt;0 を厳密に囲い込む。先例＝ケプラー(Hales)・ローレンツ(Tucker)・<strong>量子固有値の Fefferman–Seco</strong>。<strong>新道具不要</strong>が強み。だが数値だけでは閉じず（frustrated 有限サイズ判定・壁2が要る）＝ハイブリッド。だめなら1。動く図で窓の囲い込みを体感。</p>
+    </a>
+    <a class="card" href="yangmills-idea6-eberle.html" style="--c:#2f7d5a;">
+      <div class="no">アイデア6（本命） <span class="badge live">公開</span></div>
+      <h2>凸性なしでギャップを出す ── エーベルの反射カップリング</h2>
+      <p>door②が<strong>クロスオーバーの非凸性</strong>で死ぬなら、"非凸でもギャップを出す"ために作られた道具で直撃。<strong>エーベルの反射カップリング</strong>（2016）は二つのLangevinコピーをノイズの反射で会合させ、非凸でも Wasserstein 指数収束（＝ギャップ）。単リンク正曲率が"外側の凸性"、プラケットが"非凸の芯"。穴＝芯が O(1) で広い窓では率 c→0 になりうる／4DゲージSPDE未定義。<strong>6は1に"一段の縮小率"を供給</strong>。動く図で反射会合を体感。</p>
+    </a>
+    <a class="card" href="yangmills-idea1-nashmoser.html" style="--c:#a9791a;">
+      <div class="no">アイデア1 <span class="badge live">公開</span></div>
+      <h2>有限窓を超収束反復で貫く ── ナッシュ–モーザー</h2>
+      <p>クロスオーバー＝<strong>~log(1/a)段の小パラメータ無しスケール</strong>。素朴な反復は誤差が線形累積して発散。<strong>ナッシュ–モーザー／KAM の超収束</strong>（誤差を二乗で潰す）なら有限窓を貫ける ── KAMが"小さな分母(marginal)"を越えたのと同じ、漸近自由が"非共鳴条件"の役。各段の縮小は<strong>アイデア6が供給</strong>＝6→1の合わせ技。穴＝循環(6依存)・ゲージ共変RP保存の正しいノルム(未整備)・無限段の一様性。動く図で超収束vs線形累積を体感。</p>
+    </a>
+    <a class="card" href="yangmills-idea61-mark.html" style="--c:#a9791a;">
+      <div class="no">アイデア6+1・しるしを打つ <span class="badge live">公開</span></div>
+      <h2>反射×超収束を一点に ── しるしを打つ</h2>
+      <p>6（反射カップリング＝各段の縮小 c_j）×1（超収束で組む）を融合。物理ギャップは <strong>Δ_phys≥f(c_*)</strong>、c_*=inf_j c_j。深掘りすると 6の c_j も 1の閉じる条件も、<strong>各スケールの非凸の芯 L_jR_j² が一様有界か</strong>の一点に凝縮。そこに<strong>しるし ⟪c_j≥c_*&gt;0 ⟺ sup_j L_jR_j²&lt;∞⟫</strong> を打つ ── 一本の不等式・スケール毎に検証可能(案5)・反証可能・<strong>U(1)で破れSU(N)で成る</strong>（正しい標的）。旗でなく、フロンティアのいちばん精密な座標に標識。動く図で c_j vs c_* を体感。</p>
+    </a>
+    <a class="card" href="yangmills-idea61-proof.html" style="--c:#a5473a;">
+      <div class="no">アイデア6+1・証明を試みる <span class="badge live">公開</span></div>
+      <h2>c_j≥c_* を厳密に示そう ── そして壁を一つの補題に</h2>
+      <p>しるしを厳密に示しにいく遠征。段で組む：<strong>段1</strong>（全体→各段、tame評価つき半・厳密）<strong>段2</strong>（正曲率の下地 κ_j&gt;0＝SU(N)の正Ricci＋Bakry–Émery、無条件の定理）<strong>段3a</strong>（強結合スケールで c_j≥c_*、<strong>厳密な部分成果</strong>）<strong>段3b</strong>（クロスオーバーで止まる）。止まる一歩を <strong>Gap Lemma ⟪osc(∇²V_j)·R_j²≤B⟫</strong> と名指す ── だがこれは質量ギャップと<strong>同値</strong>で易しくなっていない。示し切れず、旗は立たない。だが縁まで歩き越えられない一歩を精密に。動く図で証明済み範囲と壁を体感。</p>
+    </a>
+
+    <div class="seclabel">ペレルマン編 ── ポアンカレの道具でヤン=ミルズを（方針の物語）</div>
+    <a class="card" href="yangmills-perelman1-loop.html" style="--c:#2c5560;">
+      <div class="no">ペレルマン① <span class="badge live">公開</span></div>
+      <h2>掘るとループする ── 堂々巡りの正体</h2>
+      <p>掘るたびに<strong>循環論法</strong>に落ちるのは気のせいでなく問題の構造。ループは4本（ギャップ⇄閉じ込め／連続化⇄遠距離／分け方⇄相／真空⇄全体像）でも根は1本＝<strong>スケールの自己言及（次元転換）</strong>。断つ4道具：①両端の錨（ループは中間だけ）②連続性の方法（4ループ→1不等式）③反射正値性（ループ4は既に死）④<strong>単調量＝ループを螺旋に</strong>。動く図でループ↔螺旋を体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman2-ricci.html" style="--c:#2f7d5a;">
+      <div class="no">ペレルマン② <span class="badge live">公開</span></div>
+      <h2>一度だけ断ち切られた前例 ── リッチフローとW-エントロピー</h2>
+      <p>7問で唯一解けた<strong>ポアンカレ予想</strong>。幾何を熱のようにならす<strong>リッチフロー</strong>は特異点で30年止まったが、ペレルマンが<strong>一方向に進む情報量W-エントロピー</strong>を見つけて突破（＝道具4）。そして<strong>Friedanの符合</strong>：くりこみ群フロー＝先頭次数でリッチフロー。ペレルマンが解いたのは事実上「RGフローに単調量を見つけてループを断つ」問題。<strong>YM版Wは空欄</strong>＝この編の的。動く図で形がならされる様を体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman3-atheorem.html" style="--c:#a5622a;">
+      <div class="no">ペレルマン③ <span class="badge live">公開</span></div>
+      <h2>端点だけでは足りない ── a定理の限界と仕様書</h2>
+      <p>4次元の単調量候補<strong>a定理</strong>（a_UV&gt;a_IR）は<em>両端を比べるだけ</em>で真ん中を素通り。使えない理由4つ：①総和則で中間ゼロ②ゴールがCFTだと仮定＝証明したいことを前提③固定点の外でスキーム依存④存在を仮定した連続理論で循環。逆に<strong>2次元c定理</strong>は各点で単調＝全部持つ。差から<strong>欲しい量の仕様書</strong>（各スケール／一意／各点単調／無次元ギャップ）確定 ── Wはこれを満たす。動く図で端点だけ↔各点を体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman4-wentropy.html" style="--c:#a9791a;">
+      <div class="no">ペレルマン④ <span class="badge live">公開</span></div>
+      <h2>W-エントロピーの解剖 ── 3つの部品</h2>
+      <p>Wは3つの仕掛け：<strong>①ペア化</strong>（形＋参照の重み＝流儀依存の病を吸収し勾配流に）<strong>②完全平方</strong>（変化率が二乗の積分＝各点単調・0が固定点、ボホナー／Bakry–Émeryの正値性）<strong>③ガウス参照</strong>（W＝自由な理想形からの相対エントロピー、最小値＝LSI最良定数）。この3つが<strong>移植部品①②③</strong>に。Wの役割は計算でなく<strong>潰れない保証（＝③閉）</strong>。移植表の★＝YM版W＝LSI下限＝無次元ギャップ。動く図でペア化の効き目を体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman5-lsi.html" style="--c:#7a4fa0;">
+      <div class="no">ペレルマン⑤ <span class="badge live">公開</span></div>
+      <h2>LSIの鎖と、すでに動いているエンジン</h2>
+      <p>Wとギャップを結ぶ橋＝<strong>LSI</strong>。鎖3本：①LSI→スペクトルギャップ②一様LSI⇔相関の指数減衰③指数減衰＋反射正値性→転送行列ギャップ。＝「連続極限まで一様なLSIを示せばギャップ」。しかも<strong>Shen–Zhu–Zhu</strong>が確率量子化＋Bakry–Émeryで<em>強結合側のLSI＝ギャップを証明済み</em>。止まる理由は<strong>群の曲率 vs 作用の非凸性</strong>の綱引き。欠けた一手＝<strong>フローに沿ったくりこまれたBE</strong>（乗り物＝Lüscher勾配流＝YM版リッチフロー）。動く図でβの綱引きを体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman6-doro.html" style="--c:#8a3550;">
+      <div class="no">ペレルマン⑥（完） <span class="badge live">公開</span></div>
+      <h2>泥か壁か ── 4つの泥穴と2次元の実験室</h2>
+      <p>問題は<strong>1本の関数不等式</strong>まで煮詰まった＝壁でなく<strong>泥</strong>（だが「やればできる」は保証なし）。泥穴：1・2＝工事型、<strong>3＝最深部</strong>（次元転換 ξ~e^{cβ} を指数精度で追う＝バラバン級）、4＝罠。探すと<strong>幾何解析・確率解析・ERGが部品を一個ずつ持ち誰も縫っていない</strong>。正直な三段回答：<strong>段1定式化・段2（2次元格子YM＝群上の熱流）検証は手が届く／段3（4次元一様評価）は届かない</strong>。旗は立たない、<em>フロンティアの最も精密な座標に標識</em>。動く図で4泥穴の深さを体感。</p>
+    </a>
+    <a class="card" href="yangmills-perelman-gaiden-ai.html" style="--c:#2f6d8a;">
+      <div class="no">ペレルマン編・外伝 <span class="badge live">公開</span></div>
+      <h2>AIで難問は解けるか ── ペレルマンの型は、なぜ機械と相性がいいのか</h2>
+      <p>まず線：<strong>数値で確かめる ≠ 証明する</strong>。だが「計算しながら厳密に証明」は実在（四色・ケプラー/Flyspeck・ローレンツの区間演算、そして<strong>Lean＋AI</strong>：AlphaProof銀メダル・Tao–PFR形式化）── 機械がハルシネーションを弾く。ペレルマンの型が機械と噛み合う5理由：<strong>①1本の不等式に還元済み ②単調量探し＝機械可読 ③完全平方＝SOS/SDPで自動探索 ④各スケール局所反復 ⑤2次元の厳密な教師データ</strong>。だが三つの壁（数値≠証明／形式化の前提が未整備／創造的還元は検索で出ない）。結論：<em>YM解決はまだ遠いが「この問題の形はAI時代に最も噛み合う」は本当</em>。主役は<strong>問題をAIが登れる形まで還元する力</strong>。動く図で人間↔機械の分業パイプラインを体感。</p>
+    </a>
+  </div>
+
+  <div class="oath">
+    <span class="tag">このシリーズの掟</span>
+    「解くぞ」は本気の入口だが、<strong>"解けた"とは言わない</strong>。ヤン=ミルズ問題は、世界中の天才が挑んで未解決のまま（クレイ数学研究所、2000年設定、賞金100万ドル）。このシリーズがするのは ── 問題の正体を高校生にも分かる形にほどき、物理と数学の"確信の谷"を正確に測り、<em>どこが本当に難しいのか（縁）</em>を指すこと。姉妹シリーズ譲りの「旗でなく、縁の標識を」。
+  </div>
+
+  <div class="sisters">
+    <div class="lbl">姉妹シリーズ（物理の言葉で、同じ縁へ）</div>
+    より数式に踏み込んだ物理版 ── <a href="../wakaru-shitsuryo/index.html">「わかる質量」</a>（質量ギャップを第4回・第7回・番外⑤で）／<a href="../wakaru-uchu-keisanki/uchu-keisanki-index.html">「宇宙は計算機」</a>。入口が違っても、辿り着く縁は一つ。
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題。物理好きの高校生・大学生のための読み物。各回はブラウザの「印刷 → PDF に保存」でA4化できます（印刷版では動く図と解答は静止・非表示）。この目次と各回HTMLは同じフォルダに置いてください（リンクが相対パスのため）。
+  </div>
+
+</div>
+</body>
+</html>

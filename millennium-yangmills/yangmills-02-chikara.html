@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力ってなんだ？ ── ヤン=ミルズは"力の設計図" ／ ミレニアム問題を解くぞ 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --ax1:#a5473a; --ax2:#2f7d5a; --ax3:#26456e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:9px 16px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 2 回</span></div>
+  <p class="eyebrow">そもそも「力」とは何か ── ヤン=ミルズは"力を作る設計図"だった</p>
+  <h1>力ってなんだ？ ── ヤン=ミルズは"力の設計図"
+    <span class="sub">力は「場」で、場は<strong>対称性を守るために現れる</strong>（ゲージ原理）。電磁気はその一番簡単な例、強い力はその<em>非可換</em>版。<br>核心は一つの式 ── \(D_\mu=\partial_\mu-igA_\mu\)、そして \([A_\mu,A_\nu]\neq0\)。この"順序が効く"性質が、閉じ込めと質量ギャップの源になる。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：ゲージ原理で「対称性→力」をつかむ（数式あり）</span>
+    <span>核心：\(D_\mu=\partial_\mu-igA_\mu\) ／ \(F_{\mu\nu}\) ／ \([A_\mu,A_\nu]\neq0\)</span>
+  </div>
+
+  <p class="lead">前回、ヤン=ミルズ問題は「<strong>強い力</strong>の理論を数学で作り、質量ギャップを証明せよ」だと分かりました。では、その「力」とは何なのか。ニュートンは力を「離れた物どうしが直接引き合う（遠隔作用）」と考えましたが、現代物理の答えは違います ── <strong>力とは"場"であり、その場は、ある対称性を守るために必然的に現れる</strong>。これが<em>ゲージ原理</em>。ヤン=ミルズ理論は、この「対称性から力を作る」ための<strong>設計図</strong>そのものです。電磁気はその一番やさしい実例。強い力は、同じ設計図の"非可換"版 ── そしてその非可換性こそが、この問題を100万ドルにしている張本人です。</p>
+
+  <h2><span class="n">01</span>力は「場」── 近くへ、少しずつ伝わる</h2>
+
+  <p>電気を例に。電子は空間に<strong>電磁場</strong>という"ゆがみ"を作り、別の電子はその場から力を受ける。力は瞬間に飛ぶのでなく、場を伝って<em>有限の速さ（光速）で近くへ順ぐりに</em>伝わる（近接作用）。マクスウェルがこれを方程式にまとめ、アインシュタインが場の速さ＝光速を確立しました。<strong>電磁気は、人類が最初に手にしたゲージ理論</strong>です。次の節で、その"設計図"の芯を見ます。</p>
+
+  <h2><span class="n">02</span>ゲージ原理 ── 力は「対称性を守るため」に現れる</h2>
+
+  <p>量子力学では、電子は波（波動関数 \(\psi\)）で表され、その<strong>位相</strong>には基準の任意性があります ── 全体を一斉に回しても物理は変わらない：</p>
+
+  <div class="calc">
+    <span class="tag">やってみる ── 位相を"場所ごと"に回すと、ほころびが出る</span>
+    <p class="lbl">大域的な回し（どこも同じ角度 α）：物理は不変</p>
+    $$\psi(x)\ \to\ e^{i\alpha}\,\psi(x)$$
+    <p class="lbl">局所的な回し（場所ごとに違う角度 α(x)）：微分がほころぶ</p>
+    $$\psi(x)\ \to\ e^{i\alpha(x)}\psi(x)\quad\Rightarrow\quad \partial_\mu\psi\ \to\ e^{i\alpha(x)}\big(\partial_\mu\psi+i(\partial_\mu\alpha)\psi\big)$$
+    <p style="margin-bottom:14px;">余計な項 \(i(\partial_\mu\alpha)\psi\) が出てしまう。これを<strong>打ち消す</strong>ために、新しい場 \(A_\mu\)（＝電磁ポテンシャル）を導入し、微分を"接続つき"に取り替える：</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">共変微分 ── ゲージ原理の心臓</div>
+    $$D_\mu=\partial_\mu-igA_\mu,\qquad \text{同時に}\quad A_\mu\ \to\ A_\mu+\tfrac{1}{g}\partial_\mu\alpha$$
+    <p style="margin:10px 0 0;">こう決めると \(D_\mu\psi\) はきれいに \(e^{i\alpha(x)}D_\mu\psi\) と変換し、ほころびが消える。<strong>「位相を場所ごとに自由に選ぶ権利（局所対称性）」を守るために、力の場 \(A_\mu\) が必然的に現れた</strong> ── これが「対称性 → 力」。\(g\) は結合の強さ。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">姉妹シリーズと同じ話</span>
+    「わかる宇宙論」第8回「\(i\) の曖昧さが、力を生む」と、これは同じ中身です。位相（\(i\) のかかった曖昧さ）を局所的に許した瞬間、それを取りつくろうために電磁気力が生まれる ── \(\alpha\) の起源も、力の起源も、この一点。
+  </div>
+
+  <h2><span class="n">03</span>場の強さと作用 ── マクスウェルを一行で</h2>
+
+  <p>場 \(A_\mu\) 自身の"実体"は、その<strong>場の強さ</strong> \(F_{\mu\nu}\)（電場と磁場をまとめたもの）で測ります。電磁気（可換な場合）では：</p>
+
+  <div class="keybox">
+    <div class="lbl">場の強さと、作用（電磁気＝U(1)）</div>
+    $$F_{\mu\nu}=\partial_\mu A_\nu-\partial_\nu A_\mu,\qquad \mathcal{L}=-\tfrac14 F_{\mu\nu}F^{\mu\nu}$$
+    <p style="margin:10px 0 0;">この一行のラグランジアン \(\mathcal{L}\) から、マクスウェル方程式がすべて出ます。\(F_{\mu\nu}\) はゲージ変換で不変 ── だから測れる物理量。ここまでが「電磁気＝一番やさしいゲージ理論」。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>ヤン=ミルズ ── 同じ設計図の"非可換"版</h2>
+
+  <p>1954年、楊とミルズは問いました ──「位相（1つの数の回転＝U(1)）でなく、<strong>もっと豊かな対称性</strong>を局所的に守らせたらどうなる？」。たとえば強い力では、クォークは<strong>3つの"色"</strong>（赤・緑・青）を持ち、その入れ替え対称性は \(SU(3)\)。これらの変換は<em>行列</em>で、掛ける順序が効きます（非可換）。</p>
+
+  <div class="keybox">
+    <div class="lbl">U(1) → SU(N) へ一般化する</div>
+    $$A_\mu=A_\mu^{a}T^{a}\ (\text{行列}),\qquad [T^a,T^b]=if^{abc}T^c\ (\neq0)$$
+    $$F_{\mu\nu}^{a}=\partial_\mu A_\nu^{a}-\partial_\nu A_\mu^{a}\ \underbrace{+\,g f^{abc}A_\mu^{b}A_\nu^{c}}_{\text{新しい項！}}$$
+    <p style="margin:10px 0 0;">場 \(A_\mu\) が"行列"になり、場の強さに<strong>余分な項 \(gf^{abc}A_\mu^bA_\nu^c\)</strong>（＝交換子 \([A_\mu,A_\nu]\) 由来）が加わる。これは電磁気には無かった項。<em>この一項が、すべての難しさの源</em>です。</p>
+  </div>
+
+  <p>「順序が効く（非可換）」がどういうことか ── 下の図で体感できます。<strong>同じ二つの操作 A・B を、順序を変えて</strong>加えると、電磁気（位相・同じ軸の回転）では結果は同じ（可換）。でも強い力級（違う軸の回転）では<strong>結果が変わる</strong>（非可換、\([A,B]\neq0\)）。</p>
+
+  <div class="fig">
+    <div class="cap">図：二つの操作 A・B を「A→B」と「B→A」の順で試す。<span style="color:var(--acc);font-weight:700;">U(1)（位相・同じ軸の回転）は順序によらず同じ（＝）</span>、<span style="color:var(--warn);font-weight:700;">SU(3)級（違う軸の回転）は順序で結果が変わる（≠）</span>。この非可換性が \([A_\mu,A_\nu]\neq0\) の正体</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="tbtn on" id="bU">電磁気 U(1)（位相・可換）</button>
+      <button class="tbtn" id="bN">強い力 SU(3)級（回転・非可換）</button>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">05</span>非可換だと、力が"自分自身"に効く ── ここが100万ドルの入口</h2>
+
+  <p>あの余分な項 \(gf^{abc}A_\mu^bA_\nu^c\) は、ラグランジアン \(-\tfrac14 F_{\mu\nu}^aF^{a\,\mu\nu}\) に入れると、<strong>場 \(A\) の3次・4次の項</strong>を生みます。これは<em>力を伝える粒子どうしが、互いに力を及ぼし合う</em>ことを意味します。</p>
+
+  <div class="keybox">
+    <div class="lbl">決定的な違い ── 仲介粒子は自己相互作用するか</div>
+    <p style="margin:0;"><strong>電磁気（U(1)・可換）</strong>：光子は電荷を持たない → 光子どうしは素通り（自己相互作用なし）。<br><strong>強い力（SU(3)・非可換）</strong>：グルーオンは"色"を持つ → <strong>グルーオンどうしが引き合う</strong>（自己相互作用あり）。</p>
+  </div>
+
+  <p>この「グルーオンが自分自身に効く」性質が、強い力の two 大特徴を生みます ── 近距離では結合が弱まる<strong>漸近自由</strong>、遠距離では逆に強くなって離れられない<strong>閉じ込め</strong>。そして、ここが問題の核心 ──</p>
+
+  <div class="calc">
+    <span class="tag">奇跡の入口 ── 古典的には質量ゼロが"強制"される</span>
+    <p style="margin:6px 0 8px;">ゲージ対称性は、仲介粒子に質量項を<strong>禁じます</strong>。質量項 \(m^2A_\mu A^\mu\) はゲージ変換で不変にできないから：</p>
+    $$m^2 A_\mu A^\mu\ \xrightarrow{\ \text{ゲージ変換}\ }\ \text{不変にならない}\quad\Rightarrow\quad m=0\ (\text{古典})$$
+    <p style="margin-bottom:14px;">つまり<strong>設計図の上では、力の粒子（グルーオン）は質量ゼロのはず</strong>。なのに現実の強い力は短射程で、最小エネルギー（質量ギャップ）を持つ。<em>古典では質量ゼロが強制されるのに、量子論では質量ギャップが現れる</em> ── この矛盾のような奇跡が、ヤン=ミルズ問題の正体。次回の主役です。</p>
+  </div>
+
+  <table class="dt">
+    <tr><th>力</th><th>対称性（群）</th><th>仲介粒子</th><th>自己相互作用</th></tr>
+    <tr><td>電磁気</td><td><span class="d">U(1)</span>（可換）</td><td>光子 ×1</td><td>なし</td></tr>
+    <tr><td>弱い力</td><td><span class="d">SU(2)</span></td><td>W, Z ×3</td><td>あり</td></tr>
+    <tr><td>強い力</td><td><span class="d">SU(3)</span>（色）</td><td>グルーオン ×8</td><td><strong>あり（核心）</strong></td></tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ゲージ原理・共変微分 \(D_\mu=\partial_\mu-igA_\mu\)・非可換場の強さ \(F_{\mu\nu}^a=\partial_\mu A_\nu^a-\partial_\nu A_\mu^a+gf^{abc}A_\mu^bA_\nu^c\)・標準模型のゲージ群 \(SU(3)\times SU(2)\times U(1)\) は、いずれも確立した物理です（符号や \(g\) の置き方は流儀で変わります）。グルーオンは \(N^2-1=8\) 本。図の"回転"は非可換性の<strong>たとえ</strong>で、\(SU(3)\) そのものの表現ではありません（順序が効く＝\([A,B]\neq0\) という一点だけを、見やすい3次元回転 \(SO(3)\sim SU(2)\) で示しています）。</p>
+    <p style="margin-bottom:0;">「古典では質量ゼロ、量子論で質量ギャップ」は、この問題のいちばんの不思議で、まさにクレイ問題が"証明せよ"と言っている当のもの ── ここでは正体を示しただけで、なぜそうなるか（次元的移行）は第3回、なぜ証明が難しいかは第4回。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回の式で解けます）</div>
+    <ol>
+      <li>共変微分 \(D_\mu=\partial_\mu-igA_\mu\) の役割を一言で。
+        <details><summary>答えを見る</summary><div class="ans">位相を"場所ごとに自由に選ぶ"（局所ゲージ対称性）を許したとき、ふつうの微分に出る余計な項 \(i(\partial_\mu\alpha)\psi\) を、場 \(A_\mu\) の変換で打ち消す仕掛け。これにより \(D_\mu\psi\to e^{i\alpha(x)}D_\mu\psi\) ときれいに変換する ── 力の場 \(A_\mu\) は、この対称性を守るために現れる。</div></details>
+      </li>
+      <li>電磁気の \(F_{\mu\nu}\) とヤン=ミルズの \(F_{\mu\nu}^a\) の違いは何か。それが何を意味するか。
+        <details><summary>答えを見る</summary><div class="ans">ヤン=ミルズには余分な項 \(+gf^{abc}A_\mu^bA_\nu^c\)（交換子 \([A_\mu,A_\nu]\) 由来）がある。これは非可換（\(f^{abc}\neq0\)）だから。意味：仲介粒子（グルーオン）が"色"を持ち、自分自身に力を及ぼす＝自己相互作用。電磁気の光子（可換）にはこれが無い。</div></details>
+      </li>
+      <li>ゲージ対称性は、なぜ仲介粒子の質量をゼロに"強制"するのか。
+        <details><summary>答えを見る</summary><div class="ans">質量項 \(m^2A_\mu A^\mu\) はゲージ変換 \(A_\mu\to A_\mu+\tfrac1g\partial_\mu\alpha\)（＋非可換版）で不変にできないため、対称性を保つと項として書けない → 古典的に \(m=0\)。にもかかわらず量子論では質量ギャップが現れる、という食い違いがヤン=ミルズ問題の核心。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>力は、対称性を守るために現れる</h2>
+    <p>力とは場であり、場は<strong>ゲージ原理</strong>で現れる ── 位相を"場所ごとに自由に選ぶ権利"（局所対称性）を守るため、共変微分 \(D_\mu=\partial_\mu-igA_\mu\) を通じて力の場 \(A_\mu\) が必然的に湧く。電磁気（U(1)・可換）はその一番やさしい実例で、\(\mathcal L=-\tfrac14F_{\mu\nu}F^{\mu\nu}\) がマクスウェル。</p>
+    <p>ヤン=ミルズは同じ設計図の<strong>非可換</strong>版（強い力＝SU(3)・色3つ・グルーオン8本）。場の強さに余分な項 \(gf^{abc}A_\mu^bA_\nu^c\)（＝\([A_\mu,A_\nu]\neq0\)）が加わり、<strong>グルーオンが自分自身に力を及ぼす</strong>。この自己相互作用が漸近自由と閉じ込めを生む。そして最大の謎 ── <em>ゲージ対称性は古典的に質量ゼロを強制するのに、量子論では質量ギャップが現れる</em>。この奇跡の"なぜ"が、第3回。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-01-millennium.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第1回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">第3回：質量ギャップって何？（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第2回、物理好きの高校生・大学生向け読み物。ゲージ原理（局所位相対称性と共変微分 \(D_\mu=\partial_\mu-igA_\mu\)）、電磁気の \(F_{\mu\nu}=\partial_\mu A_\nu-\partial_\nu A_\mu\) とラグランジアン \(-\tfrac14 F_{\mu\nu}F^{\mu\nu}\)、非可換ヤン=ミルズの \(F_{\mu\nu}^a=\partial_\mu A_\nu^a-\partial_\nu A_\mu^a+gf^{abc}A_\mu^bA_\nu^c\)、\([T^a,T^b]=if^{abc}T^c\)、グルーオンの自己相互作用、標準模型のゲージ群 \(SU(3)\times SU(2)\times U(1)\)（グルーオン8・W/Z・光子）、ゲージ対称性が仲介粒子の質量項 \(m^2A_\mu A^\mu\) を禁じること（Higgs 機構がないと質量ゼロ）は、いずれも確立した物理です。符号・規格化・\(g\) の位置は文献の流儀で変わります。図は非可換性（\([A,B]\neq0\)）を \(SO(3)\) 回転で示すたとえで、\(SU(3)\) の正確な表現ではありません。古典的に質量ゼロのゲージ場が量子論で質量ギャップを持つこと自体が、4次元で数学的に未証明（＝ヤン=ミルズ問題）です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では切替ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボタンで U(1)（可換）と SU(3)級（非可換）を切り替え、二つの操作の順序で結果が変わるかを見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), bU=document.getElementById('bU'), bN=document.getElementById('bN'), rd=document.getElementById('rd');
+  var mode='u1';
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function Rx(t){var c=Math.cos(t),s=Math.sin(t);return [[1,0,0],[0,c,-s],[0,s,c]];}
+  function Ry(t){var c=Math.cos(t),s=Math.sin(t);return [[c,0,s],[0,1,0],[-s,0,c]];}
+  function Rz(t){var c=Math.cos(t),s=Math.sin(t);return [[c,-s,0],[s,c,0],[0,0,1]];}
+  function mm(A,B){var C=[[0,0,0],[0,0,0],[0,0,0]];for(var i=0;i<3;i++)for(var j=0;j<3;j++){var s=0;for(var k=0;k<3;k++)s+=A[i][k]*B[k][j];C[i][j]=s;}return C;}
+  function proj(v){ return [ (v[0]-v[2])*0.866, (v[0]+v[2])*0.5 - v[1] ]; } // 等角投影
+  var DEG=Math.PI/180;
+  function ops(){
+    if(mode==='u1') return {A:Rz(50*DEG), B:Rz(85*DEG)};
+    return {A:Rx(90*DEG), B:Ry(90*DEG)};
+  }
+  function drawFrame(ctx, M, cx, cy, s){
+    var axes=[{col:0,c:'#a5473a',n:'1'},{col:1,c:'#2f7d5a',n:'2'},{col:2,c:'#26456e',n:'3'}];
+    // 原点
+    ctx.fillStyle='#8a8574';ctx.beginPath();ctx.arc(cx,cy,3,0,7);ctx.fill();
+    // z順（奥→手前）でソートは簡略化：そのまま描く
+    axes.forEach(function(ax){
+      var v=[M[0][ax.col],M[1][ax.col],M[2][ax.col]];
+      var p=proj(v); var ex=cx+p[0]*s, ey=cy+p[1]*s;
+      ctx.strokeStyle=ax.c;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+      // 矢じり
+      var ang=Math.atan2(ey-cy,ex-cx);
+      ctx.fillStyle=ax.c;ctx.beginPath();
+      ctx.moveTo(ex,ey);
+      ctx.lineTo(ex-8*Math.cos(ang-0.4),ey-8*Math.sin(ang-0.4));
+      ctx.lineTo(ex-8*Math.cos(ang+0.4),ey-8*Math.sin(ang+0.4));
+      ctx.closePath();ctx.fill();
+      ctx.fillStyle=ax.c;ctx.font='bold 11px sans-serif';ctx.fillText(ax.n, ex+5, ey+3);
+    });
+  }
+  function approxEq(A,B){var m=0;for(var i=0;i<3;i++)for(var j=0;j<3;j++)m=Math.max(m,Math.abs(A[i][j]-B[i][j]));return m<1e-6;}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    ctx.clearRect(0,0,w,h);
+    var o=ops(), A=o.A, B=o.B;
+    var M1=mm(B,A);  // A→B（先にA、後にB）
+    var M2=mm(A,B);  // B→A
+    var same=approxEq(M1,M2);
+    var s=52, cyF=h/2-6;
+    var cx1=w*0.26, cx2=w*0.74;
+    // パネル枠
+    ctx.strokeStyle='#e4dcc8';ctx.lineWidth=1;
+    ctx.strokeRect(w*0.05,24,w*0.42,h-52); ctx.strokeRect(w*0.53,24,w*0.42,h-52);
+    ctx.fillStyle='#6a6552';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('順序：A → B', cx1, 42);
+    ctx.fillText('順序：B → A', cx2, 42);
+    ctx.textAlign='left';
+    drawFrame(ctx, M1, cx1, cyF, s);
+    drawFrame(ctx, M2, cx2, cyF, s);
+    // 中央の =／≠
+    ctx.font='bold 34px serif';ctx.textAlign='center';
+    ctx.fillStyle = same ? '#2f7d5a' : '#a5473a';
+    ctx.fillText(same?'=':'≠', w/2, cyF+10);
+    ctx.textAlign='left';
+    // readout
+    if(mode==='u1'){
+      rd.style.background='#e9edf3';rd.style.color='#24344a';
+      rd.innerHTML='<b>U(1)（位相・同じ軸の回転）</b>：A→B と B→A は<b style="color:#2f7d5a;">同じ（＝可換）</b>。位相はただの数で足し算だから順序によらない。だから光子は電荷を持たず、<b>自分自身に力を及ぼさない</b>。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#3f2a1c';
+      rd.innerHTML='<b>SU(3)級（違う軸の回転）</b>：A→B と B→A で<b style="color:#a5473a;">結果が違う（≠ 非可換）</b>＝ \\([A,B]\\neq0\\)。これがヤン=ミルズの核心。グルーオンは"色"を持ち<b>自分自身に力を及ぼす</b> ── 閉じ込めと質量ギャップの源。';
+      if(window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([rd]);
+    }
+  }
+  function setMode(m){ mode=m; bU.className='tbtn'+(m==='u1'?' on':''); bN.className='tbtn'+(m==='na'?' on':''); draw(); }
+  bU.addEventListener('click',function(){setMode('u1');});
+  bN.addEventListener('click',function(){setMode('na');});
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>①＋③の統合像 ── 本命ルートの合体 ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --uv:#2f6d8a; --ir:#2f7d5a; --seam:#a9791a; --rp:#7a4fa0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--ir);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編・統合（本命ルートの合体）</span></div>
+  <p class="eyebrow">どちらも単独では届かない ── 存在は①、ギャップは③、橋は反射正値性、エンジンは漸近自由</p>
+  <h1>①＋③の統合像 ── 本命ルートの合体
+    <span class="sub">Q3は二つの半分＝<strong>存在（測度の構成）＋ギャップ（\(\Delta>0\)）</strong>。<br><strong>①（確率量子化）で存在を、③（一様下限）でギャップを</strong>分業し、<em>一本のくりこみ群</em>で噛み合わせる。<strong>反射正値性</strong>が二つを橋渡しし、<strong>漸近自由</strong>が両端を同じ力で駆動する ── 現時点で一番自然な設計図。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：本命ルートの統合像と、残る継ぎ目（数式あり）</span>
+    <span>核心：存在(①)＋ギャップ(③)＝一本のRG／橋＝反射正値性／engine＝漸近自由</span>
+  </div>
+
+  <p class="lead">戦略①（確率量子化で4次元を構成）も③（相関長の一様下限でギャップ）も、単独では頂上に届きませんでした ── ①は測度を作れてもギャップが自動では出ず、③は下限を語る"土俵"（測度）と"一様性"（連続極限の制御）を必要とする。ならば<strong>合体させる</strong>。Q3の二つの半分を分業し、<em>一本のくりこみ群</em>で継ぎ、<strong>反射正値性</strong>で橋を架け、<strong>漸近自由</strong>を共通のエンジンにする。これが、今わかっている中で一番自然な"本命ルートの設計図"です。解法ではなく、<em>何と何をどう噛み合わせれば勝てるか</em>の統合像を描きます。</p>
+
+  <h2><span class="n">01</span>Q3の二つの半分 ── 誰がどっちを担うか</h2>
+
+  <div class="keybox">
+    <div class="lbl">分業</div>
+    <p style="margin:0 0 6px;"><strong>前半＝存在</strong>：4次元YMのOS測度を、\(a\to0\) の極限として構成する。→ <strong>戦略①（確率量子化・正則化構造）</strong>が担当。UV・繰り込み・臨界を、漸近自由とゲージ共変くりこみで御す。</p>
+    <p style="margin:0;"><strong>後半＝ギャップ</strong>：その理論で \(\langle O(0)O(r)\rangle\le Ce^{-mr}\)（\(m>0\)、\(a\) に一様）を示す。→ <strong>戦略③（相関の一様下限・ランダム曲面）</strong>が担当。IR・閉じ込め・弦張力を扱う。</p>
+  </div>
+
+  <p>前半はUV（短距離）の物語、後半はIR（長距離）の物語。だからこそ<strong>役割が綺麗に分かれ</strong>、しかも<em>同じ理論の両端</em>として繋がる ── 次節でその繋ぎを見ます。</p>
+
+  <h2><span class="n">02</span>なぜ噛み合うか ── 互いの欠けを埋める</h2>
+
+  <table class="dt">
+    <tr><th></th><th>単独の弱点</th><th>相手が埋める</th></tr>
+    <tr><td class="id">① 単独</td><td class="open">測度は作れても、ギャップ（＋反射正値性）は自動では出ない</td><td class="ok">③ が一様なギャップ下限を供給</td></tr>
+    <tr><td class="id">③ 単独</td><td class="open">相関を語る土俵（測度）が要る／"一様性"＝連続極限の制御が要る</td><td class="ok">① が測度とUV評価（一様性の素）を供給</td></tr>
+  </table>
+
+  <p>つまり ── <strong>①は"物"と"UVの一様評価"を、③は"IRのギャップ下限"を出す</strong>。③の弱点（一様性＝連続極限の制御＝Q3）を、①の多スケール評価が下支えする。逆に①の弱点（ギャップ）を、③が埋める。<em>欠けが互いに相手の得意</em>。</p>
+
+  <h2><span class="n">03</span>統合の背骨 ── 一本のくりこみ群で、UVとIRを</h2>
+
+  <p>合体の心臓は、<strong>両者が同じ道具＝くりこみ群（多スケール）を使う</strong>こと。①の臨界SPDEの多スケール展開も、③の一様下限の多スケール評価も、どちらもスケールごとに積み上げるRG。夢は、<strong>一つのRGフローが、UV端で構成（①）を、IR端でギャップ下限（③）を、同時に制御する</strong>こと。</p>
+
+  <div class="fig">
+    <div class="cap">図：一本のくりこみ群フロー。左＝UV（短距離）を<span style="color:var(--uv);font-weight:700;">①構成</span>が、右＝IR（長距離）を<span style="color:var(--ir);font-weight:700;">③ギャップ下限</span>が担う。真ん中の<span style="color:var(--seam);font-weight:700;">継ぎ目</span>を一つの流れで噛み合わせる。上の帯＝<span style="color:var(--rp);font-weight:700;">反射正値性を全域で保つ（④）</span>。曲線＝走る結合（漸近自由）</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>スケール（左：UV＝短距離 → 右：IR＝長距離）<span class="val" id="vx">UV</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.15">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>① 構成（UV）</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>継ぎ目</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>③ ギャップ下限（IR）</span>
+      <span><i class="swatch" style="background:#7a4fa0;height:3px;"></i>反射正値性（全域）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>橋＝反射正値性（④を織り込む）</h2>
+
+  <p>二つの半分を繋ぐ<strong>橋</strong>が、反射正値性です。これを<em>構成の全域で保つ</em>と、二つの決定的な橋渡しが起きます：</p>
+
+  <div class="keybox">
+    <div class="lbl">反射正値性が架ける二本の橋</div>
+    $$\text{反射正値性}\ \Rightarrow\ \text{OS再構成}:\ \text{測度}\ \to\ \mathcal H,\ H\ge0\quad(\text{①の"存在"を"本物の量子論"に})$$
+    $$\text{反射正値性}\ \Rightarrow\ T=e^{-aH}:\ \Delta=-\tfrac1a\ln\tfrac{\lambda_1}{\lambda_0}\ \Leftrightarrow\ \langle OO\rangle\sim e^{-\Delta r}\quad(\text{③の"減衰"を"ギャップ"に})$$
+    <p style="margin:10px 0 0;">つまり反射正値性は、①の作った<em>測度</em>を正エネルギーの量子論に格上げし（前半完了）、同時に③の<em>相関減衰</em>を転送行列のギャップに翻訳する（後半完了）。<strong>だから構成は、反射正値性を壊さないRGで行わねばならない</strong>（戦略④が統合の必須部品として入る）。</p>
+  </div>
+
+  <h2><span class="n">05</span>共通のエンジン ── 漸近自由が両端を駆動する</h2>
+
+  <p>いちばん美しいのは、<strong>両端を動かすのが同じ一つの物理</strong>だという点。走る結合（漸近自由）が ──</p>
+
+  <div class="keybox">
+    <div class="lbl">一つの走りが、UVもIRも決める</div>
+    $$\beta(g)=-b_0g^3<0:\quad \underbrace{g\to0\ (\text{UV})}_{①\ \text{構成が非自明に成立}}\ \xrightarrow{\ \text{同じ走り}\ }\ \underbrace{g\ \text{大}\ (\text{IR})}_{③\ \text{閉じ込め・ギャップ}}$$
+    <p style="margin:10px 0 0;">UVでは結合が0へ流れ、\(\varphi^4_4\) と違って<strong>非自明な連続極限</strong>が取れる見込み（①）。同じ結合がIRで強くなり、<strong>閉じ込め＝弦張力＝ギャップ</strong>を生む（③）。<em>存在の希望も、ギャップの起源も、たった一本の「走る結合」から出る</em> ── 合体が不自然でない、深い理由。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>統合の論理骨格と、残る継ぎ目</h2>
+
+  <div class="calc">
+    <span class="tag">もし勝つなら、証明はこう組む（骨格）</span>
+    <p class="lbl">Step 1</p>
+    <p style="margin:6px 0 0;">反射正値・ゲージ共変な正則化（格子／超有限）から出発。</p>
+    <p class="lbl">Step 2</p>
+    <p style="margin:6px 0 0;"><strong>一本の多スケールRG</strong>で、(2a) UV一様評価 → 連続測度の存在（①）、(2b) 一様な相関減衰＝正の弦張力（③）を<em>同時に</em>出す。漸近自由をUV・IR両方で使う。</p>
+    <p class="lbl">Step 3</p>
+    <p style="margin:6px 0 0;">反射正値性を保ったまま極限へ → OS再構成 → \(\mathcal H,\ H\ge0\)。</p>
+    <p class="lbl">Step 4</p>
+    <p style="margin:6px 0 -2px;">(2b) の一様クラスタリング → 極限で <strong>質量ギャップ \(\Delta>0\)</strong>。＝存在＋ギャップ＝Q3完了。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 残る継ぎ目</span>
+    <p style="margin-top:0;">この骨格の各部品は<em>部分的に</em>存在します ── 3次元の構成（①、CCHS 2022）、強結合の一様下限（③、Osterwalder–Seiler）、格子の反射正値性（④）、4次元臨界のための現代RG（②、Bauerschmidt–Brydges–Slade 系）、漸近自由（Gross–Wilczek・Politzer）。だが ── <strong>「4次元・非可換・臨界で、反射正値性を保ちながら、UV構成とIRギャップ下限を同時に出す一本のRG」は、まだ存在しません</strong>。継ぎ目（Step 2 の統合）そのものが、未解決の研究課題。</p>
+    <p style="margin-bottom:0;">つまり合体は<strong>難しさを消さない</strong> ── 「一つの多スケールRGで、UV(①)＋IR(③)＋反射正値性(④)＋ゲージ共変を4次元で同時制御する」という、Q3の<em>最も鋭い一文</em>に畳み直すだけ。だがこれは、漠然と「難しい」より遥かに具体的な標的です。4次元YMは未解決（2025年時点）── これは設計図であって、建った理論ではありません。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>①と③はなぜ噛み合うのか（互いの弱点と補完）。
+        <details><summary>答えを見る</summary><div class="ans">①（確率量子化）は測度を構成できるがギャップ・反射正値性が自動では出ない。③（一様下限）は相関を語る土俵（測度）と"一様性"（連続極限の制御）を必要とする。①が"物＋UVの一様評価"を、③が"IRのギャップ下限"を出し、互いの弱点を相手の得意で埋める。</div></details>
+      </li>
+      <li>反射正値性が統合で果たす二つの役割は？
+        <details><summary>答えを見る</summary><div class="ans">(1) OS再構成で①の測度を正エネルギー \(H\ge0\) の量子論に格上げ（存在の完成）。(2) 転送行列 \(T=e^{-aH}\) を与え、③の相関減衰を固有値ギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\)＝質量ギャップに翻訳（ギャップの完成）。だから構成は反射正値性を壊さないRGで行う必要がある（戦略④が必須部品）。</div></details>
+      </li>
+      <li>統合しても消えない「残る継ぎ目」を一言で。
+        <details><summary>答えを見る</summary><div class="ans">「4次元・非可換・臨界で、反射正値性を保ちつつ、UV構成(①)とIRギャップ下限(③)を一本の多スケールRGで同時に出す」こと。各部品は部分的に存在するが、その統合（Step 2）はまだ無い＝Q3の最も鋭い言い直し。合体は難しさを消さず、標的を鋭くする。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">統合像まとめ</span>存在は①、ギャップは③、橋は反射正値性、エンジンは漸近自由</h2>
+    <p>Q3＝存在＋ギャップ。<strong>①（確率量子化）で存在を、③（一様下限）でギャップを</strong>分業し、互いの弱点（①はギャップ、③は土俵と一様性）を相手の得意で埋める。背骨は<strong>一本のくりこみ群</strong>で、UV端を①・IR端を③が担い、真ん中の継ぎ目を同じ流れで噛み合わせる。橋は<strong>反射正値性</strong>（OS再構成で存在を、転送行列でギャップを翻訳）、共通のエンジンは<strong>漸近自由</strong>（UVで非自明な構成、IRで閉じ込め・ギャップ、を一本の走りが駆動）。</p>
+    <p>骨格は Step1–4 に組める。だが残る継ぎ目 ── <strong>「4次元・非可換・臨界で、反射正値性を保ちつつ UV構成とIRギャップ下限を一本のRGで同時制御」</strong>── は未踏。合体は難しさを消さず、Q3を<em>最も鋭い一文</em>に畳み直す。それでも、漠然と難しいより遥かに具体的な標的だ ── これが本命ルートの、正直な統合像。設計図であって、建った理論ではない。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku3-soukan.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 戦略③</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">本命ルートの設計図</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編・統合、物理好きの高校生・大学生向け読み物。Q3の二分（OS測度の構成＋質量ギャップ \(\Delta>0\)）、確率量子化・正則化構造による構成（①、Chandra–Chevyrev–Hairer–Shen 2022 の3次元）、相関の一様下限・ランダム曲面・弦張力（③、強結合は Osterwalder–Seiler 1978）、反射正値性→OS再構成→\(H\ge0\)・転送行列 \(T=e^{-aH}\)・ギャップ＝固有値比（④）、現代の多スケールくりこみ群（②、Bauerschmidt–Brydges–Slade 系）、漸近自由 \(\beta=-b_0g^3\)（Gross–Wilczek・Politzer 1973）は、いずれも確立した結果・道具です。各部品は部分的に存在しますが、4次元・非可換・臨界で反射正値性を保ちつつUV構成とIRギャップ下限を一本のRGで同時制御する統合は未達で、4次元ヤン=ミルズの存在と質量ギャップは未解決です（2025年時点）。本稿は攻略の統合的な設計図であり、解法や達成ではありません。図は一本のくりこみ群フロー上での役割分担を示す概念的模式で、走る結合の描画は模式的です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスケールを UV→IR に動かすと、①（構成）→継ぎ目→③（ギャップ下限）と役割が移り、反射正値性が全域で保たれる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=20, padR=14, padT=44, padB=40;
+    var x=parseFloat(sx.value);
+    vx.textContent = x<0.4? 'UV（短距離）' : (x<0.6? '継ぎ目' : 'IR（長距離）');
+    function X(u){return padL+u*(w-padL-padR);}
+    function Y(v){return (h-padB)-v*(h-padB-padT);}  // v in [0,1]
+    ctx.clearRect(0,0,w,h);
+    // ゾーン帯
+    ctx.fillStyle='rgba(47,109,138,0.10)';ctx.fillRect(X(0),padT,X(0.4)-X(0),h-padB-padT);
+    ctx.fillStyle='rgba(169,121,26,0.14)';ctx.fillRect(X(0.4),padT,X(0.6)-X(0.4),h-padB-padT);
+    ctx.fillStyle='rgba(47,125,90,0.10)';ctx.fillRect(X(0.6),padT,X(1)-X(0.6),h-padB-padT);
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#2f6d8a';ctx.fillText('① 構成（UV）', X(0.2), padT+18);
+    ctx.fillStyle='#a9791a';ctx.fillText('継ぎ目', X(0.5), padT+18);
+    ctx.fillStyle='#2f7d5a';ctx.fillText('③ ギャップ下限（IR）', X(0.8), padT+18);
+    ctx.textAlign='left';
+    // 反射正値性のレール（上部・全域）
+    ctx.strokeStyle='#7a4fa0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(X(0),padT-14);ctx.lineTo(X(1),padT-14);ctx.stroke();
+    ctx.fillStyle='#7a4fa0';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('反射正値性を全域で保つ（④）＝橋', w/2, padT-20);ctx.textAlign='left';
+    // 走る結合 g(x)：UVで小、IRで大（漸近自由）
+    ctx.strokeStyle='#26456e';ctx.lineWidth=3;ctx.beginPath();var f=true;
+    for(var u=0;u<=1.0001;u+=0.01){ var g=0.12+0.82*Math.pow(u,1.6); var xx=X(u),yy=Y(Math.min(g,1)); if(f){ctx.moveTo(xx,yy);f=false;}else ctx.lineTo(xx,yy);}
+    ctx.stroke();
+    ctx.fillStyle='#26456e';ctx.font='11px sans-serif';ctx.fillText('走る結合 g（漸近自由：UV小→IR大）', X(0.42), Y(0.12+0.82*Math.pow(0.42,1.6))-8);
+    // 軸下ラベル
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('UV（短距離・a→0）', X(0.02), h-padB+24);
+    ctx.fillText('IR（長距離・相関）', X(0.72), h-padB+24);
+    // カーソル
+    var mx=X(x);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var gcur=0.12+0.82*Math.pow(x,1.6);
+    ctx.fillStyle='#26456e';ctx.beginPath();ctx.arc(mx,Y(Math.min(gcur,1)),6,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    if(x<0.4){
+      rd.style.background='#e6eef2';rd.style.color='#245c6e';
+      rd.innerHTML='<b>UV（短距離）＝① 構成の領域</b>。漸近自由で結合が小さく、繰り込み（a→0）を制御して<b>連続測度を存在させる</b>（Q3前半）。φ⁴₄と違い非自明に残る見込み。反射正値性はここでも保つ。';
+    } else if(x<0.6){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='<b>継ぎ目</b>。①のUV評価と③のIR下限を、<b>一本の多スケールRGで噛み合わせる</b> ── 反射正値性を渡し続けながら。ここが統合の核心にして<b>未踏の研究課題</b>。';
+    } else {
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>IR（長距離）＝③ ギャップ下限の領域</b>。結合が強くなり<b>閉じ込め＝相関の指数減衰＝ギャップの一様下限</b>（Q3後半）。反射正値性が減衰を転送行列のギャップに翻訳。';
+    }
+  }
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

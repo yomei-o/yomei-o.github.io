@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略⑥ 最小の補題に還元する ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --proven:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:18px;line-height:1.7;font-weight:600;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--proven);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編⑥（深掘り・メタ戦略）</span></div>
+  <p class="eyebrow">"解く"のでなく、"何を証明すれば勝ちか"を極限まで絞る</p>
+  <h1>戦略⑥ 最小の補題に還元する
+    <span class="sub">大問題を、<strong>ただ一つのクリーンな補題 \(L\)</strong> に畳む ── 「\(L\ \Rightarrow\) 4次元YM存在＋Δ>0」を<em>定理</em>にできれば、あとは \(L\) だけを攻めればいい。<br>還元は難しさを<strong>消さず、最もクリーンな一点に集める</strong>。良い還元と、ただの言い換え（循環）を、正直に分ける。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：還元の連鎖と、最小の補題の候補（数式あり）</span>
+    <span>核心：全問題 → OS測度＋一様クラスタリング → 一本のRGの一様安定性評価</span>
+  </div>
+
+  <p class="lead">これは"解く"戦略ではなく、<strong>"何を証明すれば勝ちか"を極限まで絞る</strong>メタ戦略。数学の大定理はしばしば、<em>一つの鍵となる補題</em>に還元されて落ちてきました。ヤン=ミルズでも同じことをやります ── 「これさえ示せれば全部終わる」という<strong>最小の補題 \(L\)</strong> を名指しし、「\(L\Rightarrow\)（存在＋ギャップ）」という<em>還元そのものを定理として</em>用意する。すると残りは \(L\) 一点の勝負になる。ただし ── 番外①②で見たとおり、<strong>ただの言い換え（循環）は無価値</strong>。良い還元とは、標的が<em>厳密に小さく・攻めやすく</em>なること。その線を守って絞ります。</p>
+
+  <h2><span class="n">01</span>還元とは何か ── 消さずに、集める</h2>
+
+  <div class="keybox">
+    <div class="lbl">還元の型</div>
+    $$\text{「}\,L\ \Rightarrow\ (\text{4次元YM 存在}+\Delta>0)\,\text{」を定理として証明}\quad\Longrightarrow\quad \text{あとは }L\ \text{だけ}$$
+    <p style="margin:10px 0 0;">ここで \(L\) は、元の問題より<strong>クリーンで・一様で・攻めやすい</strong>一つの命題（理想は一本の不等式）。還元は難しさを<em>消さない</em> ── \(L\) が結局その難しさを担う。だが<strong>難しさを最もクリーンな一点に集める</strong>ことに、確かな価値がある。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">良い還元 vs 悪い還元（番外①②の教訓）</span>
+    <strong>悪い還元</strong>＝ただの言い換えで、\(L\) が元と同じ大きさ（循環）。番外①「サンプリング」・番外②「超準解析」で見た、表現を変えるだけの近道がこれ。<strong>良い還元</strong>＝\(L\) が厳密に小さく、(a) 一本の評価に凝縮、(b) 一様、(c) 既知の道具で攻めうる。<em>「小さくなったか？」を毎回問うのが、還元を守る掟</em>。</p>
+  </div>
+
+  <h2><span class="n">02</span>還元の連鎖 ── 漏斗で絞る</h2>
+
+  <p>ヤン=ミルズは、実は<strong>すでに何段か還元されています</strong>。各矢印は"証明済みの還元（定理）"です。下の図で、漏斗の各段をクリックすると、その段の中身と、次段への還元が<em>証明済みか未解決か</em>が分かります。</p>
+
+  <div class="fig">
+    <div class="cap">図：還元の漏斗。上＝クレイ問題、下へ絞るほどクリーンに。段をクリックすると中身と、次段への<span style="color:var(--proven);font-weight:700;">証明済みの還元（緑）</span>／<span style="color:var(--open);font-weight:700;">未解決の芯（赤）</span>が読める。最下段＝最小の補題（前回のグレイル）</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>証明済みの還元（定理）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未解決の芯</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>最小の補題の候補 ── 一本の一様評価</h2>
+
+  <p>漏斗の底に来る"最小の補題"の、最有力候補はこれです ── <strong>くりこみ群フローの、一様な安定性評価</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">最小の補題 \(L\)（第一候補）</div>
+    $$\big\|\,\text{実効作用}\ S_k\,\big\|\ \le\ K\qquad(\text{段数}\ k=1,\dots,\sim\log(1/a)\ \text{に}\ \textbf{一様}\ \text{な定数}\ K)$$
+    <p style="margin:10px 0 0;">「RGを何段回しても、実効作用が<strong>有界な領域に留まる</strong>」という<em>ただ一つのa-priori評価</em>。しかも<strong>反射正値性を保存し・ゲージ共変な</strong>RGでこれを言う（＝前回のグレイル）。これが言えれば ── 段数を \(\log(1/a)\) まで伸ばして連続極限が存在し（構成）、同じ有界性からクラスタリング＝ギャップが出る。<strong>存在もギャップも、この一本から落ちる。</strong></p>
+  </div>
+
+  <p>もう一つ、より観測量に近い候補（等価に近い）：</p>
+
+  <div class="calc">
+    <span class="tag">最小の補題 \(L'\)（第二候補・クラスタリング型）</span>
+    $$\big|\langle W(C)\,W(C')\rangle-\langle W(C)\rangle\langle W(C')\rangle\big|\ \le\ C_0\,e^{-m\,\mathrm{dist}(C,C')}$$
+    <p style="margin-bottom:14px;">ウィルソンループの<strong>一様な指数クラスタリング</strong>（\(m>0\)、\(a\) によらず）＋緊密性（極限測度の存在）。反射正値性の下でこれは質量ギャップに直結。\(L\) と \(L'\) は、RGの安定性と観測量の減衰という<em>同じ芯の二つの顔</em>。</p>
+  </div>
+
+  <h2><span class="n">04</span>還元が"買うもの"と"買わないもの"</h2>
+
+  <table class="dt">
+    <tr><th>買うもの（価値）</th><th>買わないもの（限界）</th></tr>
+    <tr><td class="ok">標的が一点に明確化 ── 「\(L\) を示せ」に集約</td><td class="open">\(L\) 自体が難しさ（グレイル）を担う ── 消えない</td></tr>
+    <tr><td class="ok">分業できる ── 多くの人が同じ \(L\) を攻める</td><td class="open">\(L\) は結局 4次元・臨界・RP・ゲージの同時制御</td></tr>
+    <tr><td class="ok">道具の移植 ── \(L\) が別分野の技術で落ちるかも</td><td class="open">悪い還元（循環）に陥る危険が常にある</td></tr>
+    <tr><td class="ok">部分成果が意味を持つ ── \(L\) の一部・低次元版</td><td class="open">還元の証明（\(L\Rightarrow\)結論）にも手間が要る</td></tr>
+  </table>
+
+  <p>要するに ── 還元は<strong>問題を解かないが、問題を"正しい形"にする</strong>。「漠然と難しい」を「この一本の不等式 \(L\) を示せ」に変える。それだけで、攻め手・分業・道具の移植・部分点が全部変わる。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>なぜ"Claude的"に効くか ── そして循環への警戒</h2>
+
+  <p>この戦略は、僕（Claude）が一番現実的に貢献できる型だと思っています。<em>ひらめきで解く</em>のでなく、<strong>膨大な既存結果を突き合わせ、「\(L\Rightarrow\)結論」の還元を漏れなく組み、\(L\) を可能な限り小さく削る</strong> ── 探索と整理の作業。人間の一撃と相補的です。</p>
+
+  <div class="keybox">
+    <div class="lbl">還元を守る掟（毎回問う）</div>
+    <p style="margin:0;">① \(L\) は元より<strong>厳密に小さい</strong>か（循環でないか）？ ② \(L\) は<strong>一様</strong>か（\(a\) 依存の逃げでないか）？ ③ \(L\) は<strong>攻めうる</strong>形か（既知の道具に接続するか）？ ── 三つとも満たさない"還元"は、番外①②の"言い換え"と同じ＝無価値。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">還元の連鎖の各段は本物です ── 反射正値性→OS再構成（Osterwalder–Schrader の定理）で「存在＝OS正値測度の構成」に、構成的QFTの標準（RGの一様安定性 ⟹ 構成＋一様評価、Balaban・Bauerschmidt–Brydges–Slade 系の枠組み）で「一本のRG安定性評価」に還元される。ウィルソンループの一様クラスタリング＝ギャップも、反射正値性の下で標準的。</p>
+    <p style="margin-bottom:0;">だが ── <strong>最下段の補題 \(L\)（RP保存・ゲージ共変・対数一様なRG安定性）は未証明で、4次元YMの存在＋ギャップは未解決</strong>（2025年時点）。還元は難しさを最小の一点に集めただけで、その一点＝前回のグレイル。どの \(L\) を"最小"と呼ぶか、\(L\) と \(L'\) の厳密な同値性は、定式化に依存する<em>筆者の整理</em>で、細部は流儀で変わります。還元は解法ではありません ── 旗ではなく、縁の標識を（一番小さく削った標識を）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「最小の補題に還元する」は、問題の難しさを消すのか。
+        <details><summary>答えを見る</summary><div class="ans">消さない。還元は「\(L\Rightarrow\)結論」を定理にして、残りを \(L\) 一点に集めるだけ。\(L\) が結局その難しさ（前回のグレイル＝RP保存・ゲージ共変・対数一様なRG安定性）を担う。価値は"消す"でなく"最もクリーンな一点に集め、攻め手・分業・道具移植・部分点を可能にする"こと。</div></details>
+      </li>
+      <li>良い還元と悪い還元（言い換え）を分ける三つの問いは？
+        <details><summary>答えを見る</summary><div class="ans">① \(L\) は元より厳密に小さいか（循環でないか）。② \(L\) は一様か（\(a\)依存の逃げでないか）。③ \(L\) は既知の道具に接続する攻めうる形か。三つとも満たさない"還元"は、番外①②のサンプリング／超準解析のような表現の言い換え＝無価値。</div></details>
+      </li>
+      <li>最小の補題 \(L\) の第一候補を一言で。それが示せると何が落ちるか。
+        <details><summary>答えを見る</summary><div class="ans">「反射正値性を保存しゲージ共変なRGを、段数 \(\sim\log(1/a)\) に一様な安定性評価 \(\|S_k\|\le K\) で回せる」こと。これが言えれば、段数を伸ばして連続極限が存在（構成＝存在）し、同じ有界性からウィルソンループの一様クラスタリング＝質量ギャップが出る。存在もギャップも一本から落ちる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略⑥まとめ</span>解かずに、正しい形にする</h2>
+    <p>戦略⑥＝<strong>最小の補題への還元</strong>。「\(L\Rightarrow\)（存在＋ギャップ）」を定理にし、残りを \(L\) 一点に集める。ヤン=ミルズは既に何段か還元済み ── 反射正値性→OS再構成で「OS正値測度の構成＋一様クラスタリング」に、構成的QFTの標準で「<strong>一本のRGの一様安定性評価</strong>」に。最下段の \(L\)＝「RP保存・ゲージ共変・対数一様なRG安定性 \(\|S_k\|\le K\)」（＝前回のグレイル）。等価な観測量版 \(L'\)＝ウィルソンループの一様クラスタリング。</p>
+    <p>還元は難しさを<strong>消さず、最もクリーンな一点に集める</strong>。買うもの＝標的の明確化・分業・道具移植・部分点。買わないもの＝\(L\) は結局その芯。良い還元の掟＝毎回「小さくなったか・一様か・攻めうるか」を問い、循環（番外①②の言い換え）を退ける。これはひらめきでなく<strong>突き合わせと削り込み</strong>の仕事＝人間の一撃と相補的な、現実的な貢献の型。\(L\) は未証明、4次元YMは未解決 ── 一番小さく削った、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-tsugime.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 継ぎ目を掘る</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">問題を、正しい形に</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編⑥（深掘り・メタ戦略）、物理好きの高校生・大学生向け読み物。数学的還元（\(L\Rightarrow\)結論 を定理化して標的を絞る）、反射正値性→Osterwalder–Schrader 再構成（存在＝OS正値測度の構成）、構成的場の理論におけるくりこみ群の一様安定性評価から構成・一様評価を得る枠組み（Balaban、Bauerschmidt–Brydges–Slade 系）、ウィルソンループの一様指数クラスタリング＝質量ギャップ（反射正値性の下）は、いずれも確立した枠組み・定理です。最小の補題 \(L\)（反射正値性保存・ゲージ共変・段数に一様なRG安定性 \(\|S_k\|\le K\)）およびその観測量版 \(L'\) は未証明で、4次元 \(SU(N)\) の存在と質量ギャップは未解決です（2025年時点）。どの命題を"最小"と呼ぶか、\(L\) と \(L'\) の厳密な同値性、還元の細部は定式化に依存する筆者の整理であり、反証・改良されうる意見を含みます。本稿は攻略の"形"を絞るメタ戦略であって、解法ではありません。図は還元の連鎖を示す概念的な漏斗で、各段の幅や位置は模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では漏斗の各段をクリックすると、還元の中身と、それが証明済みか未解決かが読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var stages=[
+    {label:'クレイ問題：4次元YM ── 存在(OS公理)＋質量ギャップ Δ>0', wf:0.94, arrow:'proven',
+     arrowLabel:'反射正値性 → OS再構成（定理）',
+     desc:'出発点。4次元 SU(N) ヤン=ミルズを OS公理を満たす形で構成し、Δ>0 を証明せよ。次段への還元は Osterwalder–Schrader 再構成定理（証明済み）。'},
+    {label:'存在＝OS正値な連続測度の構成 ／ Δ>0＝一様な指数クラスタリング', wf:0.78, arrow:'proven',
+     arrowLabel:'構成的QFTの標準：RG一様安定性 ⟹ 構成＋一様評価',
+     desc:'反射正値性の下で、存在は「OS正値な連続測度の構成」、ギャップは「ウィルソンループの一様な指数クラスタリング」に翻訳される。次段への還元は構成的QFTの標準枠組み（Balaban・BBS 系、証明済みの枠組み）。'},
+    {label:'⟸ 一本の多スケールRGの《一様安定性評価》（RP保存・ゲージ共変を保ち、log(1/a)段で有界）', wf:0.60, arrow:'restate',
+     arrowLabel:'＝最小化（言い換えでなく、削り込み）',
+     desc:'両方（構成＋一様クラスタリング）は、一本のRGを「反射正値性を保存し・ゲージ共変に・段数に一様な安定性評価で」回せれば落ちる。ここまでが還元の到達点。'},
+    {label:'最小の補題 L：一様 a-priori 評価 ‖S_k‖≤K（段数によらず）＝前回のグレイル', wf:0.40, arrow:'open',
+     arrowLabel:'',
+     desc:'★最小の補題＝未解決の芯。RP保存・ゲージ共変・対数一様なRG安定性 ‖S_k‖≤K。これが示せれば全部落ちる。だが これこそ前回の「継ぎ目のグレイル」── 難しさは消えず、最もクリーンな一点に集まっている。'}
+  ];
+  var sel=stages.length-1, lastW=680, boxes=[];
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function wrap(ctx,text,maxw){var out=[],cur='';for(var i=0;i<text.length;i++){var t=cur+text[i];if(ctx.measureText(t).width>maxw&&cur.length>0){out.push(cur);cur=text[i];}else cur=t;}if(cur)out.push(cur);return out;}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var n=stages.length, topPad=14, gap=20, bh=(h-topPad*2-gap*(n-1))/n;
+    boxes=[];
+    for(var i=0;i<n;i++){
+      var s=stages[i], bw=w*s.wf, x=(w-bw)/2, y=topPad+i*(bh+gap);
+      boxes.push({x:x,y:y,w:bw,h:bh,i:i});
+      var isSel=(sel===i), isCrux=(i===n-1);
+      // box
+      ctx.fillStyle= isCrux? '#f6ede4' : '#eef2f6';
+      ctx.strokeStyle= isCrux? '#a5473a' : (isSel? '#26456e':'#c3cddd');
+      ctx.lineWidth= isSel?3:(isCrux?2.5:1.4);
+      var r=8; ctx.beginPath();
+      ctx.moveTo(x+r,y);ctx.arcTo(x+bw,y,x+bw,y+bh,r);ctx.arcTo(x+bw,y+bh,x,y+bh,r);ctx.arcTo(x,y+bh,x,y,r);ctx.arcTo(x,y,x+bw,y,r);ctx.closePath();
+      ctx.fill();ctx.stroke();
+      // label
+      ctx.fillStyle= isCrux? '#7a2f1c' : '#24303e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      var lines=wrap(ctx,s.label,bw-24);
+      var ly=y+bh/2-(lines.length-1)*8+4;
+      for(var k=0;k<lines.length;k++) ctx.fillText(lines[k], w/2, ly+k*16);
+      ctx.textAlign='left';
+      // arrow to next
+      if(i<n-1){
+        var ay=y+bh+gap/2, col= stages[i].arrow==='proven'? '#2f7d5a':(stages[i].arrow==='open'?'#a5473a':'#a9791a');
+        ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(w/2,y+bh+2);ctx.lineTo(w/2,ay+4);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(w/2,ay+8);ctx.lineTo(w/2-5,ay+1);ctx.lineTo(w/2+5,ay+1);ctx.closePath();ctx.fill();
+        ctx.font='10px sans-serif';ctx.textAlign='left';
+        ctx.fillText(stages[i].arrowLabel, w/2+12, ay+3);
+        ctx.textAlign='left';
+      }
+    }
+    var s2=stages[sel];
+    rd.innerHTML='<b>'+(sel===stages.length-1?'★最小の補題（未解決の芯）':'段 '+(sel+1))+'</b> ── '+s2.desc;
+  }
+  cv.addEventListener('click',function(ev){
+    var rect=cv.getBoundingClientRect(), sc=lastW/rect.width;
+    var mx=(ev.clientX-rect.left)*sc, my=(ev.clientY-rect.top)*sc;
+    for(var i=0;i<boxes.length;i++){var b=boxes[i]; if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){sel=b.i;draw();break;}}
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(draw,50); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

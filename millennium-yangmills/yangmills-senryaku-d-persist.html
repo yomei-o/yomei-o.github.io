@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略δ・一部品 箱→無限体積でギャップ持続 ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --blk:#2f7d5a; --thr:#a5473a; --bulk:#2f6d8a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:29px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--blk);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:20pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略δ・一部品（現実的な勝ち）</span></div>
+  <p class="eyebrow">全部でなく、一つの綺麗な補題を ── 箱の中のギャップを、無限体積へ持ち上げる</p>
+  <h1>箱 → 無限体積でギャップ持続 ── 多体系の"有限サイズ判定"で
+    <span class="sub">現実的な勝ちの型（戦略⑥）＝<strong>条件付き定理</strong>：「箱の中で \(a\) に一様なギャップを仮定 ⟹ \(L\to\infty\) でギャップ持続」。<br>道具は多体系の<strong>有限サイズ判定</strong>（Knabe・martingale）── "小ブロックのギャップ＞閾値 ⟹ バルクのギャップ"。中心の壁は<em>frustration-free でないこと</em>。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：現実的な部分成果の筋と、壁の割り方（数式あり）</span>
+    <span>核心：有限サイズ判定 ／ 壁＝frustrated → 強結合の"ギャップの摂動論"</span>
+  </div>
+
+  <p class="lead">残ったQ3を四手に割ったうち（前回・手δ）、いちばん<strong>現実的に勝てる一部品</strong>を掘ります。それは<em>全部を解く</em>のでなく、<strong>条件付き定理</strong>を一つ厳密に立てること ── 「<strong>箱の中で \(a\) に一様なギャップがある、と仮定すれば、\(L\to\infty\) の無限体積でもギャップが \(>0\) で持続する</strong>」。前半（箱の中の \(a\to0\) 繰り込み）は仮定として切り出し、後半（\(L\to\infty\) の持続）だけを、それ専用に磨かれた<strong>多体系の有限サイズ判定</strong>で落とす。これは戦略⑥「最小の補題」の実演で、部分成果でも本物の価値があります。どこまで行けて、どこが壁かを、正直に。</p>
+
+  <h2><span class="n">01</span>セットアップ ── 条件付き定理の形</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙う条件付き定理</div>
+    <p style="margin:0 0 6px;"><strong>仮定</strong>：ゲージ不変な Kogut–Susskind ハミルトニアン \(H\)（③≡Bより、ギャップ＝転送行列ギャップ＝質量ギャップ、RPはタダ）が、サイズ \(\le n_0\) の箱で<strong>\(a\) に一様なスペクトルギャップ \(\ge\gamma_0>0\)</strong> を持つ。</p>
+    <p style="margin:0;"><strong>結論</strong>：無限体積で <strong>\(\gamma_\infty\ge\gamma>0\)</strong>（\(a\) に一様）。</p>
+    <p style="margin:10px 0 0;">前半（箱の中の \(a\to0\)＝繰り込み）は<em>仮定に押し込み</em>、後半（\(L\to\infty\) 持続）だけを攻める ── 手δの分業の、勝てる方の半分。</p>
+  </div>
+
+  <h2><span class="n">02</span>道具 ── 有限サイズ判定（小ブロック→バルク）</h2>
+
+  <p>多体系には、まさにこの形の定理があります ── <strong>小さいブロックのギャップが閾値を超えれば、無限体積のギャップが保証される</strong>：</p>
+
+  <div class="calc">
+    <span class="tag">Knabe の有限サイズ判定（模式）</span>
+    $$\gamma_\infty\ \ge\ \frac{n}{n-1}\Big(\gamma_n-\frac{c}{n-1}\Big)\qquad(\gamma_n=\text{サイズ }n\text{ ブロックのギャップ})$$
+    <p style="margin-bottom:14px;">サイズ \(n\) のブロックのギャップ \(\gamma_n\) が閾値 \(\sim c/(n-1)\) を超えれば、<strong>右辺 \(>0\)＝無限体積ギャップ \(>0\)</strong>（Knabe 1988）。改良版は高次元・良い定数（Gosset–Mozgunov 2016）、非並進なら<strong>マルチンゲール法</strong>（Nachtergaele 1996）。<em>有限の計算から無限体積を保証する</em> ── 我々の目標とそっくり。下の図で機構を。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：有限サイズ判定。横＝ブロックサイズ \(n\)、縦＝ギャップ。<span style="color:var(--blk);font-weight:700;">緑＝ブロックギャップ \(\gamma_n\)</span> が <span style="color:var(--thr);font-weight:700;">赤＝閾値 \(c/(n-1)\)</span> を超えていれば<strong>バルクギャップ \(>0\) が保証</strong>。トグル：frustration-free（判定が有効）／YM（frustrated＝要拡張）</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>見るブロックサイズ n <span class="val" id="vn">4</span>
+        <input type="range" id="sn" min="2" max="16" step="1" value="4">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bF">frustration-free</button>
+        <button class="tbtn" id="bY">YM（frustrated）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>ブロックギャップ γ_n</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>閾値 c/(n−1)</span>
+      <span><i class="swatch" style="background:#2f6d8a;"></i>保証されるバルク下限</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>中心の壁 ── frustration-free でない</h2>
+
+  <p>この判定の<strong>前提</strong>は<em>frustration-free</em>（基底状態が各局所項を<strong>同時に</strong>最小化）。ところが Kogut–Susskind は ──</p>
+
+  <div class="keybox">
+    <div class="lbl">YM は frustrated</div>
+    $$H=\tfrac{g^2}{2}\sum_\ell\mathbf E_\ell^2-\tfrac{1}{g^2}\sum_\square\mathrm{Re\,Tr}\,U_\square,\qquad [\mathbf E,\,U]\neq0$$
+    <p style="margin:10px 0 0;">電気項（対角）と磁気項（プラケット＝非対角）は<strong>非可換</strong>で、基底状態は各項を同時最小化しない＝<strong>frustration-free でない</strong>。Knabe・古典的マルチンゲール法は<em>そのままでは効かない</em> ── これが一部品の中心の壁。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">割り方 ── 二つの逃げ道</div>
+    <p style="margin:0;"><strong>(a) frustrated 系のギャップ法（最前線）</strong>：detectability lemma・面積則⇄ギャップ（Anshu–Arad–Gosset 系）、Kastoryano–Lucia など、frustration-free を超えるギャップ下限法が発展中。ここに乗る。<br>
+    <strong>(b) 強結合＝"ギャップの摂動論"（in-regime の現実解）★</strong>：強結合では \(H\approx\) 電気項（<em>古典的・対角</em>＝frustration-free 的で、カシミアのギャップを持つ）＋<strong>小さな磁気摂動</strong>。<em>ギャップの摂動論</em>（Kennedy–Tasaki、Datta–Fernández–Fröhlich、Yarotsky）は「frustration-free/古典ハミルトニアンの小摂動でギャップが生き残る」を厳密に示す。強結合のゲージはまさにこの形 ── <strong>強結合で条件付き定理が落ちる見込み</strong>。</p>
+  </div>
+
+  <h2><span class="n">04</span>他の壁と、実は"資源"になるもの</h2>
+
+  <table class="dt">
+    <tr><th></th><th>論点</th><th>中身</th></tr>
+    <tr><td class="id">II</td><td class="open">無限次元局所空間</td><td>連続群 → 各リンク \(L^2(G)\) は無限次元。判定は有限次元を仮定 ── 有限次元切断（量子シミュレーション）で対処。<strong>だが電気項のカシミアギャップ（0→最小表現）は"資源"</strong>：強結合ギャップの源そのもの。</td></tr>
+    <tr><td class="id">III</td><td class="open">ガウス則（ゲージ拘束）</td><td>物理ヒルベルト空間はゲージ不変部分空間（各点のガウス則）。判定を<strong>拘束された空間の上</strong>で回す必要 ── 局所空間が単純なテンソル積でない。格子ゲージの定式化で扱われている。</td></tr>
+    <tr><td class="id">IV</td><td class="open">\(a\) に一様（＝残る半分）</td><td>「箱の中で \(a\) に一様なギャップ」は<strong>仮定</strong>＝手δの前半（\(a\to0\) 繰り込み）。この一部品は<em>後半だけ</em>を落とす条件付き定理。前半は別途（①②）。</td></tr>
+  </table>
+
+  <p>ポイントは II の裏 ── <strong>電気項のカシミアギャップは、ギャップの"種"</strong>。強結合ではこれが物理ギャップを生み、摂動論(b)で無限体積へ持ち上げられる。無限次元は<em>技術的負担だが、同時にギャップの資源</em>。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>現実的な勝ち ── 強結合の条件付き定理</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙える部分成果</div>
+    <p style="margin:0;"><strong>「十分強い結合で、ゲージ不変 Kogut–Susskind の無限体積スペクトルギャップ \(>0\) が厳密に従う」</strong> ── 電気項のカシミアギャップ＋磁気項の小摂動に、<em>ギャップの摂動論</em>＋（拘束空間版の）有限サイズ判定を適用。RPはタダ、ギャップ＝質量ギャップ。<strong>これは本物の部分成果</strong>（＝戦略⑥「一つの綺麗な補題」）。</p>
+  </div>
+
+  <p>そして残る壁は明快 ── <strong>これを \(a\) に一様（＝弱結合＝連続極限）へ延ばすこと</strong>。強結合では摂動が小さく落ちるが、連続へ向かうと磁気摂動が大きくなり、摂動論が破れる（＝またしても \(a\to0\) の芯＝Q3）。だが<em>強結合の条件付き定理</em>自体が、手δの後半を一つ埋める確かな一歩。</p>
+
+  <h2><span class="n">06</span>判定 ── 一番勝てる一部品、だが全部ではない</h2>
+
+  <div class="keybox">
+    <div class="lbl">この一部品の判定（過大申告なし）</div>
+    <p style="margin:0;">「箱の一様ギャップ ⟹ \(L\to\infty\) 持続」は、<strong>最も勝ち筋のある部分成果</strong> ── 多体系の有限サイズ判定という<em>専用の道具</em>があり、RPはタダ、ギャップ＝質量ギャップ。中心の壁 frustration-free は、強結合の<strong>ギャップの摂動論</strong>で in-regime に割れる見込み。だが (i) 無限次元・ガウス則で判定を拡張する必要、(ii) 何より<strong>「箱の中で \(a\) に一様」という仮定＝手δ前半（\(a\to0\)）は別途</strong>。<em>これは全部の解決でなく、条件付き定理＝一つの綺麗な補題</em>。それでも本物の一歩。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Kogut–Susskild ハミルトニアン（電気＝カシミア、磁気＝プラケット、非可換＝frustrated、\(H\ge0\)、ギャップ＝質量ギャップ、RPはタダ）、多体系の有限サイズ判定（Knabe 1988、Gosset–Mozgunov 2016 の改良・高次元、Nachtergaele 1996 のマルチンゲール法）、frustration-free の仮定、ギャップの摂動論（Kennedy–Tasaki、Datta–Fernández–Fröhlich、Yarotsky）、frustrated 系のギャップ法（detectability lemma・面積則⇄ギャップ、Anshu–Arad–Gosset；Kastoryano–Lucia）、電気項のカシミアギャップ、ガウス則によるゲージ不変部分空間、連続群の有限次元切断は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>これらのギャップ下限法は主に frustration-free ＋ 有限局所次元で確立</strong>しており、frustrated・無限次元・ガウス則つきのゲージ・ハミルトニアンへの厳密適用、および強結合の条件付き定理を \(a\) に一様（連続極限）へ延ばすことは未達で、4次元YMの質量ギャップは未解決です（2025年時点）。本稿は"勝てる一部品"の筋を示す設計で、証明ではありません。「(b) 強結合の摂動論が in-regime の現実解」「これが最も勝ち筋」は筆者の見立てで、反証されうる意見です。図は有限サイズ判定の機構を示す概念的模式で、実際の \(\gamma_n\) を計算したものではありません。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>この一部品は「条件付き定理」だという。何を仮定し、何を結論するか。
+        <details><summary>答えを見る</summary><div class="ans">仮定：ゲージ不変 Kogut–Susskind が、サイズ \(\le n_0\) の箱で \(a\) に一様なギャップ \(\ge\gamma_0>0\)。結論：無限体積で \(\gamma_\infty>0\)（\(a\) に一様）。前半（箱の中の \(a\to0\) 繰り込み）を仮定に押し込み、後半（\(L\to\infty\) 持続）だけを多体系の有限サイズ判定で落とす ── 手δの勝てる半分。</div></details>
+      </li>
+      <li>有限サイズ判定をYMに直接使えない中心の理由は？どう割るか。
+        <details><summary>答えを見る</summary><div class="ans">Knabe/古典マルチンゲール法は frustration-free を仮定するが、Kogut–Susskild は電気項と磁気項が非可換で frustrated。割り方＝(a) frustrated 系のギャップ法（detectability lemma・面積則⇄ギャップ）に乗る、または (b) 強結合で \(H\approx\) 電気項（frustration-free 的・カシミアギャップ）＋小さな磁気摂動として、ギャップの摂動論（Kennedy–Tasaki 等）で無限体積へ持ち上げる（in-regime の現実解）。</div></details>
+      </li>
+      <li>電気項の無限次元性は、壁であると同時に何か。
+        <details><summary>答えを見る</summary><div class="ans">資源。連続群で局所空間 \(L^2(G)\) が無限次元なのは判定の技術的負担だが、電気項のカシミアギャップ（0→最小表現の間の隙間）は<strong>強結合ギャップの源</strong>そのもの。強結合ではこれが物理ギャップを生み、摂動論で無限体積へ持ち上げられる。壁と資源の両面。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">一部品まとめ</span>全部でなく、一つの綺麗な補題を落とす</h2>
+    <p>手δの勝てる半分＝<strong>条件付き定理</strong>「箱の中で \(a\) に一様なギャップ ⟹ \(L\to\infty\) で持続」。道具は多体系の<strong>有限サイズ判定</strong>（Knabe・Gosset–Mozgunov・martingale）── 小ブロックのギャップ＞閾値 ⟹ バルクギャップ。③≡BよりRPはタダ、ギャップ＝質量ギャップ。中心の壁＝<strong>frustration-free でない</strong>（電気×磁気が非可換）。</p>
+    <p>割り方＝(a) frustrated 系のギャップ法（最前線）、(b) <strong>強結合の"ギャップの摂動論"</strong>（電気カシミアギャップ＋小磁気摂動＝in-regime の現実解）。無限次元は壁だが<em>カシミアギャップは資源</em>、ガウス則は拘束空間で対処。現実的な勝ち＝<strong>強結合の条件付き定理</strong>（本物の部分成果＝戦略⑥の一補題）。残る壁＝それを \(a\) に一様＝連続へ延ばすこと（＝また \(a\to0\) の芯）。<em>全部でなく、一つの綺麗な補題を確実に落とす</em> ── これが最も現実的な一歩。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-a0.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← a→0 の四手</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">勝てる一部品</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略δ・一部品（現実的な勝ち）、物理好きの高校生・大学生向け読み物。Kogut–Susskild ハミルトニアン格子ゲージ理論（電気＝カシミア、磁気＝プラケット、非可換＝frustrated、\(H\ge0\)、ギャップ＝転送行列ギャップ＝質量ギャップ、反射正値性がタダ）、多体系のスペクトルギャップの有限サイズ判定（Knabe 1988、Gosset–Mozgunov 2016、Nachtergaele 1996 のマルチンゲール法）、frustration-free の仮定、量子ハミルトニアンのギャップの摂動論（Kennedy–Tasaki、Datta–Fernández–Fröhlich、Yarotsky）、frustrated 系のギャップ手法（detectability lemma・面積則とギャップの関係、Anshu–Arad–Gosset；Kastoryano–Lucia）、電気項のカシミアギャップ、ガウス則によるゲージ不変部分空間、連続群の有限次元切断は、いずれも確立した事実・道具です。これらは主に frustration-free かつ有限局所次元で確立しており、frustrated・無限次元・ガウス則つきゲージ・ハミルトニアンへの厳密適用、および強結合の条件付き定理を \(a\) に一様（連続極限）へ延ばすこと、4次元YMの質量ギャップは未解決です（2025年時点）。本稿は勝てる一部品（条件付き定理）の筋を示す設計であり、証明ではありません。手法の選定・「(b)が現実解」「最も勝ち筋」は筆者の見立てで反証されうる意見を含みます。図は有限サイズ判定の機構の概念的模式で、実際のギャップ値の計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではブロックサイズ n とトグルを動かし、ブロックギャップが閾値を超えてバルク下限を保証する様子（frustration-free）／YMでは判定が要拡張なことが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sn=document.getElementById('sn'), vn=document.getElementById('vn'),
+      bF=document.getElementById('bF'), bY=document.getElementById('bY'), rd=document.getElementById('rd');
+  var ff=true, NMAX=16;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var GINF=0.5;             // バルクギャップ（真値、a priori には未知だが図示）
+  function gamN(n){ return GINF + 0.9/(n-1); }  // ブロックギャップ：n大でバルクへ
+  function thr(n){ return 1.0/(n-1); }           // Knabe 閾値（模式）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=46, padR=14, padT=16, padB=40;
+    var n=parseInt(sn.value,10); vn.textContent=n;
+    var YMAX=1.5;
+    function X(nn){return padL+(nn-2)/(NMAX-2)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド
+    for(var gy=0.5;gy<=1.51;gy+=0.5){var y=Y(gy);ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();}
+    // バルク下限線
+    ctx.strokeStyle='#2f6d8a';ctx.setLineDash([4,4]);ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(padL,Y(GINF));ctx.lineTo(w-padR,Y(GINF));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f6d8a';ctx.font='11px sans-serif';ctx.fillText('保証したいバルク下限 γ∞>0', padL+6, Y(GINF)-6);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('ブロックサイズ n →', w-160, h-padB+26);
+    ctx.save();ctx.translate(14,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('ギャップ', 0,0);ctx.restore();
+    // 閾値曲線（赤）
+    ctx.strokeStyle='#a5473a';ctx.lineWidth=2;ctx.beginPath();var f=true;
+    for(var nn=2;nn<=NMAX;nn+=0.1){var x=X(nn),y=Y(thr(nn));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    ctx.fillStyle='#a5473a';ctx.fillText('閾値 c/(n−1)', X(9), Y(thr(9))-8);
+    // ブロックギャップ曲線（緑）
+    ctx.strokeStyle= ff? '#2f7d5a':'#9aa8b2';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var nn2=2;nn2<=NMAX;nn2+=0.1){var x2=X(nn2),y2=Y(gamN(nn2));if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    ctx.fillStyle= ff?'#2f7d5a':'#7a8590';ctx.fillText('ブロックギャップ γ_n', X(9), Y(gamN(9))+16);
+    // 現在の n
+    var mx=X(n), gy2=gamN(n), ty=thr(n);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a';ctx.beginPath();ctx.arc(mx,Y(gy2),5,0,7);ctx.fill();
+    ctx.fillStyle='#a5473a';ctx.beginPath();ctx.arc(mx,Y(ty),5,0,7);ctx.fill();
+    // 判定表示
+    var above = gy2>ty;
+    ctx.font='bold 12px sans-serif';
+    if(ff){
+      ctx.fillStyle= above? '#2f7d5a':'#a5473a';
+      ctx.fillText(above? 'γ_n > 閾値 ⟹ バルクギャップ保証 ✓':'γ_n < 閾値：この n では保証できない', mx+8, Y(gy2)-8);
+    } else {
+      ctx.fillStyle='#a5473a';ctx.fillText('YM：frustrated → 判定そのものが未適用', padL+120, padT+20);
+    }
+    // readout
+    if(ff){
+      if(above){ rd.style.background='#e7f0ea';rd.style.color='#245c43';
+        rd.innerHTML='<b>frustration-free ＋ n='+n+'</b>：γ_n='+gy2.toFixed(2)+' > 閾値 '+ty.toFixed(2)+' ⟹ <b>無限体積ギャップ γ∞>0 が保証</b>。小さいブロックの計算だけで、バルクが落ちる（Knabe/Gosset–Mozgunov）。'; }
+      else { rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+        rd.innerHTML='<b>frustration-free ＋ n='+n+'</b>：γ_n が閾値をまだ超えていない ── より大きい n（または良い定数のGosset–Mozgunov/martingale）で判定を。'; }
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>YM（frustrated）</b>：電気×磁気が非可換で frustration-free でない ── <b>Knabe/古典martingaleが直接使えない</b>。割り方＝(a) frustrated系のギャップ法、(b) 強結合の"ギャップの摂動論"（カシミアギャップ＋小磁気摂動）＝in-regimeの現実解。';
+    }
+  }
+  function setFF(v){ ff=v; bF.className='tbtn'+(v?' on':''); bY.className='tbtn'+(v?'':' on'); draw(); }
+  bF.addEventListener('click',function(){setFF(true);});
+  bY.addEventListener('click',function(){setFF(false);});
+  sn.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

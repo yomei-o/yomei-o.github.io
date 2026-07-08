@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略① 臨界の壁 ── 4次元の確率量子化を押す ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sub:#2f7d5a; --crit:#a9791a; --sup:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sub);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編①（深掘り・ルートB延長）</span></div>
+  <p class="eyebrow">もし本気で挑むなら ── いちばん動いている道の、壁と希望を一点まで絞る</p>
+  <h1>戦略① 臨界の壁 ── 4次元の確率量子化を押す
+    <span class="sub">ルートB（確率量子化）は2D・3Dを落とした。残る4Dの壁は<strong>ただ一点＝"臨界"</strong>。<br>そして希望も一つ ── <strong>漸近自由</strong>が、\(\varphi^4_4\)（自明）とヤン=ミルズ（生き残る見込み）の運命を分ける。本命ルートの、壁と勝ち筋を絞る回。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：なぜ d=4 が壁か（臨界性）と、勝ち筋（数式あり）</span>
+    <span>核心：劣臨界(d&lt;4)→臨界(d=4)／YM は漸近自由で \(\varphi^4_4\) と別運命</span>
+  </div>
+
+  <p class="lead">「もしClaudeが挑むなら」で最初に賭ける道 ── ルートB（確率量子化、第7回）の4次元化です。理由は三つ：<em>いま実際に動いている</em>（3次元が2022年に落ちたばかり）、<em>壁が"臨界性"という名前のついた一点に絞れている</em>、そして<em>ヤン=ミルズには \(\varphi^4_4\) に無い希望＝漸近自由がある</em>。この回は、その壁がどこに一点集中するか、そしてなぜ漸近自由が勝ち筋になりうるかを、絞り込みます。</p>
+
+  <h2><span class="n">01</span>方程式 ── 確率的ヤン=ミルズ流</h2>
+
+  <p>確率量子化をヤン=ミルズに当てると、ノイズで駆動される<strong>YMのヒート流</strong>になります（ドリフト＝古典YM方程式）：</p>
+
+  <div class="keybox">
+    <div class="lbl">確率的ヤン=ミルズ・ランジュバン方程式</div>
+    $$\frac{\partial A}{\partial\tau}=-\,D_A^{*}F(A)\;+\;\xi,\qquad \tau\to\infty\ \text{の平衡}\ \propto e^{-S_{\rm YM}[A]}$$
+    <p style="margin:10px 0 0;">\(D_A^{*}F\) は場の強さの共変発散（＝YM運動方程式）、\(\xi\) は時空白色ノイズ。これを厳密に意味づけ、標準極限を取ればYM測度が構成できる。<strong>2次元・3次元は完成（CCHS 2022）、4次元だけが開いている。</strong></p>
+  </div>
+
+  <h2><span class="n">02</span>壁の正体 ── 劣臨界(d&lt;4) と 臨界(d=4)</h2>
+
+  <p>特異SPDEを解ける道具（正則化構造・パラ制御計算）は、<strong>劣臨界(subcritical)</strong>という条件下でしか効きません。目安は結合定数の次元。ゲージ結合（\(\varphi^4\) でも同じ）は質量次元 \(4-d\) を持ち、<em>エネルギー \(\mu\) での実効的な無次元結合</em>は \(\sim\mu^{\,d-4}\)：</p>
+
+  <div class="calc">
+    <span class="tag">短距離（UV）で結合がどう振る舞うか＝劣臨界性</span>
+    $$g_{\rm eff}(\mu)\sim \mu^{\,d-4}:\quad
+    \begin{cases} d<4:\ \mu\to\infty\ \text{で}\ \to0\quad(\textbf{劣臨界・解ける})\\[2pt]
+    d=4:\ \text{一定}\quad(\textbf{臨界・周辺的＝壁})\\[2pt]
+    d>4:\ \mu\to\infty\ \text{で}\ \to\infty\quad(\text{優臨界・非くりこみ可能})\end{cases}$$
+    <p style="margin-bottom:14px;">\(d<4\) では短距離で結合が消え、非線形項が小さな摂動＝<strong>劣臨界</strong>で正則化構造が効く。\(d=4\) では結合が<strong>スケール不変（周辺的）</strong>── \(\varphi^4\) もYMも、ちょうどこの境界に立つ。だから \(\varphi^4_3\)・YM\(_{2,3}\) は解けて、YM\(_4\) は壁。</p>
+  </div>
+
+  <p>下の図で、次元 \(d\) を動かすと、この"UVでの結合の走り"が反転するのが見えます。\(d=4\) が、下降（劣臨界）と上昇（優臨界）の<strong>境目＝臨界</strong>。そしてそこだけ、\(\varphi^4\) とYMが枝分かれします（§04）。</p>
+
+  <div class="fig">
+    <div class="cap">図：次元スライダー。縦＝UVへ向かう実効結合 \(g_{\rm eff}\sim\mu^{d-4}\)。<span style="color:var(--sub);font-weight:700;">d&lt;4＝UVで減少（劣臨界・解ける）</span>、<span style="color:var(--crit);font-weight:700;">d=4＝一定（臨界・壁）</span>、<span style="color:var(--sup);font-weight:700;">d&gt;4＝増加（優臨界）</span>。d=4 でだけ、φ⁴（自明へ↑）と YM（漸近自由で↓）が分かれる</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>次元 d <span class="val" id="vd">3.0</span>
+        <input type="range" id="sd" min="2" max="6" step="0.05" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#26456e;"></i>実効結合 \(g_{\rm eff}(\mu)\)</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>φ⁴＝UVで増加（自明へ）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>YM＝UVで減少（漸近自由）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>臨界で、何が壊れるか</h2>
+
+  <p>劣臨界では「短距離で危険な項が<strong>有限個</strong>」で、それを引き算（くりこみ）すれば正則化構造の展開が閉じる。ところが臨界(\(d=4\))では ──</p>
+
+  <div class="keybox">
+    <div class="lbl">臨界での破綻</div>
+    <p style="margin:0;">危険な項が<strong>無限個・同じ重み</strong>で効き、有限の展開が<strong>閉じない</strong>。べき（power）でなく<strong>対数（log）</strong>が積み重なる。正則化構造の"木の展開"がそのままでは終わらず、<em>多重スケールの再足し上げ（＝くりこみ群）</em>が要る。</p>
+  </div>
+
+  <p>これは第4回の「4次元は臨界点」「\(\varphi^4_4\) は自明」を、SPDEの言葉でそっくり言い直したもの。<strong>壁は"臨界性"という一点</strong>に絞れている ── 漠然と難しいのではなく、名前のついた具体的な障害です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>希望 ── 漸近自由が、\(\varphi^4_4\) と運命を分ける ★</h2>
+
+  <p>ここが賭ける最大の理由。\(\varphi^4_4\) は臨界<em>かつ自明</em>（連続極限で自由になる、Aizenman–Duminil-Copin）── 臨界＝絶望に見える。だが決定的な違いがある：</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ臨界でも、UVでの走りが逆</div>
+    $$\varphi^4_4:\ g_{\rm eff}\ \nearrow\ (\text{UVで増加＝非漸近自由}) \qquad
+    \text{YM}_4:\ \beta(g)=-b_0g^3<0\ \Rightarrow\ g_{\rm eff}\ \searrow\ 0\ (\textbf{漸近自由})$$
+    <p style="margin:10px 0 0;">YMは臨界だが<strong>漸近自由</strong>。危険項は、漸近自由のおかげで<em>べきでなく対数</em>で効く「ちょうど繰り込み可能」な理論。\(\varphi^4_4\) が自明に潰れる所を、YMは<strong>非自明に生き残れる見込み</strong>がある。<em>この一点差が、戦略①に賭ける根拠。</em></p>
+  </div>
+
+  <p>つまり勝ち筋は ──「<strong>臨界SPDEを扱う多重スケール理論を作り、漸近自由を使って YM\(_4\) が \(\varphi^4_4\) と違って非自明に残ることを示す</strong>」。壁は臨界性ただ一点、希望は漸近自由ただ一つ。</p>
+
+  <h2><span class="n">05</span>もう一つの難所 ── ゲージ共変性と軌道空間</h2>
+
+  <p>方程式はゲージ変換と両立させねばならず、物理的状態は接続 \(A\) でなく<strong>ゲージ軌道</strong>（\(A\sim A^g\)）。だが構成される \(A\) は超関数ほど荒く、<em>荒い接続に素直にゲージ変換を施せない</em>。CCHSがやったのは：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;">
+    <li>荒い接続の<strong>軌道空間を距離空間として定義</strong>し、力学・測度がその上に載ることを示す。</li>
+    <li><strong>YMヒート流で接続を滑らかにして</strong>、ゲージ不変観測量（ウィルソンループ）を荒い接続に対して定義。</li>
+    <li>くりこみが<strong>ゲージ共変</strong>（Ward恒等式と両立、対称性を壊さない）であることを確認 ── 3次元で通した非自明な検算。</li>
+  </ul>
+
+  <p>4次元では周辺的なくりこみ項が増え、それを<em>ゲージ共変に</em>引き算するのがさらに難しい。臨界（§03）とゲージ（ここ）が、4次元では同時に牙をむきます。</p>
+
+  <h2><span class="n">06</span>4次元へ ── 具体的なTo-doと現在地</h2>
+
+  <table class="dt">
+    <tr><th></th><th>やるべきこと</th><th>状態</th></tr>
+    <tr><td class="id">1</td><td>臨界SPDEの多重スケール理論（正則化構造＋SPDE内のくりこみ群）── 戦略②と合流</td><td class="open">最大のギャップ</td></tr>
+    <tr><td class="id">2</td><td>4次元のゲージ共変くりこみ（Ward恒等式を保って周辺項を引く）</td><td class="open">未達</td></tr>
+    <tr><td class="id">3</td><td>漸近自由を"エンジン"に使い、対数を制御（YM≠φ⁴₄ を示す）</td><td class="open">希望の核</td></tr>
+    <tr><td class="id">4</td><td>正則化 ε に一様な評価 → 標準極限の存在 → OS公理＋質量ギャップ</td><td class="open">構成後も別課題</td></tr>
+  </table>
+
+  <p><strong>現在地</strong>：2D・3D＝完成、4D＝未解決。壁は「臨界SPDE」の一点に凝縮 ── 第4回のQ3を、SPDEの言葉で最も鋭く言い直した形。構成できても反射正値性・ギャップの証明は残る。だが<em>今いちばん動いている道</em>で、<em>壁に名前があり</em>、<em>漸近自由という希望がある</em>。だからここに一番賭ける。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">確率的YMヒート流 \(\partial_\tau A=-D_A^*F+\xi\)、確率量子化（Parisi–Wu 1981）、正則化構造（Hairer 2014）とパラ制御計算、劣臨界性の条件と結合の次元 \(4-d\)・実効結合 \(\sim\mu^{d-4}\)、\(\varphi^4\)/YM の臨界次元 \(d=4\)、\(\varphi^4_4\) の自明性（Aizenman–Duminil-Copin 2021）、YM の漸近自由（\(\beta=-b_0g^3\)、Gross–Wilczek・Politzer 1973）、2次元・3次元YM測度の構成とゲージ共変くりこみ・軌道空間・ウィルソンループの定義（Chandra–Chevyrev–Hairer–Shen 2022）は、いずれも確立した結果です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>4次元YMの構成＋質量ギャップは未解決</strong>（2025年時点）。この回は"どこに賭け、何を作れば勝ちか"を絞った<em>戦略の地図</em>であって、解法でも達成でもありません。「漸近自由だから YM\(_4\) は非自明に残る」は<em>強い期待</em>で、証明ではない（それを示すことこそ To-do 3）。図の \(g_{\rm eff}\sim\mu^{d-4}\) は1ループ・古典次元の模式で、臨界(d=4)の対数はここでは表現しきれません。掟どおり、旗ではなく縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>なぜ2次元・3次元は解けて、ちょうど4次元が壁なのか。
+        <details><summary>答えを見る</summary><div class="ans">正則化構造が効くのは劣臨界(d&lt;4)まで。結合は次元 \(4-d\) を持ち、実効結合は \(\sim\mu^{d-4}\)。\(d<4\) ではUVで消え（劣臨界・非線形項が小さな摂動）、\(d=4\) でスケール不変（臨界・周辺的）、\(d>4\) で増大（優臨界）。φ⁴もYMも臨界次元は4なので、2D/3Dは解けて4Dが壁。</div></details>
+      </li>
+      <li>同じ臨界(d=4)なのに、φ⁴₄ は自明でYM₄ に希望があるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">UVでの走りが逆だから。φ⁴₄ は非漸近自由で実効結合がUVで増える→自明（自由）に潰れる。YM₄ は漸近自由（\(\beta=-b_0g^3<0\)）でUVで結合が0へ→危険項が対数で効く「ちょうど繰り込み可能」で、非自明に残れる見込みがある。この差が戦略①の希望の核。</div></details>
+      </li>
+      <li>戦略①を勝ちに持っていくための、最大の数学的ギャップは何か。
+        <details><summary>答えを見る</summary><div class="ans">臨界SPDEを扱う多重スケール理論（正則化構造にSPDE内のくりこみ群＝対数の再足し上げを組み込む）。加えて4次元のゲージ共変くりこみ、漸近自由による対数制御、一様評価→OS公理＋ギャップ。核心は「臨界性」を越える新技術で、戦略②（現代RG）と合流させるのが自然。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略①まとめ</span>壁は臨界ただ一点、希望は漸近自由ただ一つ</h2>
+    <p>本命ルートB（確率量子化）を4次元へ。方程式は確率的YMヒート流 \(\partial_\tau A=-D_A^*F+\xi\)。壁の正体は<strong>臨界性</strong> ── 結合次元 \(4-d\)、実効結合 \(\sim\mu^{d-4}\) で、\(d<4\) 劣臨界（解ける）、\(d=4\) 臨界（周辺的＝壁）。臨界では危険項が無限個・対数が積み重なり、正則化構造の展開が閉じない。</p>
+    <p>希望は<strong>漸近自由</strong>：同じ臨界でも φ⁴₄（UVで増加→自明）と違い、YM₄ は \(\beta=-b_0g^3<0\) でUVで結合が減り、非自明に残れる見込み。勝ち筋＝「臨界SPDEの多重スケール理論を作り、漸近自由で YM₄≠φ⁴₄ を示す」＋ゲージ共変くりこみ＋一様評価＋OS・ギャップ。2D・3D完成、4D未解決 ── だが動いている道、名前のある壁、確かな希望。<em>次は戦略③（相関長の一様下限で挟む）を深掘り。</em></p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-07-noise.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第7回（ルートB）</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">戦略③：一様な相関長の下限（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編①（深掘り・ルートB延長）、物理好きの高校生・大学生向け読み物。確率的ヤン=ミルズ・ランジュバン方程式 \(\partial_\tau A=-D_A^*F(A)+\xi\)（確率量子化、Parisi–Wu 1981）、正則化構造（Hairer 2014）・パラ制御計算による特異SPDEの扱い、劣臨界性と結合の質量次元 \(4-d\)・実効結合 \(\sim\mu^{d-4}\)、\(\varphi^4\)/ヤン=ミルズの臨界次元 \(d=4\)、\(\varphi^4_4\) の自明性（Aizenman–Duminil-Copin 2021）、ヤン=ミルズの漸近自由（\(\beta(g)=-b_0g^3\)、Gross–Wilczek・Politzer 1973）、2次元・3次元ヤン=ミルズ測度の構成／ゲージ共変くりこみ／荒い接続の軌道空間／YMヒート流によるウィルソンループの定義（Chandra–Chevyrev–Hairer–Shen 2022）は、いずれも確立した結果です。4次元ヤン=ミルズの存在と質量ギャップは未解決で（2025年時点）、本稿は攻略の戦略地図であり解法ではありません。「漸近自由ゆえ YM₄ は非自明に残る」は現時点で強い期待であって証明ではありません。図の実効結合 \(g_{\rm eff}\sim\mu^{d-4}\) は古典次元・1ループ的な模式で、臨界(d=4)での対数的振る舞いは簡略化しています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では次元 d を動かすと、UVでの実効結合の走りが d=4 で反転し、そこだけ φ⁴ と YM が枝分かれする様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sd=document.getElementById('sd'), vd=document.getElementById('vd'), rd=document.getElementById('rd');
+  var X0=0, X1=4;      // x = log10(μ/μ0), IR(左)→UV(右)
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=46, padB=42, padT=16, padR=14;
+    var dim=parseFloat(sd.value); vd.textContent=dim.toFixed(2);
+    var YMAX=3.0;
+    function X(x){return padL+(x-X0)/(X1-X0)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド
+    for(var gy=1;gy<=3;gy++){var y=Y(gy);ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();}
+    // g=1 基準線
+    ctx.strokeStyle='#cbbfa6';ctx.setLineDash([4,4]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(padL,Y(1));ctx.lineTo(w-padR,Y(1));ctx.stroke();ctx.setLineDash([]);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← IR（低エネ）        エネルギー μ        UV（高エネ・短距離）→', padL+8, h-padB+26);
+    ctx.save();ctx.translate(14,padT+120);ctx.rotate(-Math.PI/2);ctx.fillText('実効結合 g_eff', 0,0);ctx.restore();
+    // メイン曲線 g_eff = μ^{d-4}  （μ=10^x）
+    var expo=dim-4;
+    var col = Math.abs(expo)<0.03? '#a9791a' : (expo<0? '#2f7d5a' : '#a5473a');
+    ctx.strokeStyle=col;ctx.lineWidth=3.2;ctx.beginPath();var f=true;
+    for(var x=X0;x<=X1+1e-9;x+=0.02){ var v=Math.pow(10, expo*x); var xx=X(x),yy=Y(v); if(f){ctx.moveTo(xx,yy);f=false;}else ctx.lineTo(xx,yy);}
+    ctx.stroke();
+    ctx.fillStyle=col;ctx.font='bold 12px sans-serif';
+    var lbl = Math.abs(expo)<0.03? '臨界（一定）':(expo<0?'劣臨界（UVで減少）':'優臨界（UVで増加）');
+    ctx.fillText('d='+dim.toFixed(2)+'：'+lbl, X(2.3), Y(Math.pow(10,expo*2.3))-10);
+    // d=4 のときだけ φ⁴ / YM の枝分かれ（対数的、模式）
+    if(Math.abs(dim-4)<0.06){
+      // YM（漸近自由）：UVでゆるやかに減少
+      ctx.strokeStyle='#2f7d5a';ctx.lineWidth=2;ctx.setLineDash([6,3]);ctx.beginPath();f=true;
+      for(var x2=X0;x2<=X1+1e-9;x2+=0.02){ var vy=1/(1+0.5*x2); var xx2=X(x2),yy2=Y(vy); if(f){ctx.moveTo(xx2,yy2);f=false;}else ctx.lineTo(xx2,yy2);}
+      ctx.stroke();
+      // φ⁴（非漸近自由）：UVで増加
+      ctx.strokeStyle='#a5473a';ctx.beginPath();f=true;
+      for(var x3=X0;x3<=X1+1e-9;x3+=0.02){ var vp=1/Math.max(0.05,(1-0.22*x3)); var xx3=X(x3),yy3=Y(vp); if(f){ctx.moveTo(xx3,yy3);f=false;}else ctx.lineTo(xx3,yy3);}
+      ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#2f7d5a';ctx.font='bold 11px sans-serif';ctx.fillText('YM：漸近自由→非自明に残る見込み', X(1.4), Y(1/(1+0.5*1.4))+18);
+      ctx.fillStyle='#a5473a';ctx.fillText('φ⁴：UVで増加→自明に潰れる', X(1.4), Y(1/Math.max(0.05,(1-0.22*1.4)))-8);
+    }
+    // readout
+    if(Math.abs(dim-4)<0.06){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='<b>d=4：臨界（周辺的）＝壁</b>。実効結合はスケール不変で、危険項が無限個・対数が積み重なる。<b>だがここだけ φ⁴（自明へ↑）と YM（漸近自由↓）が枝分かれ</b> ── YMは非自明に残れる見込み＝戦略①の希望。';
+    } else if(dim<4){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>d='+dim.toFixed(2)+'：劣臨界</b>。UVで結合が消え、非線形項は小さな摂動 ── 正則化構造が効く。<b>YM は d=2,3 でここ＝構成成功（CCHS 2022）</b>。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>d='+dim.toFixed(2)+'：優臨界</b>。UVで結合が増大＝非くりこみ可能。ここは物理的な4次元より上で、通常は扱わない領域。';
+    }
+  }
+  sd.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

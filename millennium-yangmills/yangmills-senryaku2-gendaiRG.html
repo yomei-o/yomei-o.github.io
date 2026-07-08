@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略② 現代RGのゲージ移植 ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --scal:#2f7d5a; --gauge:#2f6d8a; --uncon:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:8px 15px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:8px 10px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--scal);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:11px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編②（深掘り・対抗＆共通エンジン）</span></div>
+  <p class="eyebrow">4次元臨界をスカラーで越えた現代RGを、ゲージへ移植して Balaban を完成させる</p>
+  <h1>戦略② 現代RGのゲージ移植 ── Balaban を綺麗な道具で
+    <span class="sub">Balaban は4次元格子ゲージの<strong>UV安定性</strong>を厳密RGで示したが、未完・難解。<br>いっぽう <strong>BBS（Bauerschmidt–Brydges–Slade）</strong>は、<em>4次元の臨界＝対数補正まで</em>をスカラーで綺麗に制御した現代RGの金字塔 ── YMと<strong>同じ壁を、別の場でもう越えている</strong>。②＝この道具をゲージに移植する。障害は一点＝<strong>ゲージ共変な有限レンジ分解</strong>。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：現代RGの心臓と、ゲージ移植の障害（数式あり）</span>
+    <span>核心：有限レンジ分解＋局所化 ／ 4次元臨界(対数)は越えられている</span>
+  </div>
+
+  <p class="lead">戦略①（確率量子化）が"動力学"の道なら、②は"静的なユークリッド測度"を、<strong>現代の厳密くりこみ群</strong>で作る道 ── そして<em>①も③も借りたい共通のエンジン</em>です。鍵は二つの事実。(1) Balaban は1980年代に4次元格子ゲージの<strong>UV安定性</strong>を厳密RGで示した ── だが未完で、恐ろしく技術的で、検証も拡張も難しい。(2) その後、スカラー／スピン系で<strong>BBS の綺麗で体系的な厳密RG</strong>が現れ、<em>4次元の臨界（周辺的＝対数補正）</em>まで制御しきった。YMの壁＝周辺性を、<strong>別の理論でもう越えている</strong>のです。②＝この現代RGをゲージへ移植し、Balaban を<em>綺麗に完成させる</em>賭け。どこまで行けて、何が最後の障害かを絞ります。</p>
+
+  <h2><span class="n">01</span>二つのRG ── Balaban と BBS</h2>
+
+  <table class="dt">
+    <tr><th></th><th>対象</th><th>達成</th><th>弱点</th></tr>
+    <tr><td class="id">Balaban RG</td><td>4次元<strong>格子ゲージ</strong></td><td class="ok">UV安定性を厳密に（ゲージ共変ブロック）</td><td class="open">未完・恐ろしく技術的・検証困難</td></tr>
+    <tr><td class="id">BBS 現代RG</td><td>4次元<strong>スカラー／スピン</strong>（\(|\varphi|^4\)・弱自己回避歩）</td><td class="ok">臨界（周辺的）＝<strong>対数補正まで</strong>綺麗・体系的に制御</td><td class="open">スカラー用（ゲージでない）</td></tr>
+  </table>
+
+  <p>ねらいは明快 ── <strong>BBS の綺麗さを、Balaban の対象（ゲージ）に持ち込む</strong>。Balaban が力ずくで登ったUVを、現代の整備された道具で登り直し、<em>連続極限の完成</em>（できれば反射正値性・ギャップまで）へ届かせる。</p>
+
+  <h2><span class="n">02</span>BBS は何を越えたか ── 4次元の"対数"を制御した</h2>
+
+  <p>戦略①で見たとおり、4次元は<strong>臨界（周辺的）</strong>で、危険項が<em>対数</em>で効く。BBS の核心は、まさにこの対数を<strong>厳密に</strong>追い切ったこと：</p>
+
+  <div class="keybox">
+    <div class="lbl">BBS が制御した"対数"（4次元臨界の指紋）</div>
+    $$\langle|\varphi(0)|^2\rangle\ \sim\ (\log L)^{p},\quad \text{感受率}\ \chi\ \sim\ |t|^{-1}(\log|t|)^{q}\ \dots$$
+    <p style="margin:10px 0 0;">4次元 \(|\varphi|^4\) 模型・弱自己回避歩の臨界指数に付く<strong>対数補正</strong>を、厳密RGで正確に導出（Bauerschmidt–Brydges–Slade）。<em>4次元＝対数の世界を、逃げずに制御しきった</em> ── これはYMの壁（周辺性）と<strong>同じ性質を、別の理論で越えた</strong>実例。だから移植の価値がある。</p>
+  </div>
+
+  <h2><span class="n">03</span>現代RGの心臓 ── 有限レンジ分解＋局所化</h2>
+
+  <p>BBS の設計思想は二つの道具に凝縮されます。</p>
+
+  <div class="calc">
+    <span class="tag">道具1：有限レンジ分解（scale by scale）</span>
+    $$C\ =\ \sum_{j\ge1} C_j,\qquad C_j\ \text{は"有限レンジ"（スケール}\ L^j\ \text{でだけ効く）}$$
+    <p style="margin:6px 0 0;">自由場の共分散 \(C\) を、<strong>スケールごとの有限レンジな部品 \(C_j\) の和</strong>に分解。RGは<em>一段で一つの \(C_j\) を積分</em>して消し、少し粗い実効理論に落とす。有限レンジだから、各段が<strong>局所的・独立に扱える</strong>（BBSの綺麗さの源）。</p>
+    <p class="lbl">道具2：局所化（relevant / irrelevant の帳簿）</p>
+    <p style="margin:6px 0 14px;">各段で、実効相互作用を<strong>関連（relevant／marginal）</strong>な有限個の項と<strong>無関連（irrelevant）</strong>な残りに分け、前者は流れを追い、後者は評価で潰す。4次元では marginal 項の<em>対数</em>を精密に追う。</p>
+  </div>
+
+  <h2><span class="n">04</span>移植の障害 ── ゲージ共変な有限レンジ分解</h2>
+
+  <p>この心臓を、そのままゲージには載せられません。障害は継ぎ目の対立（前回）の、現代RG版です。</p>
+
+  <table class="dt">
+    <tr><th></th><th>スカラー(BBS)</th><th>ゲージへ移すと</th></tr>
+    <tr><td class="id">場</td><td>実数場・ガウス基準測度</td><td class="open">群値（\(SU(N)\)行列）・非ガウス</td></tr>
+    <tr><td class="id">有限レンジ分解</td><td>共分散を素直に分解できる</td><td class="open"><strong>ゲージ共変な分解</strong>が要る（平行移動つき＝Balabanの共変ブロックの現代版）</td></tr>
+    <tr><td class="id">相互作用</td><td>多項式 \(\varphi^4\)</td><td class="open">非多項式（プラケットの余弦）＋Ward恒等式でゲージ拘束</td></tr>
+    <tr><td class="id">large-field</td><td>綺麗な大場評価</td><td class="open">群のコンパクト性は助けだが、共変な大場/小場分割が要る</td></tr>
+  </table>
+
+  <p>核心の障害は<strong>「ゲージ共変な有限レンジ分解」</strong>── 自由共分散をスケールごとに割るとき、その各部品が<em>ゲージ対称性を保つ</em>ようにする。これは継ぎ目の<strong>対立B（UV粗視化 ⊥ ゲージ共変）</strong>そのもの。ここが作れれば、BBS の局所化・対数制御が(ほぼ)そのまま動く見込み。</p>
+
+  <p>下の図で、この状況を体感できます。スケールを一段ずつ積分していくと、スカラー(BBS)は<strong>4次元臨界＝対数を最後まで制御</strong>（緑）。ゲージは Balaban の UV までは登れるが、そこから先は<strong>共変な有限レンジ分解が未整備</strong>で未制御（赤破線）。②の勝ち筋は、この<em>赤を緑にする</em>こと。</p>
+
+  <div class="fig">
+    <div class="cap">図：スケールを一段ずつ積分するRGフロー（左＝UV → 右＝IR）。<span style="color:var(--scal);font-weight:700;">スカラー(BBS)＝対数まで最後まで制御</span>／<span style="color:var(--gauge);font-weight:700;">ゲージ＝BalabanのUVまで制御</span>、<span style="color:var(--uncon);font-weight:700;">その先は共変分解が未整備＝未制御（赤破線）</span>。ボタンで切替、スライダーで現在の段</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>RGの段（左：UV短距離 → 右：IR長距離）<span class="val" id="vk">3</span>
+        <input type="range" id="sk" min="0" max="10" step="1" value="3">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">スカラー(BBS)</button>
+        <button class="tbtn" id="bG">ゲージ(移植)</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>制御済み</span>
+      <span><i class="swatch" style="background:#2f6d8a;"></i>Balaban(UV)まで</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未制御（共変分解が要る）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>①③との関係 ── ②は共通のエンジン</h2>
+
+  <p>②は単独の道であると同時に、<strong>他の解析ルートの土台</strong>です。①（臨界SPDE）の多スケール展開も、③（一様下限）の多スケール評価も、結局<em>厳密RG</em>を要る。②が整備する「ゲージ共変な現代RG」は、①③が共通して借りたいエンジン。</p>
+
+  <div class="keybox">
+    <div class="lbl">二つの厳密RG枠組み（同じ壁、別の座）</div>
+    <p style="margin:0;"><strong>①＝動力学（SPDE）＋正則化構造</strong>：時間発展でノイズを多スケール分解。<br><strong>②＝静的（ユークリッド測度）＋BBS流RG</strong>：共分散を有限レンジ分解。<br>どちらも<em>4次元臨界の対数</em>と<em>ゲージ共変</em>を要し、成功すれば同じ連続YMを与えるはず。②の共変有限レンジ分解は、①の共変くりこみとも表裏。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>現在地と勝ち筋</h2>
+
+  <div class="keybox">
+    <div class="lbl">②の到達点と、残る一点</div>
+    <p style="margin:0;"><strong>ある</strong>：Balaban のUV安定性（ゲージ、力ずく）、BBS の4次元臨界＝対数制御（スカラー、綺麗）。<br><strong>無い</strong>：BBS流の綺麗な機構を<strong>ゲージ共変な有限レンジ分解</strong>の上で回し、Balaban を<em>連続完成＋反射正値性＋ギャップ</em>まで届かせること。<br><strong>勝ち筋</strong>：<em>ゲージ共変な有限レンジ分解＋局所化</em>を作る（＝継ぎ目の対立Bを現代RGで解消する）。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Balaban の4次元格子ゲージ理論のUV安定性の厳密RG（1980年代）、BBS（Bauerschmidt–Brydges–Slade）による4次元 \(|\varphi|^4\)・弱自己回避歩の臨界挙動＝対数補正の厳密導出（有限レンジ分解＋局所化、Brydges–Yau・Gawȩdzki–Kupiainen の系譜）、くりこみ群の relevant/irrelevant 分類、ゲージ共変ブロッキングの必要性は、いずれも確立した結果・枠組みです。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>BBS流の現代RGのゲージ理論への完全な移植は未達で、4次元YMの存在＋ギャップは未解決</strong>（2025年時点）。「ゲージ共変な有限レンジ分解さえ作れれば局所化がほぼ動く」は<em>期待</em>であって定理ではない（対数の共変な帳簿・large-field・RP保存には固有の困難が残りうる）。②が①③の"共通エンジン"という位置づけ、勝ち筋の名指しは筆者の整理で、反証されうる意見です。移植は解法ではありません ── 旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>なぜ「BBSをゲージに移植する」ことに価値があるのか。
+        <details><summary>答えを見る</summary><div class="ans">YMの壁＝4次元の臨界（周辺的＝対数）。BBSはその同じ壁を、スカラー（\(|\varphi|^4\)・弱自己回避歩）で綺麗・体系的に越え、対数補正まで厳密に制御した。Balabanは同じUVをゲージで力ずくで登ったが未完・難解。BBSの綺麗さをゲージに持ち込めば、連続完成へ届く見込みがある。</div></details>
+      </li>
+      <li>現代RG（BBS）の心臓の二つの道具は？
+        <details><summary>答えを見る</summary><div class="ans">(1) 有限レンジ分解：自由共分散 \(C=\sum_j C_j\) をスケールごとの有限レンジ部品に割り、RGが一段で一つ積分（局所的・独立に扱える）。(2) 局所化：各段で実効相互作用を relevant/marginal な有限個と irrelevant に分け、前者（4次元では marginal の対数）を追い、後者を評価で潰す。</div></details>
+      </li>
+      <li>ゲージへの移植の、核心の障害を一言で。
+        <details><summary>答えを見る</summary><div class="ans">ゲージ共変な有限レンジ分解 ── 自由共分散をスケールごとに割るとき、各部品がゲージ対称性を保つようにすること（平行移動つき＝Balabanの共変ブロックの現代版）。これは継ぎ目の対立B（UV粗視化⊥ゲージ共変）そのもの。これが作れればBBSの局所化・対数制御がほぼ動く見込み。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略②まとめ</span>同じ壁を越えた道具を、ゲージへ</h2>
+    <p>②＝現代RGのゲージ移植。Balaban は4次元格子ゲージのUV安定性を厳密RGで示したが未完・難解。BBS は同じ4次元の壁＝<strong>臨界（周辺的＝対数）</strong>を、スカラーで綺麗に越え対数補正まで制御した。心臓は<strong>有限レンジ分解</strong>（\(C=\sum_j C_j\)）＋<strong>局所化</strong>（relevant/irrelevant）。②＝この綺麗な機構をゲージに載せ、Balaban を連続完成＋RP＋ギャップまで届かせる賭け。</p>
+    <p>障害の核心は<strong>ゲージ共変な有限レンジ分解</strong>（＝継ぎ目の対立B）。加えて非多項式相互作用・Ward拘束・large-field・RP保存。②は単独の道であり、同時に<strong>①（臨界SPDE）③（一様下限）が借りたい共通のエンジン</strong>。到達点＝Balaban(UV)＋BBS(スカラー対数)、残る一点＝共変な有限レンジ分解を作ること。<em>4次元YMは未解決</em> ── これは同じ壁を別の場で越えた道具を、正しい対象へ運ぶ賭け。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku1-rinkai.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 戦略①</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">①③の共通エンジン</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編②（深掘り）、物理好きの高校生・大学生向け読み物。Bałaban による4次元格子ゲージ理論のUV安定性の厳密くりこみ群（1980年代、ゲージ共変ブロッキング）、Bauerschmidt–Brydges–Slade（BBS）による4次元 \(|\varphi|^4\) モデル・4次元弱自己回避歩の臨界挙動と対数補正の厳密導出（有限レンジ分解 \(C=\sum_j C_j\)＋局所化、Brydges–Yau、Gawȩdzki–Kupiainen の系譜）、くりこみ群の relevant/marginal/irrelevant 分類、Ward–Slavnov–Taylor 恒等式によるゲージ拘束は、いずれも確立した結果・枠組みです。BBS流の現代RGのゲージ理論への完全移植、およびそれによる連続極限の構成・反射正値性・質量ギャップは未達で、4次元 \(SU(N)\) の存在と質量ギャップは未解決です（2025年時点）。「ゲージ共変な有限レンジ分解が作れれば局所化がほぼ動く」は期待であり定理ではありません。②が①③の共通エンジンという位置づけ、勝ち筋の名指しは筆者の整理で反証されうる意見を含みます。図はスケールごとのRG制御の到達範囲を示す概念的模式で、対数補正や具体的な結合値を計算したものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では切替と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスカラー／ゲージを切替え、段を進めると、制御が最後まで届くか（スカラー）／途中で赤破線になるか（ゲージ）が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'),
+      bS=document.getElementById('bS'), bG=document.getElementById('bG'), rd=document.getElementById('rd');
+  var mode='scalar', N=10, GAUGE_UV=4; // ゲージは段4(Balaban UV)まで制御
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function gk(k){ return 0.65/(1+0.14*k); } // 周辺的：対数的にゆっくり減衰
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var k=parseInt(sk.value,10); vk.textContent=k;
+    function X(i){return padL+i/N*(w-padL-padR);}
+    function Y(g){return (h-padB)-(g/0.75)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド
+    for(var gy=0.2;gy<=0.61;gy+=0.2){var y=Y(gy);ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();}
+    // ゲージ：Balaban UV 境界
+    if(mode==='gauge'){
+      ctx.strokeStyle='#a5473a';ctx.setLineDash([5,4]);ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(X(GAUGE_UV),padT);ctx.lineTo(X(GAUGE_UV),h-padB);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a5473a';ctx.font='10px sans-serif';ctx.fillText('Balaban のUV到達点', X(GAUGE_UV)+4, padT+12);
+    }
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← UV（短距離・a→0）        RGの段        IR（長距離）→', padL+6, h-padB+26);
+    ctx.save();ctx.translate(14,padT+96);ctx.rotate(-Math.PI/2);ctx.fillText('実効結合（周辺的・対数）', 0,0);ctx.restore();
+    // フロー曲線（段ごとに点）
+    var i;
+    // 制御済み部分（実線）
+    ctx.lineWidth=3;ctx.beginPath();var started=false;
+    for(i=0;i<=N;i++){
+      var controlled = (mode==='scalar') || (i<=GAUGE_UV);
+      if(!controlled) break;
+      var x=X(i),y=Y(gk(i));
+      if(!started){ctx.strokeStyle=(mode==='scalar')?'#2f7d5a':'#2f6d8a';ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // 未制御部分（ゲージのみ、赤破線）
+    if(mode==='gauge'){
+      ctx.strokeStyle='#a5473a';ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.beginPath();
+      for(i=GAUGE_UV;i<=N;i++){var x2=X(i),y2=Y(gk(i));if(i===GAUGE_UV)ctx.moveTo(x2,y2);else ctx.lineTo(x2,y2);}
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    // 段の点
+    for(i=0;i<=N;i++){
+      var controlled2 = (mode==='scalar') || (i<=GAUGE_UV);
+      ctx.fillStyle= controlled2? ((mode==='scalar')?'#2f7d5a':'#2f6d8a') : '#a5473a';
+      ctx.beginPath();ctx.arc(X(i),Y(gk(i)),3,0,7);ctx.fill();
+    }
+    // カーソル（現在の段）
+    var cx=X(k), cy=Y(gk(k)), curCtrl=(mode==='scalar')||(k<=GAUGE_UV);
+    ctx.fillStyle= curCtrl? ((mode==='scalar')?'#2f7d5a':'#2f6d8a') : '#a5473a';
+    ctx.beginPath();ctx.arc(cx,cy,6.5,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    if(mode==='scalar'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>スカラー(BBS)</b>：段 '+k+'。有限レンジ分解＋局所化で、<b>4次元臨界＝対数を最後まで厳密制御</b>。同じ壁（周辺性）を、別の理論で越えている。';
+    } else if(k<=GAUGE_UV){
+      rd.style.background='#e6eef2';rd.style.color='#245c6e';
+      rd.innerHTML='<b>ゲージ(移植)</b>：段 '+k+'（Balaban のUV到達内）。ゲージ共変ブロックでここまでは登れている。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>ゲージ(移植)</b>：段 '+k+'（UV到達点の先＝赤破線）。<b>ゲージ共変な有限レンジ分解が未整備＝未制御</b>。②の勝ち筋＝この赤を緑にすること（対立Bの解消）。';
+    }
+  }
+  function setMode(m){ mode=m; bS.className='tbtn'+(m==='scalar'?' on':''); bG.className='tbtn'+(m==='gauge'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setMode('scalar');});
+  bG.addEventListener('click',function(){setMode('gauge');});
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

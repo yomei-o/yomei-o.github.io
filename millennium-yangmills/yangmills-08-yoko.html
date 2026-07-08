@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>横から攻める ── 大N・ホログラフィー・超対称のいとこ ／ ミレニアム問題を解くぞ 第8回（挑戦編④）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --cN:#2f6d8a; --cH:#7a4fa0; --cS:#a5622a; --real:#8a8574;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:#2f7d5a;font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 8 回（挑戦編④・ルートC／挑戦編 完）</span></div>
+  <p class="eyebrow">正面が険しいなら、厳密に扱える"いとこ"から ── ただし本物との距離に正直に</p>
+  <h1>横から攻める ── 大N・ホログラフィー・超対称のいとこ
+    <span class="sub">大 \(N\)・AdS/CFT・超対称ヤン=ミルズ ── どれも<strong>閉じ込めや質量ギャップが厳密に起こりうる</strong>ことを見せる。<br>だが、いずれも<em>本物の「\(N{=}3\)・超対称なし・平坦な4次元」そのものではない</em>。状況証拠は強いが、証明ではない。そして挑戦編を締める。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：いとこ理論の威力と、本物との距離（数式あり）</span>
+    <span>核心：\(\lambda=g^2N\) ／ AdS/CFT ／ Seiberg–Witten ── どれも別の山</span>
+  </div>
+
+  <p class="lead">ルートA（格子×くりこみ群）もルートB（確率量子化）も、頂上直下の同じ壁で止まりました。第三の発想が<strong>「横から攻める」</strong> ── 本物の4次元 \(SU(3)\) 純ヤン=ミルズは険しいので、<em>厳密に扱える"いとこ"</em>から光を当てる。大 \(N\)、ホログラフィー、超対称。これらは「ヤン=ミルズ型の理論では閉じ込めや質量ギャップが<strong>本当に起こりうる</strong>」ことの、強力な状況証拠になります。ただし ── いとこは<strong>本物そのものではない</strong>。この回は、その威力と、本物との<em>距離</em>を、正直に測ります。そして挑戦編を締めくくります。</p>
+
+  <h2><span class="n">01</span>ルートC の発想 ── 解ける親戚から攻める</h2>
+
+  <p>難しい方程式に、少し条件を変えた"解ける版"から迫るのは、数学・物理の常道です。ヤン=ミルズにも、正面より<strong>ずっと扱いやすい親戚</strong>がいる ── パラメータ \(N\) を大きくする、余分な次元の重力に翻訳する、超対称を足す。順に見ます。</p>
+
+  <h2><span class="n">02</span>大 \(N\) ── 図が平面だけになる（'t Hooft）</h2>
+
+  <p>色の数 \(N\) を3に固定せず、<strong>大きくして \(N\to\infty\)</strong> を考えます。ただし結合は<strong>'t Hooft 結合 \(\lambda=g^2N\) を固定</strong>。すると、無数のファインマン図のうち<em>平面的な図だけ</em>が生き残り、理論が劇的に簡単になります：</p>
+
+  <div class="keybox">
+    <div class="lbl">'t Hooft の大 \(N\) 展開</div>
+    $$\lambda=g^2N=\text{固定},\quad N\to\infty;\qquad \text{振幅}=\sum_{g=0}^{\infty}N^{2-2g}\,f_g(\lambda)$$
+    <p style="margin:10px 0 0;">\(g\) は図の"穴の数"（種数）。\(N\to\infty\) では \(g=0\)（平面）が支配。閉じ込めやハドロンの描像が鮮明になり、\(1/N\) は小さな補正に。<em>だが本物は \(N=3\)</em> ── \(1/N\) 補正が要るうえ、大 \(N\) ヤン=ミルズ<strong>自体もまだ厳密には構成されていない</strong>。簡単化であって、証明ではありません。</p>
+  </div>
+
+  <h2><span class="n">03</span>ホログラフィー ── ゲージ理論を"重力"に翻訳（AdS/CFT）</h2>
+
+  <p>1997年のマルダセナの発見は衝撃的でした ── <strong>強結合のゲージ理論は、1次元高い時空の重力理論と同じ内容（双対）</strong>だという。境界のゲージ理論の計算が、内部（バルク）の重力の計算に化ける：</p>
+
+  <div class="keybox">
+    <div class="lbl">AdS/CFT（ホログラフィー）</div>
+    $$Z_{\text{ゲージ理論}}[\text{境界}]\;=\;Z_{\text{重力}}[\text{AdS バルク}]$$
+    <p style="margin:10px 0 0;">適切な設定（時間や次元をコンパクト化した背景）では、双対重力側で<strong>閉じ込めと質量ギャップを実際に計算できる</strong>（Witten 1998）。強結合が、重力では"素直な幾何"になる。強力な描像です。</p>
+  </div>
+
+  <p>ただし正直に ── これは<strong>別の理論</strong>の話。典型的な対象は \(\mathcal N{=}4\) 超対称ゲージ理論など、<em>大 \(N\)・大 \(\lambda\)・AdS の中</em>で成り立つ設定で、我々の「\(N{=}3\)・超対称なし・平坦な4次元」純YMそのものではない。しかも AdS/CFT 双対<strong>自体が（強い証拠はあるが）数学的には未証明の予想</strong>。得られる"ギャップ"は、いとこモデルのギャップです。</p>
+
+  <h2><span class="n">04</span>超対称のいとこ ── 厳密に解ける（Seiberg–Witten）</h2>
+
+  <p>ヤン=ミルズに<strong>超対称</strong>（ボソンとフェルミオンを入れ替える対称性）を足すと、理論が"守られて"厳密な結果が出せます。1994年、Seiberg と Witten は \(\mathcal N{=}2\) 超対称YMの<strong>低エネルギーを厳密に解き</strong>、<em>モノポールの凝縮</em>で閉じ込めが起こる仕組み（双対マイスナー効果）を示しました：</p>
+
+  <div class="keybox">
+    <div class="lbl">超対称いとこの厳密結果</div>
+    <p style="margin:0;"><strong>\(\mathcal N{=}2\) 超YM</strong>：低エネルギー有効理論が厳密（Seiberg–Witten 1994）。モノポール凝縮 → 電気的フラックスが絞られ<strong>閉じ込め</strong>（超伝導体の裏返し）。<br><strong>\(\mathcal N{=}1\) 超YM</strong>：グルイーノ凝縮 \(\langle\lambda\lambda\rangle\neq0\)、質量ギャップの議論が可能。</p>
+    <p style="margin:10px 0 0;">「ヤン=ミルズ型で閉じ込め・ギャップが<em>厳密に</em>起こる」ことの、最も鮮明な実例。</p>
+  </div>
+
+  <p>だが ── <strong>超対称は、余分な対称性と余分な粒子</strong>（グルイーノ、スカラー）を足す。理論を変えてしまう。超対称をソフトに壊して本物のQCDへ連続的につなぐ試みはあるが、<em>その極限を厳密に制御することはできていない</em>。やはり別の山の頂です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>本物との距離 ── 正直な棚卸し</h2>
+
+  <p>三つのいとこを、「何が厳密にできたか」「本物との距離」で並べます。</p>
+
+  <table class="dt">
+    <tr><th>いとこ</th><th>厳密にできたこと</th><th>本物（4次元SU(3)純YM）との距離</th></tr>
+    <tr><td class="id">大 \(N\)</td><td class="ok">平面図の支配、閉じ込めの明快な描像</td><td class="open">\(N=3\) でない（\(1/N\) 補正）／大 \(N\) 自体も未構成</td></tr>
+    <tr><td class="id">ホログラフィー</td><td class="ok">双対重力で閉じ込め・ギャップを計算</td><td class="open">別理論（\(\mathcal N{=}4\) 等）・大\(N\)大\(\lambda\)・AdS内／双対は未証明の予想</td></tr>
+    <tr><td class="id">超対称</td><td class="ok">低エネルギー厳密解、モノポール凝縮＝閉じ込め</td><td class="open">超対称＝余分な対称性・粒子／本物への極限が非厳密</td></tr>
+  </table>
+
+  <p>下の図で、この距離を"地図"にしました。中心が本物（未構成）、周りがいとこ。<strong>クリック</strong>すると、各いとこで何が厳密で、本物まで何が残るかが読めます。</p>
+
+  <div class="fig">
+    <div class="cap">図：いとこ距離マップ。中心＝<strong>本物：4次元 SU(3) 純YM（未構成）</strong>。周りの3つのいとこの<strong>丸をクリック</strong>すると、何が厳密／本物との距離が出る。いとこは強力な状況証拠だが、中心には到達していない</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">06</span>挑戦編の総括 ── 三筋は、同じ一つの壁で出会う</h2>
+
+  <p>これで三つのルートが出そろいました。俯瞰すると ── <em>登り方はまるで違うのに、止まる場所は同じ</em>です。</p>
+
+  <table class="dt">
+    <tr><th>ルート</th><th>登れた所</th><th>止まった壁</th></tr>
+    <tr><td class="id">A 格子×くりこみ群</td><td>厳密な定義、強結合ギャップ、UV安定性(Balaban)</td><td class="open">連続極限を非摂動で制御しきる（4次元）</td></tr>
+    <tr><td class="id">B 確率量子化</td><td>3次元YM測度を構成(Hairer系, 2022)</td><td class="open">4次元は臨界＋公理・ギャップの完全確認</td></tr>
+    <tr><td class="id">C 横から(いとこ)</td><td>いとこで閉じ込め・ギャップが厳密に起こる</td><td class="open">本物(N=3・超対称なし・平坦4次元)そのものでない</td></tr>
+  </table>
+
+  <div class="keybox">
+    <div class="lbl">共通の壁 ── そして、その底</div>
+    <p style="margin:0;">どのルートも、最後は<strong>「4次元で、本物の理論を、非摂動的に厳密に制御する」</strong>で止まる ── 連続極限（相関長が発散する臨界点）を渡りきる、ちょうど4次元で最も高い壁。第4回で見たとおり、その底は<em>離散から連続のローレンツ不変な時空が立ち上がるか</em>という、<strong>ブラックホール＝量子重力とも地続きの縁</strong>。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 挑戦編の締めとして</span>
+    <p style="margin-top:0;">'t Hooft の大 \(N\) 展開（\(\lambda=g^2N\)、平面優勢、1974）、AdS/CFT（Maldacena 1997）と重力双対での閉じ込め・質量ギャップ（Witten 1998）、\(\mathcal N{=}2\) 超YMの厳密低エネルギー解とモノポール凝縮による閉じ込め（Seiberg–Witten 1994）、\(\mathcal N{=}1\) SYM のグルイーノ凝縮、そしてルートA（Balaban）・ルートB（Chandra–Chevyrev–Hairer–Shen 2022）の到達点は、いずれも確立した結果です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>どのいとこも、どのルートも、4次元 \(SU(N)\) 純ヤン=ミルズの存在と質量ギャップを完成させていません</strong>（2025年時点、未解決）。いとこ（大N・ホログラフィー・超対称）は本物と別の理論で、状況証拠は強くても証明ではない。図の"距離"は関係を俯瞰するための概念的配置で、定量的な指標ではありません。この挑戦編がしたのは<strong>攻め方を正確に地図化し、共通の壁を名指しすること</strong> ── 登頂宣言ではありません。掟どおり、旗ではなく縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>大 \(N\) 極限で理論が簡単になるのはなぜか。本物との距離は？
+        <details><summary>答えを見る</summary><div class="ans">\(\lambda=g^2N\) を固定して \(N\to\infty\) にすると、種数 \(g\) の図が \(N^{2-2g}\) で効き、平面図（\(g=0\)）だけが支配して劇的に簡単になる。距離：本物は \(N=3\) で \(1/N\) 補正が要り、しかも大 \(N\) YM 自体も厳密には未構成 ── 簡単化であって証明ではない。</div></details>
+      </li>
+      <li>ホログラフィーや超対称で「閉じ込め・ギャップ」が厳密に出せるのに、なぜ"解けた"にならない？
+        <details><summary>答えを見る</summary><div class="ans">対象が本物と別の理論だから。ホログラフィーは別理論（\(\mathcal N{=}4\) 等）・大N大λ・AdS内で、双対自体も未証明の予想。超対称は余分な対称性と粒子を足し、本物への極限が非厳密。どちらも「ヤン=ミルズ型で閉じ込め・ギャップが起こりうる」強い状況証拠だが、当の4次元SU(3)純YMの構成＋証明ではない。</div></details>
+      </li>
+      <li>三つのルート（A・B・C）が最後に出会う"共通の壁"を一言で。その底は何と地続きか。
+        <details><summary>答えを見る</summary><div class="ans">「4次元で、本物の理論を非摂動的に厳密に制御する」── 連続極限（相関長が発散する臨界点）を渡りきる、ちょうど4次元で最も高い壁。その底は、離散から連続のローレンツ不変な時空が立ち上がるかという問いで、ブラックホール＝量子重力と地続き。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第8回まとめ／挑戦編 完</span>いとこは光を当てる、だが頂上は未踏</h2>
+    <p>ルートC＝横から。<strong>大 \(N\)</strong>（\(\lambda=g^2N\) 固定で平面図支配）、<strong>ホログラフィー</strong>（AdS/CFT、重力双対で閉じ込め・ギャップを計算）、<strong>超対称</strong>（Seiberg–Witten の厳密解、モノポール凝縮＝閉じ込め）── どれも「ヤン=ミルズ型で閉じ込め・ギャップが<em>厳密に起こりうる</em>」強力な状況証拠。だが本物（\(N{=}3\)・超対称なし・平坦4次元）そのものではない。</p>
+    <p>挑戦編を俯瞰すると ── A（格子×くりこみ群）・B（確率量子化）・C（いとこ）は登り方がまるで違うのに、<strong>同じ一つの壁</strong>で止まる：「4次元で本物を非摂動的に厳密制御」。その底は、離散→連続のローレンツ不変な時空＝<strong>ブラックホール／量子重力と地続きの縁</strong>。<em>私たちは登っていない ── 攻め方を地図化し、壁を名指しした。</em>頂上は未踏のまま。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-07-noise.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第7回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">挑戦編 完 ── 頂上は未踏のまま</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第8回（挑戦編④・ルートC／挑戦編 完）、物理好きの高校生・大学生向け読み物。't Hooft の大 \(N\) 展開（\(\lambda=g^2N\)、平面図優勢、種数展開 \(\sum N^{2-2g}f_g\)、1974）、AdS/CFT（Maldacena 1997）と重力双対での閉じ込め・質量ギャップ（Witten 1998）、\(\mathcal N{=}2\) 超対称ヤン=ミルズの厳密低エネルギー解とモノポール凝縮＝双対マイスナー効果による閉じ込め（Seiberg–Witten 1994）、\(\mathcal N{=}1\) SYM のグルイーノ凝縮、ルートA（Bałaban のRG）・ルートB（3次元YM測度、Chandra–Chevyrev–Hairer–Shen 2022）の到達点は、いずれも確立した結果です。4次元 \(SU(N)\) 純ヤン=ミルズの存在と質量ギャップは未解決で（2025年時点）、いとこ理論（大N・ホログラフィー・超対称）は本物と別理論のため状況証拠にとどまり、AdS/CFT 双対自体も数学的には未証明の予想です。図の距離配置は関係を俯瞰するための概念図で、定量指標ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではいとこ距離マップの丸をクリックすると、各いとこで何が厳密／本物との距離が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var nodes=[
+    {id:'real', name:'本物：4次元SU(3)純YM', sub:'（未構成＝頂上）', x:0.5, y:0.5, r:34, col:'#8a8574',
+     desc:'我々が構成したい当の理論 ── N=3・超対称なし・平坦な4次元・実際の結合。どのいとこもここには到達していない。挑戦編の頂上。'},
+    {id:'N', name:'大 N', x:0.5, y:0.17, r:26, col:'#2f6d8a',
+     desc:'λ=g²N を固定して N→∞。平面図だけが効き、閉じ込めの描像が鮮明。だが本物は N=3 で 1/N 補正が要り、大N YM 自体も厳密には未構成 ── 簡単化であって証明ではない。'},
+    {id:'H', name:'ホログラフィー', x:0.84, y:0.72, r:26, col:'#7a4fa0',
+     desc:'AdS/CFT（Maldacena）。強結合ゲージ理論＝高次元AdS重力の双対で、閉じ込め・ギャップを計算できる（Witten）。だが別理論（N=4等）・大N大λ・AdS内で、双対自体も未証明の予想。本物そのものではない。'},
+    {id:'S', name:'超対称のいとこ', x:0.16, y:0.72, r:26, col:'#a5622a',
+     desc:'N=2超YMは低エネルギーが厳密に解け、モノポール凝縮で閉じ込め（Seiberg–Witten 1994）。N=1 SYMはグルイーノ凝縮でギャップ。厳密だが超対称は余分な対称性・粒子を足し、本物への極限は非厳密。'}
+  ];
+  var sel='real', lastW=680;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    var pad=44;
+    function X(x){return pad+x*(w-2*pad);}
+    function Y(y){return pad+y*(h-2*pad);}
+    ctx.clearRect(0,0,w,h);
+    var C=nodes[0], cx=X(C.x), cy=Y(C.y);
+    // エッジ（いとこ→本物）＋距離ラベル
+    for(var i=1;i<nodes.length;i++){ var n=nodes[i], nx=X(n.x), ny=Y(n.y);
+      ctx.strokeStyle='#d3c7ad';ctx.lineWidth=1.6;ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(nx,ny);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a89670';ctx.font='10px sans-serif';ctx.textAlign='center';
+      ctx.fillText('距離', (cx+nx)/2, (cy+ny)/2-4);
+    }
+    ctx.textAlign='center';
+    // ノード
+    for(var j=0;j<nodes.length;j++){ var n2=nodes[j], x=X(n2.x), y=Y(n2.y), isSel=(sel===n2.id);
+      ctx.fillStyle=n2.col; ctx.globalAlpha=(n2.id==='real')?0.55:0.9;
+      ctx.beginPath();ctx.arc(x,y,n2.r,0,7);ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle=isSel?'#26456e':'#fff';ctx.lineWidth=isSel?3.5:2;ctx.beginPath();ctx.arc(x,y,n2.r,0,7);ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';
+      // 名前（丸内、必要なら2行）
+      var nm=n2.name, lines=nm.length>7?[nm.slice(0,Math.ceil(nm.length/2)),nm.slice(Math.ceil(nm.length/2))]:[nm];
+      for(var k=0;k<lines.length;k++) ctx.fillText(lines[k], x, y+4-(lines.length-1)*7+k*14);
+    }
+    ctx.textAlign='left';
+    var s=nodes.filter(function(n){return n.id===sel;})[0];
+    rd.innerHTML='<b>'+s.name+(s.sub||'')+'</b> ── '+s.desc;
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sc=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sc, my=(e.clientY-rect.top)*sc;
+    var d=setupHiDPI(cv), w=d.w, h=d.h, pad=44;
+    for(var i=0;i<nodes.length;i++){ var n=nodes[i], x=pad+n.x*(w-2*pad), y=pad+n.y*(h-2*pad);
+      var dx=mx-x, dy=my-y; if(dx*dx+dy*dy<=(n.r+4)*(n.r+4)){ sel=n.id; break; } }
+    draw();
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(draw,50); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

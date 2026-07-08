@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100万ドルの問題 ── ヤン=ミルズを一言で ／ ミレニアム問題を解くぞ 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  /* 谷の図（確信 vs 証明） */
+  .valley{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:flex;flex-wrap:wrap;}
+  .valley .col{flex:1;min-width:180px;padding:18px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .valley .col.phys{background:#e9f0ec;}
+  .valley .col.math{background:#f3ece1;}
+  .valley .col .h{font-size:12px;letter-spacing:.14em;font-weight:700;margin-bottom:8px;}
+  .valley .phys .h{color:var(--solved);} .valley .math .h{color:var(--warn);}
+  .valley .col .m{font-size:30px;font-weight:800;line-height:1;margin-bottom:6px;}
+  .valley .phys .m{color:var(--solved);} .valley .math .m{color:var(--warn);}
+  .valley .col .d{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.valley{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 1 回</span></div>
+  <p class="eyebrow">世界に7つ、1問100万ドルの未解決問題 ── その一つを、正体から</p>
+  <h1>100万ドルの問題 ── ヤン=ミルズを一言で
+    <span class="sub">7つのうち、解けたのはたった1つ。ヤン=ミルズは一言でいうと<strong>「強い力を数学でちゃんと作り、"質量ギャップ"を証明せよ」</strong>。<br>そして最大の不思議 ── <em>物理はほぼ100%確信しているのに、数学の証明はまだゼロ。</em>100万ドルは、その谷にある。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：問題の"正体"を一言でつかむ（式も使う）</span>
+    <span>一言で：強い力を数学で作り、質量ギャップを証明せよ</span>
+  </div>
+
+  <p class="lead">2000年、アメリカのクレイ数学研究所が、<strong>「これが解けたら100万ドル」</strong>という数学の超難問を7つ選びました ── <strong>ミレニアム問題</strong>。どれも100年前後、世界中の天才が挑んで解けていない問題ばかり。そのうち、今のところ<em>解けたのはたった1つ</em>です。この回では、残る大問題の一つ<strong>「ヤン=ミルズ問題」</strong>が、そもそも何を問うているのかを、高校生でも分かる言葉でつかみます。式も遠慮なく使います（マニアックな人向け）が、まずは全体像から ── 7つの問題を眺めるところから。</p>
+
+  <h2><span class="n">01</span>ミレニアム問題って？ ── 7つのうち、解けたのは1つ</h2>
+
+  <p>7つとも、分野はバラバラ（計算・幾何・素数・流体…）。共通するのは<strong>「かんたんそうに見えて、100年解けていない」</strong>こと。下のボードを<strong>クリック</strong>すると、それぞれが何の問題か分かります。<span style="color:var(--solved);font-weight:700;">緑</span>が唯一解けたもの（ポアンカレ予想、ペレルマンが2003年に解決）、<span style="color:var(--gold);font-weight:700;">金の枠</span>が私たちの主役ヤン=ミルズです。</p>
+
+  <div class="fig">
+    <div class="cap">図：7つのミレニアム問題。タイルをクリックすると内容が出る。<span style="color:var(--solved);font-weight:700;">緑＝解決済み（1つだけ）</span>／赤＝未解決／<span style="color:var(--gold);font-weight:700;">金枠＝ヤン=ミルズ（このシリーズの主役）</span></div>
+    <canvas id="cv" width="680" height="250"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>解決済み（1つ）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未解決（6つ）</span>
+      <span><i class="swatch" style="background:#fffdf8;border:2px solid #a9791a;"></i>ヤン=ミルズ（主役）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>ヤン=ミルズ問題を、一言で</h2>
+
+  <p>むずかしい名前ですが、中身は二つのお願いに分かれます。相手は<strong>「強い力」</strong> ── 原子核の中で、クォークをぎゅっと束ねて陽子や中性子を作っている、自然界で一番強い力です。</p>
+
+  <div class="keybox">
+    <div class="lbl">一言でいうと（お願いは二つ）</div>
+    <p class="big" style="margin:0;">① 強い力の理論を、<strong>数学としてちゃんと存在させよ</strong>（つじつまの合う"本物の理論"だと示せ）。<br>② その理論に<strong>「質量ギャップ」があると証明せよ</strong>（＝ゼロでない、最小のエネルギーがある）。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">もう少し数式で（マニア向け）</div>
+    <p style="margin:0 0 8px;">① <strong>存在</strong>：4次元時空の上に、\(SU(3)\) ヤン=ミルズ場の量子論を、数学の公理（Wightman／Osterwalder–Schrader）を満たす"本物"として構成する。</p>
+    <p style="margin:0 0 4px;">② <strong>質量ギャップ</strong>：ハミルトニアン \(H\) の取りうるエネルギー（スペクトル）が、真空の 0 の<em>すぐ上に幅 \(\Delta\) の隙間</em>を持つ：</p>
+    $$\mathrm{spec}(H)=\{0\}\ \cup\ [\Delta,\infty),\qquad \Delta>0$$
+    <p style="margin:8px 0 0;">等価な言い方：真空でつないだ相関が距離で<strong>指数的に</strong>落ちる ── \(\langle O(0)\,O(r)\rangle\sim e^{-r/\xi}\)、そして \(\Delta=\hbar c/\xi\)。「隙間がある」＝「相関がスッと消える」は同じこと。</p>
+  </div>
+
+  <p>①は「その理論、そもそも数学的にきちんと定義できてるの？」というお願い。②の<strong>質量ギャップ</strong>は次回くわしくやりますが、いまはこう思ってください ── <em>「何もない真空から一番かんたんに作れる"モノ"でも、重さ（エネルギー）がゼロにはならず、ある最小値から始まる」</em>。ゼロと最初のあいだに、ぽっかり空いた隙間（ギャップ）がある。これが「質量ギャップ」です。</p>
+
+  <div class="aside">
+    <span class="tag">名前の由来（豆知識）</span>
+    「ヤン=ミルズ」は人の名前です。1954年、物理学者の<strong>楊振寧（Yang）とミルズ（Mills）</strong>が作った、力を表すための数学のしくみ（＝ゲージ理論）のこと。電磁気も、強い力も、弱い力も、ぜんぶこの同じしくみの仲間 ── くわしくは第2回で。
+  </div>
+
+  <h2><span class="n">03</span>なぜ、そんなに大事なの？</h2>
+
+  <p>「強い力の最小エネルギー」なんて、遠い世界の話に聞こえます。でも、これはあなたの体にも直結しています。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2;">
+    <li><strong>あなたの体重のほとんどは、この力のエネルギー。</strong>陽子の重さの99%は、クォーク自身の重さではなく、強い力が閉じ込めているエネルギー（\(E=mc^2\)）。質量ギャップは、その"重さの出どころ"の核心。</li>
+    <li><strong>原子核がまとまるのも、この力。</strong>強い力が「すぐ届かなくなる（短い距離しか効かない）」のは、質量ギャップがあるから ── だから原子核はちょうどいい大きさでまとまる。</li>
+    <li><strong>もし質量ギャップが無かったら</strong>、強い力は電磁気のように無限に届いてしまい、原子も物質も、今の姿ではいられません。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">質量ギャップ ⟺ 短射程（湯川ポテンシャル）</div>
+    $$V(r)\ \propto\ \frac{e^{-r/\lambda}}{r},\qquad \lambda=\frac{\hbar c}{\Delta}$$
+    <p style="margin:8px 0 0;">力を伝える"モノ"に最小エネルギー \(\Delta\) があると、その力は距離 \(\lambda=\hbar c/\Delta\) でスッと弱まる。\(\Delta\approx\) 数百 MeV なら \(\lambda\approx1\) fm（＝陽子サイズ）── だから強い力は原子核サイズしか届かない。もし \(\Delta=0\)（ギャップ無し）なら \(\lambda=\infty\)、電磁気のように無限に届いてしまう。<strong>ギャップの有無が、力の"届く距離"を決める。</strong></p>
+  </div>
+
+  <p>つまりヤン=ミルズ問題は、<em>「なぜ物質には重さがあり、原子核はまとまるのか」</em>を、数学の一番深いところで支えている問いなのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>いちばんの不思議 ── 物理は"知ってる"、数学が"追いつかない"</h2>
+
+  <p>ここが、この問題の一番おもしろいところ。<strong>物理学者は、質量ギャップがあることをほぼ100%確信しています。</strong>実験でも、スーパーコンピュータの計算（格子計算）でも、はっきり「ある」と出る。陽子の重さも、ちゃんと計算で再現できる。</p>
+
+  <p>なのに ── <strong>数学として"証明"した人は、まだ誰もいない。</strong>「たぶんある」でも「実験で見える」でもなく、<em>一分のスキもない数学の証明</em>が無い。この<strong>「確信」と「証明」の谷</strong>こそが、100万ドルの正体です。</p>
+
+  <div class="valley">
+    <div class="col phys">
+      <div class="h">物理の目（実験＋計算機）</div>
+      <div class="m">ほぼ100%</div>
+      <div class="d">質量ギャップは「ある」。陽子の重さも計算で合う。誰も疑っていない。</div>
+    </div>
+    <div class="col math">
+      <div class="h">数学の目（厳密な証明）</div>
+      <div class="m">まだ 0</div>
+      <div class="d">「本物の理論として存在し、ギャップがある」と<em>証明</em>できた人はゼロ。100万ドルは、この谷を埋めた人へ。</div>
+    </div>
+  </div>
+
+  <p>「知っている」と「証明できた」は、数学では別ものです。<em>みんなが正しいと信じていることを、一点の隙もなく証明する</em> ── それがどれほど難しいか。この谷の深さと、なぜそんなに深いのかを、これから何回かかけてほどいていきます。</p>
+
+  <h2><span class="n">05</span>このシリーズの約束</h2>
+
+  <p>タイトルは「解くぞ」。本気で正体に迫ります。でも ── <strong>最後に「解けた！」の旗を立てることはしません。</strong>ヤン=ミルズ問題は今も未解決で、それを"チャットで解けた"と言い出すのは、いちばんやってはいけないこと。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの掟</div>
+    <p class="big" style="margin:0;">旗ではなく、<strong>縁の標識</strong>を立てる。<br>問題の正体を分かる形にほどき、"確信と証明の谷"を正確に測り、<em>本当に難しいのはどこか（縁）</em>を指す。分かったふりも、解けたふりも、しない。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この回で言った「物理はほぼ100%確信」は言葉のあや ── 正確には、実験（陽子・中間子などの質量）と格子ゲージ計算が「質量ギャップあり」で完全に一致している、という意味です。ただしそれは<strong>物理としての確信</strong>で、クレイ問題が求める<strong>数学の厳密な証明</strong>とは別もの（この違いが、まさに第4回の主役）。また7問のうち解決済みはポアンカレ予想のみ（ペレルマン、2003年前後）というのも2025年時点の事実です。</p>
+    <p style="margin-bottom:0;">「陽子の重さの99%は強い力のエネルギー」は確立した描像（残り約1%がクォーク自身の質量＝ヒッグス由来）。\(E=mc^2\) は、エネルギーと質量が同じものの表と裏、という意味で使っています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>ヤン=ミルズ問題の「二つのお願い」は何か。
+        <details><summary>答えを見る</summary><div class="ans">① 強い力の理論を、数学としてちゃんと存在させる（つじつまの合う本物の理論だと示す）。② その理論に「質量ギャップ」（ゼロでない最小エネルギー）があると証明する。この二つがそろって初めて"解けた"ことになる。</div></details>
+      </li>
+      <li>「物理学者は質量ギャップがあると確信している。なら、もう解けたのでは？」── どこが違う？
+        <details><summary>答えを見る</summary><div class="ans">違う。物理の「確信」（実験＋計算機が一致）と、数学の「証明」（一点の隙もなく示す）は別もの。クレイ問題が求めるのは後者。みんなが正しいと信じていても、証明が無ければ未解決 ── その谷が100万ドル。</div></details>
+      </li>
+      <li>質量ギャップが無かったら、私たちの世界はどう変わる？（この回の範囲で一言）
+        <details><summary>答えを見る</summary><div class="ans">強い力が電磁気のように無限に届いてしまい、原子核がちょうどよくまとまらない。陽子の重さの出どころも崩れる。つまり、今の物質・原子の姿は保てない。質量ギャップは"物質に重さがあり原子核がまとまる"ことの土台。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>ヤン=ミルズを、一言で</h2>
+    <p>ミレニアム問題は、1問100万ドルの数学の超難問7つ（解けたのはポアンカレ予想の1つだけ）。ヤン=ミルズ問題は一言で ──<strong>「強い力の理論を数学でちゃんと存在させ、質量ギャップ（ゼロでない最小エネルギー）があると証明せよ」</strong>。この力は、あなたの体重の99%と、原子核がまとまる理由の、いちばん深い土台。</p>
+    <p>最大の不思議は、<strong>物理はほぼ100%確信しているのに、数学の証明がまだゼロ</strong>という"谷"。100万ドルはそこにある。このシリーズは「解くぞ」の気持ちで正体に迫るが、<em>旗は立てない ── 縁の標識を立てる</em>。次回は、そもそも「力」とは何か、ヤン=ミルズが"力の設計図"だという話へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">第2回：力ってなんだ？（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第1回、物理好きの高校生・大学生向け読み物。クレイ数学研究所のミレニアム懸賞問題（2000年設定、各100万ドル、7問）、ヤン=ミルズの存在と質量ギャップ問題（Jaffe–Witten による問題設定）、解決済みはポアンカレ予想のみ（ペレルマン、2002–03年）は、いずれも事実です（2025年時点）。「質量ギャップ」はゼロでない最小の励起エネルギー \(\Delta>0\) を指し、強い相互作用では実験（ハドロン質量）と格子ゲージ計算が存在を支持しますが、4次元での数学的な厳密証明は未解決です。陽子質量の約99%が強い相互作用の（閉じ込め）エネルギー由来、残り約1%がクォーク質量（ヒッグス由来）という配分は確立した描像です。物理の「確信」と数学の「証明」は別種の確からしさで、本シリーズはその区別を軸にします。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボードのタイルをクリックすると、7つの問題の内容が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var probs=[
+    {label:"P vs NP", solved:false, ours:false, desc:"答えの確認が速い問題は、答え探しも速い？ ── 計算の難しさをめぐる大問題。"},
+    {label:"ホッジ予想", solved:false, ours:false, desc:"図形（多様体）の“かたち”を、方程式でどこまで書けるか。幾何と代数の橋。"},
+    {label:"ポアンカレ予想", solved:true, ours:false, desc:"「穴のない3次元の形は、丸められる」── 7問で唯一の解決（ペレルマン、2003年ごろ）。"},
+    {label:"リーマン予想", solved:false, ours:false, desc:"素数の並び方の秘密。ゼータ関数の“ゼロ”が、みな一直線に乗る？"},
+    {label:"ヤン=ミルズと質量ギャップ", solved:false, ours:true, desc:"強い力の理論を数学でちゃんと作り、“質量ギャップ”（ゼロでない最小エネルギー）があると証明せよ ── このシリーズの主役。"},
+    {label:"ナビエ–ストークス", solved:false, ours:false, desc:"水や空気の流れの方程式は、いつも滑らかな解を持つ？ 途中で破綻しない？"},
+    {label:"BSD予想", solved:false, ours:false, desc:"方程式の“有理数の答え”の個数を、ゼータ的な量が予言する？"}
+  ];
+  var boxes=[], lastW=680, sel=4;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var padX=14, gap=11, cols=4, tileH=92, topY=10, row2Y=topY+tileH+14;
+    var tileW=(w-2*padX-(cols-1)*gap)/cols;
+    boxes=[];
+    for(var i=0;i<probs.length;i++){
+      var row=i<4?0:1, col=i<4?i:(i-4);
+      var x, y;
+      if(row===0){ x=padX+col*(tileW+gap); y=topY; }
+      else { var n2=3, tot=n2*tileW+(n2-1)*gap, sx=(w-tot)/2; x=sx+col*(tileW+gap); y=row2Y; }
+      boxes.push({x:x,y:y,w:tileW,h:tileH,i:i});
+      var p=probs[i], isSel=(i===sel);
+      // fill
+      var fill = p.solved? '#e4f0ea' : (p.ours? '#fffdf8':'#f6e9e4');
+      ctx.fillStyle=fill; roundRect(ctx,x,y,tileW,tileH,7); ctx.fill();
+      // border
+      if(p.ours){ ctx.strokeStyle='#a9791a'; ctx.lineWidth=isSel?4:3; }
+      else { ctx.strokeStyle= p.solved? '#2f7d5a':'#c99b90'; ctx.lineWidth=isSel?3.5:1.4; }
+      roundRect(ctx,x,y,tileW,tileH,7); ctx.stroke();
+      // selected glow
+      if(isSel){ ctx.save(); ctx.shadowColor='rgba(38,69,110,.25)'; ctx.shadowBlur=10; roundRect(ctx,x,y,tileW,tileH,7); ctx.stroke(); ctx.restore(); }
+      // status dot
+      ctx.fillStyle= p.solved? '#2f7d5a':'#a5473a';
+      ctx.beginPath(); ctx.arc(x+14, y+16, 5, 0, 7); ctx.fill();
+      if(p.solved){ ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(x+11.5,y+16); ctx.lineTo(x+13.5,y+18.5); ctx.lineTo(x+16.5,y+13); ctx.stroke(); }
+      // label (wrap by width)
+      ctx.fillStyle='#22262e'; ctx.font='bold 13.5px sans-serif'; ctx.textAlign='center';
+      var words=p.label, lines=wrapLabel(ctx, words, tileW-16);
+      var ly=y+tileH/2 - (lines.length-1)*9 + 4;
+      for(var k=0;k<lines.length;k++){ ctx.fillText(lines[k], x+tileW/2, ly+k*18); }
+      ctx.textAlign='left';
+    }
+    // readout
+    var s=probs[sel];
+    rd.innerHTML='<b>'+s.label+'</b>'+(s.ours?'（★このシリーズの主役）':(s.solved?'（唯一の解決済み）':'（未解決）'))+' ── '+s.desc;
+  }
+  function wrapLabel(ctx, text, maxw){
+    // 日本語＝文字単位で折り返し
+    var lines=[], cur='';
+    for(var i=0;i<text.length;i++){
+      var t=cur+text[i];
+      if(ctx.measureText(t).width>maxw && cur.length>0){ lines.push(cur); cur=text[i]; }
+      else cur=t;
+    }
+    if(cur) lines.push(cur);
+    return lines.slice(0,3);
+  }
+  cv.addEventListener('click', function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(draw,40); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

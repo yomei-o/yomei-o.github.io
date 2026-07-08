@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略③ 相関長の一様下限で挟む ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --ok:#2f7d5a; --bad:#a5473a; --surf:#2f6d8a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--ok);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編③（深掘り）</span></div>
+  <p class="eyebrow">順序を逆に ── 構成しきる前に、ギャップそのものを一様におさえる</p>
+  <h1>戦略③ 相関長の一様下限で挟む ── 作らずにギャップを直接おさえる
+    <span class="sub">ルートA/Bは「まず連続理論を構成 → ギャップ証明」の二段。戦略③は逆 ── <strong>格子間隔 \(a\) に"よらない"相関減衰の下限</strong>を直接おさえ、\(a\to0\) でギャップが生き残ることを言う。<br>筋は良い（ギャップはIR量・片側不等式でよい）。だが<em>一様性</em>が、結局そのままQ3に戻る。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：戦略③の勝ち筋と壁を絞る（数式あり）</span>
+    <span>核心：\(\langle OO\rangle\le C e^{-mr}\) を \(a\) に一様に ／ 面のエントロピー vs 抑制</span>
+  </div>
+
+  <p class="lead">あなたが可能性を感じている筋 ── これは正直、<strong>筋が良い</strong>。ルートA（格子×くりこみ群）もB（確率量子化）も「まず連続理論を丸ごと構成し、そのうえでギャップを示す」二段構え。戦略③は<em>順序を逆にする</em> ── 構成の細部を全部詰める前に、<strong>質量ギャップ（＝相関の指数減衰）そのものを、格子間隔 \(a\) に"よらない"下限として直接つかまえる</strong>。ギャップはIRの量で、しかも必要なのは<em>片側の不等式</em>だけ。標的が小さいぶん、部分的な勝ちが出やすい。だが ── その"一様に"の三文字が、結局Q3に戻ってくる。どこまで効いて、どこで壁か、絞ります。</p>
+
+  <h2><span class="n">01</span>発想の逆転 ── ギャップは"片側の下限"でよい</h2>
+
+  <p>質量ギャップ \(\Delta>0\) は、相関の指数減衰と同値（第3・5回）。狙うのは、それを<strong>格子間隔によらず</strong>示すこと：</p>
+
+  <div class="keybox">
+    <div class="lbl">戦略③の目標 ── 一様な指数減衰</div>
+    $$\langle O(0)\,O(r)\rangle\ \le\ C\,e^{-m\,r}\qquad(m>0,\ C\ \text{と}\ m\ \text{は}\ a\ \text{によらない})$$
+    <p style="margin:10px 0 0;">これが<strong>一様</strong>に言えれば、\(a\to0\) の極限でも相関長 \(\xi=1/m\) は有限のまま＝<strong>ギャップは消えない</strong>。連続理論の細部を全部構成しなくても、"ギャップの存在"だけは救える。しかも必要なのは<em>上からの一本の不等式</em>（等式＝正確な値は要らない）── 標的が小さい。</p>
+  </div>
+
+  <h2><span class="n">02</span>武器 ── 相関を"幾何"で挟む</h2>
+
+  <table class="dt">
+    <tr><th>道具</th><th>何をする</th></tr>
+    <tr><td class="id">相関不等式</td><td>FKG・Griffiths 型。相関を単調性で上下に挟む（スピン系で強力）</td></tr>
+    <tr><td class="id">ランダムサーフェス表現</td><td><strong>ウィルソンループ＝それを縁とする曲面の和</strong>。相関を"面の和"に幾何化し、減衰を面積で評価</td></tr>
+    <tr><td class="id">ポリマー／クラスター展開</td><td>相互作用を"つながり"に分解。収束半径の中で指数減衰を厳密に</td></tr>
+    <tr><td class="id">多スケール＋くりこみ群</td><td>強結合の外へ、スケールごとに下限を積み上げる（Bauerschmidt–Brydges–Slade 系）</td></tr>
+  </table>
+
+  <p>本丸は<strong>ランダムサーフェス表現</strong>。強結合展開を幾何にすると、閉じ込めの証拠<em>面積則</em>が、面の和として見えてきます。</p>
+
+  <h2><span class="n">03</span>ウィルソンループ＝ランダム曲面の和 ── 抑制 vs エントロピー</h2>
+
+  <div class="calc">
+    <span class="tag">面の和が、面積則になるか否か</span>
+    $$\langle W(C)\rangle \sim \sum_{\text{面 }\Sigma:\ \partial\Sigma=C} \underbrace{e^{-\sigma_0\,\mathrm{Area}(\Sigma)}}_{\text{抑制}}\times\underbrace{(\text{面の個数}\sim e^{+s\,\mathrm{Area}(\Sigma)})}_{\text{エントロピー}}\ \sim\ e^{-(\sigma_0-s)\,\mathrm{Area}}$$
+    <p style="margin-bottom:14px;">縁 \(C\) を張る面は無数にある。各面は作用で \(e^{-\sigma_0\mathrm{Area}}\) と<strong>抑制</strong>されるが、同じ面積の面が<strong>指数的にたくさん</strong>ある（面の<em>エントロピー</em> \(e^{+s\,\mathrm{Area}}\)）。実効的な弦張力は差 \(\sigma=\sigma_0-s\)。<strong>抑制がエントロピーに勝てば（\(\sigma>0\)）面積則＝閉じ込め＝ギャップ</strong>。負ければ面が"荒れて"和が制御できない。</p>
+  </div>
+
+  <p>下の図で、面の<strong>荒れ（エントロピー）</strong>をスライダーで上げてみてください。強結合（低エントロピー）では最小面がぴんと張り、面積則＝ギャップが一様に取れる。連続へ向かう（高エントロピー）と面が激しく揺らぎ、和が制御困難＝<strong>壁</strong>。</p>
+
+  <div class="fig">
+    <div class="cap">図：ウィルソンループ（縁）を張る曲面。スライダーで面の<strong>荒れ（エントロピー \(s\)）</strong>を変える。<span style="color:var(--ok);font-weight:700;">低エントロピー＝抑制が勝ち面積則（ギャップ・一様下限OK）</span>、<span style="color:var(--bad);font-weight:700;">高エントロピー＝面が荒れて和が制御困難（＝壁）</span>。境目 \(s=\sigma_0\)</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>面の荒れ（エントロピー \(s\)）── 右へ動かすと連続極限へ<span class="val" id="vs">0.20</span>
+        <input type="range" id="ss" min="0" max="1" step="0.01" value="0.2">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>張られた曲面 Σ</span>
+      <span><i class="swatch" style="background:#26456e;height:3px;"></i>ウィルソンループ C（縁）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>なぜ筋が良いか（正直な希望）</h2>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;">
+    <li><strong>ギャップはIRの量</strong>：相関長が有限＝長距離の話。UVの繰り込みを全部完成させなくても、"減衰の下限"だけを取りに行ける（第6回・番外①の「IRは御しやすい」）。</li>
+    <li><strong>片側の不等式でよい</strong>：正確な値でなく上からの一本の不等式。数学的に、下限だけの方がしばしばやさしい。</li>
+    <li><strong>標的が小さい</strong>：構成をフルにやる①より的が小さく、<em>部分的成功</em>（ある領域での一様下限、別次元での再証明）が出やすい ── 現実的な貢献の型。</li>
+  </ul>
+
+  <h2><span class="n">05</span>どこが壁か（正直に）</h2>
+
+  <table class="dt">
+    <tr><th></th><th>壁</th><th>なぜ</th></tr>
+    <tr><td class="id">①</td><td class="open">"一様性"がQ3そのもの</td><td>\(a\) に依存する下限では無意味（\(a\to0\) で \(m\to0\) かも）。\(a\) によらない \(m>0\) ＝強結合の外＝臨界へ向かう領域の制御＝Q3</td></tr>
+    <tr><td class="id">②</td><td class="open">非可換で相関不等式が弱い</td><td>FKG等はスピン系で強力だが、行列値・非可換ゲージでは使える不等式が限られる ── 技術的最大難所</td></tr>
+    <tr><td class="id">③</td><td class="open">面のエントロピー爆発</td><td>連続極限で曲面が荒れ、面の和が制御困難（＝図の右側）。これも臨界の顔</td></tr>
+    <tr><td class="id">④</td><td class="open">相関を語るには土俵が要る</td><td>厳密な相関関数を定義するにはOS測度の存在が要り、完全には構成を回避できない（＝"構成＋一様下限"の合わせ技になりがち）</td></tr>
+  </table>
+
+  <p>結局 ── 「<strong>一様に</strong>」の三文字が、強結合の島から連続の岸への制御＝<strong>Q3</strong>に戻る。だが的が小さいぶん、①（フル構成）より部分的成功が出やすいのは本当。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>判定 ── 単独では届かないが、①との合わせ技が本命</h2>
+
+  <div class="keybox">
+    <div class="lbl">戦略③の判定（過大申告なし）</div>
+    <p style="margin:0;">戦略③は<strong>筋が良い</strong>（ギャップはIR量・片側不等式・標的が小さい）。だが<strong>単独では届かない</strong> ── 一様性が結局Q3、非可換で不等式が弱い、面のエントロピー、構成も要る。<em>最も自然なのは①との合わせ技</em>：<strong>①（確率量子化）で連続測度を構成し、③（ランダム曲面／相関不等式）で一様なギャップ下限を与える</strong>。構成と下限を分業する。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">質量ギャップ＝相関の指数減衰、ウィルソンループの面積則＝閉じ込め、強結合展開のランダムサーフェス表現（面の和＝抑制×エントロピー、実効弦張力 \(\sigma=\sigma_0-s\)）、相関不等式（FKG・Griffiths）、ポリマー／クラスター展開、多スケール的な下限（Bauerschmidt–Brydges–Slade 系）は、いずれも確立した道具・描像です。強結合での面積則・ギャップは厳密（Osterwalder–Seiler、第6回Q1）。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>4次元での "\(a\) に一様な" ギャップ下限は未達</strong>で、4次元YMの存在＋質量ギャップは未解決（2025年時点）。相関不等式の非可換ゲージへの適用は限定的で、面のエントロピー制御は臨界の難所そのもの。この回は戦略の絞り込みであって、解法や達成ではありません。図は「抑制 vs エントロピー」の競合を示す<strong>概念的な模式</strong>で、荒れは決定論的なさざ波で描いており、実際の曲面の統計を計算したものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>戦略③が「①のフル構成」より的が小さい、と言える理由を二つ。
+        <details><summary>答えを見る</summary><div class="ans">(1) ギャップはIRの量（相関の長距離減衰）で、UVの繰り込みを全部完成させなくても下限を狙える。(2) 必要なのは片側の不等式（\(\langle OO\rangle\le Ce^{-mr}\)）で、正確な値＝等式は要らない。下限だけの方がしばしばやさしい。</div></details>
+      </li>
+      <li>ウィルソンループの面積則が成り立つ／崩れる境目を、面の和の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">縁を張る面の和 \(\sum e^{-\sigma_0\mathrm{Area}}\times(\text{面の個数}\sim e^{+s\mathrm{Area}})\sim e^{-(\sigma_0-s)\mathrm{Area}}\)。抑制 \(\sigma_0\) が面のエントロピー \(s\) に勝てば実効弦張力 \(\sigma=\sigma_0-s>0\)＝面積則＝ギャップ。エントロピーが勝つ（\(s>\sigma_0\)）と面が荒れ、和が制御できず面積則が崩れる。</div></details>
+      </li>
+      <li>戦略③の最大の壁を一言で。現実的にどう使うのがよいか。
+        <details><summary>答えを見る</summary><div class="ans">「\(a\) に一様な」下限＝強結合の外・連続極限の制御＝Q3そのものに戻ること（加えて非可換で相関不等式が弱い・面のエントロピー・構成も要る）。現実的には単独でなく①との合わせ技 ── ①で連続測度を構成し、③でギャップの一様下限を与える分業が本命。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">戦略③まとめ</span>的は小さい、だが"一様に"がQ3に戻る</h2>
+    <p>戦略③＝順序を逆に、構成しきる前に<strong>ギャップ（相関の指数減衰）の一様下限</strong> \(\langle OO\rangle\le Ce^{-mr}\)（\(m>0\) は \(a\) によらず）を直接おさえる。ギャップはIR量・片側不等式・標的が小さく、筋は良い。武器は相関不等式・ランダムサーフェス表現・ポリマー展開・多スケール。核は<strong>ウィルソンループ＝面の和</strong>で、抑制 \(\sigma_0\) がエントロピー \(s\) に勝てば面積則＝ギャップ。</p>
+    <p>だが壁：「\(a\) に一様に」が結局Q3、非可換で相関不等式が弱い、連続で面のエントロピーが爆発、相関を語るには構成も要る。<strong>単独では届かない</strong> ── だが的が小さいぶん部分的成功が出やすく、<em>①（確率量子化で構成）＋③（一様ギャップ下限）の合わせ技</em>が本命。壁の在処は、やはり「4次元・非摂動・臨界」の一点。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku1-rinkai.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 戦略①</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">①＋③の合わせ技が本命</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編③（深掘り）、物理好きの高校生・大学生向け読み物。質量ギャップ＝相関の指数減衰と一様下限 \(\langle OO\rangle\le Ce^{-mr}\)、ウィルソンループの面積則＝閉じ込め、強結合展開のランダムサーフェス表現（面の和＝作用による抑制 \(e^{-\sigma_0 A}\) × 面のエントロピー \(e^{+sA}\)、実効弦張力 \(\sigma=\sigma_0-s\)）、相関不等式（FKG・Griffiths）、ポリマー／クラスター展開、多スケール的手法（Bauerschmidt–Brydges–Slade 系）、強結合での面積則・ギャップの厳密性（Osterwalder–Seiler 1978）は、いずれも確立した道具・描像です。4次元での \(a\) に一様なギャップ下限、および4次元YMの存在＋質量ギャップは未解決です（2025年時点）。相関不等式の非可換ゲージ理論への適用は限定的で、連続極限での曲面のエントロピー制御は臨界の難所です。図は「抑制 vs エントロピー」の競合を示す概念的模式で、荒れは決定論的なさざ波で描画しており、実際の曲面統計の計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では面の荒れ（エントロピー）を上げると、面積則が保たれる（ギャップ）状態から、面が荒れて和が制御困難になる（壁）状態へ移る様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), ss=document.getElementById('ss'), vs=document.getElementById('vs'), rd=document.getElementById('rd');
+  var SIG0=0.6; // 抑制（実効弦張力の基準）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var s=parseFloat(ss.value); vs.textContent=s.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // ウィルソンループ（縁）＝長方形
+    var lx=70, rx=w-70, ty=60, by=h-70;
+    // 曲面メッシュ（荒れ ∝ s）を描く：格子点を縦に揺らす（決定論的さざ波）
+    var Nx=16, Ny=9, amp=s*46;
+    function px(i){ return lx+(rx-lx)*i/Nx; }
+    function py(j){ return ty+(by-ty)*j/Ny; }
+    function wig(i,j){ // 決定論的な荒れ
+      return amp*(Math.sin(i*0.9+j*0.7)+0.6*Math.sin(i*1.7-j*1.1)+0.5*Math.cos(i*0.5+j*1.9))/2.1;
+    }
+    // 面の塗り（内部）
+    ctx.fillStyle='rgba(47,109,138,'+(0.10+0.10*(1-s))+')';
+    ctx.fillRect(lx,ty,rx-lx,by-ty);
+    // 横線・縦線メッシュ
+    ctx.strokeStyle='rgba(47,109,138,0.55)';ctx.lineWidth=1;
+    for(var j=0;j<=Ny;j++){ ctx.beginPath();
+      for(var i=0;i<=Nx;i++){ var X=px(i), Y=py(j)+wig(i,j); if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);} ctx.stroke(); }
+    for(var i2=0;i2<=Nx;i2++){ ctx.beginPath();
+      for(var j2=0;j2<=Ny;j2++){ var X2=px(i2), Y2=py(j2)+wig(i2,j2); if(j2===0)ctx.moveTo(X2,Y2);else ctx.lineTo(X2,Y2);} ctx.stroke(); }
+    // ウィルソンループ C（縁）＝太い枠
+    ctx.strokeStyle='#26456e';ctx.lineWidth=3.4;ctx.strokeRect(lx,ty,rx-lx,by-ty);
+    ctx.fillStyle='#26456e';ctx.font='bold 12px sans-serif';ctx.fillText('ウィルソンループ C（縁 ∂Σ=C）', lx, ty-10);
+    ctx.fillStyle='#2f6d8a';ctx.font='11px sans-serif';ctx.fillText('張られた曲面 Σ', lx+8, by-8);
+    // 実効弦張力 σ = σ0 − s
+    var sigma=SIG0-s;
+    // readout
+    if(sigma>0.05){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='エントロピー s='+s.toFixed(2)+' &lt; 抑制 σ₀='+SIG0.toFixed(2)+'：実効弦張力 σ=σ₀−s='+sigma.toFixed(2)+'&gt;0。<b>面積則＝閉じ込め＝ギャップ</b>。強結合側なら一様下限が厳密に取れる（Q1）。';
+    } else if(sigma>-0.05){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='s≈σ₀（境目）：抑制とエントロピーが拮抗。実効弦張力 σ≈0 ── <b>面積則がぎりぎり。連続極限（臨界）へ向かう領域＝一様下限の壁</b>。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='エントロピー s='+s.toFixed(2)+' &gt; 抑制 σ₀='+SIG0.toFixed(2)+'：σ&lt;0＝<b>面が荒れて和が制御困難</b>。面積則が崩れ、一様なギャップ下限が取れない＝<b>壁</b>。';
+    }
+  }
+  ss.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

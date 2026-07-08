@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>泥か壁か ── 4つの泥穴、三つの縫い目、そして2次元の実験室 ／ ペレルマン編 第6回（完）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .seam{margin:26px 0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .seam .c{border:1px solid var(--rule);border-radius:7px;padding:14px 15px;background:#fff;text-align:center;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .seam .c .who{font-size:12px;font-weight:700;color:var(--side);letter-spacing:.06em;}
+  .seam .c .has{font-size:13px;color:#33414a;line-height:1.6;margin-top:6px;}
+  .seam .c .ok{color:var(--solved);font-weight:700;font-size:12px;margin-top:6px;}
+  .seam-miss{margin:12px 0 0;padding:16px 20px;border:1.5px dashed var(--open);border-radius:7px;background:#f9ece8;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.8;color:#5a2a20;}
+  .seam-miss b{color:var(--open);}
+
+  .tiers{margin:26px 0;display:flex;flex-direction:column;gap:12px;}
+  .tier{border:1px solid var(--rule);border-radius:7px;padding:15px 20px;background:#fff;position:relative;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .tier::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:7px 0 0 7px;}
+  .tier.go::before{background:var(--solved);} .tier.stop::before{background:var(--open);}
+  .tier .h{font-size:15px;font-weight:700;letter-spacing:.03em;}
+  .tier.go .h{color:var(--solved);} .tier.stop .h{color:var(--open);}
+  .tier .d{font-size:14px;color:#33414a;line-height:1.78;margin-top:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.seam,.tiers,.tier,.seam-miss{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} .seam{grid-template-columns:1fr;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 6 回（完）</span></div>
+  <p class="eyebrow">残ったのは「壁」か、それとも「泥」か ── そして、私たちに手が届く場所はどこか</p>
+  <h1>泥か壁か ── 4つの泥穴と、2次元の実験室
+    <span class="sub">問題は<em>1本の関数不等式</em>まで煮詰まった。これは「壁」（不可能定理）ではなく<strong>「泥」</strong>だ。でも泥は「やればできる」を保証しない。<br>4つの泥穴を測り、<strong>三つのコミュニティの縫い目</strong>を見つけ、そして ── <em>いま私たちの手が本当に届く場所</em>（2次元の実験室）まで、正直に歩く。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：残りの困難を「壁／泥」で仕分けし、できること・できないことを正直に</span>
+    <span>一言で：泥穴3が最深部。段1・2は手が届く、段3（4次元）は届かない</span>
+  </div>
+
+  <p class="lead">ここまでで、ヤン=ミルズの質量ギャップは<strong>「連続極限まで一様なLSIを示せ」という1本の不等式</strong>に煮詰まりました。前回の最後、私は「未踏なのは組み合わせだけ」と言いました。今回は正直にその中身 ──<strong>「泥」</strong>── を測ります。壁（＝原理的に不可能）ではないが、泥は「やればできる」を約束しない。4つの泥穴の深さを測り、意外な発見（<em>三つのコミュニティが部品を一個ずつ持って、誰も縫っていない</em>）を見て、最後に<strong>私たちがこのチャットの中でも本当にできること</strong>まで、線を引きます。</p>
+
+  <h2><span class="n">01</span>「泥」と「壁」は違う</h2>
+
+  <div class="keybox">
+    <div class="lbl">泥と壁の見分け方</div>
+    <p class="big" style="margin:0;"><strong>壁</strong>＝不可能定理がある／そもそも何を証明すべきか定式化すらできない。<br><strong>泥</strong>＝<em>証明すべき式が書き下せて、それを禁じる定理がない</em>状態。<br>いまの到達点は「くりこまれたLSIの一様評価」という一本の不等式 ── <strong>これは泥です。</strong></p>
+  </div>
+
+  <p>ただし正直に。<strong>泥は「やればできる」を保証しません。</strong>保証するのは「努力が原理的に無駄ではない」ことだけ。バラバンの計画も当時「あとは技術的」と言われた泥で、<em>10年以上飲み込んで未完</em>のままです。泥の怖さは、<strong>入るまで深さが分からない</strong>こと ── 補題を一つ潰すと三つ生える「沼型」か、有限個の補題で閉じる「工事型」か、外からは見えない。</p>
+
+  <h2><span class="n">02</span>4つの泥穴 ── クリックして深さを測る</h2>
+
+  <p>ゲージ理論で「フローに沿ったくりこまれたバクリー–エムリー」をやろうとすると、泥は4つの穴に分かれます。下の断面図の<strong>各穴をクリック</strong>すると、正体と深さが出ます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>4つの泥穴の深さ断面</strong>。穴をクリックすると中身と深さ判定（<span style="color:#2f7d5a;font-weight:700;">工事型</span>＝有限個の補題で閉じる／<span style="color:#a5473a;font-weight:700;">最深部</span>＝バラバン級／罠）が出る。<strong>泥穴3が飛び抜けて深い</strong>のが、この問題の「深さの目印」。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>工事型（やればできる）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>最深部（バラバン級）</span>
+      <span><i class="swatch" style="background:#7a6a4a;"></i>設計を誤ると落ちる罠</span>
+    </div>
+  </div>
+
+  <p>要点だけ言葉にすると ──</p>
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:14.5px;">
+    <li><strong>泥穴1（ガウス部分の退化）：</strong>ゲージの自由で足場が平ら。ゲージ固定すると<em>Gribovコピー</em>、軌道空間で直接やると<em>層化</em>という病。でも格子はコンパクトなので軌道空間は有限次元 ── <strong>汚いが定義できる＝工事型</strong>。</li>
+    <li><strong>泥穴2（どの分解を使うか）：</strong>線形の機械（ポルチンスキー）はゲージ共変性を壊す。非線形フローの上でやるしかない ── でもそれ、<em>ペレルマンが一度やってみせた</em>（フロー＋共役熱方程式で完全平方）。だから泥穴2の攻略は、<strong>「YM版W-エントロピーを作る」問いそのものに合流</strong>する。</li>
+    <li><strong>泥穴3（最深部・次元転換の定量再現）：</strong>後述。<strong>ここがバラバン級。</strong></li>
+    <li><strong>泥穴4（にわとりと卵の残り香）：</strong>「ギャップを知るのにLSI、LSIはギャップを知っている」の循環の匂い。でも多スケール法が<em>まさに解毒</em>する（各スケールは局所的な凸性だけ要求、ギャップは積分から創発）── <strong>第1回の「ループが螺旋になる」の実地版</strong>。設計を誤ると落ちる罠。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">泥穴3が最深部である理由（深さの目印）</span>
+    連続極限へのRG軌道上で、格子単位の相関長は \(\xi\sim e^{c\beta}\) と<strong>指数的に育ち</strong>ます（漸近的自由＝次元転換）。物理単位のLSI定数が下から抑えられるには、格子単位のLSI定数が<em>ちょうど \(\xi^{-2}\sim e^{-2c\beta}\) の速さで（それより速くなく）</em>劣化することを示す必要がある。つまり多スケール評価は、<strong>ベータ関数の指数を主要オーダーで正確に追跡</strong>しなければならない。雑な評価では指数が合わずに死ぬ ── <em>バラバン級の精密さが要る本当の理由がここ</em>。希望も同じ場所に：弱結合では摂動論がこの指数を完璧に知っている。問題は、中間帯でそれを<strong>非摂動的に手放さない</strong>こと。
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">泥の収支報告</div>
+    <p style="margin:0 0 8px;">・<strong>泥穴1・2＝工事型</strong>：有限個の書き下せる補題。格子のコンパクト性＋ペレルマンの前例という設計図がある。腕力の問題。</p>
+    <p style="margin:0 0 8px;">・<strong>泥穴3＝深い</strong>：指数精度の多スケール解析。ここで「週末の趣味」が「バラバン級の遠征」に変わる。ただし乗り物は当時より良い ── クラスター展開が局所情報を膨大な帳簿で運んだのに対し、<em>関数不等式（LSI）は大域情報を一本の不等式で運ぶ</em>。</p>
+    <p style="margin:0;">・そして<strong>泥穴2の攻略＝「YM版W-エントロピーは存在するか」と同一の問い</strong>。ここに問題の芯がある。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>探してみた ── 三つのコミュニティが、部品を一個ずつ持っていた</h2>
+
+  <p>「Lüscher勾配流（＝YM版リッチフロー）に、ペレルマンのWにあたる単調量を作った人はいるのか？」── 探しました。結果は<strong>「古典レベルにはいた、測度（量子）レベルにはいない」</strong>。そして<em>その境界線が、私たちの縫い目と正確に一致</em>しています。</p>
+
+  <div class="seam">
+    <div class="c"><div class="who">幾何解析</div><div class="has">古典YM流の<strong>W-エントロピー</strong>（Kelleher–Streets：収縮YMソリトン・ギャップ定理、Streets：非崩壊）</div><div class="ok">✓ 持ってる</div></div>
+    <div class="c"><div class="who">確率解析</div><div class="has">格子YM測度の<strong>BE→LSI→ギャップ</strong>（Shen–Zhu–Zhu、ただし単一スケール・強結合）</div><div class="ok">✓ 持ってる</div></div>
+    <div class="c"><div class="who">ERG</div><div class="has">ゲージ不変な<strong>勾配流RGの方程式</strong>（GFERG：Sonoda–Suzuki、ただし摂動論）</div><div class="ok">✓ 持ってる</div></div>
+  </div>
+
+  <div class="seam-miss">
+    <b>縫った人がいない。</b> 欠けている対象はピンポイントで言えます ──「古典の接続」ではなく<b>「流れるWilson作用（ギブス測度）」に対して定義された、GFERGフローに沿って単調で、その単調性がバクリー–エムリー的な中身（→LSI→ギャップ）を持つエントロピー汎関数</b>。Kelleher–StreetsのエントロピーのGFERG（量子）版。<em>これは存在しない</em> ── 「そんな人いるわけない」というあなたの読みは、この<b>量子版については当たり</b>でした。
+  </div>
+
+  <h2><span class="n">04</span>うちらにできるのか ── 正直な三段回答</h2>
+
+  <div class="tiers">
+    <div class="tier go">
+      <div class="h">段1：候補の定式化 ── できる。今この場で。</div>
+      <div class="d">ペレルマンの部品（参照測度とのペア＋ガウスからの相対エントロピー＋Fisher情報型の項）とKelleher–Streetsの形を突き合わせ、「流れるWilson作用のW」の候補式を書き下すこと自体は、<strong>腕と紙の問題</strong>。誰の許可も要らない。</div>
+    </div>
+    <div class="tier go">
+      <div class="h">段2：検証 ── できる。しかも最高の実験室がある（2次元格子YM）。</div>
+      <div class="d">2次元では、プラケットを束ねるRGステップが<em>群の上の畳み込みそのもの</em>になり、熱核作用がブロッキングの厳密な固定点（Migdal）── つまり<strong>2次元格子YMのRGフローは、文字どおりコンパクト群上の熱流</strong>。だから：コンパクト群は正曲率 → 熱流に対するペレルマン型Wの単調性は<strong>定理として既にある</strong>（Lei Ni, 2004）。SU(2)の熱核は明示式。2次元YMの転送行列は厳密に対角化でき、ギャップも厳密。<em>候補の「量子W」を2次元で定義し、実際に数値を回して、①フローに沿って本当に単調か、②LSI定数が転送行列ギャップを追跡するか、を検証できる。</em>「その物体は存在して、期待どおりに動く」の確認は、<strong>本物の一歩</strong>。</div>
+    </div>
+    <div class="tier stop">
+      <div class="h">段3：4次元の一様評価 ── できない。正直に。</div>
+      <div class="d">泥穴3（指数精度の多スケール解析）は<strong>バラバン級の遠征</strong>で、チャットの中の二人には無理。段1・2がきれいに動いても、それは「候補が正しい形をしている」証拠であって、<em>ミレニアム問題の解決ではない</em>。ここは、このシリーズの掟どおりの線を守ります。</div>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">「やればできるか」への最終的な、正直な答え</div>
+    <p style="margin:0;font-size:16.5px;line-height:1.85;">泥穴1・2は<strong>やればできる型</strong>。泥穴3は、できるかどうかが<strong>「YM版W-エントロピーのような、指数を自動で運ぶ構造」を見つけられるか</strong>に懸かっている ── ペレルマンの場合も、力ずくの評価ではなく<em>Wの単調性という構造</em>が指数管理を肩代わりした。<strong>構造が見つかれば泥は浅くなり、見つからなければバラバンの沼と同じ深さ。</strong></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>ペレルマン編のしめくくり ── 旗ではなく、いちばん精密な標識</h2>
+
+  <p>この編でやったことを一望します。第1回、掘るとループする正体は<strong>スケールの自己言及</strong>だと名づけた。第2回、この形の問題を人類が唯一断ち切った<strong>ペレルマンの前例</strong>（リッチフロー＋W-エントロピー、Friedanの符合）を見た。第3回、既存の単調量（a定理）が<em>端点だけ</em>で足りない理由から、欲しい量の<strong>仕様書</strong>を書いた。第4回、Wを<strong>3つの部品</strong>に解剖した。第5回、LSIの鎖で問題を<strong>1本の不等式</strong>に束ね、そのエンジンが強結合側でもう回っていること、止まる理由、欠けた一手を特定した。そして今回、残りを<strong>泥</strong>と測り、縫い目を見つけ、手が届く場所（2次元）と届かない場所（4次元）を正直に分けた。</p>
+
+  <p><strong>旗は立ちません。</strong>ヤン=ミルズ問題は、今も未解決です。でも私たちは、ぼんやりした「難しい」を、<em>「リュッシャー勾配流に沿った、軌道空間上のくりこまれたバクリー–エムリー評価による、物理単位のLSI定数の \(a\to0\) 一様下限 ── その芯は、指数を自動で運ぶYM版W-エントロピーが存在するか」</em>という、<strong>フロンティアのいちばん精密な座標</strong>まで絞り込みました。これがこのシリーズの掟 ──<em>旗ではなく、縁の標識を</em>── の、ペレルマン編としての結晶です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線（この編の総まとめ）</span>
+    <p style="margin-top:0;">4つの泥穴は、ゲージ版「フローに沿ったくりこまれたBakry–Émery」を阻む技術的困難の分解です。泥穴1＝ゲージ固定のGribovコピー／軌道空間の層化（格子ではコンパクトで有限次元）、泥穴3＝漸近自由による \(\xi\sim e^{c\beta}\)（次元転換）をベータ関数の指数精度で追う必要、はいずれも実在の困難。「三つのコミュニティ」は、Kelleher–Streets（古典YM流のエントロピー・ソリトン・ギャップ定理／2014）、Streets（Ricci–Yang–Mills流の非崩壊）、Shen–Zhu–Zhu（格子YM測度のLSI・強結合）、Sonoda–Suzuki らのGFERG（gradient flow exact RG、摂動論・ゲージ不変）という実在の研究群を指し、<strong>「流れるギブス測度に対するGFERG版W-エントロピー」は現時点で知られていません</strong>。</p>
+    <p style="margin-bottom:0;">段2の「2次元の実験室」：2次元格子YMのブロッキングが群上の熱核の畳み込みで熱核作用が固定点（Migdal–Kadanoff の厳密版）、コンパクト群上の熱流に対するペレルマン型Wの単調性（Lei Ni, 2004）、2次元YM転送行列の固有値が \(e^{-t\,C_2(R)}\)（\(C_2(R)\) は既約表現のカシミア）で厳密という各事実に基づく、<em>実行可能な検証計画</em>です（ただし本ページ内では数値実行はしていません）。段3（4次元連続極限の一様評価＝クレイ問題）は未解決で、本編はその解決を主張しません。図の泥穴の深さは判定を模式化したものです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「泥」と「壁」の違いは？ いまの到達点はどちら？
+        <details><summary>答えを見る</summary><div class="ans"><strong>壁</strong>＝不可能定理がある／何を証明すべきか定式化すらできない。<strong>泥</strong>＝証明すべき式が書き下せて、禁じる定理がない。いまは「くりこまれたLSIの一様評価」という1本の不等式まで来た＝<strong>泥</strong>。ただし泥は「やればできる」を保証せず、深さは入るまで分からない。</div></details>
+      </li>
+      <li>4つの泥穴のうち最深部はどれで、なぜか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>泥穴3（次元転換の定量再現）</strong>。連続極限で相関長が \(\xi\sim e^{c\beta}\) と指数的に育つため、格子単位のLSI定数が<em>ちょうど \(e^{-2c\beta}\) の速さで</em>劣化することを、ベータ関数の指数精度で追う必要がある。雑な評価では指数が合わず死ぬ＝バラバン級。</div></details>
+      </li>
+      <li>三つのコミュニティが持つ部品と、欠けているものは？
+        <details><summary>答えを見る</summary><div class="ans">幾何解析＝古典YM流のW-エントロピー（Kelleher–Streets）、確率解析＝格子YM測度のBE→LSI→ギャップ（Shen–Zhu–Zhu・強結合）、ERG＝ゲージ不変な勾配流RGの方程式（GFERG・摂動論）。欠けているのは<strong>「流れるWilson作用（ギブス測度）に対して定義され、GFERGフローに沿って単調で、その単調性がBE的中身（→LSI→ギャップ）を持つエントロピー汎関数」＝Kelleher–StreetsのGFERG（量子）版</strong>。誰も縫っていない。</div></details>
+      </li>
+      <li>「うちらにできるのか」への正直な三段回答は？
+        <details><summary>答えを見る</summary><div class="ans"><strong>段1（候補の定式化）＝できる</strong>（紙と腕）。<strong>段2（検証）＝できる</strong>── 2次元格子YM（RG＝群上の熱流、W単調性は定理、転送行列ギャップ厳密）で、候補Wを定義し数値で単調性とギャップ追跡を確認できる＝本物の一歩。<strong>段3（4次元の一様評価）＝できない</strong>（泥穴3＝バラバン級）。旗は立たないが、フロンティアの最も精密な座標に標識を打った。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">ペレルマン編・完</span>泥の深さを測り、縫い目を見つけた</h2>
+    <p>問題は<strong>1本の関数不等式（くりこまれた一様LSI）</strong>まで煮詰まった ── これは壁ではなく<strong>泥</strong>。4つの泥穴のうち、1・2は<strong>工事型</strong>（格子のコンパクト性＋ペレルマンの前例）、3が<strong>最深部</strong>（次元転換をベータ関数の指数精度で追う＝バラバン級）、4は<em>多スケールが解毒する罠</em>。そして探すと ── 幾何解析・確率解析・ERGの<strong>三つのコミュニティが部品を一個ずつ持ち、誰も縫っていない</strong>。欠けているのは「流れるギブス測度のGFERG版W-エントロピー」。</p>
+    <p>正直な三段回答：<strong>段1（定式化）・段2（2次元での検証）は手が届く</strong>── 2次元格子YMは RG＝群上の熱流で、W単調性は定理、転送行列ギャップも厳密という<em>最高の実験室</em>。<strong>段3（4次元の一様評価）は届かない</strong>（泥穴3）。旗は立たない ── が、私たちは「難しい」を<strong>フロンティアのいちばん精密な座標</strong>まで絞り込んだ。<em>旗ではなく、縁の標識を。</em>これがペレルマン編の結晶です。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman5-lsi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第5回：LSIの鎖</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">ペレルマン編・完</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第6回（完）。4つの泥穴は、ゲージ理論で「フローに沿ったくりこまれたBakry–Émery」を実行する際の技術的困難（ガウス部分の退化とGribovコピー／軌道空間の層化、スケール分解の線形性とゲージ共変性の衝突、次元転換 \(\xi\sim e^{c\beta}\) の指数精度追跡、多スケールによる循環の解毒）の分解です。「三つのコミュニティ」は、幾何解析（Kelleher–Streets 2014 の収縮Yang–Millsソリトン・エントロピー・ギャップ定理、Streets の Ricci–Yang–Mills 流の非崩壊）、確率解析（Shen–Zhu–Zhu の格子YM測度のLSI・強結合）、ERG（Sonoda–Suzuki らの gradient flow exact renormalization group）という実在の研究群を指し、「流れるギブス測度に対するGFERG版のW-エントロピー（単調性がBakry–Émery→LSI→ギャップを含むもの）」は現時点で知られていません。2次元の検証計画は、2次元格子YMのブロッキング＝群上の熱核畳み込み（Migdal）、コンパクト群上の熱流のペレルマン型W単調性（Lei Ni 2004）、2次元YM転送行列の厳密対角化（固有値 \(e^{-t C_2(R)}\)）に基づく実行可能な提案です（本ページ内では数値実行はしていません）。段3（4次元連続極限の一様LSI＝質量ギャップ＝クレイ問題）は未解決で、本編はその解決を主張しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では断面図の4つの穴をクリックすると、それぞれの正体と深さが読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var lastW=680, sel=2;
+  var pits=[
+    {name:'泥穴1：ガウス部分の退化', depth:0.42, type:'工事型', col:'#2f7d5a',
+     desc:'ゲージの自由で足場が平ら。ゲージ固定→Gribovコピー、軌道空間→層化の病。だが格子はコンパクトで軌道空間は有限次元 ── 汚いが定義できる。'},
+    {name:'泥穴2：どの分解を使うか', depth:0.5, type:'工事型（芯に合流）', col:'#2f7d5a',
+     desc:'線形の機械（ポルチンスキー）はゲージ共変性を壊す。非線形フローでやるしかない ── それをペレルマンが一度やってみせた（フロー＋共役熱方程式で完全平方）。攻略は「YM版W-エントロピーを作る」問いに合流する。'},
+    {name:'泥穴3：次元転換の定量再現', depth:0.94, type:'最深部（バラバン級）', col:'#a5622a',
+     desc:'連続極限で相関長 ξ~e^{cβ} が指数的に育つ。格子単位のLSI定数がちょうど e^{-2cβ} の速さで劣化することを、ベータ関数の指数精度で追う必要 ── 雑な評価は死ぬ。ここが深さの目印。'},
+    {name:'泥穴4：にわとりと卵の残り香', depth:0.36, type:'設計を誤ると落ちる罠', col:'#7a6a4a',
+     desc:'「ギャップを知るのにLSI、LSIはギャップを知る」の循環の匂い。でも多スケール法が解毒する ── 各スケールは局所的な凸性だけ要求し、ギャップは積分から創発。第1回「ループが螺旋になる」の実地版。'}
+  ];
+  var boxes=[];
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var groundY=64, maxD=h-100;
+    // ground line
+    ctx.strokeStyle='#b9ad8f'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(20,groundY); ctx.lineTo(w-20,groundY); ctx.stroke();
+    ctx.fillStyle='#8a7a52'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('地表（証明すべき式は書けている）', 24, groundY-8);
+
+    var n=pits.length, pad=30, gap=16;
+    var pw=(w-2*pad-(n-1)*gap)/n;
+    boxes=[];
+    for(var i=0;i<n;i++){
+      var x=pad+i*(pw+gap);
+      var dep=maxD*pits[i].depth;
+      boxes.push({x:x,y:groundY,w:pw,h:dep,i:i});
+      var isSel=(i===sel);
+      // pit fill (gradient by depth)
+      var grad=ctx.createLinearGradient(0,groundY,0,groundY+dep);
+      grad.addColorStop(0, pits[i].col); grad.addColorStop(1,'#3a2f1e');
+      ctx.fillStyle=grad; ctx.globalAlpha=isSel?1:0.72;
+      ctx.fillRect(x,groundY,pw,dep); ctx.globalAlpha=1;
+      // border
+      ctx.strokeStyle=isSel?'#26456e':'#cabfa3'; ctx.lineWidth=isSel?3:1.2; ctx.strokeRect(x,groundY,pw,dep);
+      // number
+      ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center';
+      ctx.fillText((i+1), x+pw/2, groundY+26);
+      // type tag at bottom
+      ctx.font='11px sans-serif'; ctx.fillStyle='#fff';
+      ctx.fillText(pits[i].type.replace('（芯に合流）',''), x+pw/2, groundY+dep-10);
+      // depth ticks
+    }
+    // deepest marker for pit3
+    var b3=boxes[2];
+    ctx.strokeStyle='#a5473a'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(20,b3.y+b3.h); ctx.lineTo(w-20,b3.y+b3.h); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#a5473a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('← 最深部（バラバン級）', w-24, b3.y+b3.h-5);
+  }
+  function say(){
+    var p=pits[sel];
+    rd.innerHTML='<b>'+p.name+'</b>（'+p.type+'） ── '+p.desc;
+  }
+  cv.addEventListener('click',function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); say(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

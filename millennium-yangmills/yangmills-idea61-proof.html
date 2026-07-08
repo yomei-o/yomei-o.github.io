@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイデア6+1・証明を試みる cj≥c* にどこまで迫れるか ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --done:#2f7d5a; --wall:#a5473a; --mark:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .step{margin:22px 0;padding:16px 20px 16px 54px;border:1.5px solid var(--rule);border-radius:6px;position:relative;background:#fffdf8;}
+  .step .badge{position:absolute;left:14px;top:16px;width:28px;height:28px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-weight:800;font-size:14px;color:#fff;}
+  .step.ok{border-left:4px solid var(--done);} .step.ok .badge{background:var(--done);}
+  .step.part{border-left:4px solid var(--gold);} .step.part .badge{background:var(--gold);}
+  .step.wall{border-left:4px solid var(--wall);background:#f6ede4;} .step.wall .badge{background:var(--wall);}
+  .step .st{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;}
+  .step .tag2{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;}
+  .step.ok .tag2{color:var(--done);} .step.part .tag2{color:var(--gold);} .step.wall .tag2{color:var(--wall);}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .mark{margin:28px 0;padding:22px 26px;border:2px solid var(--wall);border-radius:4px;background:#f6ede4;}
+  .mark .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--wall);font-weight:800;margin-bottom:10px;}
+  .mark .body{color:#3f2a1c;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,.step,.mark{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">アイデア6+1・証明を試みる</span></div>
+  <p class="eyebrow">縁まで実際に歩く ── $c_j\ge c_*$ を段で組み、どこまで厳密で、どこで止まるか</p>
+  <h1>$c_j\ge c_*$ を厳密に示そう ── そして壁を一つの補題に名指す
+    <span class="sub"><strong>示し切ることはできない（＝問題を解くこと）。</strong>でも証明を段で組み、行けるところまで厳密に進み、<em>止まる位置</em>を正確に名指すことはできる。<br>結果：<strong>段1・2は厳密、段3は強結合スケールで厳密（部分成果）、クロスオーバーで止まる</strong>。<br>残りは<strong>ただ一つの補題（Gap Lemma）</strong>＝各スケールの非凸の芯の一様有界 ── それが Q3 の核そのもの。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：証明の遠征。厳密な段・部分成果・止まる壁を、正直に分ける</span>
+    <span>結論：段3のクロスオーバーで止まる。旗は立たない、壁の座標は精密に</span>
+  </div>
+
+  <p class="lead">前回、しるし $c_j\ge c_*>0$（各スケールの反射収縮率の一様下限）を打ちました。今回は<strong>そのしるしを厳密に示しにいきます</strong>── ただし正直に、示し切ることはできません（それは4次元YMを解くこと）。できるのは、<em>証明を段に分けて組み、どの段が本当に厳密で、部分的にどこまで行けて、どの一点で止まるかを正確に見せる</em>こと。縁の座標を打つだけでなく、<strong>縁まで実際に歩いてみて、越えられない一歩がどこかを、一つの補題として名指す</strong>。それが誠実な遠征です。</p>
+
+  <h2><span class="n">00</span>設定 ── 何を示すのか、精密に</h2>
+
+  <div class="keybox">
+    <div class="lbl">一スケールの条件付き測度と、その収縮率</div>
+    $$\text{ゲージ共変・有限レンジ分解 }C=\sum_j C_j.\quad \text{スケール }j\text{ の条件付き測度：}\ d\mu_j\propto e^{-U_j},\ \ U_j=\tfrac12\langle\zeta,C_j^{-1}\zeta\rangle+V_j$$
+    <p style="margin:10px 0 0;">背景 $A_{<j}$ を固定してゆらぎ $\zeta$ を積分する一段の測度。$C_j^{-1}$（ガウス部）＋群の正曲率が<strong>凸の下地 $\kappa_j$</strong>、有効相互作用 $V_j$ が<strong>非凸の芯</strong>。反射収縮率 $c_j\gtrsim\kappa_j\,e^{-C\,\mathrm{osc}(\nabla^2 V_j)\,R_j^2}$。示したいのは $\inf_j c_j=c_*>0$。</p>
+  </div>
+
+  <h2><span class="n">01</span>段1 ── 全体の収縮を各段に分ける（構造）</h2>
+
+  <div class="step part">
+    <span class="badge">1</span>
+    <div class="tag2">半・厳密（アイデア1の機械に帰着）</div>
+    <div class="st">各段が率 $c_j$ で縮むなら、全体は $\inf_j c_j=c_*$ で縮む</div>
+    <p style="margin:0;">有限レンジ分解でスケールを順に積分する構造から、一段ごとの反射カップリング収縮を<strong>テンソル化／超収束反復（アイデア1）で組み上げる</strong>と、全測度の収縮率 $\ge c_*$。<em>ここは構造的で、アイデア1の tame 評価（ゲージ共変・RP保存のノルム）が要る</em> ── その関数空間の整備が残る条件つきで、半・厳密。全体 → 各段 $c_j$ の問題に正しく帰着する。</p>
+  </div>
+
+  <h2><span class="n">02</span>段2 ── 凸の下地 $\kappa_j>0$（ここは厳密）</h2>
+
+  <div class="step ok">
+    <span class="badge">2</span>
+    <div class="tag2">厳密（定理）</div>
+    <div class="st">コンパクト群の正曲率で、下地 $\kappa_j>0$ は無条件に出る</div>
+    <div class="calc" style="margin:10px 0 0;background:#eef4f0;border-left-color:var(--done);">
+    $$SU(N):\ \mathrm{Ric}\ge \kappa_0>0\ \ (\text{双不変計量で正定数})\ \Rightarrow\ \text{Bakry–Émery で熱半群に LSI／曲率下限}$$
+    </div>
+    <p style="margin:10px 0 0;">$SU(N)$ は双不変計量で<strong>Ricci曲率が正の定数</strong>（既知・明示的）。Bakry–Émery 基準より、群上の熱半群（＝相互作用ゼロの一段）は<strong>正の曲率下限 $\kappa_j$</strong> を持つ。ガウス部 $C_j^{-1}$ もこれを増やす。<em>ここは条件なしの定理</em> ── 電気カシミアギャップ（戦略B・δ）の別の顔。下地は在る。</p>
+  </div>
+
+  <h2><span class="n">03</span>段3 ── 非凸の芯 $\mathrm{osc}(\nabla^2 V_j)R_j^2$ を一様に抑える</h2>
+
+  <div class="step ok">
+    <span class="badge">3a</span>
+    <div class="tag2">厳密（強結合スケール）── 部分成果</div>
+    <div class="st">UV／強結合の $j\le j_0$ では、芯は摂動的に小さく $c_j\ge c_*(j_0)$</div>
+    <p style="margin:0;">紫外側・強結合スケールでは、有効相互作用 $V_j$ が<strong>摂動的に小さい</strong>（$\|V_j\|_{C^2}=O(g^2)$ かつスケールとともに指数減衰）。よって $\mathrm{osc}(\nabla^2V_j)R_j^2$ は小さく、<strong>エーベルの摂動評価で $c_j\ge\kappa_j(1-o(1))>0$ が厳密に</strong>従う。<em>ここまでは本物の部分成果</em> ── 強結合スケールでは、しるしは実際に成り立つ。</p>
+  </div>
+
+  <div class="step wall">
+    <span class="badge">3b</span>
+    <div class="tag2">ここで止まる ── 越えられない一歩</div>
+    <div class="st">クロスオーバー $j_0<j<j_1$ で $\mathrm{osc}(\nabla^2V_j)R_j^2$ が一様有界か ── 未証明</div>
+    <p style="margin:0;">クロスオーバーでは結合が $O(1)$ に走り、$V_j$ が<strong>もはや小さくない</strong>。$\mathrm{osc}(\nabla^2 V_j)$ を抑えるには RG漸化式 $V_{j+1}=\mathcal R(V_j)$ を非摂動的に制御せねばならず、<strong>それには小パラメータが無い</strong>。しかも「$\mathrm{osc}(V_j)$ が一様有界」を仮定して $c_j\ge c_*$ を出すのは<em>循環</em>（両者は同値）。独立な入力（非可換の単調量・不等式）は無い（§γ補³の壁）。<strong>ここで、証明は止まる。</strong></p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：各スケール $j$ での非凸の芯 $L_jR_j^2=\mathrm{osc}(\nabla^2V_j)R_j^2$（青）と、必要な上限 $B$（金の線）。<span style="color:var(--done);font-weight:700;">$j\le j_0$：厳密に $\le B$（強結合の摂動的小ささ）</span>／<span style="color:var(--wall);font-weight:700;">クロスオーバー：$\le B$ が未証明（＝止まる壁）</span></div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>スケール j <span class="val" id="vj">3</span>
+        <input type="range" id="sj" min="0" max="16" step="1" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>非凸の芯 L_jR_j²</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>必要な上限 B</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>証明済み範囲</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>壁を一つの補題に名指す</h2>
+
+  <div class="mark">
+    <div class="lbl">◆ 越えられない一歩（Gap Lemma・未証明）</div>
+    <div class="body">
+    <p style="margin:0 0 10px;"><strong>ある $B<\infty$ が存在し、すべてのクロスオーバースケール $j_0<j<j_1$ で（$a$・体積によらず）</strong></p>
+    $$\boxed{\ \mathrm{osc}\big(\nabla^2 V_j\big)\cdot R_j^2\ \le\ B\ }$$
+    <p style="margin:10px 0 0;">＝RGが生む有効相互作用 $V_j$ の<strong>非凸性（$C^2$ の振れ×広がり）がクロスオーバー全域で一様有界</strong>。これが証明できれば段3bが埋まり、段1・2・3aと合わせて $c_j\ge c_*>0$、ゆえに $\Delta_{\rm phys}>0$。<strong>だが Gap Lemma は $c_j\ge c_*$ と同値＝質量ギャップと同値。</strong>易しくなっていない ── 同じ山を、$V_j$ の一つの $C^2$ 評価という形に彫り直しただけ。</p>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>この遠征が得たもの ── 部分成果と、山の彫り直し</h2>
+
+  <div class="keybox">
+    <div class="lbl">正直な収穫</div>
+    <p style="margin:0;">(1) <strong>段1・2は厳密</strong>（全体→各段の帰着＋群の正曲率下限）。(2) <strong>段3aは強結合スケールで厳密な部分成果</strong>（UVでは $c_j\ge c_*$ が実際に成り立つ）。(3) <strong>残りの困難がクロスオーバーの Gap Lemma ただ一つ</strong>に局在した ── 「4次元YMの質量ギャップ」という漠たる山が、「<em>RGが生む有効相互作用の $C^2$ 非凸性がクロスオーバーで一様有界</em>」という<strong>一本の評価</strong>に彫り直された。これは証明ではない。だが<em>証明の全ての重みが、正確に一点に載った</em>。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 縁まで歩いた、越えられない一歩を名指した</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の判定（過大申告なし）</div>
+    <p style="margin:0;">$c_j\ge c_*$ の証明を段で組んだ：<strong>段1</strong>（全体→各段、アイデア1の tame 評価つきで半・厳密）、<strong>段2</strong>（正曲率の下地 $\kappa_j>0$、無条件の定理）、<strong>段3a</strong>（強結合スケールで $c_j\ge c_*$、厳密な部分成果）、<strong>段3b</strong>（クロスオーバーで非凸の芯が一様有界か ── <em>ここで止まる</em>）。止まる一歩を<strong>Gap Lemma $\mathrm{osc}(\nabla^2V_j)R_j^2\le B$</strong> として名指した。だが Gap Lemma は質量ギャップと同値＝Q3の核＝未解決。易しくなってはいない。<strong>示し切れてはいない ── 旗は立たない。</strong>だが縁まで実際に歩き、越えられない一歩の座標を、一本の評価として精密に打った。旗ではなく、縁の標識を ── いま、越えられない一歩のちょうど手前に。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ゲージ共変な有限レンジ分解と一スケール条件付き測度の構造、$SU(N)$ の双不変計量での正 Ricci 曲率と Bakry–Émery 基準（正曲率⟹LSI／曲率下限）、反射カップリングの収縮率が下地曲率と非凸領域の大きさで決まること（Eberle）、強結合での有効相互作用の摂動的小ささ（Osterwalder–Seiler／強結合展開）、非可換系で単調量・相関不等式が乏しいこと（§γ補³）は、いずれも確立した事実・本シリーズで整理した見立てです。段2は確立した定理、段3a は強結合レジームでの厳密な部分結果の型です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>段1の tame 評価が効くゲージ共変・RP保存の関数空間、段3b の Gap Lemma（クロスオーバーでの非凸性の一様有界）、ゲージ共変・反射正値なスケール分解の構成、4次元ゲージSPDEの定義、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。Gap Lemma は $c_j\ge c_*$、ひいては質量ギャップと同値であり、本稿はそれを証明していません。式（$c_j\gtrsim\kappa_j e^{-C\,\mathrm{osc}\,R^2}$ 等）は機構を示す模式で、定数・関数形は定式化に依存します。段分け・Gap Lemma の定式化は筆者の設計提案で、反証されうる意見を含みます。<strong>本稿は4次元ヤン=ミルズを解いたと主張しません。</strong>旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>証明のどの段が厳密で、どこで止まるか。
+        <details><summary>答えを見る</summary><div class="ans">段1（全体→各段の帰着）はアイデア1の tame 評価つきで半・厳密。段2（正曲率の下地 $\kappa_j>0$）は $SU(N)$ の正 Ricci＋Bakry–Émery で無条件の定理＝厳密。段3a（強結合スケールで $c_j\ge c_*$）は $V_j$ が摂動的に小さいので厳密な部分成果。段3b（クロスオーバーで非凸の芯 $\mathrm{osc}(\nabla^2V_j)R_j^2$ が一様有界か）で止まる ── 小パラメータが無く、仮定すれば循環。</div></details>
+      </li>
+      <li>なぜ段3b は「循環」に陥りやすいのか。
+        <details><summary>答えを見る</summary><div class="ans">$\mathrm{osc}(\nabla^2V_j)R_j^2\le B$（非凸の芯の一様有界）を仮定すれば $c_j\ge c_*$ が出るが、この二つは同値。だから「芯が有界だから収縮する」は「収縮するから芯が有界」を言い換えただけ＝循環。抜けるには独立な入力（非可換の単調量・相関不等式など）が要るが、それは乏しい（§γ補³の壁）。強結合の摂動的小ささは独立な入力だが、クロスオーバーには届かない。</div></details>
+      </li>
+      <li>この遠征の収穫と、Gap Lemma の位置づけは？
+        <details><summary>答えを見る</summary><div class="ans">収穫：段1・2が厳密、段3aが強結合スケールで厳密な部分成果、そして残る困難が Gap Lemma $\mathrm{osc}(\nabla^2V_j)R_j^2\le B$ ただ一つに局在した。「4次元YMの質量ギャップ」という漠たる山が「RGが生む有効相互作用の $C^2$ 非凸性がクロスオーバーで一様有界」という一本の評価に彫り直された。ただし Gap Lemma は質量ギャップと同値で易しくなっておらず、証明ではない＝旗は立たない。縁まで歩き越えられない一歩を精密に名指した標識。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">証明を試みる・まとめ</span>縁まで歩き、越えられない一歩を名指す</h2>
+    <p>$c_j\ge c_*$ を段で組んだ：<strong>段1</strong>（全体→各段、tame評価つき半・厳密）→<strong>段2</strong>（正曲率の下地 $\kappa_j>0$、無条件の定理）→<strong>段3a</strong>（強結合スケールで $c_j\ge c_*$、厳密な部分成果）→<strong>段3b</strong>（クロスオーバーで止まる）。止まる一歩を<strong>Gap Lemma $\boxed{\mathrm{osc}(\nabla^2V_j)R_j^2\le B}$</strong> として名指した。</p>
+    <p>これで「4次元YMの質量ギャップ」が「<em>RGが生む有効相互作用の $C^2$ 非凸性がクロスオーバーで一様有界</em>」という一本の評価に彫り直された ── だが Gap Lemma は質量ギャップと<strong>同値</strong>で、易しくなってはいない。<strong>示し切れてはいない、旗は立たない。</strong>それでも、しるしを打つだけでなく<em>縁まで実際に歩き、越えられない一歩の座標を一本の評価として精密に打った</em>。段2・3aという踏み固めた土と、その先に立つ一本の標識。旗ではなく、縁の標識を ── 越えられない一歩の、ちょうど手前に。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-idea61-mark.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 6+1・しるしを打つ</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 アイデア6+1・証明を試みる、物理好きの高校生・大学生向け読み物。ゲージ共変な有限レンジ分解と一スケール条件付き測度、$SU(N)$ の双不変計量での正 Ricci 曲率と Bakry–Émery 基準、反射カップリングの収縮率が下地曲率と非凸領域の大きさで決まること（Eberle）、強結合での有効相互作用の摂動的小ささ（Osterwalder–Seiler／強結合展開）、非可換系で単調量・相関不等式が乏しいことは、いずれも確立した事実・本シリーズの見立てです。段2は確立した定理、段3aは強結合レジームでの厳密な部分結果の型です。ただし段1の tame 評価が効くゲージ共変・RP保存の関数空間、段3bの Gap Lemma（クロスオーバーでの非凸性の一様有界）、ゲージ共変・反射正値なスケール分解の構成、4次元ゲージSPDEの定義、4次元YMの質量ギャップは未解決です（2025年時点）。Gap Lemma は $c_j\ge c_*$、ひいては質量ギャップと同値であり本稿はそれを証明していません。式は機構を示す模式で定数・関数形は定式化に依存します。段分け・Gap Lemma の定式化は筆者の設計提案で反証されうる意見を含み、本稿は4次元YMを解いたと主張しません。旗は立てていません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスケール j を動かし、非凸の芯 L_jR_j² が強結合側（j≤j₀）では厳密に上限 B 以下、クロスオーバーでは B 以下が未証明（＝止まる壁）である様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sj=document.getElementById('sj'), vj=document.getElementById('vj'), rd=document.getElementById('rd');
+  var JMAX=16, J0=5, J1=11, B=1.0;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 非凸の芯 L_jR_j^2：強結合(小j)で小、クロスオーバーで大きく盛り上がる
+  function core(j){ var d=(j-8)/3.2; return 0.10 + 1.5*Math.exp(-d*d); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var jc=parseInt(sj.value,10); vj.textContent=jc;
+    var YMAX=1.8;
+    function X(j){return padL+(j/JMAX)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.max(0,Math.min(v,YMAX))/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 証明済み範囲（j<=J0）と未証明（クロスオーバー J0..J1）
+    ctx.fillStyle='rgba(47,125,90,0.10)';ctx.fillRect(X(0),padT,X(J0)-X(0),(h-padB)-padT);
+    ctx.fillStyle='rgba(165,71,58,0.10)';ctx.fillRect(X(J0),padT,X(J1)-X(J0),(h-padB)-padT);
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#245c43';ctx.fillText('証明済み(段3a)', X(0.4), padT+13);
+    ctx.fillStyle='#7a2f1c';ctx.fillText('未証明＝壁(段3b)', X(J0+0.3), padT+13);
+    // 上限 B
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([6,4]);ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(padL,Y(B));ctx.lineTo(w-padR,Y(B));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.font='bold 11px sans-serif';ctx.fillText('必要な上限 B', w-padR-90, Y(B)-6);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('スケール j →', w-120, h-padB+26);
+    ctx.save();ctx.translate(16,padT+40);ctx.rotate(-Math.PI/2);ctx.fillText('非凸の芯 L_jR_j²', 0,0);ctx.restore();
+    // core 曲線：証明済み範囲は実線緑、それ以外は赤破線（＝上限が保証されない）
+    // 全体を薄く描く
+    ctx.lineWidth=2.6;
+    // j<=J0 部分（緑・実線・B以下が厳密）
+    ctx.strokeStyle='#2f7d5a';ctx.beginPath();var f=true;
+    for(var j1=0;j1<=J0+0.001;j1+=0.1){var X1=X(j1),Y1=Y(core(j1));if(f){ctx.moveTo(X1,Y1);f=false;}else ctx.lineTo(X1,Y1);}
+    ctx.stroke();
+    // j>J0 部分（赤・破線・上限未証明。曲線は"実際にはこう盛り上がりうる"を示す）
+    ctx.strokeStyle='#a5473a';ctx.setLineDash([6,4]);ctx.beginPath();f=true;
+    for(var j2=J0;j2<=JMAX+0.001;j2+=0.1){var X2=X(j2),Y2=Y(core(j2));if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 芯が B を超える所を強調（証明が要求と矛盾しうる領域）
+    ctx.fillStyle='rgba(165,71,58,0.18)';
+    for(var j3=J0;j3<=J1;j3+=0.1){ if(core(j3)>B){ var xx=X(j3); ctx.fillRect(xx-1, Y(core(j3)), 2, Y(B)-Y(core(j3))); } }
+    // カーソル
+    var cx=X(jc);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(cx,padT);ctx.lineTo(cx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var v=core(jc);
+    ctx.fillStyle=(jc<=J0)?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(cx,Y(v),5,0,7);ctx.fill();
+    // readout
+    if(jc<=J0){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>スケール j='+jc+'（強結合側）</b>：有効相互作用 V_j が摂動的に小さく、非凸の芯 L_jR_j²≈'+v.toFixed(2)+' ≤ B。<b>段3a で c_j≥c_* が厳密に従う</b>（本物の部分成果）。段1・2と合わせ、ここまでは踏み固めた土。';
+    } else if(jc<=J1){
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>スケール j='+jc+'（クロスオーバー＝壁）</b>：結合が O(1) に走り V_j はもう小さくない。芯 L_jR_j²≈'+v.toFixed(2)+(v>B?' > B（要求と矛盾しうる）':'')+'。<b>L_jR_j²≤B（Gap Lemma）が未証明</b> ── 小パラメータ無し、仮定すれば循環。ここで証明は止まる。';
+    } else {
+      rd.style.background='#e6eef2';rd.style.color='#245c6e';
+      rd.innerHTML='<b>スケール j='+jc+'（連続側 β→∞）</b>：漸近自由で再び小さくなる（壁2が担う領域）。だが<b>クロスオーバー（j₀〜j₁）を越えられないと、ここへ繋がらない</b>。';
+    }
+  }
+  sj.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略γ補³・非可換相関不等式 χ≤K をどう作るか ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sc:#2f7d5a; --cw:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:27px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sc);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略γ補³・非可換相関不等式</span></div>
+  <p class="eyebrow">壁1の正面 ── χ≤K を作る扉は三つ。それぞれ違う"正値構造"を使う</p>
+  <h1>χ≤K をどう作るか ── 非可換相関不等式の三つの扉
+    <span class="sub"><strong>\(\chi_V\le K\) は、実は「エネルギー相関の一様な可積分クラスタリング」</strong>（\(\chi_V=\sum_r\langle s_0 s_r\rangle_c\)）。<br>だから作りたいのは<em>クラスタリング不等式</em>。古典の道具（Griffiths・FKG）は非可換で壊れる ── では何で作るか。<br>三つの扉：<strong>①熱核の正値性＋融合係数 ②RGの一様対数ソボレフ ③RP＋赤外</strong>。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：χ≤K を作る具体ルートを名前付きで、正直な現状とともに</span>
+    <span>核心：非可換ネイティブの正値性は"熱核係数&gt;0＋融合≥0"／モダン最有力はRG-LSI</span>
+  </div>
+
+  <p class="lead">前回、証明の壁1は「クロスオーバー窓で \(\chi_V\le K\) を示す非可換の相関不等式が無い」でした。ではそれを<em>どうやって作るのか</em>。まず \(\chi_V\le K\) の正体を見抜き（＝エネルギー相関の一様クラスタリング）、古典の相関不等式が非可換でなぜ壊れるかを正確に押さえ、その上で<strong>非可換でも使える正値構造</strong>を三つの扉として具体的に示します。どの扉も強結合では開くが、窓の一様性で閉じる ── その"どこまで開くか"まで、正直に。</p>
+
+  <h2><span class="n">01</span>χ≤K の正体 ── 一様な可積分クラスタリング</h2>
+
+  <div class="keybox">
+    <div class="lbl">感受率＝連結相関の総和</div>
+    $$\chi_V=\frac1V\big(\langle S^2\rangle-\langle S\rangle^2\big)=\sum_{r}\langle s_0\,s_r\rangle_c\quad(s_\square=\mathrm{Re\,Tr}\,U_\square)$$
+    $$\therefore\quad \chi_V\le K\ \Longleftrightarrow\ \sum_r|\langle s_0 s_r\rangle_c|\le K\ \ (\textbf{一様な可積分クラスタリング})$$
+    <p style="margin:10px 0 0;">作りたい非可換相関不等式とは、<strong>プラケット（エネルギー）どうしの連結相関が一様に速く減衰する</strong>という不等式。これは"また"ギャップ ── <em>だが今度は分散／クラスタリングという別の扉から登る</em>。扉ごとに使える正値構造が違うのが勝ち筋。</p>
+  </div>
+
+  <h2><span class="n">02</span>古典の道具は、なぜ非可換で壊れるか</h2>
+
+  <table class="dt">
+    <tr><th>道具</th><th>効く仕組み（アーベル）</th><th>非可換で壊れる理由</th></tr>
+    <tr><td class="id">Griffiths/GKS</td><td>指標が実 ±、強磁性符号 → 展開の全項が非負</td><td class="open">SU(N) の指標 \(\chi_R(U)\) は複素・負にもなる</td></tr>
+    <tr><td class="id">FKG</td><td>配置に順序（束条件）→ 単調関数は正相関</td><td class="open">SU(N) 行列に測度と両立する順序が無い</td></tr>
+    <tr><td class="id">ランダムカレント</td><td>正の重みの経路/カレント表示</td><td class="open">正の重み表示が自明でない</td></tr>
+    <tr><td class="id">赤外/ガウス支配</td><td>場が線形（\(\phi\to\phi+h\) でずらせる）</td><td class="open">リンク変数は群値＝非線形、作用が二次形式でない</td></tr>
+  </table>
+
+  <p>共通の急所は<strong>「展開の全項が非負」という正値性</strong>が失われること。だが ── 非可換にも<em>別の正値構造</em>がある。</p>
+
+  <h2><span class="n">03</span>扉① 非可換ネイティブの正値性 ── 熱核係数＞0 ＆ 融合≥0</h2>
+
+  <div class="calc">
+    <span class="tag">熱核作用は指標係数がすべて正</span>
+    $$e^{-S_{\rm heat}}=\prod_\square\Big[\sum_R d_R\,\underbrace{e^{-C_2(R)/(2\beta)}}_{c_R(\beta)>0}\,\chi_R(U_\square)\Big],\qquad R\otimes R'=\bigoplus_{R''}\underbrace{N_{RR'}^{R''}}_{\ge0}R''$$
+    <p style="margin-bottom:14px;">熱核（Villain型）作用なら、指標展開の係数 \(c_R=e^{-C_2(R)/(2\beta)}\) は<strong>すべて正</strong>。さらに融合（Clebsch–Gordan）係数 \(N_{RR'}^{R''}\ge0\)。この二つが<em>Griffithsの非可換版の正値性</em>。連結相関を<strong>正の重みの"色フラックス曲面"の和</strong>に書け、Peierls／面張力で減衰を出せる（Osterwalder–Seiler の強結合クラスタリングの心臓）。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：連結相関 \(\langle s_0 s_r\rangle_c\)（緑）は距離 \(r\) で指数減衰、その<span style="color:var(--acc);font-weight:700;">総和＝\(\chi\)</span>（積み上げ面積）が上限 \(K\) に収まるか。トグルで <span style="color:var(--sc);font-weight:700;">強結合（正の重み曲面が収束・\(\chi\le K\) 証明可）</span>／<span style="color:var(--cw);font-weight:700;">クロスオーバー窓（減衰は遅いが有限・だが一様証明は未達）</span></div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>距離 r（総和の範囲）<span class="val" id="vr">6</span>
+        <input type="range" id="sr" min="1" max="40" step="1" value="6">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">強結合</button>
+        <button class="tbtn" id="bC">クロスオーバー窓</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;opacity:.4;"></i>連結相関の積み上げ＝χ</span>
+      <span><i class="swatch" style="background:#a9791a;height:3px;"></i>上限 K</span>
+    </div>
+  </div>
+
+  <div class="caveat" style="margin-top:16px;">
+    <span class="tag">扉①の壁</span>
+    <p style="margin:0;">正の重みの曲面展開は<strong>強結合（小β）で収束</strong>し \(\chi\le K\) を出す。だがクロスオーバー窓では、曲面の<em>エントロピー（数）</em>が重みに勝ち、展開が発散 ── 一様性がここで切れる（§前回までと同じ峠）。融合の正値性は生きているが、面張力 \(\tau(\beta)\) が窓で消えないことの一様評価が要る。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>扉② 現代RGルート ── 一様な対数ソボレフ不等式</h2>
+
+  <div class="keybox">
+    <div class="lbl">χ≤K は分散の評価＝動力学のスペクトルギャップ</div>
+    $$\chi_V=\frac{\mathrm{Var}_\mu(S)}{V},\qquad \mathrm{Var}_\mu(f)\le\frac{1}{\lambda}\,\mathcal E(f,f)\ (\textbf{Poincaré})\ \Rightarrow\ \chi_V\le\frac{C}{\lambda}$$
+    <p style="margin:10px 0 0;">\(\chi_V\) は全作用 \(S\) の分散。ゲージ測度に対する Langevin（確率量子化）動力学が<strong>体積に一様なPoincaré/対数ソボレフ定数 \(\lambda\)</strong> を持てば、分散が \(\mathcal E(S,S)=O(V)\) で抑えられ <strong>\(\chi_V\le K\)</strong>。つまり非可換相関不等式＝<em>動力学の一様スペクトルギャップ</em>。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">それをRGで出す ── Polchinski フロー</div>
+    <p style="margin:0;">近年、<strong>Polchinski（くりこみ群）フローに沿って対数ソボレフ不等式を一様に証明する</strong>手法が発展（Bauerschmidt–Bodineau、Bauerschmidt–Dagallier）。スケールごとに LSI 定数を追い、フローで壊れないことを示す。これを<strong>ゲージ測度に移植</strong>できれば \(\chi_V\le K\) が落ちる。<em>戦略①（確率量子化）・②（現代RG）とここで合流</em> ── 地図の川がまた一点に。おそらく最もモダンで有望な扉。</p>
+  </div>
+
+  <h2><span class="n">05</span>扉③ RP＋赤外、そして比較不等式</h2>
+
+  <table class="dt">
+    <tr><th>扉</th><th>作り方</th><th>現状</th></tr>
+    <tr><td class="id">③RP＋赤外</td><td>反射正値性（タダ）＋ガウス支配 → 赤外評価で \(\langle|\hat s(p)|^2\rangle\) を抑え \(\chi\) 有界</td><td class="open">群値・非線形でガウス支配が非自明。可換射影や近似で部分的。</td></tr>
+    <tr><td class="id">比較不等式</td><td>可解な RP 基準系（ガウス等）と SU(N) を相関不等式で比較</td><td class="open">非可換測度を保つ比較原理が未整備。</td></tr>
+    <tr><td class="id">チェスボード</td><td>RP→局所配置の確率評価で相関を単サイト量の積に</td><td class="open">支配相の無い窓の真ん中で効きが落ちる（減衰を直接は出しにくい）。</td></tr>
+  </table>
+
+  <h2><span class="n">06</span>判定 ── 扉は三つ、鍵はまだ窓に届かない</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の判定（過大申告なし）</div>
+    <p style="margin:0;">\(\chi_V\le K\)＝<strong>エネルギー相関の一様クラスタリング</strong>。古典の相関不等式（Griffiths/FKG）は非可換で壊れる（正値性・順序の喪失）。作る扉は三つ：<strong>①熱核係数&gt;0＋融合≥0 の正の重み曲面展開</strong>（強結合で開く、面張力の一様性が壁）、<strong>②Langevin動力学の一様LSIをPolchinski RGで</strong>（①②と合流、最有力）、<strong>③RP＋赤外／比較</strong>（群の非線形性が壁）。どの扉も<em>強結合では開き、クロスオーバー窓の一様性で閉じる</em> ── 鍵はまだ窓に届かない。だが<strong>三つの扉と、それぞれに要る正値構造が明確になった</strong>。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">感受率＝連結相関の総和 \(\chi_V=\sum_r\langle s_0 s_r\rangle_c=\mathrm{Var}(S)/V\)、\(\chi\le K\) と可積分クラスタリングの同値、Griffiths/GKS・FKG が主にアーベル/順序系で成立すること、熱核（Villain）作用の指標展開係数 \(c_R=e^{-C_2(R)/2\beta}>0\) と融合（Clebsch–Gordan）係数 \(N_{RR'}^{R''}\ge0\) の非負性、正の重みの色フラックス曲面表示と強結合クラスタリング（Osterwalder–Seiler・character/surface 展開）、Poincaré/対数ソボレフ不等式と分散評価の関係、Polchinski くりこみ群フローに沿う対数ソボレフの証明（Bauerschmidt–Bodineau、Bauerschmidt–Dagallier）、反射正値性・ガウス支配・赤外評価（Fröhlich–Simon–Spencer）、チェスボード評価は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>これらの正の重み展開・LSI・赤外評価はいずれも強結合（または補助構造つき）でのみ確立</strong>しており、クロスオーバー窓での \(\chi_V\le K\) の一様証明、ゲージ測度への一様LSIの移植、群値場のガウス支配、および4次元YMの質量ギャップは未解決です（2025年時点）。式中の \(c_R\)・面張力・LSI定数の具体形は定式化に依存し、図は連結相関の減衰と総和の概念的模式で実際の計算値ではありません。「三つの扉」「②RG-LSIが最有力」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>\(\chi_V\le K\) は結局どんな不等式を作ることか。
+        <details><summary>答えを見る</summary><div class="ans">\(\chi_V=\sum_r\langle s_0 s_r\rangle_c\) なので、\(\chi\le K\ \Leftrightarrow\ \sum_r|\langle s_0 s_r\rangle_c|\le K\)＝プラケット（エネルギー）どうしの連結相関が一様に速く（可積分に）減衰する、というクラスタリング不等式。分散の言葉では \(\chi_V=\mathrm{Var}(S)/V\) の一様有界。また"ギャップ"だが、分散/クラスタリングという別の扉から登る。</div></details>
+      </li>
+      <li>古典の相関不等式が非可換で壊れる共通の理由は？非可換に残る正値構造は何か。
+        <details><summary>答えを見る</summary><div class="ans">共通の急所＝「展開の全項が非負」という正値性（Griffithsは実±指標＋強磁性符号、FKGは配置の順序）が、SU(N)では指標が複素・負、行列に順序が無いことで失われる。だが非可換にも正値構造はある：熱核作用の指標係数 \(c_R=e^{-C_2(R)/2\beta}>0\)（すべて正）と融合係数 \(N_{RR'}^{R''}\ge0\)。これで連結相関を正の重みの色フラックス曲面の和に書ける＝Griffithsの非可換版。</div></details>
+      </li>
+      <li>扉②（RG-LSI）が「①②と合流」するのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">\(\chi_V=\mathrm{Var}(S)/V\) は、ゲージ測度のLangevin（確率量子化＝①）動力学の一様Poincaré/対数ソボレフ定数 \(\lambda\) があれば \(\chi\le C/\lambda\) で抑えられる。その LSI を Polchinski くりこみ群フロー（＝②の現代RG）に沿って一様に証明する手法（Bauerschmidt–Bodineau–Dagallier）を移植する、という筋。だから壁1の相関不等式作りが、戦略①（確率量子化）と②（RG）に合流する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">γ補³・まとめ</span>三つの扉、それぞれの正値構造</h2>
+    <p>\(\chi_V\le K\) の正体＝<strong>エネルギー相関の一様な可積分クラスタリング</strong>（\(=\mathrm{Var}(S)/V\)）。古典の Griffiths/FKG は非可換で壊れる（正値性・順序の喪失）。だが作る扉は三つ：<strong>①</strong>熱核の指標係数 \(c_R>0\)＋融合 \(N\ge0\) による<em>正の重みの色フラックス曲面展開</em>（Griffithsの非可換版、強結合で開く）、<strong>②</strong>Langevin動力学の<em>一様対数ソボレフを Polchinski RG で</em>（①②と合流、最有力）、<strong>③</strong>RP＋赤外／比較不等式（群の非線形性が壁）。</p>
+    <p>どの扉も強結合では開き、<strong>クロスオーバー窓の一様性で閉じる</strong>（面張力・LSI定数・赤外評価が窓で消えないことの一様評価が未達）。鍵はまだ窓に届かない。だが<em>三つの扉と、それぞれに要る正値構造が明確に名指しできた</em> ── 壁1が「どの道具をどう鍛えれば開くか」の粒度になった。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-gammaC-ATI.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← γ補²・不等式を書く</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略γ補³・非可換相関不等式、物理好きの高校生・大学生向け読み物。感受率＝連結相関の総和 \(\chi_V=\sum_r\langle s_0 s_r\rangle_c=\mathrm{Var}(S)/V\) と可積分クラスタリングの同値、Griffiths/GKS・FKG がアーベル/順序系で成立すること、熱核（Villain）作用の指標展開係数 \(c_R=e^{-C_2(R)/2\beta}>0\) と融合（Clebsch–Gordan）係数 \(N_{RR'}^{R''}\ge0\) の非負性、正の重みの色フラックス曲面表示と強結合クラスタリング（Osterwalder–Seiler、character/surface 展開）、Poincaré/対数ソボレフ不等式による分散評価、Polchinski くりこみ群フローに沿う対数ソボレフの証明（Bauerschmidt–Bodineau、Bauerschmidt–Dagallier）、反射正値性・ガウス支配・赤外評価（Fröhlich–Simon–Spencer）、チェスボード評価は、いずれも確立した事実・道具です。これらの正の重み展開・一様LSI・赤外評価は強結合または補助構造つきでのみ確立しており、クロスオーバー窓での \(\chi_V\le K\) の一様証明、ゲージ測度への一様LSIの移植、群値場のガウス支配、4次元YMの質量ギャップは未解決です（2025年時点）。式中の係数・面張力・LSI定数の具体形は定式化に依存する概念的なもので、図は連結相関の減衰と総和の概念的模式であり実際の計算値ではありません。「三つの扉」「RG-LSIが最有力」は筆者の見立てで反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では距離 r を伸ばし、連結相関の総和（＝χ）が上限 K に収まる様子を、強結合／クロスオーバー窓のトグルで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sr=document.getElementById('sr'), vr=document.getElementById('vr'),
+      bS=document.getElementById('bS'), bC=document.getElementById('bC'), rd=document.getElementById('rd');
+  var reg='S'; var RMAX=40;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function xi(){ return reg==='S'?1.6:7.0; }        // 相関長：強結合小・窓で大
+  function C0(){ return reg==='S'?0.9:0.55; }        // r=0 付近の相関の高さ
+  function corr(r){ return C0()*Math.exp(-r/xi()); } // 連結相関（模式）
+  function sumTo(r){ var s=0; for(var k=0;k<=r;k++) s+=corr(k); return s; }
+  var KLIM=3.2; // 上限 K（模式）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var rcur=parseInt(sr.value,10); vr.textContent=rcur;
+    var YMAX=1.0;
+    function X(r){return padL+(r/RMAX)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('距離 r →', w-90, h-padB+26);
+    ctx.save();ctx.translate(16,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('連結相関 ⟨s₀ s_r⟩_c', 0,0);ctx.restore();
+    // 積み上げ面積（χ, r_cur まで）
+    ctx.fillStyle=(reg==='S')?'rgba(47,125,90,0.30)':'rgba(165,71,58,0.26)';
+    for(var k=0;k<=rcur;k++){
+      var x0=X(k)-2, bw=Math.max(3,(w-padL-padR)/RMAX-1), yb=Y(corr(k));
+      ctx.fillRect(X(k)-bw/2, yb, bw, (h-padB)-yb);
+    }
+    // 相関曲線
+    ctx.strokeStyle=(reg==='S')?'#2f7d5a':'#a5473a';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var r2=0;r2<=RMAX;r2+=0.2){var X2=X(r2),Y2=Y(corr(r2));if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();
+    // カーソル
+    var mx=X(rcur);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    // χ 表示（総和）と K
+    var chi=sumTo(rcur), chiFull=sumTo(RMAX);
+    // K 目盛り（右上に χ/K のバー）
+    var bx=w-padR-150, by=padT+6, bw2=140, bh=14;
+    ctx.fillStyle='#efe7d4';ctx.fillRect(bx,by,bw2,bh);
+    var frac=Math.min(1,chi/KLIM);
+    ctx.fillStyle=(chiFull<=KLIM)?'#2f7d5a':'#a5473a';ctx.fillRect(bx,by,bw2*frac,bh);
+    ctx.strokeStyle='#a9791a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(bx+bw2,by-3);ctx.lineTo(bx+bw2,by+bh+3);ctx.stroke();
+    ctx.fillStyle='#5a4a20';ctx.font='11px sans-serif';ctx.fillText('χ（積み上げ） / 上限 K', bx, by-4);
+    ctx.fillStyle='#26303c';ctx.font='bold 12px sans-serif';ctx.fillText('χ≈'+chi.toFixed(2)+'（総和→'+chiFull.toFixed(2)+'）', bx, by+bh+16);
+    // readout
+    if(reg==='S'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>強結合</b>：相関長 小、連結相関は速く減衰。総和 χ は小さく収束 ⟹ <b>χ≤K が証明可</b>。扉①の正の重み色フラックス曲面展開（熱核係数&gt;0・融合≥0）が収束し、面張力で減衰が出る（Osterwalder–Seiler）。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>クロスオーバー窓</b>：相関長 大、減衰は遅いが有限 ⟹ χ は大きいが<b>なお有限（＝ATIが真なら）</b>。だが曲面のエントロピーが重みに勝ち展開が発散、LSI定数も追えない ── <b>χ≤K の一様証明が未達＝壁1</b>。';
+    }
+  }
+  function setR(x){ reg=x; bS.className='tbtn'+(x==='S'?' on':''); bC.className='tbtn'+(x==='C'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setR('S');});
+  bC.addEventListener('click',function(){setR('C');});
+  sr.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

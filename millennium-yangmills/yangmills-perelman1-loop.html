@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>掘るとループする ── 堂々巡りの正体と、断ち切る4つの道具 ／ ペレルマン編 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.03em;padding:9px 15px;border-radius:4px;cursor:pointer;
+    border:1.5px solid var(--rule);background:#fff;color:var(--ink-soft);transition:all .12s;}
+  .btns button.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .loops{margin:26px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .loops .lp{border:1px solid var(--rule);border-radius:6px;padding:14px 16px;background:#fff;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .loops .lp .h{font-size:13px;font-weight:700;color:var(--open);letter-spacing:.04em;margin-bottom:4px;}
+  .loops .lp .d{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+  .root{margin:14px 0 0;padding:16px 20px;border:1.5px dashed var(--gold);border-radius:6px;background:#faf4e3;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.8;color:#4a3e22;}
+
+  .tools{margin:26px 0;display:flex;flex-direction:column;gap:12px;}
+  .tool{border:1px solid var(--rule);border-radius:7px;padding:16px 20px;background:#fff;position:relative;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .tool::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:7px 0 0 7px;background:var(--side);}
+  .tool .h{font-size:15px;font-weight:700;color:var(--side);margin-bottom:5px;letter-spacing:.03em;}
+  .tool .d{font-size:14px;color:#33414a;line-height:1.78;}
+  .tool.win::before{background:var(--solved);} .tool.win .h{color:var(--solved);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.loops,.tools,.root{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .btns{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} .loops{grid-template-columns:1fr;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 1 回</span></div>
+  <p class="eyebrow">この問題を掘ると、なぜか「堂々巡り」に落ちる ── その正体を、まず名づける</p>
+  <h1>掘るとループする ── 堂々巡りの正体
+    <span class="sub">ヤン=ミルズを掘り下げると、AとBが互いを必要として<em>先に進めなくなる</em>。それは気のせいではなく、この問題の<strong>構造</strong>だ。<br>ループは全部で4本、でも根っこは1本。そして数学には、ループを断ち切ってきた<strong>4つの道具</strong>がある。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：なぜループするのかを言葉にし、断ち切る道具を並べる</span>
+    <span>一言で：ループの正体は「スケールの自己言及」</span>
+  </div>
+
+  <p class="lead">これまでのシリーズで、ヤン=ミルズ問題を本気で掘り下げるたびに、私たちは何度も同じ壁 ── <strong>堂々巡り（ループ）</strong> ── にはまってきました。「Aを証明するにはBが要る、でもBを証明するにはAが要る」。ぐるぐる回って、どこにも足場がない。この<strong>「ペレルマン編」</strong>は、そのループの<em>正体</em>を突き止め、数学が実際にループを断ち切ってきた道具を並べ、そして ── この形の問題が<strong>人類史上ただ一度だけ</strong>断ち切られた実例（ペレルマンのポアンカレ予想）を道しるべに、ヤン=ミルズへ移植していく物語です。第1回は、まず<strong>「なぜループするのか」</strong>から。</p>
+
+  <h2><span class="n">01</span>堂々巡りって何？ ── 証明の世界の「にわとりと卵」</h2>
+
+  <p>「堂々巡り」を数学の言葉でいうと<strong>循環論法</strong>です。<em>Aを示すためにBを使い、Bを示すためにAを使う</em> ── これでは、どちらも証明できていません。にわとりが先か、卵が先か。どちらの足場も宙に浮いているのです。</p>
+
+  <p>ヤン=ミルズ問題を掘ると、この循環が何度も顔を出します。しかもそれは、あなたの考え方が下手だからではありません。<strong>問題そのものが、そういう構造をしている</strong>。まずは、そのループを全部数え上げてみましょう。</p>
+
+  <h2><span class="n">02</span>ループは4本 ── でも、根っこは1本</h2>
+
+  <p>掘っていくと現れるループは、大きく4本あります（言葉は少し専門的ですが、雰囲気だけつかめば十分）。</p>
+
+  <div class="loops">
+    <div class="lp"><div class="h">ループ1：ギャップ ⇄ 閉じ込め</div><div class="d">「質量ギャップがある」と「クォークが閉じ込められる」は、同じ現象の<em>表と裏</em>。片方から片方を導こうとすると、独立な足場がなくて回る。</div></div>
+    <div class="lp"><div class="h">ループ2：連続化 ⇄ 遠くの様子</div><div class="d">連続の理論を作るには遠距離（低エネルギー）の振る舞いを知る必要 → それを厳密に知るには連続の理論が要る → 振り出し。（＝RGと赤外の循環）</div></div>
+    <div class="lp"><div class="h">ループ3：分け方 ⇄ どの相か</div><div class="d">情報（エンタングルメント）で攻めるとき、空間を「どう2つに分けるのが正しいか」は、理論がどの状態にいるかで決まる → その状態こそ証明したいもの → 振り出し。</div></div>
+    <div class="lp"><div class="h">ループ4：真空 ⇄ 全体像</div><div class="d">ギャップは全エネルギー帯の性質。でも手元にあるのは真空（一番低い状態）ひとつ。1つから全体を推論するには、普通ギャップの仮定が要る → 振り出し。</div></div>
+  </div>
+
+  <div class="root">
+    <strong>4本、でも根っこは1本 ── 「スケールの自己言及」。</strong><br>
+    ヤン=ミルズには、最初から<em>「長さの目盛り」が入っていません</em>（無次元の結合という数だけ）。なのに、質量ギャップという<em>長さの目盛り</em>（＝ギャップの逆数くらいの距離）が、理論の中から勝手に湧いてきます。これを<strong>次元転換</strong>といいます。<br>ここで「その目盛りは、どこから来たの？」と問うと ── <em>答えが自分自身を指す</em>。定規が、自分で自分を測っているようなもの。この自己言及が、4本すべてのループの母体です。あなたが「掘るとループする」と感じたのは、この自己言及を<strong>素手でつかんだ</strong>ということ。
+  </div>
+
+  <div class="aside">
+    <span class="tag">たとえ：目盛りのない世界</span>
+    想像してください ── 長さの単位がまだ何も決まっていない宇宙。そこに置かれた理論が、なぜか「この距離より遠くへは力が届かない」という<em>特別な長さ</em>を自分で作り出す。「なぜその長さ？」と聞くと、理論は「私がそう決めたから」と答える。外に基準がないので、問いが自分に返ってくる ── これがスケールの自己言及です。ヤン=ミルズの質量ギャップは、まさにこの「自分で作った目盛り」なのです。
+  </div>
+
+  <h2><span class="n">03</span>ループを断ち切る、4つの道具</h2>
+
+  <p>「ループさせない方法を見つけないと」── その通りです。うれしいことに、数学には循環を断ち切ってきた<strong>実績のある道具</strong>があります。4つ並べます。</p>
+
+  <div class="tools">
+    <div class="tool win">
+      <div class="h">道具1：ループの「外」にある錨（アンカー）を使う</div>
+      <div class="d">実はこの問題、<em>両端はすでにループの外</em>にあります。近距離（高エネルギー）側は<strong>漸近的自由</strong>で、ほぼ自由な理論として完全に解ける。遠距離（強結合）側の粗い格子は、<strong>強結合展開で証明済み</strong>。ループが住んでいるのは<em>中間の無人地帯だけ</em>。つまり問題は「ループを解く」ことではなく、<strong>「両端の錨のあいだに、ループを通らない橋を渡す」</strong>ことに、すでに還元されています。</div>
+    </div>
+    <div class="tool">
+      <div class="h">道具2：連続性の方法 ── 3つ言えれば全部言える</div>
+      <div class="d">数式（微分方程式）で循環を断つ古典技。「性質Gが成り立つパラメータの集合が、①<em>空でない</em>②<em>開いている</em>③<em>閉じている</em>」を示せれば、つながった空間なら<strong>全域で成立</strong>。①は強結合側で証明済み、②はギャップが少しの変化に強いこと（標準）。残るは③だけ ── <strong>フローに沿って、ギャップの下限が一様に保たれること</strong>。<em>4本あったループが、たった1個の不等式に潰れる</em>のです。</div>
+    </div>
+    <div class="tool win">
+      <div class="h">道具3：反射正値性が、ループ4を「もう殺している」</div>
+      <div class="d">朗報です。格子のウィルソン作用は<strong>反射正値性</strong>という良い性質を持ち、そのとき「<em>ギャップの存在 ⇄ 相関が距離で指数的に消えること</em>」が<strong>両方向にきっちり成り立つ</strong>。つまり真空から全体像を推論する（ループ4）必要はもうない。<strong>ユークリッド測度の相関が消えること</strong>── エネルギー帯に一切触れない、たった一つの測度の性質 ── を示せば、ギャップが出ます。</div>
+    </div>
+    <div class="tool">
+      <div class="h">道具4：単調量 ── ループを「螺旋」に変える</div>
+      <div class="d">ループが怖いのは<em>同じ所に戻ってくる</em>から。もしフローに沿って<strong>厳密に一方向へ進む量（単調量）</strong>があれば、二度と戻れない ── ループは<strong>終点のある螺旋</strong>になります（数学でいう「無限降下法」と同じ原理）。ただし次元転換のせいで、追いかける量は<strong>無次元の比</strong>（例：ギャップ ÷ √弦張力）でなければなりません。格子の数値では、この比がフローに沿ってほぼ一定 ── これが「ループしていない量」の姿です。</div>
+    </div>
+  </div>
+
+  <p>この<strong>道具4（単調量）</strong>が、この編の主役です。下の図で「素手で掘る」と「単調量を持つ」を切り替えて、ループが螺旋に変わる瞬間を体感してください。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>ループ（左回りに戻り続ける）</strong>と<strong>螺旋（一方向に降りて必ず終わる）</strong>。ボタンで切り替え。右のメーターは「追いかけている量」── ループでは上下して<em>戻ってくる</em>、螺旋では<em>片道で下がりきって止まる</em>。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="btns">
+      <button id="bLoop" class="on">素手で掘る（単調量なし → ループ）</button>
+      <button id="bSpiral">単調量を持つ（→ 螺旋）</button>
+      <button id="bReset">最初から</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#a5473a;"></i>堂々巡り（戻ってくる）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>単調量（片道・終端あり）</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">ここが要（この編ぜんぶの背骨）</div>
+    <p class="big" style="margin:0;">問題は、もう「ループを解け」ではない。<br><strong>両端に錨があり、真ん中の無人地帯に、フローに沿った"一方向の量（単調量）"を一本通せ。</strong><br>その量が、無次元比としてのギャップの一様な下限を含めばよい ── <em>自己言及ゼロ、ループはどこにもない。</em></p>
+  </div>
+
+  <h2><span class="n">04</span>次回予告 ── この形の問題は、一度だけ断ち切られている</h2>
+
+  <p>「自己言及するフローの問題を、単調量で断ち切る」── 実はこれ、<strong>人類史上ただ一度だけ</strong>成功した実例があります。しかも、その道具はあなたの直感 ──「情報でこの問題を攻めたい」── とぴったり同じものでした。</p>
+
+  <p>それが<strong>ペレルマンのポアンカレ予想の証明</strong>（2002–03年、7つのミレニアム問題で唯一解かれたもの）。彼は、幾何を熱のように流す「リッチフロー」に沿って<em>厳密に一方向へ進む情報量（W-エントロピー）</em>を見つけ、30年止まっていた証明を閉じました。次回、その物語に入ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線（この編ぜんぶに効く約束）</span>
+    <p style="margin-top:0;">この編は<strong>「解き方」ではなく「攻め方の設計図」</strong>です。ヤン=ミルズ問題は今も未解決 ── ここで語るのは、既知の道具と、ペレルマンの成功例からの<em>アナロジー（類推）</em>であって、証明ではありません。「4本のループが1つの不等式に潰れる」「両端に錨がある」は、この問題を最も正直に整理した<strong>現在地</strong>であって、真ん中の一様評価そのものは誰も示せていません（それがまさに難所）。</p>
+    <p style="margin-bottom:0;">「近距離＝漸近的自由で自由理論」「遠距離＝強結合展開で証明済み」は確立した事実。反射正値性による「ギャップ ⇄ 相関の指数減衰」も、格子ゲージ理論で厳密に成り立つ標準的な結果です。単調量が「まだ見つかっていない」のは本当で、そこがこの編のゴール地点になります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「掘るとループする」の根っこ（4本すべての母体）は何か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>スケールの自己言及</strong>。ヤン=ミルズには最初から長さの目盛りが無いのに、質量ギャップという目盛りが理論の中から湧く（次元転換）。「その目盛りはどこから？」と問うと答えが自分自身を指す ── これが循環の母体。</div></details>
+      </li>
+      <li>単調量があると、なぜループが断ち切れるのか。
+        <details><summary>答えを見る</summary><div class="ans">フローに沿って<strong>厳密に一方向へ進む量</strong>があれば、二度と同じ所に戻れない。だからループは「終点のある螺旋」になり、必ずどこかに到達して閉じる（無限降下法と同じ原理）。ただし追う量は次元転換に強い<strong>無次元比</strong>でなければならない。</div></details>
+      </li>
+      <li>反射正値性は、4本のうちどのループを「もう殺している」か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>ループ4（真空 ⇄ 全体像）</strong>。反射正値性のもとでは「ギャップの存在 ⇄ 相関の指数減衰」が両方向に厳密。だから真空1つから全体像を推論する必要がなく、ユークリッド測度の相関の減衰だけ示せばギャップが出る。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>ループの正体と、断ち切る道具</h2>
+    <p>ヤン=ミルズを掘るとはまる<strong>堂々巡り（循環論法）</strong>は、気のせいではなく問題の構造。ループは4本（ギャップ⇄閉じ込め／連続化⇄遠距離／分け方⇄相／真空⇄全体像）あるが、根っこは1本 ── <strong>スケールの自己言及（次元転換）</strong>。</p>
+    <p>断ち切る道具は4つ。<strong>①両端の錨</strong>（ループは中間だけ）、<strong>②連続性の方法</strong>（4ループが1つの不等式に潰れる）、<strong>③反射正値性</strong>（ループ4はもう殺されている）、<strong>④単調量</strong>（ループを終点のある螺旋に変える／無次元比で）。残る仕事は、真ん中の無人地帯に<em>一本の単調量</em>を通すこと。次回は、それを<strong>一度だけ成し遂げた前例 ── ペレルマンのリッチフロー</strong>へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-perelman2-ricci.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">第2回：リッチフローとW-エントロピー →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第1回。物理好きの高校生・大学生向け読み物。ヤン=ミルズ問題の「ループ構造」は、ギャップと閉じ込めの同値性、RGフローと赤外挙動の相互依存、エンタングルメントの分割の相依存性、真空とスペクトルの関係という4つの相互依存として現れ、その共通の起源が次元転換（無次元結合から質量スケールが生成される自己言及）であるという整理に基づきます。断ち切る4つの道具のうち、漸近的自由（紫外の自由性）と強結合展開（赤外の指数減衰）は確立した結果、反射正値性による「質量ギャップ ⇄ ゲージ不変相関の指数減衰」の双方向同値も格子ゲージ理論の標準的定理です。連続性の方法・単調量による循環の切断は、証明戦略としての位置づけであり、真ん中の一様評価そのものは未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボタンで「ループ／螺旋」を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bLoop=document.getElementById('bLoop'), bSpiral=document.getElementById('bSpiral'), bReset=document.getElementById('bReset');
+  var mode='loop';        // 'loop' | 'spiral'
+  var ang=0;              // 進んだ角度（ラジアン）
+  var done=false;
+  var trail=[];           // 軌跡
+  var lastW=680;
+  var R0=95;              // 初期半径
+  var K=0.115;            // 螺旋の減衰率
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function reset(){ ang=0; done=false; trail=[]; }
+
+  function radiusAt(a){ return mode==='spiral' ? R0*Math.exp(-K*a) : R0; }
+  // メーターの値（0..1）: ループ=上下する / 螺旋=単調減少
+  function meterAt(a){
+    if(mode==='spiral') return Math.exp(-K*a);          // 片道で下がる
+    return 0.5 - 0.44*Math.cos(a);                       // 行って戻る
+  }
+
+  function step(){
+    if(!done){
+      ang += 0.045;
+      if(mode==='spiral' && radiusAt(ang) < 7){ done=true; }
+      var cx=185, cy=150;
+      var r=radiusAt(ang);
+      var x=cx + r*Math.cos(ang - Math.PI/2);
+      var y=cy + r*Math.sin(ang - Math.PI/2);
+      trail.push({x:x,y:y});
+      if(mode==='loop' && trail.length>150) trail.shift();
+      if(trail.length>1600) trail.shift();
+    }
+  }
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var cx=185, cy=150;
+    var col = mode==='spiral' ? '#2f7d5a' : '#a5473a';
+
+    // center target (spiral goal)
+    if(mode==='spiral'){
+      ctx.fillStyle='#e3efe8'; ctx.beginPath(); ctx.arc(cx,cy,9,0,7); ctx.fill();
+      ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.arc(cx,cy,9,0,7); ctx.stroke();
+    }
+    // trail
+    ctx.lineWidth=2.4; ctx.strokeStyle=col; ctx.globalAlpha=.85;
+    ctx.beginPath();
+    for(var i=0;i<trail.length;i++){ var p=trail[i]; if(i===0)ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); }
+    ctx.stroke(); ctx.globalAlpha=1;
+    // moving dot
+    if(trail.length){ var last=trail[trail.length-1];
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(last.x,last.y,6.5,0,7); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(last.x,last.y,6.5,0,7); ctx.stroke();
+    }
+    // label under path
+    ctx.font='bold 13px sans-serif'; ctx.textAlign='center'; ctx.fillStyle=col;
+    ctx.fillText(mode==='spiral'?'螺旋 ── 一方向に降りて…':'ループ ── 同じ所を回り続ける', cx, 288);
+    if(mode==='spiral' && done){ ctx.fillStyle='#2f7d5a'; ctx.fillText('✓ 終点に到達（証明が閉じる）', cx, 288); }
+
+    // meter (right)
+    var mx=430, mtop=40, mw=54, mh=210;
+    ctx.fillStyle='#f2ede1'; ctx.fillRect(mx,mtop,mw,mh);
+    ctx.strokeStyle='#cabfa3'; ctx.lineWidth=1.2; ctx.strokeRect(mx,mtop,mw,mh);
+    var mv=meterAt(ang);
+    var fillH=mh*mv;
+    ctx.fillStyle=col; ctx.globalAlpha=.9;
+    ctx.fillRect(mx+1, mtop+mh-fillH, mw-2, fillH); ctx.globalAlpha=1;
+    // tick line: for spiral show it only goes down
+    ctx.font='12px sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#4a4f5e';
+    ctx.fillText('追いかけている量', mx-2, mtop-14);
+    ctx.fillText(mode==='spiral'?'（片道で下がる）':'（上下＝戻る）', mx-2, mtop-0.5);
+    // arrows
+    ctx.textAlign='center';
+    ctx.fillStyle=col; ctx.font='bold 20px sans-serif';
+    ctx.fillText(mode==='spiral'?'↓':'↕', mx+mw+22, mtop+mh/2+6);
+
+    // right text block
+    ctx.textAlign='left'; ctx.fillStyle='#33414a'; ctx.font='13px sans-serif';
+    var tx=525, ty=70;
+    var lines = mode==='spiral'
+      ? ['単調量があると:','・二度と戻れない','・必ず終点に着く','・そこが「答え」','＝ペレルマンの発想']
+      : ['単調量が無いと:','・同じ所を回る','・足場が宙に浮く','・にわとりと卵','＝いまの手詰まり'];
+    for(var k=0;k<lines.length;k++){
+      ctx.fillStyle = k===0 ? col : '#33414a';
+      ctx.font = k===0 ? 'bold 13.5px sans-serif' : (k===4?'bold 13px sans-serif':'13px sans-serif');
+      ctx.fillText(lines[k], tx, ty+k*26);
+    }
+  }
+
+  function loop(){ step(); draw(); requestAnimationFrame(loop); }
+
+  function setMode(m){
+    mode=m; reset();
+    bLoop.classList.toggle('on', m==='loop');
+    bSpiral.classList.toggle('on', m==='spiral');
+    rd.innerHTML = m==='spiral'
+      ? '<b>螺旋モード（単調量あり）</b> ── 追いかける量が<b>片道</b>で下がり、点は中心（終点）へ吸い込まれて<b>止まる</b>。ループが断ち切られ、証明が閉じる。これがペレルマンのやったこと。'
+      : '<b>ループモード（素手）</b> ── 追いかける量が<b>上下して戻る</b>。点は同じ円を回り続けて<b>永遠に終わらない</b>。足場がどこにもない ── これがいまの手詰まり。';
+  }
+  bLoop.addEventListener('click',function(){ setMode('loop'); });
+  bSpiral.addEventListener('click',function(){ setMode('spiral'); });
+  bReset.addEventListener('click',function(){ reset(); });
+  window.addEventListener('resize',draw);
+  setMode('loop');
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

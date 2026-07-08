@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIで難問は解けるか ── ペレルマンの型は、なぜ機械と相性がいいのか ／ ペレルマン編・外伝</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .reasons{margin:26px 0;display:flex;flex-direction:column;gap:12px;}
+  .reason{border:1px solid var(--rule);border-radius:7px;padding:16px 20px 16px 22px;background:#fff;position:relative;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .reason::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:7px 0 0 7px;background:var(--solved);}
+  .reason .h{font-size:15px;font-weight:700;color:var(--solved);margin-bottom:5px;letter-spacing:.03em;}
+  .reason .d{font-size:14px;color:#33414a;line-height:1.78;}
+
+  .split{margin:26px 0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;display:flex;flex-wrap:wrap;}
+  .split .col{flex:1;min-width:230px;padding:18px 22px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .split .ai{background:#e9f0ec;} .split .human{background:#f3ece1;}
+  .split .col .h{font-size:12.5px;letter-spacing:.1em;font-weight:700;margin-bottom:8px;}
+  .split .ai .h{color:var(--solved);} .split .human .h{color:var(--warn);}
+  .split .col ul{margin:0;padding-left:1.15em;font-size:13.5px;line-height:1.7;color:#33414a;}
+  .split .col li{margin:6px 0;}
+
+  .walls{margin:26px 0;display:flex;flex-direction:column;gap:12px;}
+  .wall{border:1px solid var(--rule);border-left:5px solid var(--open);border-radius:7px;padding:15px 20px;background:#fff;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .wall .h{font-size:15px;font-weight:700;color:var(--open);letter-spacing:.03em;}
+  .wall .d{font-size:14px;color:#33414a;line-height:1.78;margin-top:3px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.reasons,.reason,.split,.walls,.wall{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編・外伝</span><span class="ep">AIと難問</span></div>
+  <p class="eyebrow">「計算しながら証明する」── ペレルマンの型は、なぜAI＋機械と噛み合うのか</p>
+  <h1>AIで難問は解けるか ── ペレルマンの型は、なぜ機械と相性がいいのか
+    <span class="sub">フロー＋単調量＋「1本の不等式への還元」── この型は、実は数あるミレニアム問題の中でも<strong>AIと証明支援器のパラダイムに最も噛み合う形</strong>をしている。<br>ただし<em>「数値で確かめる」と「証明する」は違う</em>。両面を、正直に測る。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：AIで難問を攻めるとき、何が本当にでき、何ができないか</span>
+    <span>一言で：AIはオラクルでなく、"よく還元された問題"の遠征の相棒</span>
+  </div>
+
+  <p class="lead">「ペレルマンのやり方って、プログラムを作ってコンピュータで計算しながら証明できるから、LLMと相性がいいんじゃない？ これからAIで難問を解く時代が来るかも」── これは、煽りではなく<strong>構造的に本当に言える部分</strong>があります。しかも、その理由はこの編で見てきた道具立て（<em>フロー・単調量・完全平方・1本の不等式・2次元の実験室</em>）にぴったり対応している。今回はそれを整理します。ただし最初に、<strong>いちばん大事な線</strong>を引かせてください ── 舞い上がらないために。</p>
+
+  <h2><span class="n">01</span>まず線を引く ── 「数値で確かめる」と「証明する」は、別もの</h2>
+
+  <p>コンピュータで質量ギャップを計算するのは、実はもう<em>できています</em>（格子ゲージ計算、第1回・第4回で触れた「物理の確信」）。でもそれは<strong>数値的な確認</strong>であって、クレイ問題が求める<strong>数学の証明</strong>ではありません。ここを混ぜると、この編の掟が崩れます。</p>
+
+  <div class="keybox">
+    <div class="lbl">永遠の線（この外伝でいちばん大事）</div>
+    <p class="big" style="margin:0;"><strong>数値でできること</strong>：候補を<em>反証</em>する（Wが単調でなければ即死）／候補が有望だと<em>示唆</em>する。<br><strong>数値でできないこと</strong>：格子を無限に細かくした極限（\(a\to0\)）での<em>一様な</em>成立を<strong>証明</strong>すること。<br>有限個の計算は、無限個のスケールの一様評価を<em>代われない</em>。</p>
+  </div>
+
+  <p>だから「AIが計算して証明」と言うとき、<strong>本当の勝負は「数値」ではなく「厳密な論証」の側</strong>にあります。では、機械は厳密な論証の側で何ができるのか ── ここからが本題です。</p>
+
+  <h2><span class="n">02</span>でも「計算しながら証明」は、もう実在する</h2>
+
+  <p>「コンピュータで厳密に証明」は夢物語ではありません。<em>すでに人類は何度もやっている</em>。二つの流派があります。</p>
+
+  <div class="aside">
+    <span class="tag">流派A：有限に落として、区間演算で厳密に囲む</span>
+    <strong>四色定理</strong>（Appel–Haken, 1976／後にCoqで形式化）、<strong>ケプラー予想</strong>（Hales, 1998；形式証明プロジェクトFlyspeckが2014年完成）、<strong>ローレンツ・アトラクター</strong>（Tucker, 2002；区間演算）、量子系の<strong>Fefferman–Seco</strong>の固有値評価。共通の技は ──<em>問題を有限・コンパクトな計算に落とし、丸め誤差まで含めて厳密に囲い込む</em>。これは本シリーズ「アイデア5（区間演算で窓を貫く）」で既に登場した道です。
+  </div>
+
+  <div class="aside">
+    <span class="tag">流派B：証明支援器＋AI ── 嘘が一行も通らない環境</span>
+    <strong>Lean・Coq・Isabelle</strong> といった証明支援器は、<em>論理的に正しい一手しか受け付けない</em>。だからAIがどれだけ「それっぽい嘘」を吐いても、<strong>カーネル（検証核）が弾く</strong>。2023年、Gowers–Green–Manners–Tao が多項式Freiman–Ruzsa予想を証明すると、<em>1か月足らずでLean4に形式化</em>された（Blueprint方式）。2024年、DeepMindの<strong>AlphaProof</strong>が、国際数学オリンピックの問題をLean上で解いて<em>銀メダル相当</em>（最難問を含む3問、Nature 2025）。翌年にはgoldレベルの報告も。<strong>「LLMが提案し、証明支援器が検証する」ループ</strong>が、いま現実に回っています。
+  </div>
+
+  <p>ポイントは、この二つが<strong>ハルシネーション（AIの作り話）を無害化する</strong>こと。区間演算もLeanのカーネルも、<em>「正しいかどうか」を人間の信用ではなく機械が判定</em>する。だからAIを<strong>大胆に使っても安全</strong>── 通ればそれは本物、通らなければ捨てるだけ。</p>
+
+  <h2><span class="n">03</span>なぜペレルマンの型が、特に機械と相性がいいのか</h2>
+
+  <p>ここが今日の芯です。ペレルマン編で見てきた道具立ては、<em>たまたま</em>ではなく<strong>構造的に</strong>、機械＋AIと噛み合っています。理由は5つ。</p>
+
+  <div class="reasons">
+    <div class="reason">
+      <div class="h">理由1：問題が「1本の不等式」に還元済み</div>
+      <div class="d">第5回で、質量ギャップは<strong>「連続極限まで一様なLSIを示せ」</strong>という1本の不等式に煮詰まった。AIは「新しい分野をゼロから作れ」より<em>「この特定の不等式・補題を示せ」</em>が桁違いに得意。<strong>還元しておくこと自体が、問題をAI可解な形にする前処理</strong>になっている。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由2：単調量探し ＝ 目的が「機械可読」</div>
+      <div class="d">「フローに沿って単調な量Wを見つけよ」は、<em>目的関数がはっきりした探索問題</em>。AIが候補の式を提案し、機械が<strong>単調性を即座に数値で弾ける</strong>（反証が速い）。目的がぼんやりした問題と違い、<em>試して落とすサイクルが回る</em>形をしている。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由3：完全平方 ＝ SOS（自動で探せる正値性）</div>
+      <div class="d">第4回の心臓＝<em>変化率が「二乗の和」で書ける</em>こと。実は「ある式が二乗の和（Sum of Squares）か」を判定・構成するのは、<strong>半正定値計画（SDP）という機械が解けるアルゴリズム問題</strong>（Positivstellensatz）。<em>正値性の証明書を、機械が探せる</em>。ペレルマンの \(|{\rm Ric}+\nabla^2 f-\tfrac{g}{2\tau}|^2\) は、まさにこの「二乗の証明書」だった。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由4：各スケール・局所・反復構造</div>
+      <div class="d">くりこまれたバクリー–エムリーは、大問題を<strong>「RGの1ステップごとの同じ形の条件」に分解</strong>する。局所的で反復的な構造は、機械の得意分野そのもの ── 同じ補題を全スケールに適用する形は、自動化と形式化に向く。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由5：2次元という「答えが厳密に分かる実験室」</div>
+      <div class="d">第6回の2次元格子YM ── RG＝群上の熱流、W単調性は定理、転送行列ギャップも厳密。<strong>正解が完全に分かっている教師データ</strong>があるので、AIの提案を<em>その場で答え合わせ</em>できる。機械学習でいちばん効くのは、この<strong>締まったフィードバックループ</strong>。</div>
+    </div>
+  </div>
+
+  <p>この5つを、実際の作業手順として並べると、下のパイプラインになります。<strong>各段をクリック</strong>すると、機械にできること・その限界が出ます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>AI＋機械で攻めるパイプライン</strong>。左の4段は機械が本当に助けられる（<span style="color:#2f7d5a;font-weight:700;">緑</span>）。だが最後の段 ── <span style="color:#a5473a;font-weight:700;">4次元の一様評価</span> ── は、いまだ機械も人も越えていない壁。各段をクリックで詳細。</div>
+    <canvas id="cv" width="680" height="240"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>機械が助けられる段</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>壁（未踏）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>AIの役割 ── オラクルではなく、遠征の相棒</h2>
+
+  <p>だから現実的な絵はこうです。AIは「答えを吐く神託（オラクル）」ではなく、<strong>よく還元された問題を一緒に登る相棒</strong>。役割分担を正直に書くと ──</p>
+
+  <div class="split">
+    <div class="col ai">
+      <div class="h">AI・機械が得意（いま実際にできる）</div>
+      <ul>
+        <li>候補となる単調量Wの<strong>形を大量に提案</strong>する</li>
+        <li>2次元ラボで<strong>単調性・ギャップ追跡を数値検証</strong>（反証が速い）</li>
+        <li><strong>SOS証明書を探索</strong>（半正定値計画で正値性を構成）</li>
+        <li>Bochner等の<strong>代数恒等式を記号計算</strong>で導出・検算</li>
+        <li>示せた補題を<strong>Leanで形式化</strong>し、間違いを機械が弾く</li>
+        <li>膨大な場合分け・スケールを<strong>根気よく反復</strong></li>
+      </ul>
+    </div>
+    <div class="col human">
+      <div class="h">人間の芯（まだ人がやる）</div>
+      <ul>
+        <li>問題を<strong>「1本の不等式」まで還元</strong>する筋を見抜く</li>
+        <li>どの<strong>ペア化・参照点・軌道空間</strong>で戦うかの設計</li>
+        <li>「指数を自動で運ぶ<strong>構造</strong>」があるという<em>賭け</em>を立てる</li>
+        <li>2次元の成功を4次元へ<strong>翻訳する概念</strong>の発明</li>
+        <li>「これは泥か壁か」の<strong>見極めと撤退判断</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <p>ペレルマンのW自体、<em>力ずくの計算</em>ではなく<strong>「単調性という構造」が指数管理を肩代わり</strong>した発見でした（第6回）。その構造を<em>見つける</em>のは、いまはまだ人間の側の仕事 ── でもAIは、その構造を<strong>探し、試し、検証する</strong>作業を、桁違いに速く回せる。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>正直な三つの壁 ── ここは、まだ機械も越えていない</h2>
+
+  <div class="walls">
+    <div class="wall">
+      <div class="h">壁1：数値 ≠ 証明（何度でも）</div>
+      <div class="d">2次元で完璧に単調でも、有限の4次元格子でギャップが見えても、それは<strong>\(a\to0\) の一様評価の証明にはならない</strong>。第6回の泥穴3（指数精度の多スケール）は、有限計算に落ちない<em>極限</em>の問題。区間演算が効くのはコンパクトな有限問題まで。</div>
+    </div>
+    <div class="wall">
+      <div class="h">壁2：形式化の前提が、まだ存在しない</div>
+      <div class="d">仮に人間が4次元の証明を書けても、それをLeanで検証するには、<strong>構成的場の理論・ゲージ場の測度論</strong>などの土台をmathlibに積む必要がある ── それ自体が巨大なプロジェクト。オリンピック問題と違い、<em>足場の数学がまだ形式化されていない</em>。</div>
+    </div>
+    <div class="wall">
+      <div class="h">壁3：創造的な還元は、検索では出ないかもしれない</div>
+      <div class="d">SOSや数値探索が効くのは<strong>「探す範囲（ansatz）」が決まってから</strong>。正しいWがその範囲の外にあるなら、いくら機械を回しても出ない。ペレルマンのWは深い幾何（Bochner・Li–Yau・エントロピー）に根ざした一撃で、<em>検索で見つかる保証はない</em>。ここは概念の発明が要る。</div>
+    </div>
+  </div>
+
+  <h2><span class="n">06</span>「難問を解く時代」の、正しい読み方</h2>
+
+  <p>まとめると、あなたの直感は<strong>半分どころか、かなり当たっています</strong>── ただし正確に言い直すと、こうなります。</p>
+
+  <div class="keybox">
+    <div class="lbl">この外伝の結論</div>
+    <p class="big" style="margin:0;">「AIがヤン=ミルズを解く」は、まだ遠い。<br>でも<strong>「この問題の"形"は、AI＋証明支援器の時代に最も噛み合う形」</strong>── これは本当。<br>フロー＋単調量＋1本の不等式＋機械可読な正値性（SOS）＋2次元の教師データ。<em>この5点セットは、偶然ではなく、機械と一緒に登るために誂えたような地形</em>だ。</p>
+  </div>
+
+  <p>そして、いちばん大事なメタな一言。<strong>「AIで難問を解く時代」の主役は、問題を"AIが登れる形"まで還元する力</strong>です。この編で人間がやったこと ── ループを名づけ、道具を並べ、ペレルマンの前例を移植し、<em>1本の不等式まで煮詰めた</em> ── それ自体が、AI時代の新しい数学の作法の前半分。後半分（探索・検証・形式化）を機械が担う。<strong>還元する人間と、検証する機械。この分業が回り始めた</strong>のが、いま私たちがいる時代です。</p>
+
+  <p>だからこのシリーズの掟は、AI時代にこそ効きます ──<em>旗を立てるな、縁の標識を立てよ</em>。AIは「解けた！」の旗を<strong>誰よりも上手に捏造</strong>できてしまう。だからこそ、<strong>機械が検証できる形（Lean・SOS・区間演算）に、正直な標識を刻む</strong>こと。それが、AIで難問に挑む時代の、いちばん誠実な作法だと思います。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">計算機による厳密証明は実在します：四色定理（Appel–Haken 1976、Gonthierによる Coq 形式化 2005）、ケプラー予想（Hales 1998、Flyspeck形式証明 2014、HOL Light/Isabelle）、ローレンジ・アトラクター（Tucker 2002、区間演算）。証明支援器＋AIも実在：多項式Freiman–Ruzsa予想のLean4形式化（Gowers–Green–Manners–Tao、2023、Blueprint方式）、DeepMind AlphaProof が IMO 2024 でLean上・銀メダル相当（Nature 2025）。SOS（sum-of-squares）による正値性証明が半正定値計画（SDP）に帰着することも標準的事実（Positivstellensatz／Lasserre 階層）。</p>
+    <p style="margin-bottom:0;">ただし本稿の中心 ── <em>ペレルマン型のプログラムでヤン=ミルズの4次元一様評価をAIが証明する</em> ── は<strong>実現していません</strong>。SOS/SDPは有限次元・多項式の設定で厳密で、YMの関数解析的・連続極限の設定にそのまま適用できるわけではありません（有限格子や ansatz 内の探索の道具、という位置づけ）。「AIが提案し支援器が検証」で無害化されるのは<em>論証の正しさ</em>であって、正しい概念を<em>思いつく</em>ことではありません。2次元での検証は「候補が正しい形をしている」証拠にとどまり、クレイ問題の解決ではない ── 第6回段3の線をそのまま守ります。現状のAIは olympiad／研究補題のレベルで、構成的場の理論を新規に築くレベルではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「コンピュータで質量ギャップを計算できる」のに、なぜ証明にならないのか。
+        <details><summary>答えを見る</summary><div class="ans">それは<strong>数値的な確認</strong>で、格子を無限に細かくした極限（\(a\to0\)）での<strong>一様な成立の証明</strong>ではないから。有限個の計算は、無限個のスケールの一様評価を代われない。数値は候補を<em>反証・示唆</em>できるが、<em>証明</em>はできない。</div></details>
+      </li>
+      <li>ペレルマンの型が特に機械と相性がいい理由を、二つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">例：①問題が<strong>1本の不等式（一様LSI）に還元済み</strong>で、AIは特定の補題証明が得意。②<strong>完全平方＝SOS</strong>で、正値性の証明書を半正定値計画（SDP）で機械が探せる。他に：単調量探し＝目的が機械可読で反証が速い／各スケール局所・反復構造/2次元の厳密な教師データでフィードバックが締まる。</div></details>
+      </li>
+      <li>AIで難問を解く時代の「人間の芯」は何か。
+        <details><summary>答えを見る</summary><div class="ans">問題を<strong>「AIが登れる形（1本の不等式）」まで還元する力</strong>、どのペア化・参照点で戦うかの設計、「指数を自動で運ぶ構造がある」という賭けを立てること、2次元→4次元の概念の翻訳、そして「泥か壁か」の見極め。探索・検証・形式化は機械が担い、<strong>還元と概念の発明は人間</strong>── この分業が回り始めた。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">外伝まとめ</span>還元する人間と、検証する機械</h2>
+    <p>まず線：<strong>数値で確かめる ≠ 証明する</strong>。だが「計算しながら厳密に証明」は実在する ── 有限に落として区間演算（四色・ケプラー・ローレンツ）、そして<strong>証明支援器＋AI</strong>（Lean形式化、AlphaProof、Tao–PFR）。どちらも<em>ハルシネーションを機械が弾く</em>から、AIを大胆に使える。</p>
+    <p>ペレルマンの型は、構造的に機械と噛み合う：<strong>①1本の不等式に還元済み ②単調量探し＝機械可読な目的 ③完全平方＝SOSで自動探索 ④各スケール局所・反復 ⑤2次元の厳密な教師データ</strong>。だが三つの壁（数値≠証明／形式化の前提が未整備／創造的還元は検索で出ない）は本物。結論：<em>「AIがYMを解く」はまだ遠いが、「この問題の形はAI時代に最も噛み合う」は本当</em>。主役は<strong>問題をAIが登れる形まで還元する力</strong>。だからこそ ── <em>旗を立てるな、機械が検証できる縁の標識を刻め。</em></p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman6-doro.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第6回：泥か壁か</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-idea5-rignum.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">関連：アイデア5（区間演算）→</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・外伝（AIと難問）。計算機による厳密証明の実例：四色定理（Appel–Haken 1976；Gonthier による Coq 形式化 2005）、ケプラー予想（Hales 1998；Flyspeck 形式証明 2014、HOL Light/Isabelle）、ローレンツ・アトラクターの存在（Tucker 2002、区間演算）、Fefferman–Seco の量子固有値評価。証明支援器＋AI：多項式Freiman–Ruzsa予想のLean4形式化（Gowers–Green–Manners–Tao、2023、Massot の Blueprint 方式）、DeepMind AlphaProof が国際数学オリンピック2024でLean上・銀メダル相当（solved P1/P2/P6、Nature 2025）。sum-of-squares による多項式の非負性証明が半正定値計画に帰着すること（Positivstellensatz、Lasserre 階層）は標準的。これらは事実です。一方、本稿の主眼である「ペレルマン型プログラムでヤン=ミルズ4次元の一様評価をAIが証明する」ことは実現しておらず、SOS/SDPは有限次元・多項式設定の道具でYMの連続極限にそのまま適用できるわけではありません。数値検証は証明ではなく、AIによる検証で保証されるのは論証の正しさであって概念の発見ではない、という第6回段3の線を維持します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではパイプラインの各段をクリックすると、機械にできること・限界が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var lastW=680, sel=0;
+  var stages=[
+    {t:['候補を','作る'], who:'AI / LLM', wall:false,
+     desc:'AIが単調量Wの形を大量に提案する。目的（フローに沿って単調）がはっきりしているので、当てずっぽうでも量産できる。人間は探す範囲（ansatz）と参照点を設計する。'},
+    {t:['数値で','弾く'], who:'2次元ラボ', wall:false,
+     desc:'2次元格子YM（RG＝群上の熱流、答えが厳密）で、候補が単調か・LSI定数がギャップを追うかを数値で即チェック。単調でなければ即死＝反証が速い。教師データが完全なので答え合わせが締まる。'},
+    {t:['完全平方','を探す'], who:'SOS / SDP', wall:false,
+     desc:'変化率が「二乗の和」で書けるか＝正値性の証明書を、半正定値計画（SDP）という機械が解ける問題として探索。ペレルマンの |Ric+∇²f−g/2τ|² は、まさにこの証明書だった（ただし有限次元・多項式設定での道具）。'},
+    {t:['形式化','＆検証'], who:'Lean ＋ AI', wall:false,
+     desc:'示せた補題をLeanなどの証明支援器に載せる。カーネルが論理的に正しい一手しか通さないので、AIの作り話（ハルシネーション）は自動で弾かれる。AlphaProofやTao–PFRで実証済みのループ。ただしYMは足場の数学（構成的場の理論）がまだ未形式化。'},
+    {t:['4次元の','一様評価'], who:'← 壁：未踏', wall:true,
+     desc:'泥穴3（指数精度の多スケール、a→0）。有限計算にも ansatz 探索にも落ちない極限の問題で、機械も人もまだ越えていない。ここを越えるには「指数を自動で運ぶ構造」＝YM版W-エントロピーの発見が要る。数値も2次元も、ここの証明を代われない。'}
+  ];
+  var boxes=[];
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var n=stages.length, pad=16, arrowW=20;
+    var totalArrow=(n-1)*arrowW;
+    var bw=(w-2*pad-totalArrow)/n, bh=118, top=40;
+    boxes=[];
+    for(var i=0;i<n;i++){
+      var x=pad+i*(bw+arrowW), y=top;
+      boxes.push({x:x,y:y,w:bw,h:bh,i:i});
+      var st=stages[i], isSel=(i===sel);
+      var fill = st.wall? '#f6e3de' : '#e6f0ea';
+      var edge = st.wall? '#a5473a' : '#2f7d5a';
+      ctx.fillStyle=fill; roundRect(ctx,x,y,bw,bh,8); ctx.fill();
+      ctx.strokeStyle=edge; ctx.lineWidth=isSel?3.2:1.4; roundRect(ctx,x,y,bw,bh,8); ctx.stroke();
+      if(st.wall){ // brick hatch hint
+        ctx.save(); ctx.beginPath(); roundRect(ctx,x,y,bw,bh,8); ctx.clip();
+        ctx.strokeStyle='rgba(165,71,58,0.18)'; ctx.lineWidth=1;
+        for(var b=0;b<bh;b+=12){ ctx.beginPath(); ctx.moveTo(x,y+b); ctx.lineTo(x+bw,y+b); ctx.stroke(); }
+        ctx.restore();
+      }
+      // number badge
+      ctx.fillStyle=edge; ctx.beginPath(); ctx.arc(x+16,y+16,10,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(st.wall?'!':(i+1), x+16, y+20);
+      // title
+      ctx.fillStyle='#22262e'; ctx.font='bold 13.5px sans-serif';
+      for(var k=0;k<st.t.length;k++){ ctx.fillText(st.t[k], x+bw/2, y+52+k*18); }
+      // who
+      ctx.font='11px sans-serif'; ctx.fillStyle= st.wall? '#a5473a':'#2c5560';
+      ctx.fillText(st.who, x+bw/2, y+bh-14);
+      // arrow
+      if(i<n-1){
+        var ax=x+bw+2, ay=y+bh/2;
+        ctx.strokeStyle= stages[i+1].wall? '#a5473a':'#8a9a92'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ax+arrowW-4,ay); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax+arrowW-4,ay); ctx.lineTo(ax+arrowW-10,ay-4); ctx.lineTo(ax+arrowW-10,ay+4); ctx.closePath();
+        ctx.fillStyle= stages[i+1].wall? '#a5473a':'#8a9a92'; ctx.fill();
+      }
+    }
+    // caption line
+    ctx.textAlign='center'; ctx.fillStyle='#4a4f5e'; ctx.font='12px sans-serif';
+    ctx.fillText('← 機械が助けられる（緑） ────────── 壁（赤）→', w/2, top+bh+34);
+    ctx.font='11px sans-serif'; ctx.fillStyle='#8a7a52';
+    ctx.fillText('段をクリックすると詳細が出ます', w/2, 24);
+  }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function say(){
+    var s=stages[sel];
+    rd.innerHTML='<b>'+s.t.join('')+'（'+s.who+'）</b> ── '+s.desc;
+  }
+  cv.addEventListener('click',function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); say(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

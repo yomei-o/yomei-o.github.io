@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超準解析で解けるか ── 無限小の格子は連続か ／ ミレニアム問題を解くぞ 番外②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --ok:#2f7d5a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .bad{color:var(--bad);font-weight:700;} table.dt .ok{color:var(--ok);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">番外② （自己診断）</span></div>
+  <p class="eyebrow">無限小の間隔の格子は、そのまま連続 ── なら連続極限はタダ？</p>
+  <h1>超準解析で解けるか ── 無限小の格子は連続か
+    <span class="sub">超準解析なら、間隔が<strong>無限小 \(\delta\)</strong> の格子を厳密に扱え、その<strong>標準部分</strong>が連続。これは番外①「離散＝連続／十分細かく標本化」の<em>厳密版</em>そのもの。<br>だが4次元YMは解けない ── しかも今回は<strong>"解けない"が定理で言える</strong>（保存性）。難所は言い換えでは消えない。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：もう一つの自作理論を、保存性で反証（数式あり）</span>
+    <span>核心：超準解析は ZFC の保存的拡大＝新しい標準定理を生まない</span>
+  </div>
+
+  <p class="lead">番外①で、サンプリング定理は「帯域制限」という前提でしか効かないと分かりました。今回は、より強力に見える道具 ── <strong>超準解析</strong>（Robinson の超実数・無限小）。「連続極限 \(a\to0\) を<em>極限として</em>取る」代わりに、最初から<strong>間隔が無限小 \(\delta\) の格子</strong>を置き、その<strong>標準部分（standard part）</strong>を連続とみなす。無限小の格子はもう連続なのだから、連続極限はタダになる ── ように見える。じつはこれは、あなたの「離散＝連続／無限に細かく標本化」を<em>数学的に正当化した姿</em>です。でも、やはり解けない。そして今回は、その"解けなさ"が<strong>定理として</strong>言えます。</p>
+
+  <h2><span class="n">01</span>超準解析とは ── 無限小を、正直な数にする</h2>
+
+  <p>超準解析は、通常の実数に<strong>無限小</strong>（0でないのに、どんな正の実数より小さい数 \(\delta\)）と<strong>無限大</strong>を、矛盾なく付け加えた体系（超実数）です。そして各超実数には、いちばん近い普通の実数を返す<strong>標準部分 \(\mathrm{st}(\cdot)\)</strong> がある。</p>
+
+  <div class="keybox">
+    <div class="lbl">超有限格子と標準部分</div>
+    $$\text{間隔}=\delta\ (\text{無限小}),\quad \text{点の数}=\text{超有限};\qquad \text{連続の量}=\mathrm{st}\big(\text{超有限格子の量}\big)$$
+    <p style="margin:10px 0 0;">間隔が無限小の<strong>超有限格子</strong>を置くと、経路積分は<em>内部的には</em>ただの（超有限次元の）積分で well-defined。連続極限を"極限"として苦労して取る代わりに、<strong>標準部分 \(\mathrm{st}\) を一発で取る</strong>。微分は無限小の差の商、積分は無限小の和 ── 差分と微分、和と積分が、無限小でそのまま結ばれる。</p>
+  </div>
+
+  <h2><span class="n">02</span>本当にできること ── これは"本物のルート"</h2>
+
+  <p>クランクではありません。<strong>Loeb 測度</strong>（Peter Loeb, 1975）は、超有限格子の内部測度を<em>標準の（σ加法的な）測度</em>に変換する道具で、これでブラウン運動や確率過程が厳密に作れる。Nelson や Albeverio–Fenstad–Høegh-Krohn–Lindström らは、この方法で<strong>いくつかの低次元の場の理論・確率模型を厳密に構成</strong>しています。つまり超準解析は、第6回ルートA（格子→連続）の<em>上品な変種</em>で、あなたの「無限に細かい離散＝連続」を数学的に正当化する本物の道。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>決定的な壁 ── 保存的拡大（"解けない"が定理になる）</h2>
+
+  <p>ここが今回の急所。超準解析（Robinson、あるいは Nelson の内部集合論 IST）は、通常の数学 ZFC の<strong>保存的拡大</strong>です ── これは定理（IST の ZFC 上の保存性、Nelson 1977）。</p>
+
+  <div class="keybox">
+    <div class="lbl">保存性 ── 新しい標準定理は生まれない</div>
+    $$\text{超準解析}\ \vdash\ \varphi\ (\varphi\text{ は標準的な命題})\quad\Longrightarrow\quad \text{ZFC}\ \vdash\ \varphi$$
+    <p style="margin:10px 0 0;">標準的な命題については、<strong>超準解析で証明できることは、超準解析なしでも証明できる</strong>。「4次元YMが存在しギャップを持つ」は標準的な命題。だから ── <em>もし超準解析でYMが解けたら、その証明は普通の数学に翻訳できてしまう</em>。難しさは「離散↔連続の言い換え」には無い（そこは超準解析が完璧に扱う）ので、<strong>言い換えの道具では原理的に近道にならない</strong>。番外①の"循環"を、保存性という定理に格上げした形。</p>
+  </div>
+
+  <h2><span class="n">04</span>難所は翻訳しても残る ── \(\mathrm{st}\) を取れること＝Q3</h2>
+
+  <p>「標準部分を取る」＝「連続極限 \(a\to0\) を取る」。超有限格子の相関 \(\langle O O\rangle\) の標準部分が<strong>存在し・有限で・非自明で・OS正値で・ギャップを持つ</strong>ことを示すには、内部量への<em>一様な評価</em>が要る ── これがそっくり Q3 です。</p>
+
+  <div class="calc">
+    <span class="tag">内部で well-defined ≠ 標準部分が非自明</span>
+    $$\underbrace{\int_{\text{超有限格子}}\!\!\!(\cdots)}_{\text{内部：常にOK}}\quad\xrightarrow{\ \mathrm{st}\ }\quad
+    \begin{cases}\text{自明（自由・ギャップ0）}\\[2pt]\textbf{非自明（}\Delta>0\textbf{）＝目標}\\[2pt]\text{発散（}\infty\text{）}\end{cases}$$
+    <p style="margin-bottom:14px;">内部積分がいつも定義できても、その<strong>標準部分の運命</strong>は一様評価しだい ── 潰れて自明になるか、非自明に残るか、発散するか。<em>「目標（非自明＋ギャップ）」の窓に入れる</em>ことこそ、未証明の一様制御＝Q3。下の図で、この分岐を動かせます。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：<span style="color:#2f7d5a;font-weight:700;">下の帯＝内部（無限小格子）は常に well-defined</span>。だが<strong>標準部分 st() の運命</strong>（上の針）は、裸結合の走らせ方／一様評価しだいで <span style="color:#a5473a;font-weight:700;">自明（自由）</span>・<span style="color:#a9791a;font-weight:700;">目標（Δ>0）</span>・<span style="color:#a5473a;font-weight:700;">発散</span> に分岐。既知の U(1)・φ⁴₄ は<em>自明</em>に落ちる。YMを"目標窓"に入れられるか＝Q3</div>
+    <canvas id="cv" width="680" height="270"></canvas>
+    <div class="controls">
+      <label>裸結合の走らせ方 g(δ)／一様評価（st の取り方）<span class="val" id="vt">0.30</span>
+        <input type="range" id="st" min="0" max="1" step="0.005" value="0.3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">05</span>同じ障害が、超実数の衣を着て戻る</h2>
+
+  <table class="dt">
+    <tr><th>障害（第4・6・7回）</th><th>超準解析でどうなるか</th></tr>
+    <tr><td class="id">φ⁴₄ は自明</td><td class="bad">超有限格子で作っても、標準部分はやはり自明（表現を選ばない定理）</td></tr>
+    <tr><td class="id">U(1) は連続で自由</td><td class="bad">超有限格子の標準部分もやはり自由・質量ゼロ</td></tr>
+    <tr><td class="id">くりこみ群フロー</td><td class="bad">裸結合 \(g(\delta)\) を無限小 \(\delta\) に応じて調整＝RGフローが超実数の衣で再登場</td></tr>
+    <tr><td class="id">ローレンツ回復</td><td class="bad">超有限の立方格子は依然ローレンツを破り、st で回復するかは別途評価</td></tr>
+  </table>
+
+  <p>どれも「無限小にする」だけでは消えない。<strong>難しさは"内部の格子"でなく"標準部分が非自明に存在するか"に、丸ごと移る</strong> ── そしてそこが Q3 のまま。</p>
+
+  <h2><span class="n">06</span>判定と、いちばん深い教訓</h2>
+
+  <div class="keybox">
+    <div class="lbl">この理論の判定（過大申告なし）</div>
+    <p style="margin:0;">超準解析は<strong>本物の道具</strong>（低次元の構成に実績、あなたの「無限小格子＝連続」の厳密化）。だが<strong>4次元YMは解けない</strong> ── ①保存性より、標準命題に新しい近道を与えない（定理）。②難所（st の存在・非自明性・OS正値・ギャップ）は表現不変で残り、そのままQ3。効くのは、標準部分が素直に存在する側（低次元・IR）まで。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">番外①＋②の共通の教訓</div>
+    <p style="margin:0;">サンプリングも超準解析も、<em>離散↔連続の関係を厳密に扱う道具</em>。しかも後者は前者の直感の厳密版。だが<strong>YMの難しさは、その関係の中には無い</strong> ── 難しさは<em>解析的な中身</em>（一様評価・臨界・非自明性・ローレンツ）にあり、表現・言語を変えても不変。<strong>表現を変える道具は、難しさが"中身"にある問題を解けない</strong> ── 超準解析の保存性が、これを"意見"でなく"定理"にした。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">超実数・無限小・標準部分、超有限格子と内部の well-defined 性、Loeb 測度（Loeb 1975）による標準測度化とブラウン運動等の構成、超準解析による低次元の確率模型・場の理論の構成（Nelson；Albeverio–Fenstad–Høegh-Krohn–Lindström）、内部集合論 IST の ZFC 上の保存性（Nelson 1977）、φ⁴₄ の自明性（Aizenman–Duminil-Copin 2021）、U(1) の連続極限での自由性は、いずれも確立した事実です。</p>
+    <p style="margin-bottom:0;">この回は<strong>4次元YMを解いていません</strong>（2025年時点、未解決）。むしろ、超準解析という強力な道具でも解けないこと、そしてその理由が保存性＋Q3の表現不変性であることを確認した回です。超準解析は「離散↔連続の言い換え」を厳密化しますが、連続極限の<em>解析的中身</em>（一様評価・非自明性）は肩代わりしません。図は st() の分岐を示す<strong>概念的な模式</strong>（横位置は"一様評価/裸結合の走らせ方"の抽象化）で、具体的な計算値ではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「無限小の格子はもう連続だから、連続極限はタダ。Q3は解けた」── どこが誤りか。
+        <details><summary>答えを見る</summary><div class="ans">内部（超有限格子）が well-defined でも、その標準部分 st() が"存在し・有限・非自明・OS正値・ギャップあり"になる保証はない（自明に潰れたり発散しうる）。それを示すには一様評価＝Q3が必要。無限小にするのは離散↔連続の言い換えで、解析的な難所は肩代わりしない。</div></details>
+      </li>
+      <li>超準解析が原理的に近道を与えない理由を、一言で。
+        <details><summary>答えを見る</summary><div class="ans">保存的拡大だから。標準命題について超準解析で証明できることは ZFC でも証明できる（IST の保存性、Nelson 1977）。「4次元YM＋ギャップ」は標準命題なので、超準解析で解けたら普通の数学に翻訳できる＝言い換えの道具では近道にならない。</div></details>
+      </li>
+      <li>番外①（サンプリング）と②（超準解析）に共通する教訓は？
+        <details><summary>答えを見る</summary><div class="ans">どちらも離散↔連続の関係を（厳密に）扱う道具だが、YMの難しさはその関係でなく解析的な中身（一様評価・臨界・非自明性・ローレンツ）にあり、表現を変えても不変。表現を変える道具は、難しさが中身にある問題を解けない ── 超準解析の保存性がそれを定理にした。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">番外②まとめ</span>無限小にしても、壁は無限小には近づかない</h2>
+    <p>超準解析は、間隔が無限小 \(\delta\) の超有限格子を厳密に扱い、標準部分 \(\mathrm{st}\) で連続を得る ── あなたの「離散＝連続／無限に細かく標本化」の厳密版で、低次元の構成に実績のある本物の道具。だが4次元YMは解けない。</p>
+    <p>理由は二つ。①<strong>保存性</strong>：超準解析は ZFC の保存的拡大で、標準命題に新しい近道を与えない（"解けない"が定理）。②<strong>難所は翻訳しても残る</strong>：st() が非自明に存在する（自明にも発散にもならない）ことを示す一様評価が、そのままQ3。φ⁴₄・U(1) は st で自明に潰れる。<em>難しさは「内部の格子」でなく「標準部分の非自明な存在」に丸ごと移り、そこが壁のまま。</em>番外①と合わせた教訓 ── <strong>表現を変える道具は、難しさが"中身"にある問題を解けない</strong>。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-bangai-sampling.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 番外①（サンプリング）</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">自作理論の自己診断②</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 番外②（自己診断）、物理好きの高校生・大学生向け読み物。超準解析（Robinson の超実数・無限小・標準部分）、超有限格子と内部の well-defined 性、Loeb 測度（Loeb 1975）とブラウン運動等の構成、超準解析による低次元の場の理論・確率模型の構成（Nelson；Albeverio–Fenstad–Høegh-Krohn–Lindström『Nonstandard Methods in Stochastic Analysis and Mathematical Physics』1986）、内部集合論 IST の ZFC 上の保存性（Nelson 1977）、連続極限＝標準部分の非自明な存在＝一様評価、φ⁴₄ の自明性（Aizenman–Duminil-Copin 2021）、U(1) の連続極限での自由性は、いずれも確立した事実です。本稿は姉妹シリーズの「離散＝連続／サンプリング」の枠組みの延長として超準解析をヤン=ミルズ問題(Q3)に当て、保存性と難所の表現不変性から自己反証したもので、4次元ヤン=ミルズの存在と質量ギャップは未解決です（2025年時点）。図は標準部分 st() の分岐（自明／非自明／発散）を示す概念的模式で、横軸は一様評価・裸結合の走らせ方の抽象化であり、具体的な計算値ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーを動かすと、内部は常に well-defined なのに標準部分 st() が自明／目標／発散に分岐する様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  var GOAL0=0.47, GOAL1=0.55; // 目標窓
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function zone(t){ if(t<GOAL0) return 'triv'; if(t<=GOAL1) return 'goal'; return 'div'; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=20, padR=14;
+    var t=parseFloat(st.value); vt.textContent=t.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(u){return padL+u*(w-padL-padR);}
+    var barY=h-70, barH=26, topY=70;
+    // 上：st() のスペクトル（3ゾーン）
+    ctx.fillStyle='rgba(165,71,58,0.14)';ctx.fillRect(X(0),topY,X(GOAL0)-X(0),barH); // 自明
+    ctx.fillStyle='rgba(169,121,26,0.20)';ctx.fillRect(X(GOAL0),topY,X(GOAL1)-X(GOAL0),barH); // 目標
+    ctx.fillStyle='rgba(165,71,58,0.14)';ctx.fillRect(X(GOAL1),topY,X(1)-X(GOAL1),barH); // 発散
+    ctx.strokeStyle='#d9cdb3';ctx.lineWidth=1;ctx.strokeRect(X(0),topY,X(1)-X(0),barH);
+    ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#a5473a';ctx.fillText('自明（自由・Δ=0）', X(GOAL0/2), topY-8);
+    ctx.fillStyle='#a9791a';ctx.fillText('目標 Δ>0', X((GOAL0+GOAL1)/2), topY-8);
+    ctx.fillStyle='#a5473a';ctx.fillText('発散 ∞', X((GOAL1+1)/2), topY-8);
+    ctx.fillStyle='#4a4f5e';ctx.font='bold 12px sans-serif';ctx.fillText('標準部分 st()（連続極限で何が残るか）', w/2, topY-30);
+    // 既知例のピン（自明ゾーン）
+    ctx.font='10px sans-serif';ctx.fillStyle='#a5473a';
+    ctx.fillText('φ⁴₄', X(0.16), topY+barH+14); ctx.fillText('U(1)', X(0.30), topY+barH+14);
+    ctx.fillStyle='#a5473a';
+    [0.16,0.30].forEach(function(u){ ctx.beginPath();ctx.arc(X(u),topY+barH,3.5,0,7);ctx.fill(); });
+    // 針（現在のt）
+    var mx=X(t), zn=zone(t);
+    var col = zn==='goal'? '#a9791a' : '#a5473a';
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(mx,topY-2);ctx.lineTo(mx,topY+barH+2);ctx.stroke();
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(mx,topY-2);ctx.lineTo(mx-6,topY-12);ctx.lineTo(mx+6,topY-12);ctx.closePath();ctx.fill();
+    // 下：内部（常にwell-defined）
+    ctx.fillStyle='rgba(47,125,90,0.16)';ctx.fillRect(X(0),barY,X(1)-X(0),barH);
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=1.4;ctx.strokeRect(X(0),barY,X(1)-X(0),barH);
+    ctx.fillStyle='#245c43';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('内部（無限小格子 δ）＝ 常に well-defined ✓', w/2, barY+barH/2+4);
+    // 矢印（内部 → st）
+    ctx.strokeStyle='#9aa8b2';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(mx,barY-2);ctx.lineTo(mx,topY+barH+8);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7a8590';ctx.font='10px sans-serif';ctx.fillText('st(  )', mx+18, (barY+topY+barH)/2);
+    ctx.textAlign='left';
+    // readout
+    if(zn==='goal'){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='標準部分は<b>非自明＋ギャップ（目標）</b>── だがこの窓に入れる一様評価こそ<b>未証明＝Q3</b>。内部（下）はいつもOKなのに、st() の運命（上）は肩代わりされない。';
+    } else if(zone(t)==='triv'){
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='標準部分が<b>自明に潰れる（自由・Δ=0）</b>。φ⁴₄・U(1) はここに落ちる ── <b>無限小格子でも st() は自明になりうる</b>＝「離散＝連続」だけでは非自明性を保証しない。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='標準部分が<b>発散（∞）</b>── 一様評価が甘いと連続極限が定義できない。<b>内部が well-defined でも st() は発散しうる</b>。';
+    }
+  }
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

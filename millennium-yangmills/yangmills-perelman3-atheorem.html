@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>端点だけでは足りない ── a定理の限界と、欲しい量の「仕様書」 ／ ペレルマン編 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.03em;padding:9px 15px;border-radius:4px;cursor:pointer;
+    border:1.5px solid var(--rule);background:#fff;color:var(--ink-soft);transition:all .12s;}
+  .btns button.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .reasons{margin:26px 0;display:flex;flex-direction:column;gap:12px;}
+  .reason{border:1px solid var(--rule);border-radius:7px;padding:16px 20px 16px 22px;background:#fff;position:relative;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .reason::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:7px 0 0 7px;background:var(--open);}
+  .reason .h{font-size:15px;font-weight:700;color:var(--open);margin-bottom:5px;letter-spacing:.03em;}
+  .reason .d{font-size:14px;color:#33414a;line-height:1.78;}
+
+  .check{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .check .row{display:flex;border-bottom:1px solid var(--rule);}
+  .check .row:last-child{border-bottom:none;}
+  .check .row>div{padding:12px 14px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;line-height:1.6;}
+  .check .c1{flex:2.4;background:#fff;} .check .c2{flex:1;text-align:center;border-left:1px solid var(--rule);}
+  .check .c3{flex:1;text-align:center;border-left:1px solid var(--rule);}
+  .check .row.head>div{font-weight:700;font-size:12px;letter-spacing:.06em;background:#f2ede1;color:#4a3e22;}
+  .check .yes{color:var(--solved);font-weight:700;} .check .no{color:var(--open);font-weight:700;}
+  .check .c2{background:#eef4f1;} .check .c3{background:#f7efe6;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.reasons,.reason,.check{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .btns{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 3 回</span></div>
+  <p class="eyebrow">単調量ならある ── でも「端っこだけ」の単調性では、この仕事に届かない</p>
+  <h1>端点だけでは足りない ── a定理の限界
+    <span class="sub">4次元にも単調量の候補「<strong>a定理</strong>」がある。でもそれは<em>両端を比べるだけ</em>で、いちばん評価が要る<strong>真ん中（無人地帯）を素通りする</strong>。<br>なぜ足りないのか4つの理由で分解し、逆に2次元の「c定理」から、私たちが欲しい量の<strong>仕様書</strong>を書き出す。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：既存の単調量がなぜ使えないかを知り、欲しい量の条件を確定する</span>
+    <span>一言で：欲しいのは「各点で・非摂動で・一意に・無次元」な単調量</span>
+  </div>
+
+  <p class="lead">前回、ペレルマンの成功は<strong>「フローに沿った単調量」</strong>のおかげだと分かりました。「なら、場の理論にも単調量を探せばいい」── その通りで、<em>4次元には有力候補があります</em>。<strong>a定理</strong>です。ところが、これをそのまま使おうとすると届かない。理由がとても示唆的なので、今回はそれを4つに分解します。そして裏返しに ── うまくいっている<strong>2次元のc定理</strong>と比べることで、私たちが本当に欲しい量の<strong>「仕様書」</strong>が、くっきり浮かび上がります。</p>
+
+  <h2><span class="n">01</span>a定理って何？ ── 「情報量」は流れると減る</h2>
+
+  <p>くりこみ群フロー（＝目盛りを粗くして遠くから理論を眺める流れ）に沿って、<strong>理論の"中身の豊かさ"を測る数 \(a\)</strong> があります。近距離（UV）から遠距離（IR）へ流すと、細かい構造がならされて中身が減る ── だから</p>
+
+  <div class="keybox">
+    <div class="lbl">a定理（弱い版・2011年に証明）</div>
+    $$a_{\text{UV}} \;>\; a_{\text{IR}}$$
+    <p style="margin:8px 0 0;">近距離での豊かさ \(a_{\text{UV}}\) は、遠距離での豊かさ \(a_{\text{IR}}\) より大きい。<em>流れると"情報量"は減る</em>という、いかにも単調量らしい主張です（コマルゴツキ–シュウィマー、2011年）。これがあれば勝てそう ── しかし。</p>
+  </div>
+
+  <p>問題は、この不等式が<strong>「両端を比べているだけ」</strong>だということ。スタート（UV）とゴール（IR）の高さは比べるが、<em>途中で何が起きているか</em>は何も言わない。下の図で、その落とし穴を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：横軸は<strong>くりこみ群フロー</strong>（左＝近距離UV → 右＝遠距離IR）。縦軸は量 \(a\)。<strong>a定理（端点だけ）</strong>は両端の高さ関係しか保証せず、真ん中の<span style="color:#a5473a;font-weight:700;">無人地帯</span>で<em>いくらでも沈める</em>。<strong>c定理（各点）</strong>は、どの点でも下がり続ける。私たちが要るのは後者。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="btns">
+      <button id="bA" class="on">a定理：端点だけ保証</button>
+      <button id="bC">c定理：各点で保証（欲しいもの）</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#26456e;"></i>量 a のフロー</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>無人地帯（評価が要る所）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>ギャップの下限（守りたい線）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>なぜ端点では足りないのか ── 4つの理由</h2>
+
+  <p>「a定理では、私たちの仕事（ギャップの一様な下限）に使えない」── その理由は、4つの独立した形に分解できます。</p>
+
+  <div class="reasons">
+    <div class="reason">
+      <div class="h">理由1：端点の不等式は「総和」── 途中の情報がゼロ</div>
+      <div class="d">a定理の中身は、フロー全体を足し合わせて初めて正になる<strong>総和則</strong>です。<em>途中のどのスケールで何が起きたかは何も言わない</em>。私たちが欲しいのは前回の道具2の③「閉」── <strong>フローに沿った一様な下限</strong>。ところが総和則では、途中で量が一度ゼロ近くまで沈んでから戻っても成立してしまう。<em>穴（評価が要る中間）と、道具が届く範囲が、ちょうどずれている</em>。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由2：ゴールが「スケール不変な理論」だと仮定している ── 証明したいことを前提に</div>
+      <div class="d">a定理は「スケール不変な理論からスケール不変な理論へ流れるとき」の主張。つまり<em>両端がきれいな固定点だと前提</em>している。でも私たちが証明したいのは「ヤン=ミルズのゴールは<strong>ギャップあり</strong>（＝自明な固定点）」であって、<strong>ゴールの正体こそが問題</strong>。しかも不等式が弱すぎて、\(a_{\text{UV}}>a_{\text{IR}}\) は「ギャップあり」も「ギャップなしの別の理論」も両方許してしまう。<em>排除できていない。</em></div>
+    </div>
+    <div class="reason">
+      <div class="h">理由3：固定点の外では、量そのものが「流儀依存」── 泥沼の再来</div>
+      <div class="d">いちばん深い病。固定点（端点）ではきれいに定義できる量が、<strong>フローの途中 ── いちばん評価が要る所 ── で、計算の流儀（スキーム）によって値が揺れる</strong>。これは、以前エンタングルメントで苦しんだ「空間をどう分けるのが正しいか」問題と<em>同じ病気</em>。a定理ルートも情報ルートも、同じ壁の別の面を触っている。</div>
+    </div>
+    <div class="reason">
+      <div class="h">理由4：そもそも土俵が「存在を仮定した連続理論」── クレイ問題には循環</div>
+      <div class="d">a定理の証明は、<em>すでに存在するなめらかな連続理論</em>を前提に走る物理水準の議論。でもクレイ問題は<strong>「理論をゼロから作れ」</strong>が課題。存在を仮定した結果を使うと循環になる。だから<strong>格子から立ち上げる（格子ネイティブな）</strong>定義でなければならない。</div>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>逆に ── 2次元のc定理は、なぜ全部持っているのか</h2>
+
+  <p>対照が鮮やかです。2次元には<strong>c定理</strong>（ザモロドチコフ）という、はるかに強い単調量があります。こちらは<em>各点で下がり続ける</em>ことが、シンプルでエレガントな証明で言える。決め手は<strong>正値性（＝理論の健全さ／ユニタリ性）</strong>です。そして「同じやり方は4次元では効かない」。</p>
+
+  <p>2次元のcが持っていて、4次元のaが（同時には）持てないもの ── チェックリストにするとこうです。これがそのまま、<strong>私たちが探す「ヤン=ミルズ版W-エントロピー」の仕様書</strong>になります。</p>
+
+  <div class="check">
+    <div class="row head"><div class="c1">欲しい性質（仕様書）</div><div class="c2">2次元 c定理</div><div class="c3">4次元 a定理</div></div>
+    <div class="row"><div class="c1">(i) <strong>各スケールで</strong>具体的に定義できる（流儀の曖昧さなし）</div><div class="c2 yes">◎ ある</div><div class="c3 no">△ 固定点のみ</div></div>
+    <div class="row"><div class="c1">(ii) 単調性が<strong>各点で</strong>、正値性から直接出る</div><div class="c2 yes">◎ ある</div><div class="c3 no">△ 端点の総和のみ</div></div>
+    <div class="row"><div class="c1">(iii) 止まる場所＝固定点だと保証される</div><div class="c2 yes">◎ ある</div><div class="c3 no">△ 摂動的のみ</div></div>
+    <div class="row"><div class="c1">(iv) <strong>無次元比としてのギャップ</strong>につながる</div><div class="c2 yes">◎ ある</div><div class="c3 no">△ 弱い</div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">欲しい量の仕様書（ヤン=ミルズ版W-エントロピー）</div>
+    <p class="big" style="margin:0;">(i) 格子の<strong>各スケール</strong>で、非摂動的に定義でき、<br>(ii) <strong>選び方・流儀に依らず</strong>（一意に）、<br>(iii) 具体的な正値性から<strong>各点で単調</strong>が出て、<br>(iv) <strong>無次元比としてのギャップ</strong>につながる量。<br><span style="font-size:15px;font-weight:400;color:var(--ink-soft);">2次元のcは4つ全部持っている。4次元のaは、ひとつも同時には持てていない。</span></p>
+  </div>
+
+  <p>そして ── <strong>ペレルマンのW-エントロピーが凄いのは、まさにこの4項目を（リッチフローの文脈で）全部満たしたこと</strong>なのです。フローの各点で定義され、単調性が正値性から各点で出て、止まる場所が固定点（ソリトン）に一致する。次回は、その W を解剖して、なぜ4項目を満たせたのか、その「部品」を取り出します。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(a\) は4次元の共形場理論の「中心電荷」にあたる量で、「自由度の実効的な数」の目安。<strong>弱い版のa定理</strong>（\(a_{\text{UV}}>a_{\text{IR}}\)）はコマルゴツキ–シュウィマー（2011年）が4ディラトン散乱＋光学定理で証明済み。一方<strong>強い版</strong>（フロー全体に沿って曖昧さなく単調減少する関数の存在）は<em>未解決</em>で、原因は中間でスキーム依存の項が残ること ── 本文の理由1・3がその正確な言い換えです。理由2の「\(a_{\text{UV}}>a_{\text{IR}}\) は自明ギャップ相も非自明CFTも許す」も、't Hooftアノマリーの議論を高校向けにかみ砕いたもの。</p>
+    <p style="margin-bottom:0;">2次元c定理（ザモロドチコフ 1982）は応力テンソルの2点相関の正値性から各点単調が出る、という別格にきれいな結果。チェックリストは、この編の目標（YM版W）の要求仕様を整理したもので、(i)〜(iv)を同時に満たす量はゲージ理論ではまだ知られていません。図の曲線は模式で、実際の \(a\) の値ではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>a定理はあるのに、なぜギャップの証明に直接使えないのか（いちばんの理由を一つ）。
+        <details><summary>答えを見る</summary><div class="ans">a定理は<strong>両端を比べる「総和則」</strong>で、途中（無人地帯）の情報をゼロしか持たない。私たちが欲しいのは<strong>フローに沿った一様な下限</strong>で、それはちょうど途中で必要になる。穴の位置と道具の届く範囲がずれている。（他に：ゴールがCFTだと仮定＝証明したいことを前提／中間でスキーム依存／存在を仮定した連続理論で循環）</div></details>
+      </li>
+      <li>2次元のc定理が「各点で」単調を言えるのは、何のおかげか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>正値性（理論の健全さ＝ユニタリ性）</strong>。応力テンソルの2点相関の正値性から、各点での単調減少が直接出る。決め手が「総和」ではなく「各点の正の量」なのが4次元との違い。</div></details>
+      </li>
+      <li>「ヤン=ミルズ版W-エントロピー」に求める4条件は？
+        <details><summary>答えを見る</summary><div class="ans">(i) 格子の各スケールで非摂動的に定義でき、(ii) 選び方・流儀に依らず一意で、(iii) 具体的な正値性から各点で単調が出て、(iv) 無次元比としてのギャップにつながる。2次元cは全部持ち、4次元aは同時には持てない ── ペレルマンのWはリッチフローの文脈でこの4つを満たした。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>端点では足りない、だから仕様書が書けた</h2>
+    <p>4次元の単調量候補<strong>a定理</strong>（\(a_{\text{UV}}>a_{\text{IR}}\)、2011年に弱い版が証明）は、<em>両端を比べるだけ</em>で、いちばん評価の要る<strong>真ん中を素通り</strong>する。使えない理由は4つ：①総和則で途中の情報ゼロ、②ゴールがCFTだと仮定＝証明したいことを前提、③固定点の外でスキーム依存（情報ルートと同じ病）、④存在を仮定した連続理論で循環。</p>
+    <p>逆に<strong>2次元c定理</strong>は、正値性から<em>各点で</em>単調が出て全部きれい。両者の差から、欲しい量の<strong>仕様書</strong>が確定した：<strong>(i)各スケールで定義／(ii)一意／(iii)各点単調が正値性から／(iv)無次元ギャップにつながる</strong>。そして<em>ペレルマンのWは、この4つを満たしていた</em>。次回、その W を3つの部品に解剖する。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman2-ricci.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第2回：リッチフロー</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-perelman4-wentropy.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">第4回：W-エントロピーの解剖 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第3回。a定理は4次元場の理論の量 \(a\)（共形アノマリー係数、実効的自由度の目安）についての予想で、弱い版 \(a_{\text{UV}}>a_{\text{IR}}\) はKomargodski–Schwimmer（2011）がディラトン有効作用と光学定理で証明。強い版（フロー全体で曖昧さなく単調減少する関数の存在）は未解決で、Jack–Osbornの \(a\) 関数はスキーム依存（\(\chi_{IJ}\) の正定値性が摂動論でしか示せていない）という事情が本文の理由1・3に対応します。理由2は、\(a_{\text{UV}}>a_{\text{IR}}\) が自明ギャップ相（\(a_{\text{IR}}=0\)）と非自明IR-CFTの双方を許すこと、純SU(N)には非自明IRを強制する 't Hooftアノマリーが無いことに基づきます。2次元c定理（Zamolodchikov 1982）は応力テンソル2点相関の正値性から各点単調が従い、同じ方法は4次元では機能しないことが知られています。(i)〜(iv)のチェックリストは本シリーズが目標量の要求仕様として整理したもの。図は模式で実データではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボタンで「端点だけ／各点」を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bA=document.getElementById('bA'), bC=document.getElementById('bC');
+  var mode='a', t=0, lastW=680;
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // curve value in [0,1] over u in [0,1]. UV(u=0) high, IR(u=1) low.
+  function aVal(u){ // dips in the middle then recovers, endpoints fixed
+    var base = 0.82 - 0.42*u;                 // gentle endpoint decrease
+    var dip = -0.5*Math.exp(-Math.pow((u-0.5)/0.16,2));  // deep middle dip
+    var wob = 0.05*Math.sin(2.0*u*Math.PI + t*0.03);
+    return base + dip + wob;
+  }
+  function cVal(u){ // strictly monotone decreasing, smooth
+    return 0.82 - 0.5*u - 0.06*Math.sin(u*Math.PI)*0.0; // pure decrease
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var L=64, Rr=w-30, T=30, B=h-46;
+    function X(u){ return L+(Rr-L)*u; }
+    function Y(v){ return B-(B-T)*v; }
+
+    // no-man's-land band (middle)
+    ctx.fillStyle='rgba(165,71,58,0.08)';
+    ctx.fillRect(X(0.30),T,X(0.70)-X(0.30),B-T);
+    ctx.fillStyle='#a5473a'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('無人地帯（評価が要る所）', X(0.5), T+16);
+
+    // gap lower-bound line (green) — the level we must not sink below
+    var gapY=Y(0.30);
+    ctx.setLineDash([6,5]); ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(L,gapY); ctx.lineTo(Rr,gapY); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d5a'; ctx.textAlign='left'; ctx.font='12px sans-serif';
+    ctx.fillText('守りたい線＝ギャップの下限', L+4, gapY-6);
+
+    // axes
+    ctx.strokeStyle='#b9ad8f'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(L,T-4); ctx.lineTo(L,B); ctx.lineTo(Rr,B); ctx.stroke();
+    ctx.fillStyle='#4a4f5e'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('近距離 UV（始）', X(0.06), B+18);
+    ctx.fillText('くりこみ群フロー →', X(0.5), B+18);
+    ctx.fillText('遠距離 IR（終）', X(0.95), B+18);
+    ctx.save(); ctx.translate(18,(T+B)/2); ctx.rotate(-Math.PI/2); ctx.fillText('量 a（豊かさ）', 0,0); ctx.restore();
+
+    // curve
+    var fn = mode==='a'? aVal : cVal;
+    ctx.strokeStyle='#26456e'; ctx.lineWidth=3;
+    ctx.beginPath();
+    var sinkBelow=false, minv=1;
+    for(var i=0;i<=120;i++){ var u=i/120, v=fn(u); if(v<minv)minv=v; if(u>0.30&&u<0.70&&v<0.30)sinkBelow=true;
+      var x=X(u), y=Y(Math.max(0,Math.min(1,v))); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+    // endpoints markers
+    ctx.fillStyle='#26456e';
+    ctx.beginPath(); ctx.arc(X(0),Y(fn(0)),5,0,7); ctx.fill();
+    ctx.beginPath(); ctx.arc(X(1),Y(fn(1)),5,0,7); ctx.fill();
+    ctx.font='bold 12px sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#26456e';
+    ctx.fillText('a_UV', X(0)+7, Y(fn(0))-6);
+    ctx.textAlign='right'; ctx.fillText('a_IR', X(1)-7, Y(fn(1))-6);
+
+    // verdict badge
+    ctx.textAlign='center';
+    if(mode==='a'){
+      // show the endpoint inequality still holds, but sinks below the gap line
+      ctx.fillStyle='#a5473a'; ctx.font='bold 13px sans-serif';
+      ctx.fillText('端点は a_UV>a_IR で OK ── でも中間で下限を割っている！', X(0.5), B-8);
+    } else {
+      ctx.fillStyle='#2f7d5a'; ctx.font='bold 13px sans-serif';
+      ctx.fillText('どの点でも単調に減少 ── 一度も下限を割らない ✓', X(0.5), B-8);
+    }
+  }
+  function say(){
+    rd.innerHTML = mode==='a'
+      ? '<b>a定理モード（端点だけ）。</b> 両端の高さ関係 a_UV>a_IR は満たすのに、真ん中で<b>守りたい線（ギャップ下限）を割って</b>いる。総和則は途中の落ち込みを禁じない ── だからギャップの一様下限の証明には届かない。'
+      : '<b>c定理モード（各点）。</b> 正値性のおかげで<b>どの点でも下がり続け</b>、一度も下限を割らない。私たちが欲しいのはこちら ── 「各スケールで／一意に／各点単調」。これがWの仕様書。';
+  }
+  function anim(){ t++; draw(); requestAnimationFrame(anim); }
+  bA.addEventListener('click',function(){ mode='a'; bA.classList.add('on'); bC.classList.remove('on'); say(); });
+  bC.addEventListener('click',function(){ mode='c'; bC.classList.add('on'); bA.classList.remove('on'); say(); });
+  window.addEventListener('resize',draw);
+  say(); requestAnimationFrame(anim);
+})();
+</script>
+</body>
+</html>

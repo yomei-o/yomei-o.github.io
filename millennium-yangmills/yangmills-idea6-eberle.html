@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイデア6・反射カップリング 凸性なしでギャップを出す ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --xc:#2f6d8a; --yc:#a5473a; --good:#2f7d5a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--good);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">アイデア6・反射カップリング（本命）</span></div>
+  <p class="eyebrow">door②が死ぬ理由＝非凸。ならば"非凸でもギャップを出す"ために作られた道具で正面から</p>
+  <h1>凸性なしでギャップを出す ── エーベルの反射カップリング
+    <span class="sub">door②（RG-LSI）が<strong>クロスオーバーの非凸性</strong>で死んだ。<br>エーベル（Eberle 2016）の<strong>反射カップリング</strong>は、<em>非凸ポテンシャルの Langevin でも指数収束（＝ギャップ）を出す</em>ために作られた道具。<br>失敗の原因を名指しで狙う。単リンクの正曲率が"外側の凸性"、相互作用が"非凸の芯"── その芯を反射で会合させる。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：door②の失敗モードを直撃する道具と、その射程・穴</span>
+    <span>核心：凸性を捨て"反射で会合"／非凸が O(1) の窓で率が消えないかが勝負</span>
+  </div>
+
+  <p class="lead">door②（Langevin動力学の一様LSI）は、クロスオーバーで<strong>相互作用が曲率に勝ち、凸性（＝Bakry–Émery）が崩れる</strong>ために死にました。ならば ── <em>非凸でも収束を出すために作られた道具</em>を持ってくればいい。それが<strong>エーベルの反射カップリング</strong>です。二つの Langevin コピーを"鏡写し"に走らせ、非凸のコブを越えて<strong>会合</strong>させる。会合すれば Wasserstein 距離が指数的に縮み、それが質量ギャップ（＝動力学の緩和率）になる。凸性という失敗した歯車を、<em>幾何（反射）</em>という別の原理で置き換える ── これが第二弾の本命でした。射程と穴を、正直に。</p>
+
+  <h2><span class="n">01</span>ギャップ＝動力学の緩和率、そして凸性の死</h2>
+
+  <div class="keybox">
+    <div class="lbl">思い出す：door② の等式と失敗</div>
+    $$\text{質量ギャップ}=\text{Langevin の緩和率},\qquad \mathrm{Var}(f)\le\frac1\alpha\mathcal E(f,f)\ \Leftarrow\ \text{Bakry–Émery：}\ \mathrm{Ric}+\nabla^2 U\ge\kappa>0$$
+    <p style="margin:10px 0 0;">door② は「曲率＋ポテンシャルのヘッシアンが正（凸）」なら収束率 $\alpha>0$、というBakry–Émery基準に頼っていた。<strong>クロスオーバーでは相互作用のヘッシアンが負に振れ、$\nabla^2U$ が曲率に勝って条件が破れる</strong>。ここで door② は死ぬ。</p>
+  </div>
+
+  <h2><span class="n">02</span>エーベルの反射カップリング ── 非凸のための道具</h2>
+
+  <div class="calc">
+    <span class="tag">凸性を"外側だけ"に緩め、芯は反射で会合</span>
+    $$dX_t=-\nabla U(X_t)dt+\sqrt2\,dB_t,\quad dY_t=-\nabla U(Y_t)dt+\sqrt2\,(\mathrm{I}-2ee^\top)dB_t\ \ (e=\tfrac{X-Y}{|X-Y|})$$
+    $$W_f\big(\mathrm{law}(X_t),\mathrm{law}(Y_t)\big)\le e^{-c\,t}\,W_f(\cdots)\qquad(c>0,\ U\ \text{が"外側で凸・芯は非凸"でも})$$
+    <p style="margin-bottom:14px;">エーベル（2016）：ノイズを<strong>反射</strong>（$X-Y$ 方向を鏡写し）で結合し、凹な距離関数 $f$ を選ぶと、<strong>$U$ が全域で凸でなくても</strong>（外側で凸＋非凸の芯が有界なら）Wasserstein 距離が<em>指数収束</em>する。率 $c>0$ は明示的で、非凸の芯の大きさで決まる。<strong>凸性の代わりに"反射で会合"</strong>が縮小を生む ── door②の失敗を正面から埋める。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：二つの Langevin コピー $X$（青）・$Y$（赤）が反射結合で会合し、距離 $|X-Y|$（下段）が指数的に縮む。上段＝ポテンシャル地形。トグル：<span style="color:var(--good);font-weight:700;">凸（Bakry–Émeryも反射も収束）</span>／<span style="color:var(--bad);font-weight:700;">非凸クロスオーバー（Bakry–Émery失敗・反射は会合、率は落ちるが&gt;0）</span></div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>時間 t <span class="val" id="vt">0.15</span>
+        <input type="range" id="st" min="0" max="1" step="0.01" value="0.15">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bV">凸</button>
+        <button class="tbtn" id="bN">非凸（クロスオーバー）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>コピー X</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>コピー Y</span>
+      <span><i class="swatch" style="background:#7a4fa0;"></i>距離 |X−Y|（緩和率＝ギャップ）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>ゲージへ載せる ── 資源と対応</h2>
+
+  <table class="dt">
+    <tr><th>エーベルの部品</th><th>ゲージでの対応</th><th>状況</th></tr>
+    <tr><td class="id">"外側で凸"</td><td>単リンクのコンパクト群<strong>正曲率</strong>（Bakry–Émery の下地・電気カシミアの別の顔）</td><td class="ok">資源として在る</td></tr>
+    <tr><td class="id">"非凸の芯"</td><td>プラケット相互作用（クロスオーバーで曲率に勝つ）</td><td class="open">芯が O(1) で"有界"に収まるかが鍵</td></tr>
+    <tr><td class="id">反射結合</td><td>群多様体上の反射カップリング（リーマン多様体版は存在）</td><td class="open">ゲージ拘束＋無限次元で一様率が要る</td></tr>
+    <tr><td class="id">収束率 $c$</td><td>質量ギャップ（緩和率）</td><td class="open">体積・$a$ に一様な $c>0$ が目標</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>穴 ── どこで率が消えうるか</h2>
+
+  <div class="caveat">
+    <span class="tag">正直な穴</span>
+    <p style="margin-top:0;"><strong>穴1（芯が大きい）</strong>：エーベルの率 $c$ は非凸の芯の"大きさ×広がり"で決まり、芯が小さければ $c$ は大きい。だが<strong>クロスオーバーの非凸性は $O(1)$ で広い</strong>（小さい球ではない）── ここで $c\to0$ になりうる。芯を"制御された大きさ"に抑えることが、まさに難しい赤外物理。</p>
+    <p style="margin:0;"><strong>穴2（無限次元・一様性）</strong>：エーベルの次元によらない収束は主に<em>弱相互作用／平均場</em>で確立（Eberle–Guillin–Zimmer 系）。<strong>強相互作用で体積・次元に一様な率</strong>は未確立。<strong>穴3（4Dで方程式が未定義）</strong>：確率量子化のゲージSPDEは3Dで構成（CCHS）、4Dは未。動力学そのものがまだ厳密に無い。</p>
+  </div>
+
+  <h2><span class="n">05</span>射程 ── 現実的な勝ちと、1への橋</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙える部分成果と、アイデア1への接続</div>
+    <p style="margin:0;"><strong>現実的な勝ち</strong>：強結合（非凸の芯が小さい）で、反射カップリングによる<strong>体積一様な指数収束＝クラスタリング/ギャップ</strong>を厳密に ── door②の Bakry–Émery が要る"凸性"を、反射で不要にした<em>動力学版の強結合ギャップ</em>。これは本物の部分成果。<br><strong>1への橋</strong>：反射カップリングは<em>「一スケール（一段の粗視化）の縮小率」</em>を与える道具でもある。それを<strong>アイデア1（ナッシュ–モーザー）の各ステップの縮小評価</strong>に使えば、超収束反復でクロスオーバー窓を貫ける ── <strong>6 が 1 に部品を供給する</strong>。次回、1でこの接続を掘ります。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 失敗モードを直撃、だが芯が大きい窓で率が消えうる</h2>
+
+  <div class="keybox">
+    <div class="lbl">アイデア6の判定（過大申告なし）</div>
+    <p style="margin:0;">door②（RG-LSI）が<strong>クロスオーバーの非凸性</strong>で死ぬのに対し、<strong>エーベルの反射カップリングは"非凸でもギャップを出す"ために作られた道具</strong>で、失敗モードを名指しで狙う。単リンク正曲率が"外側の凸性"、プラケットが"非凸の芯"、反射がその芯を会合させ、収束率＝質量ギャップ。<strong>穴</strong>：芯が $O(1)$ で広いクロスオーバーでは率 $c\to0$ になりうる（＝赤外物理そのもの）、強相互作用で体積一様な率は未確立、4DゲージSPDEは未定義。現実的な勝ち＝<strong>強結合の反射カップリング・ギャップ</strong>。そして<strong>6は1（ナッシュ–モーザー）に"一段の縮小率"を供給する</strong>。<em>最も的を絞った道具だが、窓の芯を飼えるかは未達</em>。旗は立たない ── 縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">質量ギャップと確率量子化 Langevin 動力学の緩和率の対応、Bakry–Émery 基準（曲率＋ポテンシャルのヘッシアンの正値性⟹収束）とその凸性依存、エーベルの反射カップリング（Eberle 2016：外側で凸・芯が非凸の有界領域でも Wasserstein 指数収束）と明示的収束率、次元によらない収束の弱相互作用/平均場での結果（Eberle–Guillin–Zimmer 系）、コンパクト群の正曲率、リーマン多様体上の反射カップリング、3次元ゲージSPDEの構成（Chandra–Chevyrev–Hairer–Shen）は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>クロスオーバー窓（非凸の芯が $O(1)$ で広い）で収束率が正に保たれること、強相互作用で体積・$a$ に一様な率、4次元ゲージSPDEの構成、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。アイデア6は door② の失敗モードを直撃する有望な道具だが、実行された証明ではありません。図のポテンシャル・軌道・距離の減衰は反射カップリングの機構を示す概念的模式で、実際の計算ではありません。「6が最も的を絞った道具」「6が1に部品を供給」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>door② はなぜクロスオーバーで死に、エーベルはなぜそこを埋めうるのか。
+        <details><summary>答えを見る</summary><div class="ans">door②は Bakry–Émery（曲率＋ポテンシャルのヘッシアンが正＝凸）に頼るが、クロスオーバーでは相互作用のヘッシアンが負に振れ凸性が崩れて死ぬ。エーベルの反射カップリングは<strong>全域の凸性を要求せず</strong>（外側で凸＋非凸の芯が有界なら）、二つのコピーをノイズの反射で結合して非凸の芯を越えて会合させ、Wasserstein距離を指数収束させる＝凸性を"反射での会合"で置き換える。だから door② の失敗モードを正面から埋めうる。</div></details>
+      </li>
+      <li>エーベルの部品はゲージ理論の何に対応するか。
+        <details><summary>答えを見る</summary><div class="ans">"外側で凸"＝単リンクのコンパクト群の正曲率（Bakry–Émeryの下地・電気カシミアの別の顔）。"非凸の芯"＝プラケット相互作用（クロスオーバーで曲率に勝つ）。反射結合＝群多様体上の反射カップリング。収束率 $c$＝質量ギャップ（緩和率）。目標は体積・$a$ に一様な $c>0$。</div></details>
+      </li>
+      <li>アイデア6の主な穴と、アイデア1への橋は？
+        <details><summary>答えを見る</summary><div class="ans">穴：(1)クロスオーバーの非凸の芯は $O(1)$ で広く、エーベルの率 $c$ が0に落ちうる（＝赤外物理）。(2)強相互作用で体積・次元一様な率は未確立（次元によらない結果は弱相互作用/平均場）。(3)4次元ゲージSPDEは未定義（3DはCCHS）。1への橋：反射カップリングは"一段の粗視化の縮小率"を与えるので、それをアイデア1（ナッシュ–モーザー）の各ステップの縮小評価に使い、超収束反復でクロスオーバー窓を貫く＝6が1に部品を供給する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">アイデア6・まとめ</span>凸性を捨て、反射で会合させる</h2>
+    <p>door②（RG-LSI）はクロスオーバーの<strong>非凸性</strong>で死んだ。<strong>エーベルの反射カップリング</strong>は"非凸でもギャップを出す"ために作られた道具で、失敗モードを名指しで狙う ── 二つの Langevin コピーをノイズの反射で結合し、非凸の芯を越えて会合させ、Wasserstein 距離を指数収束（＝質量ギャップ）させる。単リンク正曲率が"外側の凸性"、プラケットが"非凸の芯"。</p>
+    <p>穴：芯が $O(1)$ で広いクロスオーバーでは率 $c\to0$ になりうる（＝赤外物理そのもの）、強相互作用で体積一様な率は未確立、4DゲージSPDEは未定義。現実的な勝ち＝<strong>強結合の反射カップリング・ギャップ</strong>。そして<strong>反射カップリングは"一段の縮小率"を与え、アイデア1（ナッシュ–モーザー）の各ステップに供給できる</strong>── 6→1 の橋。最も的を絞った道具だが、窓の芯を飼えるかは未達。次は 1 で、この一段の縮小を超収束反復に組む。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-idea5-rignum.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← アイデア5・検証つき数値</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="yangmills-idea1-nashmoser.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">アイデア1・ナッシュ–モーザー →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 アイデア6・反射カップリング、物理好きの高校生・大学生向け読み物。質量ギャップと確率量子化 Langevin 動力学の緩和率の対応、Bakry–Émery 基準（曲率とポテンシャルのヘッシアンの正値性⟹収束）とその凸性依存、エーベルの反射カップリング（A. Eberle 2016：外側で凸・非凸の芯が有界でも Wasserstein 指数収束）と明示的収束率、次元によらない収束の弱相互作用/平均場での結果（Eberle–Guillin–Zimmer 系）、コンパクト群の正曲率、リーマン多様体上の反射カップリング、3次元ゲージSPDEの構成（Chandra–Chevyrev–Hairer–Shen）は、いずれも確立した事実・道具です。ただしクロスオーバー窓（非凸の芯が $O(1)$）での収束率の正値保持、強相互作用で体積・$a$ に一様な率、4次元ゲージSPDEの構成、4次元YMの質量ギャップは未解決です（2025年時点）。アイデア6は door② の失敗モードを直撃する道具だが実行された証明ではありません。図は反射カップリングの機構の概念的模式で実際の計算ではありません。見立ては筆者のもので反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では時間 t を進め、二つのコピーが反射結合で会合し距離が縮む様子を、凸／非凸のトグルで見比べられます（非凸では Bakry–Émery が失敗しても反射は会合、ただし率は落ちる）。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'),
+      bV=document.getElementById('bV'), bN=document.getElementById('bN'), rd=document.getElementById('rd');
+  var mode='V';
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // ポテンシャル U(q): 凸=お椀、非凸=中央にコブ
+  function U(q){ // q in [-1,1]
+    if(mode==='V') return 1.6*q*q;
+    return 1.6*q*q - 0.9*Math.exp(-q*q/0.05); // 中央に非凸のコブ
+  }
+  // 収束率：凸=速い、非凸=遅いが>0
+  function rate(){ return mode==='V'? 3.4 : 1.2; }
+  // 二コピーの位置（模式）：反射カップリングで会合、距離 d(t)=d0 e^{-rate t}
+  function pos(t){
+    var d0=1.3, d=d0*Math.exp(-rate()*t);
+    var center=0.15*Math.sin(6.0*t)*Math.exp(-1.2*t); // 共通のゆらぎ（模式）
+    // 非凸ではコブを越える間わずかに滞留（模式的な段）
+    if(mode==='N' && t<0.28){ d = d0*Math.exp(-0.5*t); }
+    return {X:center + d/2, Y:center - d/2, d:Math.abs(d)};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseFloat(st.value); vt.textContent=t.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // 上段：ポテンシャル地形（q軸）
+    var topH=170, padL=46, padR=14, padT=16;
+    function QX(q){return padL+(q+1)/2*(w-padL-padR);}
+    function UY(u){return padT+ (1-Math.min(u,1.7)/1.7)*(topH-padT-10);}
+    // 地形曲線
+    ctx.strokeStyle='#8a8266';ctx.lineWidth=2;ctx.beginPath();var f=true;
+    for(var q=-1;q<=1.0001;q+=0.02){var X=QX(q),Y=UY(U(q));if(f){ctx.moveTo(X,Y);f=false;}else ctx.lineTo(X,Y);}
+    ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='11px sans-serif';ctx.fillText('ポテンシャル U（'+(mode==='V'?'凸＝お椀':'非凸＝中央にコブ')+'）', padL+4, padT+8);
+    // 二コピー
+    var p=pos(t);
+    var xX=QX(p.X), xY=QX(p.Y);
+    ctx.fillStyle='#2f6d8a';ctx.beginPath();ctx.arc(xX,UY(U(p.X)),7,0,7);ctx.fill();
+    ctx.fillStyle='#a5473a';ctx.beginPath();ctx.arc(xY,UY(U(p.Y)),7,0,7);ctx.fill();
+    // 反射結合の線
+    ctx.strokeStyle='rgba(122,79,160,0.6)';ctx.setLineDash([4,3]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(xX,UY(U(p.X)));ctx.lineTo(xY,UY(U(p.Y)));ctx.stroke();ctx.setLineDash([]);
+    // 下段：距離 d(t) の減衰
+    var botT=topH+18, botB=h-34;
+    function TX(tt){return padL+tt*(w-padL-padR);}
+    function DY(v){return botB-(Math.min(v,1.4)/1.4)*(botB-botT);}
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,botT);ctx.lineTo(padL,botB);ctx.lineTo(w-padR,botB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='11px sans-serif';ctx.fillText('時間 t →', w-90, botB+22);
+    ctx.save();ctx.translate(16,botT+66);ctx.rotate(-Math.PI/2);ctx.fillText('距離 |X−Y|', 0,0);ctx.restore();
+    // 距離曲線
+    ctx.strokeStyle='#7a4fa0';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var tt=0;tt<=1.0001;tt+=0.005){var Xt=TX(tt),Yt=DY(pos(tt).d);if(f){ctx.moveTo(Xt,Yt);f=false;}else ctx.lineTo(Xt,Yt);}
+    ctx.stroke();
+    // 現在点
+    ctx.fillStyle='#7a4fa0';ctx.beginPath();ctx.arc(TX(t),DY(p.d),5,0,7);ctx.fill();
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(TX(t),botT);ctx.lineTo(TX(t),botB);ctx.stroke();ctx.setLineDash([]);
+    // readout
+    if(mode==='V'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>凸</b>：ポテンシャルはお椀。Bakry–Émery（凸性）でも反射カップリングでも指数収束 ⟹ 距離が速く縮む＝大きなギャップ。率 c 大。';
+    } else {
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='<b>非凸（クロスオーバー）</b>：中央のコブで Bakry–Émery は失敗（曲率が負）。だが<b>反射カップリングは芯を越えて会合し、なお指数収束</b>（率 c は落ちるが&gt;0）。<b>穴：コブが O(1) で広いと c→0 になりうる</b>＝赤外物理そのもの。';
+    }
+  }
+  function setM(x){ mode=x; bV.className='tbtn'+(x==='V'?' on':''); bN.className='tbtn'+(x==='N'?' on':''); draw(); }
+  bV.addEventListener('click',function(){setM('V');});
+  bN.addEventListener('click',function(){setM('N');});
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

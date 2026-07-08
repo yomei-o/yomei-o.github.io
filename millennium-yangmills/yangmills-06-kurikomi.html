@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>格子から連続へ、厳密に ── くりこみ群と反射正値性 ／ ミレニアム問題を解くぞ 第6回（挑戦編②）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:9px 16px;transition:all .12s ease;}
+  .tbtn:hover{background:#eef1f6;} .tbtn:active{transform:translateY(1px);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;font-weight:600;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 6 回（挑戦編②・ルートA）</span></div>
+  <p class="eyebrow">まず有限で厳密に定義し、くりこみ群で連続へ登る ── 構成的場の理論の王道</p>
+  <h1>格子から連続へ、厳密に ── くりこみ群と反射正値性
+    <span class="sub">時空を格子に刻むと理論は<strong>有限で厳密に定義できる</strong>（Wilson作用）。<strong>反射正値性</strong>が転送行列を生み、<em>質量ギャップ＝転送行列の固有値ギャップ</em>に。強結合では厳密（Q1）。<br>あとは <strong>\(a\to0\) をくりこみ群で制御</strong>して頂上へ ── バラバンがUVまで登った。だが連続極限は、まだ壁。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：格子→厳密定義→ギャップ→連続極限の登山道（数式あり）</span>
+    <span>核心：\(S=\beta\sum(1-\tfrac1N\mathrm{Re\,Tr}\,U_\square)\) ／ \(\Delta=-\tfrac1a\ln\tfrac{\lambda_1}{\lambda_0}\)</span>
+  </div>
+
+  <p class="lead">第5回で見たルートAを、実際に登ります。狙いは「まず<strong>有限の世界（格子）で理論を厳密に定義</strong>し、そこから<strong>連続極限 \(a\to0\) をくりこみ群で厳密に制御</strong>して頂上（4次元YMの構成＋ギャップ）へ」。この道の強みは、出発点が<em>数学的に一点の曖昧さもない</em>こと ── 経路積分が、ただの有限次元の積分になる。弱みは、連続極限という最後の登りが、ちょうど4次元で最も険しいこと。順に見ます。</p>
+
+  <h2><span class="n">01</span>格子の上なら、理論は"厳密に定義できる"</h2>
+
+  <p>連続の場 \(A_\mu(x)\) をそのまま積分するのは、数学的に手強い（無限次元）。そこで<strong>時空を間隔 \(a\) の格子に刻み</strong>、場を<em>リンク変数</em>（格子の辺にのった \(SU(N)\) 行列）で表します：</p>
+
+  <div class="keybox">
+    <div class="lbl">ウィルソンの格子ゲージ理論</div>
+    $$U_\mu(x)=e^{\,iagA_\mu(x)}\in SU(N),\qquad S=\beta\sum_\square\Big(1-\tfrac1N\,\mathrm{Re\,Tr}\,U_\square\Big),\quad \beta=\frac{2N}{g^2}$$
+    <p style="margin:10px 0 0;">\(U_\square\) は小さな正方形（プラケット）を一周した積＝<em>その面の場の強さ</em>。経路積分は \(Z=\int\prod_{x,\mu}dU_\mu(x)\,e^{-S}\)。ここで \(dU\) は<strong>コンパクト群のハール測度</strong> ── 各辺の積分は<em>有限な体積</em>。だから有限格子では \(Z\) は<strong>ふつうの（有限次元の）積分</strong>で、完全に well-defined。<em>ゲージ対称性も厳密に保たれる</em>（連続極限を待たずに）。</p>
+  </div>
+
+  <p>これがルートAの土台。連続では無限次元で曖昧だったものが、格子では<strong>数学的に文句のつけようがない対象</strong>になる。あとはこの厳密さを、\(a\to0\) まで<em>失わずに</em>運べるか。</p>
+
+  <h2><span class="n">02</span>反射正値性 → 転送行列 → ギャップは"固有値の比"</h2>
+
+  <p>格子の測度には、決定的な性質<strong>反射正値性</strong>（時間方向の折り返しに対する正値性）が成り立ちます。これがあると、時間を1コマ進める<strong>転送行列 \(T\)</strong> が定義でき、そこからハミルトニアンと<em>正のエネルギー</em>が出ます：</p>
+
+  <div class="calc">
+    <span class="tag">転送行列から、質量ギャップが"見える形"に</span>
+    <p class="lbl">1コマの時間発展＝転送行列、ハミルトニアンは</p>
+    $$T=e^{-aH}\quad\Rightarrow\quad H=-\tfrac1a\ln T\ \ (\ge0)$$
+    <p class="lbl">ギャップ＝最大固有値 \(\lambda_0\)（真空）と次 \(\lambda_1\) の比</p>
+    $$\Delta=-\tfrac1a\ln\frac{\lambda_1}{\lambda_0}>0\quad\Longleftrightarrow\quad \langle O(0)O(r)\rangle\sim\Big(\tfrac{\lambda_1}{\lambda_0}\Big)^{r/a}=e^{-\Delta r}$$
+    <p style="margin-bottom:14px;">質量ギャップの証明が、<strong>「転送行列の第二固有値が最大固有値より真に小さい（\(\lambda_1<\lambda_0\)）」</strong>という<em>行列の問題</em>に翻訳される。第3回の「隙間＝指数クラスタリング」が、格子では固有値ギャップとして手に取れる形になった。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ反射正値性が命綱か</span>
+    反射正値性は、ユークリッド（虚時間・統計力学）の測度から<strong>本物の量子論（正エネルギー・ヒルベルト空間）を取り出す</strong>ための鍵 ── これが第5回のOS再構成の格子版です。逆に、連続極限でこの性質を<em>失わずに</em>保てるかが、ルートA全体の生命線になります。</p>
+  </div>
+
+  <h2><span class="n">03</span>強結合では、ギャップは厳密に証明できる（＝Q1）</h2>
+
+  <p>結合が強い（\(\beta\) が小さい＝格子が粗い）ときは、\(e^{-S}\) を展開する<strong>強結合（指標）展開</strong>が<em>収束</em>し、すべてを厳密に評価できます。結果はウィルソンループの<strong>面積則</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">強結合＝閉じ込め＋ギャップ（厳密）</div>
+    $$\langle W(C)\rangle\sim e^{-\sigma\,\mathrm{Area}(C)}\quad(\text{面積則}\Rightarrow\text{閉じ込め}),\qquad \Delta>0\ \text{も厳密}$$
+    <p style="margin:10px 0 0;">クォークを引き離すほど"ひも"のエネルギーが面積で増える＝閉じ込め。転送行列にも真のギャップがある。<strong>これは厳密な定理</strong>（Osterwalder–Seiler 1978）── 第4回のQ1が、ここで数学的に完了しています。<em>問題は、これが強結合＝粗い格子の話だということ。</em></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>連続極限 ── くりこみ群で"登る"</h2>
+
+  <p>ここが本番。連続極限 \(a\to0\) は、漸近自由（第3回）により<strong>弱結合 \(\beta\to\infty\)</strong> に対応します：</p>
+
+  <div class="calc">
+    <span class="tag">連続極限＝弱結合の臨界点へ</span>
+    $$a\,\Lambda \sim \exp\!\Big(-\frac{1}{2b_0\,g^2}\Big)=\exp\!\Big(-\frac{\beta}{4N b_0}\Big)\ \xrightarrow{\ \beta\to\infty\ }\ 0$$
+    <p style="margin-bottom:14px;">\(\beta\) を大きくするほど \(a\) は<strong>指数的に小さく</strong>なり、連続に近づく。だが強結合展開（\(\S03\)）は小さい \(\beta\) の話 ── <em>そのままでは弱結合（連続）まで届かない</em>。強結合の島と連続の岸を、<strong>くりこみ群で橋渡し</strong>する必要があります。</p>
+  </div>
+
+  <p>くりこみ群（RG）の心臓は<strong>ブロック変換</strong>：細かい格子の自由度をまとめて（例：\(2\times2\) を1つに）、少し粗い格子の<em>実効的な作用</em>に書き換える。これを繰り返し、結合がどう<strong>流れる</strong>かを追う。下の図で、この"粗視化"を実際に動かしてみましょう。</p>
+
+  <div class="fig">
+    <div class="cap">図：くりこみ群のブロック変換。<strong>「粗視化する」</strong>を押すと、\(2\times2\) の場をまとめて1つにし、格子が段階的に粗くなる（\(a\to2a\to4a\dots\)）。連続極限は<em>この逆向き</em> ── 無限に細かくし、相関長が格子無限個ぶんに発散する臨界点（\(g\to0\)）へ。RGはこの流れを厳密に制御する道具</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="tbtn" id="bC">粗視化する（ブロック変換）</button>
+      <button class="tbtn" id="bR">リセット（細かい格子へ）</button>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">05</span>どこまで登れたか ── バラバンの到達点と、残る壁</h2>
+
+  <p>この<strong>厳密なくりこみ群</strong>を4次元格子ゲージ理論に対して実行したのが、<strong>バラバン（Bałaban）の一連の仕事（1980年代）</strong>。ブロック変換を繰り返し、各段で誤差を精密に評価して、<strong>紫外（短距離）側の安定性</strong>を厳密に証明しました ── 技術的に途方もない偉業です。</p>
+
+  <div class="keybox">
+    <div class="lbl">ルートAの現在地（正直な地図）</div>
+    <p style="margin:0;"><strong>登れた</strong>：格子の厳密定義（§01）、反射正値性→転送行列（§02）、強結合のギャップ＝Q1（§03）、UV安定性のRG評価（Balaban）。<br><strong>残る壁</strong>：連続極限を<em>最後まで</em>制御し、<strong>反射正値性とギャップが極限で生き残る</strong>ことを示す ── \(SU(3)\) 4次元での<em>完成</em>は未達。</p>
+  </div>
+
+  <p>なぜ最後が越えられないか。第4回の壁そのもの ── 連続極限は<strong>相関長が発散する臨界点</strong>（\(\xi\to\infty\)）で、そこを<em>非摂動的に</em>制御しきるのが、ちょうど4次元で最も難しい。強結合（Q1）と連続極限のあいだの<strong>全域の流れ</strong>を、一つの厳密な制御でつなぐ ── これがルートAの残された頂上直下の壁です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ウィルソン格子作用 \(S=\beta\sum_\square(1-\tfrac1N\mathrm{Re\,Tr}\,U_\square)\)（\(\beta=2N/g^2\)）、ハール測度による有限格子の well-defined 性、反射正値性と転送行列 \(T=e^{-aH}\)・\(H\ge0\)、ギャップ＝固有値比 \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\)、強結合展開の収束と面積則・閉じ込め・ギャップの厳密性（Osterwalder–Seiler 1978）、漸近スケーリング \(a\Lambda\sim e^{-1/(2b_0g^2)}\)、ブロックスピンくりこみ群（Kadanoff・Wilson）、バラバンの4次元格子ゲージのUV安定性評価（Bałaban 1980年代）は、いずれも確立した結果です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>4次元 \(SU(N)\) の連続極限の完全な構成と \(\Delta>0\) の証明は未達</strong>（2025年時点、未解決）。バラバンの仕事はUV側の安定性であり、連続極限での反射正値性・ギャップの存続まで含む"登頂"ではありません。図のブロック変換は概念を示す模式（実際のゲージ場でなく、相関のある場の粗視化のイメージ）で、相関長やギャップの数値を主張するものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>なぜ「格子に刻む」と理論が厳密に定義できるのか。
+        <details><summary>答えを見る</summary><div class="ans">場を辺上の \(SU(N)\) 行列（リンク変数）で表すと、各辺の積分がコンパクト群のハール測度＝有限体積になる。だから有限格子では経路積分 \(Z\) はふつうの有限次元積分で、無限次元の曖昧さがない。ゲージ対称性も厳密に保たれる。連続の無限次元の困難を、いったん回避できる。</div></details>
+      </li>
+      <li>質量ギャップは、格子ではどんな"行列の問題"に翻訳されるか。
+        <details><summary>答えを見る</summary><div class="ans">反射正値性から定義される転送行列 \(T=e^{-aH}\) の、最大固有値 \(\lambda_0\)（真空）と第二固有値 \(\lambda_1\) の比。\(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)>0\)、すなわち \(\lambda_1<\lambda_0\)（第二固有値が真に小さい）ことがギャップの存在。相関は \((\lambda_1/\lambda_0)^{r/a}=e^{-\Delta r}\) と指数減衰。</div></details>
+      </li>
+      <li>強結合でギャップが厳密に示せるのに、なぜルートAは"登頂"にならないのか。
+        <details><summary>答えを見る</summary><div class="ans">強結合（小さい \(\beta\)＝粗い格子）の話だから。連続極限は漸近自由で弱結合 \(\beta\to\infty\)（\(a\to0\)）に対応し、相関長が発散する臨界点。強結合展開はそこまで届かず、強結合と連続極限のあいだの全域の流れを、非摂動的・厳密に制御する必要がある（Balaban はUVまで、完成は未達）。それが4次元で最も難しい壁。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第6回まとめ</span>厳密な出発点から、連続へ登る道</h2>
+    <p>ルートA＝構成的場の理論の王道。<strong>格子に刻めば理論は有限で厳密</strong>（Wilson作用、ハール測度）。<strong>反射正値性</strong>が転送行列 \(T=e^{-aH}\) を生み、質量ギャップは固有値ギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\) に。<strong>強結合では面積則・閉じ込め・ギャップが厳密</strong>（Osterwalder–Seiler＝Q1完了）。</p>
+    <p>残るは連続極限 \(a\to0\)（＝弱結合 \(\beta\to\infty\) の臨界点）を<strong>くりこみ群</strong>で厳密に制御すること。ブロック変換を繰り返し流れを追う ── <strong>バラバンがUV安定性まで登った</strong>が、連続極限での反射正値性・ギャップの存続を含む完成は未達。頂上直下の壁は、第4回と同じ「4次元・非摂動・臨界点」。次回はまったく別のルートB ── ノイズで場を育てる確率量子化（Hairer）へ。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-05-semekata.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第5回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">第7回：確率量子化とHairer（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第6回（挑戦編②・ルートA）、物理好きの高校生・大学生向け読み物。ウィルソンの格子ゲージ理論（リンク変数 \(U_\mu=e^{iagA_\mu}\)、作用 \(S=\beta\sum_\square(1-\tfrac1N\mathrm{Re\,Tr}\,U_\square)\)、\(\beta=2N/g^2\)、ハール測度、Wilson 1974）、反射正値性と転送行列 \(T=e^{-aH}\)・\(H\ge0\)、質量ギャップ＝固有値ギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\)、強結合（指標）展開の収束・面積則・閉じ込め・ギャップの厳密性（Osterwalder–Seiler 1978）、漸近スケーリング \(a\Lambda\sim e^{-1/(2b_0g^2)}\)、ブロックスピンくりこみ群（Kadanoff・Wilson）、バラバンによる4次元格子ゲージのUV安定性のRG評価（Bałaban 1980年代）は、いずれも確立した結果です。4次元 \(SU(N)\) の連続極限の完全な構成と質量ギャップ \(\Delta>0\) の証明は未解決です（2025年時点）。図はブロック変換（くりこみ群の粗視化）の概念を、相関のある場の平均化で示した模式で、実際のゲージ場や具体的な相関長・ギャップ値を主張するものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「粗視化する」で格子が段階的に粗くなり、くりこみ群のブロック変換を体感できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), bC=document.getElementById('bC'), bR=document.getElementById('bR'), rd=document.getElementById('rd');
+  var N0=32, xi0=6;      // 初期格子 32x32、初期相関長 6格子
+  var field=null, N=N0, level=0;
+  function makeField(n){
+    // 決定論的な"相関のある"場（サイン波の重ね合わせ）
+    var f=[];
+    for(var i=0;i<n;i++){ f[i]=[];
+      for(var j=0;j<n;j++){
+        var v=Math.sin(i*0.42)+Math.cos(j*0.35)+0.8*Math.sin((i+j)*0.22)+0.6*Math.cos((i-j)*0.28);
+        f[i][j]=v;
+      }
+    }
+    return f;
+  }
+  function coarse(f){
+    var n=f.length, m=n>>1, g=[];
+    for(var i=0;i<m;i++){ g[i]=[];
+      for(var j=0;j<m;j++){
+        g[i][j]=(f[2*i][2*j]+f[2*i+1][2*j]+f[2*i][2*j+1]+f[2*i+1][2*j+1])/4;
+      }
+    }
+    return g;
+  }
+  function reset(){ field=makeField(N0); N=N0; level=0; draw(); }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function col(v){ // -3..3 → 青(低)〜白〜金(高)
+    var t=Math.max(0,Math.min(1,(v+3)/6));
+    if(t<0.5){ var s=t/0.5; return 'rgb('+Math.round(38+ s*(245-38))+','+Math.round(69+s*(247-69))+','+Math.round(110+s*(240-110))+')'; }
+    var s2=(t-0.5)/0.5; return 'rgb('+Math.round(245-s2*(245-169))+','+Math.round(247-s2*(247-121))+','+Math.round(240-s2*(240-26))+')';
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    ctx.clearRect(0,0,w,h);
+    var S=Math.min(w-160, h-24), ox=20, oy=(h-S)/2, cs=S/N;
+    for(var i=0;i<N;i++)for(var j=0;j<N;j++){
+      ctx.fillStyle=col(field[i][j]);
+      ctx.fillRect(ox+i*cs, oy+j*cs, Math.ceil(cs), Math.ceil(cs));
+    }
+    // 格子線（粗いときだけ）
+    if(N<=16){ ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1;
+      for(var k=0;k<=N;k++){ ctx.beginPath();ctx.moveTo(ox+k*cs,oy);ctx.lineTo(ox+k*cs,oy+S);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(ox,oy+k*cs);ctx.lineTo(ox+S,oy+k*cs);ctx.stroke(); } }
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.strokeRect(ox,oy,S,S);
+    // 右側テキスト
+    var tx=ox+S+18, ty=oy+20;
+    ctx.fillStyle='#26456e';ctx.font='bold 13px sans-serif';ctx.textAlign='left';
+    ctx.fillText('格子 '+N+' × '+N, tx, ty);
+    ctx.fillStyle='#4a4f5e';ctx.font='12px sans-serif';
+    ctx.fillText('間隔 a → '+Math.pow(2,level)+'a', tx, ty+22);
+    var xiEff=Math.max(1,(xi0/Math.pow(2,level)));
+    ctx.fillText('相関長 ξ ≈ '+xiEff.toFixed(1)+' 格子', tx, ty+40);
+    ctx.fillStyle='#8a7a52';ctx.font='11px sans-serif';
+    ctx.fillText('段数 '+level, tx, ty+62);
+    // readout
+    if(level===0){
+      rd.innerHTML='初期の細かい格子（32×32、相関長 ξ≈6 格子）。<b>「粗視化する」</b>で 2×2 をまとめ、実効的な粗い格子へ（くりこみ群のブロック変換）。';
+    } else if(N>2){
+      rd.innerHTML='段数 '+level+'：間隔 a→'+Math.pow(2,level)+'a、相関長は格子 '+xiEff.toFixed(1)+' 個ぶんに縮んで見える。<b>連続極限はこの逆向き</b>＝無限に細かくし ξ→∞（臨界点・g→0）。RGはこの流れを厳密に制御する。';
+    } else {
+      rd.innerHTML='ほぼ粗視化しきり。<b>連続極限（頂上）は逆向き</b>＝ a→0・ξ→∞ の臨界点。そこを非摂動的に制御しきるのが、ルートAの残る壁（Balaban はUVまで）。';
+    }
+  }
+  bC.addEventListener('click',function(){ if(N>2){ field=coarse(field); N=N>>1; level++; draw(); } });
+  bR.addEventListener('click',reset);
+  window.addEventListener('resize',draw);
+  reset();
+  window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

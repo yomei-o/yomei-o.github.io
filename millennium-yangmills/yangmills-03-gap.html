@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>質量ギャップって何？ ── ゼロと"最初の音"のあいだの隙間 ／ ミレニアム問題を解くぞ 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --strong:#a5473a; --lam:#a9791a; --weak:#2f7d5a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;font-weight:600;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 3 回</span></div>
+  <p class="eyebrow">古典では質量ゼロが強制される ── なのに量子論では隙間が現れる。その"なぜ"</p>
+  <h1>質量ギャップって何？ ── ゼロと"最初の音"のあいだの隙間
+    <span class="sub">質量ギャップとは、真空の<strong>すぐ上に空いた、ゼロでない最小エネルギー \(\Delta\)</strong>。鐘に"最低の音"があるように。<br>第2回の宿題 ── <em>古典的に質量ゼロのはずのグルーオンから、なぜ隙間が湧くのか</em>。答えは二段：<strong>結合が走り（漸近自由）、無次元から質量スケールが湧く（次元的移行）</strong>。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：ギャップの正体と、湧く仕組み（数式あり）</span>
+    <span>核心：\(\mathrm{spec}(H)=\{0\}\cup[\Delta,\infty)\) ／ \(\Lambda=\mu\,e^{-1/(2b_0 g^2)}\)</span>
+  </div>
+
+  <p class="lead">第2回の最後で、ふしぎな食い違いに出会いました ── ゲージ対称性は、力の粒子（グルーオン）に<strong>質量項を禁じる</strong>。だから設計図の上では、グルーオンは<em>質量ゼロ</em>のはず。なのに現実の強い力は短い距離しか届かず、最小のエネルギー（<strong>質量ギャップ</strong>）を持つ。古典では「ゼロ」が強制されるのに、量子論では「隙間」が現れる。この回で、まず質量ギャップの<strong>厳密な意味</strong>をはっきりさせ、それから<strong>なぜ湧くのか</strong>を二段階で解きます。式もしっかり使います。</p>
+
+  <h2><span class="n">01</span>質量ギャップ、厳密には ── スペクトルの隙間</h2>
+
+  <p>量子論では、系のエネルギーは<strong>ハミルトニアン \(H\) が取りうる値（スペクトル）</strong>で決まります。真空をエネルギー0とすると、質量ギャップとは：</p>
+
+  <div class="keybox">
+    <div class="lbl">質量ギャップの定義</div>
+    $$\mathrm{spec}(H)=\{0\}\ \cup\ [\Delta,\infty),\qquad \Delta>0$$
+    <p style="margin:10px 0 0;">真空（0）の<strong>すぐ上に、幅 \(\Delta\) の空白</strong>がある。0 と \(\Delta\) のあいだには、状態が一つも無い。<em>何かを励起しようとしたら、最低でも \(\Delta\) のエネルギーが要る</em> ── これが「ゼロと最初の音のあいだの隙間」。\(\Delta\) は<strong>一番軽い粒子の質量</strong>（\(E=\Delta=mc^2\)）に等しい。</p>
+  </div>
+
+  <p>もう一つ、まったく等価な言い方があります。真空で二点をつないだ<strong>相関</strong>が、距離とともにどう落ちるか：</p>
+
+  <div class="keybox">
+    <div class="lbl">等価：相関の"指数的な"減衰</div>
+    $$\langle O(0)\,O(r)\rangle\ \sim\ e^{-r/\xi},\qquad \xi=\frac{\hbar c}{\Delta}$$
+    <p style="margin:10px 0 0;">ギャップがある（\(\Delta>0\)）⟺ 相関が距離で<strong>指数的にスッと消える</strong>（相関長 \(\xi\) は有限）。ギャップが無い（\(\Delta=0\)）⟺ 相関は<strong>べき乗でだらだら続く</strong>（\(\xi=\infty\)）。「隙間がある」と「相関がすぐ消える」は同じこと。</p>
+  </div>
+
+  <h2><span class="n">02</span>質量ゼロと質量あり ── "届く距離"で見分ける</h2>
+
+  <p>なぜ「指数的に消える」が大事か。力の届き方が、質量ゼロとありで決定的に違うからです。</p>
+
+  <div class="calc">
+    <span class="tag">くらべる ── 力の届き方（静的ポテンシャル）</span>
+    <p class="lbl">質量ゼロの仲介（例：光子）── べき乗、無限に届く</p>
+    $$V(r)\propto\frac{1}{r}$$
+    <p class="lbl">質量ありの仲介（質量 \(m\)）── 指数、\(\lambda=\hbar c/mc^2\) で消える</p>
+    $$V(r)\propto\frac{e^{-r/\lambda}}{r},\qquad \lambda=\frac{\hbar c}{mc^2}$$
+    <p style="margin-bottom:14px;">質量ギャップ \(\Delta\) があると、力は距離 \(\lambda=\hbar c/\Delta\) でスッと切れる。\(\Delta\approx\)数百 MeV なら \(\lambda\approx1\) fm（陽子サイズ）── だから核力は短射程。第1回の湯川の式が、ここで"スペクトルの隙間"と結びつきます。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">たとえ ── 鐘の最低音</span>
+    鐘をどんなに弱く叩いても、"ある音の高さ"から下は鳴りません。もっと低い音を出そうとしても、鐘の形が許さない ── 最低の音（基本振動）があるからです。質量ギャップも同じ：真空をどんなに弱くつついても、\(\Delta\) より下のエネルギーの"モノ"は作れない。\(\Delta\) は、この世界の強い力がもつ<em>最低音</em>です。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>なぜ湧く？①── 結合が"走る"（漸近自由）</h2>
+
+  <p>では、古典的に質量ゼロのはずの理論から、どうやって \(\Delta\) が出るのか。第一の鍵は、<strong>結合の強さ \(g\) が、見るエネルギー（＝距離の細かさ）で変わる</strong>こと ── "走る結合"。その走り方を決めるのが<strong>ベータ関数</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">走る結合とベータ関数（QCDは負＝漸近自由）</div>
+    $$\beta(g)=\mu\frac{dg}{d\mu}=-b_0\,g^3+\cdots,\qquad b_0=\frac{11-\tfrac23 n_f}{16\pi^2}>0$$
+    <p style="margin:10px 0 0;">ヤン=ミルズ（非可換）では \(b_0>0\) で符号が<strong>負</strong>。つまり<strong>高エネルギー（近距離）で \(g\) は小さく</strong>（漸近自由＝クォークは自由に見える）、<strong>低エネルギー（遠距離）で \(g\) は大きく</strong>なる（強くなって離れられない＝閉じ込め）。第2回のグルーオン自己相互作用（非可換の \(11\)）が、この符号を生んでいます。</p>
+  </div>
+
+  <p>下の図で、この"走り"を動かしてみましょう。エネルギー \(E\) を下げていくと、強い力の結合 \(\alpha_s=g^2/4\pi\) がぐんぐん大きくなり、あるスケール \(\Lambda\) で<strong>発散</strong>します。この \(\Lambda\) こそ、次の節の主役。</p>
+
+  <div class="fig">
+    <div class="cap">図：強い力の走る結合 \(\alpha_s(E)\)。スライダーでエネルギー \(E\) を変える。<span style="color:var(--weak);font-weight:700;">高エネルギー＝弱い（漸近自由）</span>、<span style="color:var(--strong);font-weight:700;">低エネルギー＝強い</span>、そして <span style="color:var(--lam);font-weight:700;">\(\Lambda\approx0.2\) GeV で発散</span> ── ここで"質量スケール"が湧く</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>見るエネルギー \(E\)（GeV、対数）<span class="val" id="ve">100</span>
+        <input type="range" id="se" min="-0.5" max="4" step="0.02" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#26456e;"></i>走る結合 \(\alpha_s(E)\)</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>湧いたスケール \(\Lambda\)（発散点）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>なぜ湧く？②── 次元的移行：無次元から質量が湧く</h2>
+
+  <p>ここが核心。古典のヤン=ミルズ理論には、<strong>質量やエネルギーの目盛りが一つもありません</strong>（スケール不変：結合 \(g\) は無次元）。なのに、走る結合を積分すると、<em>ひとりでに一つのスケール \(\Lambda\) が現れる</em>のです。ベータ関数を積分してみます：</p>
+
+  <div class="calc">
+    <span class="tag">やってみる ── 走りを積分すると、質量スケールが湧く</span>
+    <p class="lbl">\(\mu\,dg/d\mu=-b_0g^3\) を積分</p>
+    $$\frac{1}{g^2(\mu)}=2b_0\ln\frac{\mu}{\Lambda}\qquad\Longleftrightarrow\qquad \boxed{\ \Lambda=\mu\,\exp\!\Big(-\frac{1}{2b_0\,g^2(\mu)}\Big)\ }$$
+    <p style="margin-bottom:14px;">左辺は<strong>無次元</strong>（\(g\) だけ）。なのに右辺には<strong>エネルギーの次元をもつ \(\Lambda\)</strong> が現れる。しかも \(\Lambda\) は \(\mu\) や \(g(\mu)\) の選び方によらず<strong>一定</strong>（理論を特徴づける本物の量）。<em>無次元の"走り"が、質量の目盛りを産んだ</em> ── これが<strong>次元的移行（dimensional transmutation）</strong>。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">第2回の宿題への答え</div>
+    <p style="margin:0;">質量ギャップのスケールは \(\Delta\sim\Lambda\approx0.2\)–\(0.3\) GeV。<strong>質量項を手で入れた（＝ゲージ対称性を破った）のではない</strong>。無次元の理論に、量子効果（走る結合）が<em>自発的に</em>スケールを生んだ。だから「古典で質量ゼロ、量子で質量ギャップ」は矛盾ではなく、\(\Lambda\) の誕生として両立する。</p>
+  </div>
+
+  <h2><span class="n">05</span>その結果 ── 閉じ込め・グルーボール・あなたの体重</h2>
+
+  <p>スケール \(\Lambda\) が湧いた世界では、こうなります：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2;">
+    <li><strong>閉じ込め</strong>：低エネルギー（\(\sim\Lambda\)）で結合が強すぎ、クォークもグルーオンも単独で取り出せない。引き離すほど力が減らず、間の"ひも"のエネルギーが増える。</li>
+    <li><strong>グルーボール</strong>：純粋なヤン=ミルズ（グルーオンだけ）の一番軽い励起。その質量 \(\approx1.7\) GeV が、事実上<strong>質量ギャップ \(\Delta\) そのもの</strong>。ゼロでない ── これが"証明せよ"の当のもの。</li>
+    <li><strong>あなたの体重の99%</strong>：陽子の質量の大半は、クォーク自身の重さでなく、閉じ込められた場のエネルギー（\(\sim\Lambda\)、\(E=mc^2\)）。質量ギャップは、物質の"重さの出どころ"。</li>
+  </ul>
+
+  <h2><span class="n">06</span>計算機には"見えている" ── でも証明は別（次回へ）</h2>
+
+  <p>ここまでの話は絵空事ではありません。<strong>格子ゲージ理論</strong>（時空を格子に刻んでスパコンで計算）では、相関 \(\langle O(0)O(r)\rangle\) が距離で<em>きれいに指数的に落ちる</em>のが見え、その傾きから \(\Delta\)（グルーボール質量）が数値で出る。実験のハドロン質量とも合う。<strong>物理は、質量ギャップを"見て"います。</strong></p>
+
+  <p>なのに ── これを<em>数学の定理として証明</em>した人は、まだいません。走る結合も次元的移行も、多くは<strong>近似（摂動）や数値</strong>の言葉。「連続極限まできっちり、一分のスキもなく」構成して \(\Delta>0\) を示すのは、別次元の難しさ。<strong>物理の"見えている"と、数学の"証明した"の谷</strong> ── それが、次の第4回の主役です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">スペクトルの隙間 \(\{0\}\cup[\Delta,\infty)\)、相関の指数減衰と \(\xi=\hbar c/\Delta\)、質量ゼロ＝\(1/r\)・質量あり＝湯川 \(e^{-r/\lambda}/r\)、ベータ関数 \(\beta=-b_0g^3\)（\(b_0=(11-\tfrac23 n_f)/16\pi^2\)、純ゲージは \(n_f=0\)）、漸近自由（Gross–Wilczek・Politzer 1973）、次元的移行 \(\Lambda=\mu e^{-1/(2b_0g^2)}\)、\(\Lambda_{\rm QCD}\approx0.2\)–\(0.3\) GeV、純ゲージ最軽グルーボール \(\approx1.7\) GeV は、いずれも確立した物理です（符号・規格化は流儀で変わります）。</p>
+    <p style="margin-bottom:0;">ただし「走る結合が \(\Lambda\) で発散」は<strong>1ループ近似の描像</strong>で、そこ自体は摂動が効かなくなる領域（本当の非摂動の姿は格子が担う）。この回で示したのは"なぜギャップが湧くか"の物理的な筋であって、\(\Delta>0\) の<strong>数学的証明ではありません</strong> ── そここそが第4回で扱うクレイ問題の壁。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回の式で解けます）</div>
+    <ol>
+      <li>「質量ギャップがある」を、相関関数の言葉で言うと？
+        <details><summary>答えを見る</summary><div class="ans">真空での相関が距離で指数的に落ちる：\(\langle O(0)O(r)\rangle\sim e^{-r/\xi}\)、相関長 \(\xi=\hbar c/\Delta\) が有限。ギャップ無し（\(\Delta=0\)）ならべき乗でだらだら続く（\(\xi=\infty\)）。「隙間がある」＝「相関がスッと消える」。</div></details>
+      </li>
+      <li>古典的に質量ゼロのはずの理論から、質量スケールはどうやって現れる？
+        <details><summary>答えを見る</summary><div class="ans">次元的移行。走る結合 \(\mu\,dg/d\mu=-b_0g^3\) を積分すると、無次元の \(g\) から \(\Lambda=\mu\,e^{-1/(2b_0g^2)}\) というエネルギー次元の量が"ひとりでに"現れる。質量項を手で入れた（対称性を破った）のではなく、量子効果が自発的にスケールを産む。\(\Delta\sim\Lambda\)。</div></details>
+      </li>
+      <li>純粋ヤン=ミルズ理論で、質量ギャップ \(\Delta\) に対応する"実物"は何か。
+        <details><summary>答えを見る</summary><div class="ans">一番軽いグルーボール（グルーオンだけの束縛励起、\(0^{++}\)、質量 \(\approx1.7\) GeV）。真空の上の最小励起なので、その質量が事実上の \(\Delta\)。ゼロでない ── これが「\(\Delta>0\) を証明せよ」の当のもの。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>ゼロと最初の音の隙間は、こうして湧く</h2>
+    <p>質量ギャップ \(\Delta\) とは、真空のすぐ上の最小エネルギー ── \(\mathrm{spec}(H)=\{0\}\cup[\Delta,\infty)\)。等価に、相関が指数的に消える（\(\xi=\hbar c/\Delta\)）。質量ゼロなら力は \(1/r\) で無限に届き、ギャップがあれば \(e^{-r/\lambda}/r\) で短射程 ── 鐘の最低音のように。</p>
+    <p>第2回の宿題「古典ゼロなのに量子ギャップ」の答えは二段：<strong>①結合が走る</strong>（漸近自由、\(\beta=-b_0g^3\)）→ <strong>②次元的移行</strong>で無次元から質量スケール \(\Lambda=\mu e^{-1/(2b_0g^2)}\) が自発的に湧く。\(\Delta\sim\Lambda\approx0.2\)–\(0.3\) GeV。結果は閉じ込め・グルーボール(\(\approx1.7\) GeV)・陽子の重さの99%。物理はこれを格子で"見ている"── だが数学の証明は別。その谷が、次回。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-02-chikara.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第2回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">第4回：なぜ"問題"なのか（準備中）</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第3回、物理好きの高校生・大学生向け読み物。質量ギャップの定義（\(\mathrm{spec}(H)=\{0\}\cup[\Delta,\infty)\)、\(\Delta>0\)）、相関の指数クラスタリングと \(\xi=\hbar c/\Delta\)、質量ゼロ＝\(1/r\)・有質量＝湯川 \(e^{-r/\lambda}/r\)（\(\lambda=\hbar c/mc^2\)）、走る結合とベータ関数 \(\beta(g)=-b_0g^3+\cdots\)（\(b_0=(11-\tfrac23 n_f)/16\pi^2\)）、漸近自由（Gross–Wilczek, Politzer 1973）、次元的移行 \(\Lambda=\mu\,e^{-1/(2b_0g^2)}\)、\(\Lambda_{\rm QCD}\approx0.2\)–\(0.3\) GeV（スキーム・\(n_f\) 依存）、純ゲージ \(SU(3)\) の最軽 \(0^{++}\) グルーボール \(\approx1.7\) GeV、閉じ込め、陽子質量の約99%が強い相互作用のエネルギー由来は、いずれも確立した物理です。図の \(\alpha_s(E)\) は1ループの模式（\(\alpha_s=A/\ln(E/\Lambda)\)、\(\Lambda=0.2\) GeV）で、\(\Lambda\) 近傍では摂動が破綻し、真の非摂動の姿は格子ゲージ計算が与えます。本稿は"なぜギャップが湧くか"の物理的機構を示したもので、4次元での \(\Delta>0\) の数学的厳密証明（＝ヤン=ミルズ問題）は未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーでエネルギーを下げると、走る結合が Λ で発散し"質量スケールが湧く"様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), se=document.getElementById('se'), ve=document.getElementById('ve'), rd=document.getElementById('rd');
+  var LAM=0.2, A=0.72;                 // alpha_s = A/ln(E/LAM)
+  var X0=-0.8, X1=4, AMAX=2.2;         // x=log10(E GeV), y=alpha_s
+  var lamLog=Math.log(LAM)/Math.LN10;  // ~ -0.699
+  function aS(E){ var l=Math.log(E/LAM); return l>0? A/l : Infinity; }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padB=40, padT=16, padR=14;
+    var u=parseFloat(se.value), E=Math.pow(10,u);
+    ve.textContent = E<1? E.toFixed(2) : (E<1000? Math.round(E) : (E/1000)+'k');
+    function X(uu){return padL+(uu-X0)/(X1-X0)*(w-padL-padR);}
+    function Y(a){return (h-padB)-(Math.min(a,AMAX)/AMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 閉じ込め領域（E<Λ）を塗る
+    ctx.fillStyle='rgba(165,71,58,0.08)';
+    ctx.fillRect(X(X0),padT,X(lamLog)-X(X0),(h-padB)-padT);
+    ctx.fillStyle='#a5473a';ctx.font='10px sans-serif';ctx.fillText('閉じ込め領域', X(X0)+6, padT+13);
+    // グリッド縦
+    ctx.font='10px sans-serif';
+    for(var iu=0;iu<=4;iu++){ var x=X(iu);
+      ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      var lab=iu===0?'1':(iu===1?'10':(iu===2?'100':(iu===3?'1000':'10⁴')));
+      ctx.fillStyle='#b3a892';ctx.fillText(lab, x-7, h-padB+14);
+    }
+    // グリッド横
+    for(var a=0.5;a<=2.01;a+=0.5){ var y=Y(a);
+      ctx.strokeStyle='#eee5d0';ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#b3a892';ctx.fillText(a.toFixed(1), 8, y+3);
+    }
+    // Λ 縦線
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([5,4]);ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(X(lamLog),padT);ctx.lineTo(X(lamLog),h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a9791a';ctx.font='bold 11px sans-serif';ctx.fillText('Λ≈0.2 GeV（湧いたスケール）', X(lamLog)+5, padT+30);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('エネルギー E（GeV, 対数）→', w-210, h-padB+28);
+    ctx.save();ctx.translate(14,padT+92);ctx.rotate(-Math.PI/2);ctx.fillText('結合 α_s', 0,0);ctx.restore();
+    // α_s 曲線（E>Λ）
+    ctx.strokeStyle='#26456e';ctx.lineWidth=3;ctx.beginPath();var f=true;
+    for(var uu=lamLog+0.03; uu<=X1+1e-9; uu+=0.01){
+      var Ee=Math.pow(10,uu), av=aS(Ee); if(av>AMAX*1.5){continue;}
+      var x=X(uu), y=Y(av); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // カーソル
+    var mx=X(u), av=aS(E);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#26456e';ctx.beginPath();ctx.arc(mx,Y(av),6,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    var reg, col;
+    if(E<=LAM*1.3){ reg='閉じ込め（結合が発散、摂動は効かない）'; col='#a5473a'; }
+    else if(av>0.6){ reg='強い（低エネルギー＝遠距離、閉じ込めへ）'; col='#a5473a'; }
+    else if(av>0.2){ reg='中くらい（陽子サイズ 〜1 GeV 付近）'; col='#8a5a1e'; }
+    else { reg='弱い（高エネルギー＝近距離、漸近自由でクォークは自由に見える）'; col='#2f7d5a'; }
+    rd.style.color=col;
+    rd.innerHTML='E ≈ '+(E<1?E.toFixed(2):Math.round(E))+' GeV → α_s ≈ '+(isFinite(av)?av.toFixed(2):'∞')+'。'+reg+' ── 下げるほど強くなり、Λ で発散して"質量スケール"が湧く。';
+  }
+  se.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

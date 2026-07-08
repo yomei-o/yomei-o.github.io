@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>③≡B 転送行列で束ねる ── RPネイティブ評価の輸入 ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --f1:#2f6d8a; --f2:#7a4fa0; --f3:#2f7d5a; --rp:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:30px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--f3);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略③≡B（深掘り・統合）</span></div>
+  <p class="eyebrow">③（相関の一様下限）と B（スペクトルギャップ）は、転送行列で同じ問題になる</p>
+  <h1>③≡B 転送行列で束ねる ── RPネイティブ評価の輸入
+    <span class="sub">③の「一様な指数クラスタリング」は、<strong>反射正値な転送行列のスペクトルギャップ</strong>と厳密に同値。<br>だから③をBの土俵に移せる ── 転送行列は<em>生まれつき正</em>、そこに<strong>RP専用の評価（チェスボード・赤外）＋多体ギャップ術</strong>を渡す。一つの量の三つの顔を、RPが貫く。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：③とBの同一性と、RPネイティブな武器（数式あり）</span>
+    <span>核心：クラスタリング ⇄ 転送行列ギャップ ⇄ スペクトルギャップ ／ 橋＝RP</span>
+  </div>
+
+  <p class="lead">戦略③（構成せずに相関の一様下限でギャップを掴む）と戦略B（ハミルトニアンのスペクトルギャップ）── 別々に見えた二つは、じつは<strong>転送行列を挟むと同じ問題</strong>です。ウィルソンループの一様な指数クラスタリング（③）＝転送行列の固有値ギャップ＝ハミルトニアンのスペクトルギャップ（B）。<em>一つの量の、三つの顔</em>。そして三つを"同一"にしているのが<strong>反射正値性(RP)</strong>。この統合の御利益は大きい ── 転送行列は<em>生まれつき正</em>なので、<strong>RPがあってこそ使える強力な評価（チェスボード評価・赤外評価）</strong>と、Bの多体ギャップ術を、同じ標的に同時に渡せる。③の"良い方法"とは、この束ね方です。</p>
+
+  <h2><span class="n">01</span>一つの量の、三つの顔</h2>
+
+  <div class="keybox">
+    <div class="lbl">同じ Δ が、三通りに現れる</div>
+    $$\underbrace{\langle O(0)O(r)\rangle\sim e^{-\Delta r}}_{\text{③ 相関の指数減衰}}\ \Longleftrightarrow\ \underbrace{\Delta=-\tfrac1a\ln\tfrac{\lambda_1}{\lambda_0}}_{\text{転送行列 }T\text{ の固有値ギャップ}}\ \Longleftrightarrow\ \underbrace{\Delta=E_1-E_0}_{\text{B }H=-\frac1a\ln T\text{ のスペクトルギャップ}}$$
+    <p style="margin:10px 0 0;">相関の減衰率、転送行列の第一固有値と第二の比、ハミルトニアンの最小励起 ── <strong>すべて同じ \(\Delta\)</strong>。「③の一様クラスタリングを示す」と「Bの一様スペクトルギャップを示す」は、<em>文字通り同じ主張</em>。下の図で、Δ を動かすと三つの顔が同時に動きます。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：一つの量 \(\Delta\)（ギャップ）の三つの顔。スライダー一本で同時に動く ── <span style="color:var(--f1);font-weight:700;">① 相関 \(e^{-\Delta r}\)</span> ／ <span style="color:var(--f2);font-weight:700;">② 転送行列の固有値 \(\lambda_0,\lambda_1\)</span> ／ <span style="color:var(--f3);font-weight:700;">③ \(H\) のスペクトルギャップ \(E_1-E_0\)</span>。三つを"同一"にする橋が<span style="color:var(--rp);font-weight:700;">反射正値性(RP)</span></div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>質量ギャップ \(\Delta\)（右で大きい）<span class="val" id="vd">0.80</span>
+        <input type="range" id="sd" min="0" max="1.5" step="0.01" value="0.8">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>① 相関の減衰</span>
+      <span><i class="swatch" style="background:#7a4fa0;"></i>② 転送行列</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>③ スペクトルギャップ</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>橋は反射正値性 ── 三つを"同一"にする</h2>
+
+  <p>なぜ三つが同値になるのか。鍵は<strong>反射正値性(RP)</strong>です。RPがあると：</p>
+
+  <div class="keybox">
+    <div class="lbl">RP が架ける同値</div>
+    <p style="margin:0;">RP ⟹ 転送行列 \(T\) が<strong>自己共役・正</strong>（\(0\le T\le 1\)）⟹ \(H=-\tfrac1a\ln T\ge0\) が定義でき、相関 \(\langle O(0)O(r)\rangle=\langle 0|O\,T^{r/a}\,O|0\rangle\) は \(T\) の固有値で<strong>指数減衰</strong>。減衰率＝固有値ギャップ＝スペクトルギャップ。</p>
+    <p style="margin:10px 0 0;">つまり <strong>RP が、③の"相関" と B の"スペクトル" を一本に繋ぐ橋</strong>。そしてゲージ格子では RP は<em>タダで在る</em>（Osterwalder–Seiler）。</p>
+  </div>
+
+  <h2><span class="n">03</span>だから③はBに移せる ── 同じ標的に道具を集める</h2>
+
+  <p>③を「相関の減衰」でなく「<strong>RPな転送行列のスペクトルギャップの一様下限</strong>」として立てると、二系統の道具が<em>同時に</em>効きます。</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ標的に、二系統の武器</div>
+    <p style="margin:0;"><strong>(1) 多体ギャップ術</strong>（戦略B）：Knabe の有限サイズ判定、マルチンゲール法 ── 転送行列/ハミルトニアンのスペクトルギャップ下限。<br><strong>(2) RPネイティブ評価</strong>（③固有）：チェスボード評価・赤外評価 ── RPがあってこそ使える相関の挟み込み。</p>
+  </div>
+
+  <h2><span class="n">04</span>③固有の武器 ── RPネイティブ評価（過小評価の本命）</h2>
+
+  <p>RPは"橋"であると同時に、それ自体が<strong>強力な不等式の源</strong>。ゲージのギャップ下限には、まだ使い倒されていません。</p>
+
+  <table class="dt">
+    <tr><th>道具</th><th>何をする</th></tr>
+    <tr><td class="id">チェスボード評価</td><td>RPで、相関を<strong>反射で敷き詰めた積</strong>に上から評価（Fröhlich–Israel–Lieb–Simon）。局所量の制御を大域に持ち上げる。</td></tr>
+    <tr><td class="id">赤外評価／ガウス支配</td><td>RPで、揺らぎのスペクトルを<strong>上下から挟む</strong>（Fröhlich–Simon–Spencer）。相関の減衰・秩序の有無を厳密に。</td></tr>
+    <tr><td class="id">反射・鏡像法</td><td>反射面での折り返しで、正値性つきの不等式列を生成。</td></tr>
+  </table>
+
+  <p>これらは相転移の証明などで威力を発揮した本物の道具で、<strong>RPが命綱の③にとって native な武器</strong>。転送行列のギャップ下限へ向けて、\(a\) に一様な相関評価を組む素地になります。</p>
+
+  <h2><span class="n">05</span>補助の道具（③を支える）</h2>
+
+  <table class="dt">
+    <tr><th>補助</th><th>役割</th></tr>
+    <tr><td class="id">ランダム曲面計算の厳密化</td><td>ウィルソンループ＝面の和を、ランダムウォーク表現（BFS）並みに厳密制御する ── 面のエントロピー vs 抑制。</td></tr>
+    <tr><td class="id">解析性（相転移の不在）</td><td>SU(2)/SU(3) は強→弱でバルク相転移なし。ギャップの \(g\) 解析性を示せば強結合の下限が連続へ延びる。</td></tr>
+    <tr><td class="id">'t Hooft 秩序–無秩序双対</td><td>Wilson と 't Hooft のループは両方 perimeter 則を取れない ⟹ どちらかが面積則＝閉じ込め相を構造的に強制。</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>判定 ── ③の"良い方法"は、Bと束ねてRPを武器化すること</h2>
+
+  <div class="keybox">
+    <div class="lbl">③≡B 統合の判定（過大申告なし）</div>
+    <p style="margin:0;">③の一番の"良い方法"＝<strong>転送行列で B と束ね、標的を「RPな転送行列の一様スペクトルギャップ」に一本化</strong>すること。すると RPネイティブ評価(チェスボード・赤外)＋多体ギャップ術が同じ標的に効き、③の「RPが命綱」が"タダのRP"に化ける。<em>だが</em> ── \(a\to0\) の一様性（Q3）は消えない。<strong>これは"標的を最も道具の効く形に畳む"一手であって、銀の弾丸ではない。</strong></p>
+  </div>
+
+  <p>それでも、これは確かな前進の形です ── バラバラだった③・B・RPが<strong>一点（RPな転送行列の一様スペクトルギャップ）</strong>に集まり、そこに<em>ギャップ専用に磨かれた二系統の道具</em>が渡る。残るQ3（\(a\to0\) 一様性）は、その一点で戦えばよい。<strong>戦場を最良の地形に選び直した</strong>、と言えます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">相関の指数クラスタリング＝転送行列の固有値ギャップ＝ハミルトニアンのスペクトルギャップの同値、反射正値性→転送行列 \(0\le T\le1\)・\(H\ge0\)（Osterwalder–Seiler／Osterwalder–Schrader）、チェスボード評価（Fröhlich–Israel–Lieb–Simon 1978）、赤外評価／ガウス支配（Fröhlich–Simon–Spencer 1976）、量子多体のスペクトルギャップ下限法（Knabe、Nachtergaele）、ランダムウォーク表現（Brydges–Fröhlich–Spencer）、SU(2)/SU(3) のバルク相転移の不在、't Hooft の秩序–無秩序双対は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>これらを組んで4次元YMの \(a\) に一様なスペクトルギャップ／質量ギャップを出すことは未達で、4次元YMは未解決</strong>（2025年時点）。赤外評価はしばしば秩序（の有無）を示す道具で、ギャップ下限に転用するには工夫が要り、非可換ゲージへのチェスボード評価の適用も限定的です。「③≡B が③の最良の方法」「RPネイティブ評価が過小評価の本命」は筆者の見立てで、反証されうる意見です。図は三つの顔が同じ \(\Delta\) で動く模式で、実際の相関・スペクトルを計算したものではありません。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>③（相関の一様下限）とB（スペクトルギャップ）は、なぜ同じ問題か。
+        <details><summary>答えを見る</summary><div class="ans">転送行列 \(T\) を挟むと、相関 \(\langle O(0)O(r)\rangle\) は \(T\) の固有値で指数減衰し、その減衰率＝固有値ギャップ \(-\tfrac1a\ln(\lambda_1/\lambda_0)\)＝\(H=-\tfrac1a\ln T\) のスペクトルギャップ \(E_1-E_0\)＝質量ギャップ \(\Delta\)。三つは同じ \(\Delta\) の三つの顔。だから③とBは同一の主張。</div></details>
+      </li>
+      <li>三つの顔を"同一"にしている橋は何か。それはゲージ格子でどう手に入るか。
+        <details><summary>答えを見る</summary><div class="ans">反射正値性(RP)。RP ⟹ 転送行列が自己共役・正（\(0\le T\le1\)）⟹ \(H\ge0\) が定義でき、相関が固有値で指数減衰。ゲージ格子ではRPはタダで在る（Osterwalder–Seiler）。だから"橋"は無償で手に入る。</div></details>
+      </li>
+      <li>③に固有の"RPネイティブな武器"を挙げ、なぜ③向きか。
+        <details><summary>答えを見る</summary><div class="ans">チェスボード評価（Fröhlich–Israel–Lieb–Simon）と赤外評価／ガウス支配（Fröhlich–Simon–Spencer）。どちらもRPがあってこそ使える相関の挟み込みで、③はRPが命綱だから相性が良い。転送行列のギャップ下限へ向け、a に一様な相関評価を組む素地になる（ただしギャップ下限への転用・非可換への適用には工夫が要る）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">③≡Bまとめ</span>戦場を、道具の効く地形に選び直す</h2>
+    <p>③の一番の"良い方法"＝<strong>転送行列で B と束ねる</strong>。相関の一様指数クラスタリング（③）＝転送行列の固有値ギャップ＝\(H\) のスペクトルギャップ（B）＝同じ \(\Delta\) の三つの顔。三つを同一にする橋が<strong>反射正値性</strong>で、ゲージ格子ではタダ。だから標的を「<strong>RPな転送行列の一様スペクトルギャップ</strong>」に一本化できる。</p>
+    <p>すると二系統の武器が同じ標的に効く ── <strong>多体ギャップ術</strong>（Knabe・martingale）＋<strong>RPネイティブ評価</strong>（チェスボード・赤外＝過小評価の本命）。補助に曲面計算の厳密化・解析性・'t Hooft双対。<em>だが</em> \(a\to0\) の一様性（Q3）は残る ── 銀の弾丸でなく、<strong>戦場を最良の地形に選び直す</strong>一手。③・B・RPをバラバラに戦うより、一点に集めて道具を束ねる方が強い。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku3-soukan.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 戦略③</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">③・B・RP を一点に</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略③≡B（深掘り・統合）、物理好きの高校生・大学生向け読み物。相関の指数クラスタリング＝転送行列の固有値ギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\)＝ハミルトニアン \(H=-\tfrac1a\ln T\) のスペクトルギャップ \(E_1-E_0\) の同値、反射正値性→転送行列 \(0\le T\le1\)・\(H\ge0\)（Osterwalder–Seiler 1978／Osterwalder–Schrader）、チェスボード評価（Fröhlich–Israel–Lieb–Simon 1978）、赤外評価・ガウス支配（Fröhlich–Simon–Spencer 1976）、量子多体のスペクトルギャップ下限法（Knabe、Nachtergaele）、ランダムウォーク表現（Brydges–Fröhlich–Spencer）、SU(2)/SU(3) のバルク相転移の不在、't Hooft の秩序–無秩序双対は、いずれも確立した事実・道具です。これらを組んで4次元YMの \(a\) に一様なスペクトルギャップ／質量ギャップを厳密に出すこと、および4次元YMの存在＋質量ギャップは未解決です（2025年時点）。赤外評価のギャップ下限への転用・チェスボード評価の非可換ゲージへの適用には固有の工夫が要ります。「③≡B が最良の方法」「RPネイティブ評価が過小評価の本命」は筆者の見立てで反証されうる意見です。図は同じ \(\Delta\) が三つの顔で動く概念的模式で、実際の相関・スペクトルの計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではギャップ Δ を動かすと、相関の減衰・転送行列の固有値・スペクトルギャップの三つが同時に動く様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sd=document.getElementById('sd'), vd=document.getElementById('vd'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padT=34, padB=30;
+    var D=parseFloat(sd.value); vd.textContent=D.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var pw=(w-40)/3, gap=10;
+    var x0=[16, 16+pw+gap, 16+2*(pw+gap)];
+    var topY=padT, botY=h-padB;
+    // パネル枠＋見出し
+    var titles=['① 相関 e^(−Δr)','② 転送行列 λ','③ スペクトルギャップ'];
+    var cols=['#2f6d8a','#7a4fa0','#2f7d5a'];
+    for(var p=0;p<3;p++){
+      ctx.strokeStyle='#e4dcc8';ctx.lineWidth=1;ctx.strokeRect(x0[p],topY,pw-6,botY-topY);
+      ctx.fillStyle=cols[p];ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText(titles[p], x0[p]+(pw-6)/2, topY-14);
+    }
+    ctx.textAlign='left';
+    // 橋（RP）矢印
+    ctx.strokeStyle='#a9791a';ctx.fillStyle='#a9791a';ctx.lineWidth=2;
+    for(var a=0;a<2;a++){ var ax=x0[a]+pw-6, bx=x0[a+1]; var my=(topY+botY)/2;
+      ctx.beginPath();ctx.moveTo(ax+1,my);ctx.lineTo(bx-1,my);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bx-1,my);ctx.lineTo(bx-8,my-4);ctx.lineTo(bx-8,my+4);ctx.closePath();ctx.fill();
+      ctx.beginPath();ctx.moveTo(ax+1,my);ctx.lineTo(ax+8,my-4);ctx.lineTo(ax+8,my+4);ctx.closePath();ctx.fill();
+    }
+    ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('＝RP', (x0[0]+pw-6+x0[1])/2, (topY+botY)/2-6);
+    ctx.fillText('＝RP', (x0[1]+pw-6+x0[2])/2, (topY+botY)/2-6);
+    ctx.textAlign='left';
+    // ---- パネル①：相関 e^{-Δr} ----
+    var A=x0[0], AW=pw-6;
+    ctx.strokeStyle='#2f6d8a';ctx.lineWidth=2.4;ctx.beginPath();var f=true;
+    for(var r2=0;r2<=1.0001;r2+=0.02){ var val=Math.exp(-D*r2*5); var xx=A+8+r2*(AW-16), yy=botY-8-val*(botY-topY-20);
+      if(f){ctx.moveTo(xx,yy);f=false;}else ctx.lineTo(xx,yy);}
+    ctx.stroke();
+    ctx.fillStyle='#7d94a4';ctx.font='9px sans-serif';ctx.fillText('r →', A+AW-26, botY-6);
+    // ---- パネル②：転送行列 λ0, λ1 ----
+    var B=x0[1], BW=pw-6;
+    var lam0=1.0, lam1=Math.exp(-D); // λ1/λ0 = e^{-Δ}
+    function YL(v){ return botY-10-v*(botY-topY-24); } // λ 0..1
+    ctx.strokeStyle='#7a4fa0';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(B+14,YL(lam0));ctx.lineTo(B+BW-14,YL(lam0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(B+14,YL(lam1));ctx.lineTo(B+BW-14,YL(lam1));ctx.stroke();
+    ctx.fillStyle='#7a4fa0';ctx.font='10px sans-serif';
+    ctx.fillText('λ₀', B+BW-30, YL(lam0)-4); ctx.fillText('λ₁', B+BW-30, YL(lam1)+12);
+    // ギャップ矢印
+    var bmx=B+BW/2;
+    ctx.strokeStyle='#a9791a';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(bmx,YL(lam0));ctx.lineTo(bmx,YL(lam1));ctx.stroke();
+    ctx.fillStyle='#a9791a';ctx.font='9px sans-serif';ctx.fillText('gap', bmx+4, (YL(lam0)+YL(lam1))/2);
+    // ---- パネル③：スペクトルギャップ ----
+    var C=x0[2], CW=pw-6;
+    function YE(E){ return botY-10-(E/1.7)*(botY-topY-24); } // E 0..1.7
+    var E0=0, E1=D;
+    ctx.fillStyle='rgba(47,125,90,0.16)';ctx.fillRect(C+14,YE(E1),CW-28,YE(E0)-YE(E1));
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(C+14,YE(E0));ctx.lineTo(C+CW-14,YE(E0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(C+14,YE(E1));ctx.lineTo(C+CW-14,YE(E1));ctx.stroke();
+    ctx.fillStyle='#2f7d5a';ctx.font='10px sans-serif';
+    ctx.fillText('E₀', C+CW-26, YE(E0)-4); ctx.fillText('E₁', C+CW-26, YE(E1)-4);
+    var cmx=C+CW/2;
+    ctx.strokeStyle='#a9791a';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(cmx,YE(E0));ctx.lineTo(cmx,YE(E1));ctx.stroke();
+    ctx.fillStyle='#a9791a';ctx.font='bold 10px sans-serif';ctx.fillText('Δ', cmx+4, (YE(E0)+YE(E1))/2);
+    // readout
+    if(D<0.06){
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='Δ≈0：<b>ギャップ消滅</b> ── 相関はべきでだらだら（①）、転送行列の λ₁→λ₀（②縮退）、H は gapless（③）。三つの顔すべてが"ギャップ無し"を示す。';
+    } else {
+      rd.style.background='#e9edf3';rd.style.color='#24344a';
+      rd.innerHTML='Δ='+D.toFixed(2)+'：<b>三つの顔すべてがギャップを示す</b> ── 相関は指数減衰（①）、λ₁<λ₀ の固有値ギャップ（②）、H のスペクトルギャップ E₁−E₀（③）。<b>同じ Δ を、RP が一本に繋いでいる</b>。';
+    }
+  }
+  sd.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

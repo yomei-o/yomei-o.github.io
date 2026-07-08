@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイデア6+1・しるしを打つ 反射×超収束を一点に ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --su:#2f7d5a; --u1:#a5473a; --mark:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .mark{margin:28px 0;padding:22px 26px;border:2px solid var(--mark);border-radius:4px;background:linear-gradient(180deg,#faf1d8,#f2e6bf);}
+  .mark .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:#7a5510;font-weight:800;margin-bottom:10px;}
+  .mark .body{color:#5f4310;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--su);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.mark{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">アイデア6+1・しるしを打つ</span></div>
+  <p class="eyebrow">反射カップリング × 超収束 を一点に融合し、旗でなく"しるし"を精密な位置へ</p>
+  <h1>反射×超収束を一点に ── しるしを打つ
+    <span class="sub">6（反射カップリング＝各段の縮小）と1（ナッシュ–モーザー＝超収束で組む）を融合し、一段深く。<br>物理ギャップは $\Delta_{\rm phys}\ge f(c_*)>0$、ただし $c_*=\inf_j c_j$（各スケールの反射収縮率の下限）。<br>すべては<strong>ただ一つの精密な不等式 $c_j\ge c_*>0$</strong> に凝縮する ── そこに<em>しるし</em>を打つ。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：6+1を融合し、残る一点を精密なしるしとして正確な位置に打つ</span>
+    <span>核心：各スケールの非凸の芯 $L_jR_j^2$ が一様有界 ⟺ $c_j\ge c_*>0$（SU(N)特有）</span>
+  </div>
+
+  <p class="lead">6（エーベルの反射カップリング＝<em>非凸でも一段を縮める</em>）と 1（ナッシュ–モーザー＝<em>超収束で有限窓を貫く</em>）は、じつは一つの機械の二つの部品でした ── <strong>6が各スケールの縮小率 $c_j$ を供給し、1がそれを $\sim\log(1/a)$ 段にわたり超収束で組み上げる</strong>。この回はそれを一段深く融合し、35話の探索が収束する<strong>ただ一つの精密なしるし</strong>を、フロンティアの正確な位置に打ちます。旗は立てません ── でも「ここから先が未踏、ここまでは地続き、越えるべき一点はここ」を、$c_j\ge c_*$ という一本の不等式で指す。それが標識の打ち方です。</p>
+
+  <h2><span class="n">01</span>融合 ── 一段の縮小(6) × 超収束で組む(1)</h2>
+
+  <div class="keybox">
+    <div class="lbl">物理ギャップは、各段の収縮率の下限で決まる</div>
+    $$\Delta_{\rm phys}\ \ge\ f(c_*)>0,\qquad c_*:=\inf_{j}\,c_j\quad(c_j=\text{スケール }j\text{ の反射カップリング収縮率})$$
+    <p style="margin:10px 0 0;"><strong>6</strong>：各スケール $j$ で一段の粗視化（ゆらぎ積分）が反射カップリングで率 $c_j$ で縮む。<strong>1</strong>：$j=1,\dots,\sim\log(1/a)$ を超収束反復で組み、marginal な損失を $\varepsilon\to\varepsilon^2$ で呑む。組み上がった物理ギャップは<strong>最悪スケールの収縮率 $c_*=\inf_j c_j$ で下から決まる</strong>。だから勝負は「$c_j$ が全スケールで $c_*>0$ に留まるか」の一点。</p>
+  </div>
+
+  <h2><span class="n">02</span>深掘り(6) ── 各スケールの収縮率は"非凸の芯"で決まる</h2>
+
+  <div class="calc">
+    <span class="tag">曲率 vs 非凸の芯</span>
+    $$U=\underbrace{U_{\rm curv}}_{\text{単リンク正曲率}\ \kappa>0}+\underbrace{U_{\rm int}}_{\text{プラケット：芯で}\nabla^2\ge-L_j,\ \text{半径}R_j},\qquad c_j\ \gtrsim\ \kappa\,\exp\!\big(-C\,L_j R_j^2\big)$$
+    <p style="margin-bottom:14px;">エーベルの収縮率は、<strong>正曲率の下地 $\kappa$</strong> を<strong>非凸の芯の"深さ×広がり" $L_j R_j^2$</strong> が指数的に削る形（模式）。芯が小さい（強結合・UV）なら $c_j\approx\kappa$ と大きい。<strong>クロスオーバーで芯 $L_jR_j^2$ が大きくなる</strong>と $c_j$ が急落しうる ── ここが崖。だから $c_j\ge c_*$ は<em>「各スケールの芯 $L_jR_j^2$ が一様有界」</em>と同値。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：各スケール $j$（横、クロスオーバーを跨ぐ）の反射収縮率 $c_j$（縦）。下地 $\kappa$ を非凸の芯が削る。<span style="color:var(--mark);font-weight:700;">しるしの線 $c_*$</span> を全域で上回れば $\Delta_{\rm phys}>0$。トグル：<span style="color:var(--su);font-weight:700;">SU(N)（$c_j\ge c_*$：しるし成立）</span>／<span style="color:var(--u1);font-weight:700;">U(1)（$c_j\to0$：転移＝崖）</span></div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>スケール j（クロスオーバーを跨ぐ）<span class="val" id="vj">6</span>
+        <input type="range" id="sj" min="0" max="16" step="1" value="6">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">SU(N)</button>
+        <button class="tbtn" id="bU">U(1)</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>SU(N) の c_j</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>U(1) の c_j</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>しるし c_*</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>深掘り(1) ── 超収束が閉じる条件は $c_*$ で決まる</h2>
+
+  <div class="calc">
+    <span class="tag">各段の可逆性＝$c_j$、収束は $c_*$ に依存</span>
+    $$\|\varepsilon_{n+1}\|\ \le\ \frac{C}{c_*}\,\|\varepsilon_n\|^{2-\theta},\qquad \text{閉じる条件：}\ \frac{C}{c_*}\,\|\varepsilon_0\|^{1-\theta}<1$$
+    <p style="margin-bottom:14px;">ナッシュ–モーザーの各段のニュートン補正には線形化の逆＝<strong>一スケールの縮小率 $c_j$</strong> が要る（6が供給）。超収束の定数は $1/c_*$ で悪化するので、<strong>$c_*$ が大きいほど超収束が閉じやすい</strong>。$c_*>0$ で初期誤差が十分小さければ二重指数で潰れて窓を貫く。<em>1が閉じるか否かは、結局 $c_*$ 一つ</em>。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>しるしを打つ ── 一本の不等式に、正確な位置で</h2>
+
+  <div class="mark">
+    <div class="lbl">◆ しるし（精密な予想・反証されうる意見）</div>
+    <div class="body">
+    <p style="margin:0 0 10px;"><strong>ゲージ共変・反射正値なスケール分解が存在し、ある $c_*>0$ について、クロスオーバーを跨ぐすべてのスケール $j$（および $a$・体積によらず）</strong></p>
+    $$\boxed{\,c_j\ \ge\ c_*\ >\ 0\quad\Longleftrightarrow\quad \sup_j\,L_j R_j^2\ <\ \infty\,}$$
+    <p style="margin:10px 0 0;">＝<strong>各スケールの"非凸の芯（深さ×広がり）"が一様に有界に留まる</strong>。これが成れば 6 が各段に $c_j\ge c_*$ を供給し、1 が超収束で $\Delta_{\rm phys}\ge f(c_*)>0$ に組み上げる。破れる（どこかで $c_j\to0$）なら、<strong>まさにその位置で</strong>詰まる ── だから、しるしはそこに打つ。</p>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>なぜ良いしるしか ── 一本・検証可能・反証可能・SU(N)特有</h2>
+
+  <table class="dt">
+    <tr><th>性質</th><th>中身</th></tr>
+    <tr><td class="id ok">一本の不等式</td><td>35話の探索が $c_j\ge c_*$ という<strong>ただ一つの量的不等式</strong>に凝縮。曖昧語が消えた。</td></tr>
+    <tr><td class="id ok">スケール毎に検証可能</td><td>$c_j$（＝各スケールの芯 $L_jR_j^2$）は<strong>原理的に各スケールで見積もれる</strong> ── アイデア5（検証つき数値）が各 $j$ を測れる。数値と解析が同じしるしを見る。</td></tr>
+    <tr><td class="id ok">反証可能</td><td>もし $c_j\to0$ なら<strong>どのスケールで崖が来るか</strong>が見える＝予想の誤りが具体的に露見する。</td></tr>
+    <tr><td class="id ok">SU(N)特有</td><td><strong>U(1) はまさに $\beta_c$ で $c_j\to0$</strong>（転移＝モノポール凝縮）。しるしは U(1) で破れ SU(N) で成る ── §γ補の羅針盤に叶う。</td></tr>
+  </table>
+
+  <p>このしるしは、6・1・5・そして U(1)対照を<strong>一点に束ねる</strong>。反射カップリング（6）がそれを"率"として与え、超収束（1）がそれを"組み上げ条件"として使い、検証つき数値（5）がそれを"各スケールで測り"、U(1)対照がそれを"正しい標的だと保証する"。<em>全ての道が、この一本の不等式の上で交わる</em>。</p>
+
+  <h2><span class="n">06</span>判定 ── 旗は立てない、しるしは打った</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の判定（過大申告なし）</div>
+    <p style="margin:0;">6（反射カップリング＝各段の縮小 $c_j$）と 1（ナッシュ–モーザー＝超収束で組む）を融合すると、物理ギャップは $\Delta_{\rm phys}\ge f(c_*)$、$c_*=\inf_j c_j$。深掘りすると 6 の $c_j$ も 1 の閉じる条件も、<strong>各スケールの非凸の芯 $L_jR_j^2$ が一様有界か</strong>という一点に凝縮する。そこに<strong>しるし $c_j\ge c_*>0$</strong> を打った ── 一本の不等式・スケール毎に検証可能・反証可能・U(1)で破れ SU(N)で成る（正しい標的）。<em>これは証明ではない。$c_j\ge c_*$ を厳密に示すこと自体が Q3 の核＝未解決。</em>でも、35話の探索が<strong>フロンティアのただ一点</strong>に収束し、そこに正確に標識が立った。旗ではなく、縁の標識を ── いま、その縁のいちばん精密な座標に。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">質量ギャップと確率量子化 Langevin の緩和率の対応、反射カップリングの収縮率が正曲率の下地と非凸領域の大きさで決まること（Eberle、収縮率が非凸の芯の深さ×広がりで指数的に劣化する模式）、ナッシュ–モーザー超収束の各段が線形化の可逆性（＝一スケールの縮小率）を要し収束定数がそれで悪化すること、コンパクト群の正曲率、ゲージ共変・反射正値なスケール分解の必要性、U(1) が有限 $\beta_c$ で転移（モノポール凝縮）し収縮率が消えること、アイデア5（検証つき数値）が各スケール量を見積もりうることは、いずれも確立した概念・道具、または本シリーズで整理した見立てです。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>しるし $c_j\ge c_*>0$（＝$\sup_j L_jR_j^2<\infty$）を厳密に示すこと、ゲージ共変・反射正値なスケール分解の構成、4次元ゲージSPDEの定義、および4次元YMの質量ギャップは未解決</strong>です（2025年時点）。式（$c_j\gtrsim\kappa e^{-CL_jR_j^2}$、$\Delta_{\rm phys}\ge f(c_*)$、超収束の閉じる条件）は機構を示す模式で、定数・関数形は定式化に依存し、実際の評価ではありません。「しるしが 6・1・5・U(1)対照を束ねる一点」という定式化は筆者の設計提案で、反証されうる意見を含みます。<strong>本稿は4次元ヤン=ミルズを解いたと主張しません。しるしは旗ではありません。</strong></p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>6と1を融合すると、物理ギャップは何で下から決まるか。
+        <details><summary>答えを見る</summary><div class="ans">$\Delta_{\rm phys}\ge f(c_*)$、$c_*=\inf_j c_j$（各スケールの反射カップリング収縮率の下限）。6が各スケール $j$ の縮小率 $c_j$ を供給し、1が $\sim\log(1/a)$ 段を超収束で組み上げる。組み上がったギャップは最悪スケールの収縮率で決まるので、勝負は「$c_j$ が全スケールで $c_*>0$ に留まるか」の一点。</div></details>
+      </li>
+      <li>各スケールの収縮率 $c_j$ は何で決まり、しるしは何と同値か。
+        <details><summary>答えを見る</summary><div class="ans">$c_j\gtrsim\kappa\,e^{-CL_jR_j^2}$：正曲率の下地 $\kappa$（単リンク・コンパクト群）を、非凸の芯の"深さ×広がり" $L_jR_j^2$（プラケット相互作用）が指数的に削る。だからしるし $c_j\ge c_*>0$ は<strong>$\sup_j L_jR_j^2<\infty$（各スケールの非凸の芯が一様有界）</strong>と同値。クロスオーバーで芯が大きくなると $c_j$ が急落する崖が、越えるべき一点。</div></details>
+      </li>
+      <li>このしるしが「良い標識」である四つの理由は？
+        <details><summary>答えを見る</summary><div class="ans">(1)一本の量的不等式に凝縮（曖昧語が消えた）、(2)スケール毎に検証可能（アイデア5＝検証つき数値が各 $j$ を測れる）、(3)反証可能（$c_j\to0$ ならどのスケールで崖が来るか露見）、(4)SU(N)特有（U(1)は $\beta_c$ で $c_j\to0$＝転移で破れる、SU(N)で成る＝正しい標的）。6・1・5・U(1)対照を一点に束ねる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">6+1・まとめ</span>一本の不等式に、正確な座標で、しるしを</h2>
+    <p>6（反射カップリング＝各段の縮小 $c_j$）× 1（ナッシュ–モーザー＝超収束で組む）＝物理ギャップ $\Delta_{\rm phys}\ge f(c_*)$、$c_*=\inf_j c_j$。深掘りすると、6の収縮率 $c_j\gtrsim\kappa e^{-CL_jR_j^2}$ も、1の超収束が閉じる条件 $\tfrac{C}{c_*}\varepsilon_0^{1-\theta}<1$ も、<strong>各スケールの非凸の芯 $L_jR_j^2$ が一様有界か</strong>という一点に凝縮する。</p>
+    <p>そこに<strong>しるし $\boxed{c_j\ge c_*>0\ \Leftrightarrow\ \sup_j L_jR_j^2<\infty}$</strong> を打った ── 一本の不等式・スケール毎に検証可能・反証可能・U(1)で破れ SU(N)で成る。6・1・5・U(1)対照が、この一点で交わる。<em>これは証明ではない（$c_j\ge c_*$ を示すこと自体が Q3 の核）。</em>でも 35話の探索は、フロンティアの<strong>いちばん精密な一座標</strong>に収束した。旗ではなく、そこに縁の標識を打つ ── これが、このシリーズがずっとやってきたことの、いちばん深いところです。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-idea1-nashmoser.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← アイデア1</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="yangmills-idea6-eberle.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">アイデア6 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 アイデア6+1・しるしを打つ、物理好きの高校生・大学生向け読み物。質量ギャップと確率量子化 Langevin の緩和率の対応、反射カップリングの収縮率が正曲率の下地と非凸領域の大きさで決まること（Eberle）、ナッシュ–モーザー超収束の各段が線形化の可逆性（一スケールの縮小率）を要し収束定数がそれで悪化すること、コンパクト群の正曲率、ゲージ共変・反射正値なスケール分解の必要性、U(1) の有限 $\beta_c$ での転移（モノポール凝縮）と収縮率の消失、アイデア5（検証つき数値）が各スケール量を見積もりうることは、いずれも確立した概念・道具、または本シリーズの見立てです。ただししるし $c_j\ge c_*>0$（$\sup_j L_jR_j^2<\infty$）の厳密な証明、ゲージ共変・反射正値なスケール分解の構成、4次元ゲージSPDEの定義、4次元YMの質量ギャップは未解決です（2025年時点）。式は機構を示す模式で定数・関数形は定式化に依存し実際の評価ではありません。しるしの定式化は筆者の設計提案で反証されうる意見を含み、本稿は4次元YMを解いたと主張しません。しるしは旗ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスケール j を跨ぎ、各スケールの反射収縮率 c_j がしるしの線 c_* を上回るか（SU(N)）／クロスオーバーで崖に落ちるか（U(1)）をトグルで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sj=document.getElementById('sj'), vj=document.getElementById('vj'),
+      bS=document.getElementById('bS'), bU=document.getElementById('bU'), rd=document.getElementById('rd');
+  var mode='S', JMAX=16, CSTAR=0.22, KAPPA=0.8, JC=8;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 非凸の芯 L*R^2 がクロスオーバー(JC付近)で山。SU(N)は有界、U(1)はJCで発散的
+  function core(j){ var d=(j-JC)/3.0; return 1.6*Math.exp(-d*d); }        // SU(N)：有界な山
+  function coreU(j){ var d=(j-JC)/2.2; return 5.5*Math.exp(-d*d); }        // U(1)：高い山
+  function cj(j){ return KAPPA*Math.exp(-1.0*core(j)); }                    // SU(N)：c*を上回る
+  function cjU(j){ return KAPPA*Math.exp(-1.0*coreU(j)); }                  // U(1)：JCで0近く
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var jc=parseInt(sj.value,10); vj.textContent=jc;
+    var YMAX=0.9;
+    function X(j){return padL+(j/JMAX)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.max(0,Math.min(v,YMAX))/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // クロスオーバー帯
+    ctx.fillStyle='rgba(169,121,26,0.08)';ctx.fillRect(X(JC-3),padT,X(JC+3)-X(JC-3),(h-padB)-padT);
+    ctx.fillStyle='#8a6a1e';ctx.font='11px sans-serif';ctx.fillText('クロスオーバー', X(JC-2.6), padT+13);
+    // しるしの線 c*
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([6,4]);ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(padL,Y(CSTAR));ctx.lineTo(w-padR,Y(CSTAR));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.font='bold 11px sans-serif';ctx.fillText('しるし c_*', w-padR-72, Y(CSTAR)-6);
+    // 下地 κ
+    ctx.strokeStyle='#cbbfa6';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(padL,Y(KAPPA));ctx.lineTo(w-padR,Y(KAPPA));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#9a9078';ctx.font='11px sans-serif';ctx.fillText('下地 κ（正曲率）', padL+6, Y(KAPPA)-5);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('スケール j →', w-120, h-padB+26);
+    ctx.save();ctx.translate(16,padT+52);ctx.rotate(-Math.PI/2);ctx.fillText('反射収縮率 c_j', 0,0);ctx.restore();
+    // c_j 曲線（両方薄く）
+    function curve(fn,col,lw){ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();var f=true;
+      for(var j=0;j<=JMAX;j+=0.1){var X1=X(j),Y1=Y(fn(j));if(f){ctx.moveTo(X1,Y1);f=false;}else ctx.lineTo(X1,Y1);}ctx.stroke();}
+    curve(cj, mode==='S'?'#2f7d5a':'#aecdbc', mode==='S'?2.8:1.6);
+    curve(cjU, mode==='U'?'#a5473a':'#e3b7ad', mode==='U'?2.8:1.6);
+    // カーソル
+    var cx=X(jc);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(cx,padT);ctx.lineTo(cx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var val=(mode==='S')?cj(jc):cjU(jc);
+    ctx.fillStyle=(mode==='S')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(cx,Y(val),5,0,7);ctx.fill();
+    // readout
+    if(mode==='S'){
+      var ok=val>=CSTAR;
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>SU(N)・スケール j='+jc+'</b>：c_j='+val.toFixed(2)+(ok?' ≥ c_*（しるし成立）':' … 谷でも c_* を上回る')+'。非凸の芯 L·R² は有界な山＝c_j はクロスオーバーでも c_*&gt;0 に留まる ⟹ 6が各段を供給、1が超収束で組み <b>Δ_phys ≥ f(c_*)>0</b>。しるしが立つ位置。';
+    } else {
+      var bad = jc>=JC-2 && jc<=JC+2;
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>U(1)・スケール j='+jc+'</b>：c_j='+cjU(jc).toFixed(2)+(bad?' → 0（崖！）':'')+'。β_c 付近で非凸の芯が発散的に大きく c_j→0＝<b>転移（モノポール凝縮）</b>。しるしは U(1) で破れる ── だから SU(N) で成れば正しい標的だと分かる。';
+    }
+  }
+  function setM(x){ mode=x; bS.className='tbtn'+(x==='S'?' on':''); bU.className='tbtn'+(x==='U'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setM('S');});
+  bU.addEventListener('click',function(){setM('U');});
+  sj.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

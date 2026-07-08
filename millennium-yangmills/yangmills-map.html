@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略地図 ── 全ての道は g_c 峠、そして厳密RGへ ／ ミレニアム問題を解くぞ</title>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --intro:#2f6d8a; --bangai:#4a5a3a; --senryaku:#6a4a9c; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:900px;margin:32px auto;background:var(--paper);
+    padding:60px 64px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  h1{font-size:30px;line-height:1.3;margin:6px 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);}
+  p{margin:14px 0;}
+  .lead{font-size:18px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  h2{font-size:22px;font-weight:700;margin:50px 0 14px;letter-spacing:.03em;
+    padding-bottom:6px;border-bottom:1.5px solid var(--rule);}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:12.5px;letter-spacing:.12em;display:block;margin-bottom:2px;font-weight:700;}
+
+  /* 漏斗フロー図 */
+  .flow{margin:26px 0;padding:24px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:6px;}
+  .stage{display:flex;gap:14px;align-items:stretch;justify-content:center;flex-wrap:wrap;margin:0 auto;}
+  .chip{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:.12em;color:#fff;padding:4px 10px;border-radius:20px;
+    align-self:center;white-space:nowrap;}
+  .box{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;line-height:1.5;padding:9px 13px;border-radius:6px;border:1.5px solid var(--rule);
+    background:#fff;color:#26303c;max-width:210px;text-decoration:none;display:block;transition:all .12s ease;}
+  a.box:hover{border-color:var(--acc);box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-1px);}
+  .box b{color:var(--acc);font-weight:700;}
+  .box.wide{max-width:520px;}
+  .box.intro{border-left:4px solid var(--intro);} .box.bangai{border-left:4px solid var(--bangai);}
+  .box.sen{border-left:4px solid var(--senryaku);}
+  .arrow{text-align:center;color:var(--hair);font-size:18px;line-height:1;margin:8px 0;font-family:sans-serif;letter-spacing:.3em;}
+  .arrow small{display:block;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;color:var(--ink-soft);letter-spacing:.04em;margin-top:2px;}
+  .peak{margin:6px auto 0;max-width:560px;text-align:center;padding:16px 22px;border-radius:8px;
+    background:linear-gradient(180deg,#faf1d8,#f0e2b8);border:2px solid var(--peak);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .peak .t{font-size:16px;font-weight:800;color:#7a5510;letter-spacing:.04em;}
+  .peak .d{font-size:12.5px;color:#6a5316;margin-top:6px;line-height:1.6;}
+  .peakwrap{position:relative;}
+
+  /* エピソード索引 */
+  .arc{margin:30px 0;}
+  .arclabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.1em;color:#fff;padding:5px 14px;border-radius:5px;display:inline-block;margin-bottom:12px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  a.ep{text-decoration:none;color:inherit;border:1px solid var(--rule);border-radius:6px;padding:11px 14px;
+    background:#fffdf8;display:block;transition:all .12s ease;}
+  a.ep:hover{border-color:var(--acc);box-shadow:0 3px 10px rgba(0,0,0,.07);transform:translateY(-1px);}
+  a.ep .tt{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;color:var(--acc);line-height:1.45;}
+  a.ep .dd{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.55;margin-top:4px;}
+  a.ep .num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.08em;}
+
+  .keybox{margin:26px 0;padding:20px 24px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .oath{margin:30px 0 0;padding:16px 22px;border-left:3px solid var(--gold);background:#faf4e6;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:#5f4a1c;line-height:1.8;}
+  .foot{margin-top:46px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;}
+
+  @media print{
+    @page{size:A4;margin:14mm;}
+    body{background:#fff;font-size:10.5pt;line-height:1.6;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h2{font-size:14pt;margin-top:20pt;break-after:avoid;}
+    .flow,.arc,.keybox,.peak{break-inside:avoid;}
+    a.box:hover,a.ep:hover{transform:none;box-shadow:none;}
+    .no-print{display:none;}
+  }
+  @media (max-width:680px){ .sheet{padding:36px 16px 56px;margin:0;} h1{font-size:23px;} .grid{grid-template-columns:1fr;} .box{max-width:100%;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略地図（全30話の俯瞰）</span></div>
+  <h1>戦略地図 ── 全ての道は g_c 峠、そして厳密RGへ
+    <span class="sub">30話を一枚に。<strong>入門で問題をQ3に絞り、戦略で四方から攻め、その全てがひとつの峠 \(g_c\)（強結合↔連続のクロスオーバー）に収束する</strong>。<br>手γが峠を<em>「相転移の不在」という反証可能な命題</em>に凝縮し、峠を渡す道具は全て<strong>一本の厳密くりこみ群</strong>へ ── その終着点までの地形図。</span>
+  </h1>
+  <div class="byline">読む順の道標＋論理の収束構造。各ボックス・カードはクリックで本編へ。</div>
+
+  <p class="lead">この第一部は30話。バラバラに見えて、実は<strong>一本の川</strong>です ── 上流で「何が問題か」を <em>Q3（連続極限の構成＋ギャップ）</em> に絞り込み、中流で四つの戦略（①臨界SPDE・②現代RG・③一様下限・Bハミルトニアン）が合流して<strong>「RPな転送行列の一様スペクトルギャップ」</strong>という一点に束ねられ、下流で残った \(a\to0\) の一様性を四手（δ/α/β/γ）で攻める。全ての流れは同じ峠 \(g_c\)（クロスオーバー）に注ぎ、峠を渡す道具は皆<strong>一本の厳密くりこみ群</strong>へ収束して、終着点＝<strong>四つの歯車を一つのRGステップに噛ませる設計図</strong>に畳まれる。水源から河口、そして<em>河口の先の一点</em>までを、一枚で。</p>
+
+  <h2><span class="n">MAP</span>収束の地形図 ── 上流から峠まで</h2>
+
+  <div class="flow">
+    <!-- 入門 -->
+    <div class="stage">
+      <span class="chip" style="background:var(--intro);">入門①〜④</span>
+      <a class="box wide intro" href="yangmills-04-mondai.html"><b>問題をQ3に絞る</b>：力＝ヤン=ミルズ場、質量ギャップ＝0と最初の音の隙間。Q1（強結合ギャップ・厳密）／Q2（連続・数値）／<b>Q3（連続の厳密構成＋ギャップ＝未解決）</b></a>
+    </div>
+    <div class="arrow">▼<small>「物理は知っている、数学が追いつかない」＝Q3</small></div>
+
+    <!-- 番外：近道は効くか -->
+    <div class="stage">
+      <span class="chip" style="background:var(--bangai);">番外</span>
+      <a class="box bangai" href="yangmills-bangai-sampling.html"><b>サンプリング定理</b>は効くか → QFTは帯域無限で不可。だが"どこが難所か"が鋭くなる</a>
+      <a class="box bangai" href="yangmills-bangai2-chojun.html"><b>超準解析</b>で無限小格子は連続か → 表現の一致は要るが構成は代替しない</a>
+    </div>
+    <div class="arrow">▼<small>近道は無い。難所＝a→0 の連続構成であると確定</small></div>
+
+    <!-- 戦略の分岐 -->
+    <div class="stage">
+      <span class="chip" style="background:var(--senryaku);">戦略の分岐</span>
+      <a class="box sen" href="yangmills-senryaku1-rinkai.html"><b>①臨界SPDE</b><br>4次元の確率量子化を臨界へ押す</a>
+      <a class="box sen" href="yangmills-senryaku2-gendaiRG.html"><b>②現代RG</b><br>Balabanを綺麗な道具で（+2b共変FRD/+2c背景場）</a>
+      <a class="box sen" href="yangmills-senryaku3-soukan.html"><b>③一様下限</b><br>作らずに相関減衰でギャップを直接</a>
+      <a class="box sen" href="yangmills-senryakuB-hamilton.html"><b>Bハミルトニアン</b><br>RPタダ・ギャップ＝多体系の道具</a>
+    </div>
+    <div class="arrow">▼<small>③≡B（転送行列）＋ ①＋③統合 ＝ 標的を一本化</small></div>
+
+    <!-- 統合 -->
+    <div class="stage">
+      <a class="box wide sen" href="yangmills-senryaku3B-tenso.html" style="border-left-color:var(--acc);border-width:2px;"><b>一点集約：RPな転送行列の一様スペクトルギャップ</b><br>相関の指数減衰 ⇄ 転送行列の固有値ギャップ ⇄ H のスペクトルギャップ＝同じ Δ。橋は反射正値性（③≡B）。<span style="color:var(--ink-soft);">〔統合像＝<a href="yangmills-senryaku-tougou.html" style="color:var(--acc);">①＋③</a>、継ぎ目＝<a href="yangmills-senryaku-tsugime.html" style="color:var(--acc);">4対立</a>、還元＝<a href="yangmills-senryaku6-hodai.html" style="color:var(--acc);">⑥補題</a>〕</span></a>
+    </div>
+    <div class="arrow">▼<small>だが残る：a→0 の一様性（＝Q3）</small></div>
+
+    <!-- 残ったQ3を四手で -->
+    <div class="stage">
+      <span class="chip" style="background:#8a3550;">残ったQ3</span>
+      <a class="box wide sen" href="yangmills-senryaku-a0.html" style="border-left-color:#8a3550;"><b>a→0 の一様性を割る四手</b>：<b>δ</b>二重極限を分離／<b>α</b>無次元ギャップの固定点／<b>β</b>単調量(Fekete)＋強結合アンカー／<b>γ</b>解析性で強結合と連続を接続</a>
+    </div>
+    <div class="arrow">▼<small>δの勝てる一部品 → 摂動論 → 収束が切れる g_c</small></div>
+
+    <div class="stage">
+      <a class="box sen" href="yangmills-senryaku-d-persist.html"><b>δ・一部品</b><br>箱→L→∞ 持続（有限サイズ判定）</a>
+      <a class="box sen" href="yangmills-senryaku-d2-perturb.html"><b>δ・摂動論</b><br>強結合ギャップの摂動論。g_c で収束が切れる</a>
+      <a class="box sen" href="yangmills-senryaku-gamma-kaiseki.html" style="border-left-color:var(--peak);border-width:2px;"><b>γ・解析性</b><br>g_c を越える渡し＝相転移の不在</a>
+    </div>
+    <div class="arrow" style="color:var(--peak);">▼ ▼ ▼<small style="color:#8a6a1e;">四手・四戦略、全ての道がここへ注ぐ</small></div>
+
+    <!-- 峠 -->
+    <div class="peakwrap">
+      <div class="peak">
+        <div class="t">g_c 峠 ── 強結合↔連続のクロスオーバー</div>
+        <div class="d">強結合（厳密なギャップ）と連続（漸近自由）の<b>あいだの無人地帯</b>。①②③B の全ての困難も、δの摂動論の破れも、ここに集まる。<br>手γ が、この峠を<b>「結合直線上に相転移が無い（＝ Δ(β) が解析的）」という一つの反証可能な命題</b>に凝縮する ── <b>U(1)対照</b>（転移あり→ギャップ喪失）が試金石。</div>
+      </div>
+    </div>
+    <div class="arrow" style="color:var(--peak);">▼<small style="color:#8a6a1e;">峠を渡るには二本の柱が要る ── しかも道具は皆おなじ</small></div>
+
+    <!-- 二本の柱＋反証可能な標的 -->
+    <div class="stage">
+      <a class="box sen" href="yangmills-senryaku-gammaC-ATI.html" style="border-left-color:var(--acc);"><b>反転移不等式 ATI</b>（γ補²）<br>ξ(β)&lt;∞ ∀有限β ＝ 臨界点は無限遠にのみ。U(1)で破れる（正しい標的）。<span style="color:var(--ink-soft);">壁1の χ≤K は<a href="yangmills-senryaku-gammaD-clustering.html" style="color:var(--acc);">三つの扉</a>で</span></a>
+      <a class="box sen" href="yangmills-senryaku-kabe2-scaling.html" style="border-left-color:var(--g1);"><b>壁2：漸近スケーリング</b><br>ln ξ~β/4Nb₀ を厳密に（Δ_lattice~aΛ）。<b>Balaban 紫外安定性</b>・BBS。</a>
+    </div>
+    <div class="arrow" style="color:var(--peak);">▼<small style="color:#8a6a1e;">壁1扉②(RG-LSI)・壁2(Balaban/BBS)・戦略②系 ── 全ての道具が一点へ</small></div>
+
+    <div class="stage">
+      <a class="box wide sen" href="yangmills-senryaku-kabe1-lsi.html" style="border-left-color:var(--g4);border-width:2px;"><b>全ての道具が『厳密くりこみ群』へ収束</b><br>壁1扉②（Polchinskiフローの一様LSI）＋壁2（Balaban/BBS）＋戦略②（現代RG）②b（共変FRD）②c（背景場）── 皆おなじRGに注ぐ。</a>
+    </div>
+    <div class="arrow" style="color:var(--peak);">▼ ▼ ▼<small style="color:#8a6a1e;">終着点 ── 一本の厳密RGの設計図</small></div>
+
+    <!-- 終着点：グレイル -->
+    <div class="peakwrap">
+      <div class="peak" style="border-width:3px;background:linear-gradient(180deg,#f7eccf,#ecdca8);">
+        <div class="t" style="font-size:17px;">◆ 終着点：一本の厳密くりこみ群 <a href="yangmills-senryaku-grail-rg.html" style="color:#7a5510;">（設計図）</a></div>
+        <div class="d">一つのRGステップ \(T:\mu_a\mapsto\mu_{La}\) に<b>四つの歯車</b>を同時に要求 ── <b>①ゲージ共変（Balaban背景場）②反射正値保存（反射対称ブロッキング）③有限レンジ共変分解（BBS＋共変ヒート核）④1スケール凸性/LSI（正曲率＋Polchinski＋不変領域）</b>。\(\sim\log(1/a)\) 段まわして<b>壁2（漸近スケーリング）＋壁1（χ≤K）を同時に</b>。<br>残るは<b>ただ一つの組み合わせ・一様性補題</b>（四歯車が一台で marginal スケールにわたり一様に噛む）＝<b>Q3を最大限に組み上げた姿</b>。<br><span style="color:#8a3550;font-weight:800;">設計図は書けた、証明はしていない。たとえ書けても検証が要る。あくまで地図であって、旗ではない。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">この地図の一行</div>
+    <p style="margin:0;">入門で <strong>Q3</strong> に絞り、戦略で <strong>「RPな転送行列の一様スペクトルギャップ」</strong>に束ね、四手で <strong>a→0 の一様性</strong>を攻め、全ての道が <strong>峠 \(g_c\)</strong> に注ぎ、手γ がそれを <strong>「相転移の不在」</strong>という一命題（反転移不等式 ATI）に凝縮する。その峠を渡す二本の柱（壁1・壁2）の道具は皆<strong>厳密くりこみ群</strong>に集まり、終着点＝<strong>四つの歯車を一つのRGステップに噛ませる設計図</strong>と<strong>残る一つの組み合わせ補題</strong>に畳まれる。<em>解いていない。たとえ書けても検証が要る。あくまで地図であって、旗ではない ── だが"何を証明すれば勝ちか"を、論文一本分の粒度まで絞り込んだ。</em></p>
+  </div>
+
+  <h2><span class="n">INDEX</span>全30話 ── アーク別</h2>
+
+  <div class="arc">
+    <span class="arclabel" style="background:var(--intro);">入門編 ── 問題を知り、Q3に絞る</span>
+    <div class="grid">
+      <a class="ep" href="yangmills-01-millennium.html"><span class="num">01</span><div class="tt">100万ドルの問題</div><div class="dd">ヤン=ミルズを一言で。クレイ問題の位置づけ</div></a>
+      <a class="ep" href="yangmills-02-chikara.html"><span class="num">02</span><div class="tt">力ってなんだ？</div><div class="dd">ヤン=ミルズは"力の設計図"（ゲージ場）</div></a>
+      <a class="ep" href="yangmills-03-gap.html"><span class="num">03</span><div class="tt">質量ギャップって何？</div><div class="dd">ゼロと"最初の音"のあいだの隙間 Δ>0</div></a>
+      <a class="ep" href="yangmills-04-mondai.html"><span class="num">04</span><div class="tt">なぜ"問題"なのか</div><div class="dd">物理は知ってる、数学が追いつかない。Q1/Q2/Q3</div></a>
+      <a class="ep" href="yangmills-05-semekata.html"><span class="num">05</span><div class="tt">攻め方の地図</div><div class="dd">Q3への四つのルート</div></a>
+      <a class="ep" href="yangmills-06-kurikomi.html"><span class="num">06</span><div class="tt">格子から連続へ、厳密に</div><div class="dd">くりこみ群と反射正値性（RP）</div></a>
+      <a class="ep" href="yangmills-07-noise.html"><span class="num">07</span><div class="tt">ノイズで場を育てる</div><div class="dd">確率量子化とHairer（正則構造）</div></a>
+      <a class="ep" href="yangmills-08-yoko.html"><span class="num">08</span><div class="tt">横から攻める</div><div class="dd">大N・ホログラフィー・超対称のいとこ</div></a>
+    </div>
+  </div>
+
+  <div class="arc">
+    <span class="arclabel" style="background:var(--bangai);">番外編 ── 近道は効くか（効かないが、難所が鋭くなる）</span>
+    <div class="grid">
+      <a class="ep" href="yangmills-bangai-sampling.html"><span class="num">番外①</span><div class="tt">サンプリング定理は効くか</div><div class="dd">QFTは帯域無限。ナイキストは救わない</div></a>
+      <a class="ep" href="yangmills-bangai2-chojun.html"><span class="num">番外②</span><div class="tt">超準解析で解けるか</div><div class="dd">無限小の格子は連続か。表現の一致と構成の別</div></a>
+    </div>
+  </div>
+
+  <div class="arc">
+    <span class="arclabel" style="background:var(--senryaku);">戦略編 ── Q3を四方から攻め、g_c 峠へ</span>
+    <div class="grid">
+      <a class="ep" href="yangmills-senryaku1-rinkai.html"><span class="num">①</span><div class="tt">臨界の壁</div><div class="dd">4次元の確率量子化を押す（臨界SPDE）</div></a>
+      <a class="ep" href="yangmills-senryaku2-gendaiRG.html"><span class="num">②</span><div class="tt">現代RGのゲージ移植</div><div class="dd">Balaban を綺麗な道具で</div></a>
+      <a class="ep" href="yangmills-senryaku2b-kyohen.html"><span class="num">②補</span><div class="tt">共変FRDは作れそうか</div><div class="dd">共変ヒート核ルート</div></a>
+      <a class="ep" href="yangmills-senryaku2c-haikei.html"><span class="num">②補²</span><div class="tt">曲率と背景場分割</div><div class="dd">F依存を飼えるか</div></a>
+      <a class="ep" href="yangmills-senryakuB-hamilton.html"><span class="num">B</span><div class="tt">ハミルトニアンで攻める</div><div class="dd">RPはタダ、ギャップは多体系の道具で</div></a>
+      <a class="ep" href="yangmills-senryaku3-soukan.html"><span class="num">③</span><div class="tt">相関長の一様下限で挟む</div><div class="dd">作らずにギャップを直接おさえる</div></a>
+      <a class="ep" href="yangmills-senryaku3B-tenso.html"><span class="num">③≡B</span><div class="tt">転送行列で束ねる</div><div class="dd">RPネイティブ評価の輸入。一点集約</div></a>
+      <a class="ep" href="yangmills-senryaku-tougou.html"><span class="num">統合</span><div class="tt">①＋③の統合像</div><div class="dd">本命ルートの合体</div></a>
+      <a class="ep" href="yangmills-senryaku-tsugime.html"><span class="num">継ぎ目</span><div class="tt">継ぎ目を掘る</div><div class="dd">4つの対立とグレイル</div></a>
+      <a class="ep" href="yangmills-senryaku6-hodai.html"><span class="num">⑥</span><div class="tt">最小の補題に還元する</div><div class="dd">解かずに、正しい形にする</div></a>
+      <a class="ep" href="yangmills-senryaku-a0.html"><span class="num">残Q3</span><div class="tt">a→0 の一様性を割る</div><div class="dd">残ったQ3への四手 δ/α/β/γ</div></a>
+      <a class="ep" href="yangmills-senryaku-d-persist.html"><span class="num">δ</span><div class="tt">箱→無限体積でギャップ持続</div><div class="dd">多体系の有限サイズ判定で</div></a>
+      <a class="ep" href="yangmills-senryaku-d2-perturb.html"><span class="num">δ摂動</span><div class="tt">強結合ギャップの摂動論</div><div class="dd">どこで収束が切れるか＝g_c</div></a>
+      <a class="ep" href="yangmills-senryaku-gamma-kaiseki.html"><span class="num">γ</span><div class="tt">g_c を越える渡し</div><div class="dd">解析性＝相転移の不在。U(1)対照</div></a>
+      <a class="ep" href="yangmills-senryaku-gammaB-futoshiki.html"><span class="num">γ補</span><div class="tt">SU(N)固有の反転移</div><div class="dd">漸近自由が中間の不動点を禁じる。't Hooftループ不等式</div></a>
+      <a class="ep" href="yangmills-senryaku-gammaC-ATI.html"><span class="num">γ補²</span><div class="tt">反転移不等式を書き下す</div><div class="dd">ATI：ξ(β)&lt;∞ ∀有限β。旗は立たない、標識が立つ</div></a>
+      <a class="ep" href="yangmills-senryaku-gammaD-clustering.html"><span class="num">γ補³</span><div class="tt">χ≤K をどう作るか</div><div class="dd">非可換相関不等式の三つの扉（熱核正値/RG-LSI/RP）</div></a>
+      <a class="ep" href="yangmills-senryaku-kabe2-scaling.html"><span class="num">壁2</span><div class="tt">漸近スケーリングの厳密化</div><div class="dd">Balaban 紫外安定性・BBS。連続ギャップの第二の柱</div></a>
+      <a class="ep" href="yangmills-senryaku-kabe1-lsi.html"><span class="num">壁1扉②</span><div class="tt">Polchinskiフローで一様LSI</div><div class="dd">正曲率で単リンクLSIはタダ。共変RGが鍵</div></a>
+      <a class="ep" href="yangmills-senryaku-grail-rg.html" style="border-color:#a9791a;border-width:1.5px;"><span class="num">グレイル</span><div class="tt">一本の厳密くりこみ群を設計する</div><div class="dd">四つの歯車を一つのRGステップに。残るは一補題＝Q3の最終形</div></a>
+    </div>
+  </div>
+
+  <div class="arc">
+    <span class="arclabel" style="background:#6a4a2a;">アイデア編 ── 峠の向こうへ（推測・反証されうる意見）</span>
+    <div class="grid">
+      <a class="ep" href="yangmills-idea5-rignum.html"><span class="num">案5</span><div class="tt">検証つき数値で窓を貫く</div><div class="dd">コンパクト窓を区間演算で。ケプラー/Fefferman–Seco 型</div></a>
+      <a class="ep" href="yangmills-idea6-eberle.html"><span class="num">案6（本命）</span><div class="tt">エーベルの反射カップリング</div><div class="dd">凸性なしでギャップ。door②の失敗を直撃。6→1に供給</div></a>
+      <a class="ep" href="yangmills-idea1-nashmoser.html"><span class="num">案1</span><div class="tt">ナッシュ–モーザー超収束</div><div class="dd">有限窓を二乗収束で貫く。marginal＝小さな分母(KAM)</div></a>
+      <a class="ep" href="yangmills-idea61-mark.html" style="border-color:#a9791a;border-width:1.5px;"><span class="num">6+1しるし</span><div class="tt">反射×超収束を一点に ── しるしを打つ</div><div class="dd">c_j≥c_*&gt;0 ⟺ sup L_jR_j²&lt;∞。案6・1・5・U(1)対照が交わる一座標</div></a>
+      <a class="ep" href="yangmills-idea61-proof.html"><span class="num">6+1証明</span><div class="tt">c_j≥c_* を厳密に示そう</div><div class="dd">段2・3aは厳密、段3bで止まる。壁＝Gap Lemma（質量ギャップと同値）</div></a>
+      <a class="ep" href="yangmills-goal.html" style="border-color:#26456e;border-width:1.5px;"><span class="num">🎯測定</span><div class="tt">ゴールの位置と距離</div><div class="dd">合格条件(A)存在＋(B)ギャップ。D=4は本体が未踏＝地図は距離を縮めていない</div></a>
+    </div>
+  </div>
+
+  <div class="oath">
+    <strong>この地図の掟</strong> ── ここに描いたどの道も、まだ4次元ヤン=ミルズを<em>解いてはいない</em>。地図は「勝ち筋がどこに集まるか」の見立てで、反証されうる意見を含む。私たちが立てたのは勝利の旗ではなく、<strong>フロンティアの縁に置く標識</strong>。「ここまでは地続き、ここから先が峠」と示すための地図です。
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:28px 0 0;">
+    <a href="yangmills-senryaku-gamma-kaiseki.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">最新回：γ・解析性 →</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略地図。全30話の読み順と論理の収束構造を一枚に俯瞰したもの。終着点として描いた「一本の厳密くりこみ群」は設計図（予想）であって定理ではなく、たとえ構成を書けても独立な検証を経て初めて成立します。個々の主張・図・見立ての根拠と限界（何が確立した事実で、何が未解決か）は各回本文に記載。4次元ヤン=ミルズの存在＋質量ギャップは未解決の問題です（2025年時点）。本地図は勝ち筋の集まりを示す見立てで、反証されうる意見を含みます ── あくまで地図であって、旗ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を。
+  </div>
+
+</div>
+</body>
+</html>

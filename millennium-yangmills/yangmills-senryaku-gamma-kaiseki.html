@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略γ・解析性 g_c を越える渡し ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sun:#2f7d5a; --u1:#a5473a; --cross:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:28px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sun);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:20pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:21px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略γ・解析性（全ての道が集まる峠）</span></div>
+  <p class="eyebrow">g_c を越える渡し ── 相転移が無ければ、強結合の確実なギャップは連続まで途切れず延びる</p>
+  <h1>g_c を越える渡し ── 解析性＝相転移の不在
+    <span class="sub">強結合の摂動論は \(g_c\) で切れた。その向こう（連続）へ渡すのが手γ：<br><strong>結合直線 \(\beta=2N/g^2\) 上でギャップ \(\Delta(\beta)\) が解析的なら、強結合のギャップは連続まで延びる</strong>。相転移＝非解析性。<br>試金石は<em>U(1)対照</em> ── U(1) は相転移を持ちギャップを失う。SU(N) は持たない。手法はこれを<u>区別できねばならない</u>。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：g_c を越える論理と、その硬さの正体（史実つき）</span>
+    <span>核心：解析性＝相転移の不在／U(1)は転移あり・SU(N)はなし</span>
+  </div>
+
+  <p class="lead">前回、強結合の"ギャップの摂動論"は収束半径 \(g_c\) で切れました。連続極限（\(g\to0\)）は \(g_c\) の向こう側。そこへ渡す橋が手γ ── <strong>解析性</strong>です。相転移とは物理量の<em>非解析性</em>。もし質量ギャップ \(\Delta\) が結合 \(\beta=2N/g^2\) の関数として全域で解析的なら、強結合と連続は<strong>同じひとつの相</strong>で、強結合で確実に \(>0\) のギャップが連続まで途切れず延びる。この回はその論理を組み、<em>なぜ硬いのか</em>を、U(1) との対照という美しい試金石とともに、正直に見ます。いま全ての道がこの峠に集まっています。</p>
+
+  <h2><span class="n">01</span>解析性＝相転移の不在 ── 渡しの論理</h2>
+
+  <div class="keybox">
+    <div class="lbl">手γ の主張</div>
+    $$\Delta(\beta)\ \text{が}\ \beta=\frac{2N}{g^2}\in(0,\infty)\ \text{で解析的}\quad\Longrightarrow\quad \Delta_{\text{強結合}}>0\ \text{が連続}(\beta\to\infty)\text{まで延びる}$$
+    <p style="margin:10px 0 0;">相転移は物理量の<strong>非解析点</strong>（不連続や折れ）として現れる。強結合（小 \(\beta\)）で \(\Delta>0\) が厳密に出ている。もし \(\Delta(\beta)\) が途中で非解析点を持たなければ、強結合の相と連続の相は<em>地続き</em>＝ギャップは消えずに延びる。だから <strong>手γ ＝「結合直線上に相転移が無い」の厳密化</strong>。</p>
+  </div>
+
+  <h2><span class="n">02</span>U(1) 対照 ── 手法の試金石（正直の要）</h2>
+
+  <p>この論理が<em>効いている</em>ことを、自然が用意した対照で確かめられます。同じ格子ゲージでも、群が違えば運命が分かれる：</p>
+
+  <div class="keybox">
+    <div class="lbl">運命を分けるのは"相転移の有無"</div>
+    <p style="margin:0 0 8px;"><strong>U(1)（4次元）</strong>：\(\beta_c\) で<strong>相転移を持つ</strong> ── 小 \(\beta\)（強結合）は閉じ込め相、大 \(\beta\)（弱結合）は<em>クーロン相</em>。連続では自由マクスウェル＝<strong>質量ゼロの光子、ギャップなし</strong>。〔非閉じ込め相の存在は Guth 1980 が厳密証明（Phys. Rev. D 21, 2291）〕</p>
+    <p style="margin:0;"><strong>SU(2)/SU(3)（4次元, Wilson作用）</strong>：強結合↔弱結合を分ける<strong>バルク相転移が無い＝解析的クロスオーバー</strong>（Creutz 以来の数値・物理）。だから閉じ込め・ギャップが連続まで残ると<em>期待</em>される。</p>
+  </div>
+
+  <div class="caveat" style="margin-top:18px;">
+    <span class="tag">だからこそ ── γ は非自明</span>
+    <p style="margin:0;">手γ の手法は、<strong>U(1)（転移あり・ギャップ喪失）と SU(N)（転移なし・ギャップ存続）を区別できねばならない</strong>。区別できない"証明"は必ずどこか間違っている（U(1) にも効いてしまうから）。この対照が γ の<em>羅針盤</em>＝載っている論理が本物かの試金石。区別の鍵は<strong>漸近自由（非可換性）</strong>：SU(N) は \(g\to0\) で自由になり相転移を回避、U(1) は違う。下の図で二つの運命を。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：結合直線 \(\beta=2N/g^2\)（左＝強結合、右＝連続）上のギャップ。トグルで <span style="color:var(--sun);font-weight:700;">SU(N)（相転移なし・全域で \(\Delta>0\)）</span>／<span style="color:var(--u1);font-weight:700;">U(1)（\(\beta_c\) で転移・クーロン相でギャップ0）</span>。中央の帯＝<span style="color:var(--cross);font-weight:700;">クロスオーバー窓（g_c 近傍）</span></div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>結合 β（左：強結合 → 右：連続 β→∞）<span class="val" id="vx">強結合</span>
+        <input type="range" id="sx" min="0" max="1" step="0.01" value="0.12">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">SU(N)</button>
+        <button class="tbtn" id="bU">U(1)</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>SU(N) ギャップ</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>U(1) ギャップ</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>クロスオーバー窓</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>道具 ── 二つの解析的な端と、真ん中</h2>
+
+  <table class="dt">
+    <tr><th>領域</th><th>道具</th><th>効き方</th></tr>
+    <tr><td class="id">強結合（小β）</td><td class="ok">ポリマー／高温展開</td><td><strong>収束</strong> ── \(\beta<\beta_0\) の円板で \(\Delta(\beta)\) は解析的（Osterwalder–Seiler）。左端は確保。</td></tr>
+    <tr><td class="id">弱結合（大β）</td><td class="open">摂動論＋漸近自由</td><td>展開は<strong>漸近級数（収束半径0）</strong>。漸近自由が主要項を支配するが、解析性の保証は Borel 総和可能性次第（4次元YMでは未確立、レノルマロン）。</td></tr>
+    <tr><td class="id">真ん中（g_c）</td><td class="open">Lee–Yang零点／相関不等式</td><td>非解析＝分配関数の零点が実軸を挟むこと。SU(N) には Ising のような綺麗な相関不等式・順序変数が乏しく、<strong>零点の不在の証明が難しい</strong>。</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>硬さの正体 ── γ は Q3 の"言い換え"</h2>
+
+  <p>正直に。二つの端（強結合・弱結合）は原理的に押さえ得ますが、<strong>真ん中（クロスオーバー \(g_c\)）</strong>には小パラメータが無い。ここで解析性を示すには：</p>
+
+  <div class="keybox">
+    <div class="lbl">真ん中を渡る＝非摂動的な構成</div>
+    <p style="margin:0;">クロスオーバー窓で「非解析点が無い」を示すには、<strong>その領域を非摂動的に制御</strong>するしかない ── それは Balaban 型の多重スケール RG＝<em>連続極限の構成そのもの</em>。つまり <strong>手γ（結合直線上の解析性）は、a→0 のQ3を<u>言い換えた</u>もの</strong>で、Q3 を迂回する近道ではない。</p>
+  </div>
+
+  <p>ではなぜ γ に価値があるか ── (1) <strong>ひとつの綺麗な命題</strong>（一つの関数の解析性）に凝縮される、(2) <strong>豊かな道具</strong>（Lee–Yang零点・ポリマー展開・相関不等式）に接続する、(3) <strong>U(1) 対照で的が鋭く反証可能</strong>（手法が U(1) を殺し SU(N) を生かすか、で正誤が即わかる）。<em>Q3 に最も"料理しやすい服"を着せる</em>のが γ。</p>
+
+  <h2><span class="n">05</span>現実的な勝ち ── 全直線を"有界な窓"に</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙える部分成果</div>
+    <p style="margin:0 0 8px;"><strong>(A) 窓へ圧縮</strong>：強結合（\(\beta<\beta_0\)）＋弱結合（\(\beta>\beta_1\)、漸近自由の下で）を解析的に押さえ、問題を<strong>有界なクロスオーバー窓 \([\beta_0,\beta_1]\) に非解析点が無い</strong>へ還元。無限の直線を<em>コンパクトな窓</em>に変えるのは本物の前進。</p>
+    <p style="margin:0;"><strong>(B) SU(N) 固有の不等式</strong>：U(1) 対照が指す通り、<em>漸近自由・非可換性</em>が転移を禁じる構造を、SU(N) 固有の相関不等式や単調性として取り出す（あれば大突破）。羅針盤＝「U(1) に無く SU(N) にある性質は何か」。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 峠は見えた、渡りは Q3 のまま</h2>
+
+  <div class="keybox">
+    <div class="lbl">手γ の判定（過大申告なし）</div>
+    <p style="margin:0;">手γ＝<strong>結合直線上の解析性（相転移の不在）</strong>で、強結合の確実なギャップを連続へ延ばす渡し。全ての道（③≡B・δ・摂動論）がこの峠 \(g_c\) に集まる。二つの端は押さえ得るが、<strong>真ん中（クロスオーバー）の解析性は非摂動的構成＝Q3の言い換え</strong>で、迂回路ではない。価値＝ひとつの綺麗な命題・豊かな道具・U(1)対照という鋭い試金石。現実的な勝ち＝<em>全直線を有界な窓に圧縮</em>、または <em>SU(N)固有の反転移不等式</em>。峠は見えた。渡り切るのは、まだ Q3。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">相転移＝物理量の非解析性、解析性⟹強結合相と連続相が地続き、強結合ポリマー／高温展開の収束と解析性（Osterwalder–Seiler）、4次元 U(1) 格子ゲージの相転移（閉じ込め相→クーロン相；非閉じ込め相の存在の厳密証明は A. Guth, Phys. Rev. D 21, 2291 (1980)。近年も 4D U(1) の相構造の研究が続く）と連続 U(1) が質量ゼロの自由マクスウェルであること、SU(2)/SU(3)（Wilson作用, 4次元, ゼロ温度）が強↔弱結合を分けるバルク相転移を持たず解析的クロスオーバーであること（Creutz 以来の数値・物理）、漸近自由、Lee–Yang 零点による相転移の特徴づけ、Borel 総和可能性とレノルマロンは、いずれも確立した事実・概念です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>SU(N) の"バルク相転移の不在＝解析的クロスオーバー"は数値・物理的知見であって厳密定理ではなく</strong>（それを厳密化することこそ手γ）、クロスオーバー窓での解析性の証明、弱結合の Borel 総和可能性、および4次元YMの質量ギャップは未解決です（2025年時点）。注意：SU(N) でも \(N\ge5\) や特定の作用ではバルク一次転移があり得ます（本稿は SU(2)/SU(3) Wilson作用を念頭）。図のギャップ曲線・\(\beta_c\)・窓の位置は運命の対照を示す<strong>概念的模式</strong>で、実際のギャップ値の計算ではありません。「γ は Q3 の言い換え」「窓への圧縮／SU(N)固有の不等式が現実的な勝ち」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「解析性なら強結合のギャップが連続まで延びる」のはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">相転移は物理量（ここでは質量ギャップ \(\Delta(\beta)\)）の非解析点として現れる。もし \(\Delta(\beta)\) が結合直線 \(\beta=2N/g^2\in(0,\infty)\) 全域で解析的＝非解析点が無いなら、強結合（小β）の相と連続（β→∞）の相は地続きの<strong>ひとつの相</strong>。強結合で厳密に \(\Delta>0\) が出ているので、途中で消えることなく連続まで延びる。だから手γ＝「相転移の不在」の厳密化。</div></details>
+      </li>
+      <li>U(1) 対照が手γ の"試金石"なのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">同じ格子ゲージでも U(1)（4次元）は相転移を持ち（閉じ込め相→クーロン相、Guth 1980）、連続では質量ゼロの光子＝ギャップなし。SU(N) はバルク相転移を持たず（クロスオーバー）ギャップが残る。だから手γ の手法は<strong>この二つを区別できねばならない</strong> ── U(1) にも効いてしまう"証明"は必ず誤り。区別の鍵は漸近自由（非可換性）。この対照が、載っている論理が本物かを即座に判定する羅針盤になる。</div></details>
+      </li>
+      <li>手γ が「Q3 の言い換え」だとされるのは、どこが硬いからか。
+        <details><summary>答えを見る</summary><div class="ans">強結合（収束展開）と弱結合（漸近自由）の二つの端は押さえ得るが、真ん中のクロスオーバー \(g_c\) には小パラメータが無い。そこで解析性（非解析点の不在）を示すには非摂動的にその領域を制御するしかなく、それは Balaban 型多重スケール RG＝連続極限の構成そのもの。つまり γ は a→0 のQ3を迂回せず言い換えたもの。ただし「ひとつの命題・豊かな道具・U(1)対照で反証可能」という料理しやすさに価値がある。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">γ まとめ</span>峠は見えた、渡り切るのはまだ Q3</h2>
+    <p>手γ＝<strong>結合直線 \(\beta=2N/g^2\) 上の解析性（相転移の不在）</strong>で、強結合の確実なギャップを \(g_c\) の向こう（連続）へ渡す。相転移＝非解析性ゆえ、γ は「SU(N) は強↔連続を分けるバルク相転移を持たない」の厳密化。<strong>U(1) 対照</strong>が試金石 ── U(1) は転移を持ちギャップを失う（Guth 1980）、SU(N) は持たず残す。手法はこれを区別できねばならず、鍵は漸近自由。</p>
+    <p>二つの端（強結合＝収束展開、弱結合＝漸近自由）は押さえ得るが、<strong>真ん中のクロスオーバーの解析性は非摂動的構成＝Q3の言い換え</strong>で迂回路ではない。それでも γ の価値＝ひとつの綺麗な命題・豊かな道具（Lee–Yang・相関不等式）・U(1)対照という鋭い羅針盤。現実的な勝ち＝<em>全直線を有界な窓 \([\beta_0,\beta_1]\) に圧縮</em>、または <em>SU(N)固有の反転移不等式</em>。全ての道が集まる峠は、はっきり見えた。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-d2-perturb.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← δ・摂動論</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">全ての道が集まる峠</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略γ・解析性（全ての道が集まる峠）、物理好きの高校生・大学生向け読み物。相転移＝物理量の非解析性、解析性による強結合相と連続相の地続き、強結合ポリマー／高温展開の収束と解析性（Osterwalder–Seiler）、4次元 U(1) 格子ゲージ理論の相転移（閉じ込め相→クーロン相、非閉じ込め相の存在の厳密証明は A. H. Guth, Phys. Rev. D 21, 2291 (1980)；4D U(1) の相構造は近年も研究が継続）と連続 U(1) が質量ゼロの自由マクスウェルであること、SU(2)/SU(3)（Wilson作用・4次元・ゼロ温度）が強↔弱結合を分けるバルク相転移を持たない解析的クロスオーバーであること（Creutz 以来の数値・物理）、漸近自由と非可換性、Lee–Yang 零点による相転移の特徴づけ、Borel 総和可能性とレノルマロンは、いずれも確立した事実・概念です。ただし SU(N) のバルク相転移の不在＝解析的クロスオーバーは数値・物理的知見であって厳密定理ではなく（その厳密化こそ手γ）、クロスオーバー窓での解析性の証明、弱結合の Borel 総和可能性、4次元YMの質量ギャップは未解決です（2025年時点）。SU(N) でも N≥5 や特定作用ではバルク一次転移があり得ます（本稿は SU(2)/SU(3) Wilson作用が念頭）。図はギャップの運命の対照を示す概念的模式で、実際のギャップ値・臨界結合の計算ではありません。「γ は Q3 の言い換え」「窓への圧縮／SU(N)固有の不等式が現実的な勝ち」は筆者の見立てで反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では結合 β を動かし、SU(N)／U(1) をトグルすると、相転移の有無でギャップの運命が分かれる様子（U(1) は β_c でギャップ喪失、SU(N) は全域で存続）が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sx=document.getElementById('sx'), vx=document.getElementById('vx'),
+      bS=document.getElementById('bS'), bU=document.getElementById('bU'), rd=document.getElementById('rd');
+  var grp='S'; // S=SU(N), U=U(1)
+  var XC=0.5;  // U(1) の転移点 β_c、SU(N) のクロスオーバー中心
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // x: 0=強結合(小β) .. 1=連続(大β)
+  function gapSU(x){ return 0.80-0.32*x; }         // SU(N)：全域で >0、滑らか（解析的）
+  function gapU1(x){ return x<XC ? (0.80-0.32*x) : 0.0; } // U(1)：β_c で 0 に落ちる（クーロン相）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=46, padR=14, padT=18, padB=42;
+    var x=parseFloat(sx.value);
+    vx.textContent = x<0.35?'強結合（小β）':(x<0.62?'クロスオーバー窓':'連続へ（β→∞）');
+    var YMAX=1.0;
+    function X(xx){return padL+xx*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.max(0,Math.min(v,YMAX))/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // クロスオーバー窓
+    ctx.fillStyle='rgba(169,121,26,0.10)';ctx.fillRect(X(0.38),padT,X(0.62)-X(0.38),(h-padB)-padT);
+    ctx.fillStyle='#8a6a1e';ctx.font='11px sans-serif';ctx.fillText('クロスオーバー窓（g_c）', X(0.40), padT+13);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← 強結合 小β        β=2N/g²        連続 β→∞ →', padL+8, h-padB+26);
+    ctx.save();ctx.translate(14,padT+62);ctx.rotate(-Math.PI/2);ctx.fillText('質量ギャップ Δ', 0,0);ctx.restore();
+    // ゼロ線
+    ctx.strokeStyle='#e0d6bf';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(w-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+    // 両曲線を薄く両方描く
+    // U(1)
+    ctx.strokeStyle=(grp==='U')?'#a5473a':'#e3b7ad';ctx.lineWidth=(grp==='U')?2.8:1.6;
+    ctx.beginPath();ctx.moveTo(X(0),Y(gapU1(0)));
+    for(var xx=0;xx<=XC;xx+=0.01)ctx.lineTo(X(xx),Y(gapU1(xx)));
+    ctx.stroke();
+    ctx.beginPath();ctx.moveTo(X(XC),Y(0));ctx.lineTo(X(1),Y(0));ctx.stroke();
+    // U(1) の転移点マーク
+    ctx.strokeStyle=(grp==='U')?'#a5473a':'#e3b7ad';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(X(XC),padT+30);ctx.lineTo(X(XC),h-padB);ctx.stroke();ctx.setLineDash([]);
+    if(grp==='U'){ctx.fillStyle='#a5473a';ctx.font='bold 11px sans-serif';ctx.fillText('β_c：相転移→クーロン相（ギャップ0）', X(XC)+4, padT+44);}
+    // SU(N)
+    ctx.strokeStyle=(grp==='S')?'#2f7d5a':'#aecdbc';ctx.lineWidth=(grp==='S')?2.8:1.6;
+    ctx.beginPath();var f=true;
+    for(var x2=0;x2<=1.0001;x2+=0.01){var X2=X(x2),Y2=Y(gapSU(x2));if(f){ctx.moveTo(X2,Y2);f=false;}else ctx.lineTo(X2,Y2);}
+    ctx.stroke();
+    // ラベル
+    ctx.fillStyle=(grp==='S')?'#2f7d5a':'#8fb3a0';ctx.font='11px sans-serif';ctx.fillText('SU(N)：全域で Δ>0（解析的）', X(0.55), Y(gapSU(0.7))-8);
+    // カーソル
+    var mx=X(x);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    var gy = (grp==='S')?gapSU(x):gapU1(x);
+    ctx.fillStyle=(grp==='S')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(mx,Y(gy),5,0,7);ctx.fill();
+    // readout
+    if(grp==='S'){
+      if(x<0.35){ rd.style.background='#e7f0ea';rd.style.color='#245c43';
+        rd.innerHTML='<b>SU(N)・強結合</b>：ポリマー展開が収束、Δ>0 が厳密（Osterwalder–Seiler）。この左端がアンカー。'; }
+      else if(x<0.62){ rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+        rd.innerHTML='<b>SU(N)・クロスオーバー窓（g_c）</b>：小パラメータが無い難所。ここで<b>非解析点が無い</b>を示せれば渡り切る ── だがそれは非摂動的構成＝Q3の言い換え。'; }
+      else { rd.style.background='#e6eef2';rd.style.color='#245c6e';
+        rd.innerHTML='<b>SU(N)・連続へ（β→∞）</b>：漸近自由が支配。窓を渡れていれば、強結合のギャップがここまで延びて<b>連続の質量ギャップ</b>に。'; }
+    } else {
+      if(x<XC){ rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)・閉じ込め相（小β）</b>：ここは SU(N) と同様にギャップあり。だが ──'; }
+      else { rd.style.background='#f3e2dc';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>U(1)・クーロン相（β_c の先）</b>：<b>相転移でギャップ喪失</b>。連続は質量ゼロの自由マクスウェル。手γ の手法は、この U(1) を殺し SU(N) を生かせて初めて本物。'; }
+    }
+  }
+  function setG(g){ grp=g; bS.className='tbtn'+(g==='S'?' on':''); bU.className='tbtn'+(g==='U'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setG('S');});
+  bU.addEventListener('click',function(){setG('U');});
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

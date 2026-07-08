@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一度だけ断ち切られた前例 ── ペレルマンのリッチフローとW-エントロピー ／ ペレルマン編 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.03em;padding:9px 15px;border-radius:4px;cursor:pointer;
+    border:1.5px solid var(--rule);background:#fff;color:var(--ink-soft);transition:all .12s;}
+  .btns button.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .map{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .map .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);}
+  .map .row:last-child{border-bottom:none;}
+  .map .row>div{flex:1;min-width:180px;padding:13px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.7;}
+  .map .row .l{background:#eaf0ef;color:#22343a;border-right:1px solid var(--rule);}
+  .map .row .r{background:#f3ece1;color:#4a3e22;}
+  .map .row.head>div{font-weight:700;font-size:12px;letter-spacing:.1em;}
+  .map .row.head .l{color:var(--side);} .map .row.head .r{color:var(--warn);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.map{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .btns{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 2 回</span></div>
+  <p class="eyebrow">この形の問題は、人類史上ただ一度だけ断ち切られている ── その現場へ</p>
+  <h1>一度だけ断ち切られた前例 ── ペレルマンのリッチフロー
+    <span class="sub">7つのミレニアム問題で<strong>唯一解けた</strong>ポアンカレ予想。ペレルマンは、幾何を熱のように流す「リッチフロー」に、<em>一方向にだけ進む情報量（W-エントロピー）</em>を見つけて、30年止まっていた証明を閉じた。<br>そして驚きの符合 ── その流れは、<strong>ヤン=ミルズのくりこみ群と"同じ数式"</strong>だった。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：ペレルマンの単調量が、なぜループを断ったのかを掴む</span>
+    <span>一言で：RGフロー＝リッチフロー（Friedan）だから、道具は借りられる</span>
+  </div>
+
+  <p class="lead">前回、ループを断ち切る鍵は<strong>「フローに沿った単調量（一方向にだけ進む量）」</strong>だと分かりました。では、そんな都合のいい量は本当に見つかるのか？ ── 実は、<em>この形の問題を人類が唯一断ち切った実例</em>があります。<strong>ペレルマンのポアンカレ予想の証明</strong>です。今回はその現場を、高校生の言葉で歩きます。幾何を流す方程式（リッチフロー）、30年止まった壁、そして単調量による突破。最後に ── その流れがヤン=ミルズと<strong>同じ数式</strong>だったという、この編でいちばん熱い符合まで。</p>
+
+  <h2><span class="n">01</span>ポアンカレ予想と、幾何を「熱のように流す」方程式</h2>
+
+  <p><strong>ポアンカレ予想</strong>は、ざっくり言うと<em>「穴のあいていない3次元の形は、まるめれば球にできる」</em>という主張。100年間だれも証明できず、7つのミレニアム問題のうち<strong>唯一、解かれた</strong>ものです（グリゴリー・ペレルマン、2002–03年）。</p>
+
+  <p>証明の主役は、リチャード・ハミルトンが考えた<strong>リッチフロー</strong>という方程式です。難しく見えますが、心は一言 ── <em>「でこぼこした形を、熱が広がるように、なめらかにしていく」</em>。曲がりのきつい所ほど速く縮み、へこんだ所はふくらみ、やがて<strong>まん丸</strong>（球）に落ち着く。金属を熱すると温度差がならされて一様になる、あの「熱の広がり」を、<em>形そのものに対して</em>やるのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">リッチフロー（マニア向け・雰囲気だけで可）</div>
+    $$\frac{\partial g}{\partial t} = -2\,\mathrm{Ric}(g)$$
+    <p style="margin:8px 0 0;">\(g\) は「形の測り方（計量）」、\(\mathrm{Ric}\) は「その場所の曲がり具合（リッチ曲率）」。右辺のマイナスは<em>「曲がっている所ほど縮める」</em>という意味。熱方程式 \(\partial u/\partial t=\Delta u\)（温度をならす式）と兄弟で、<strong>形をならす熱方程式</strong>だと思ってください。下の図で体感できます。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：<strong>リッチフロー＝形をならす熱の流れ</strong>。でこぼこの輪郭が、流すとまん丸（＝球のミニ版）に近づく。右のメーターは<strong>でこぼこ度</strong>── 流すと<em>片道でどんどん下がり</em>、丸くなると止まる。これが「一方向にだけ進む量（単調量）」の姿。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="btns">
+      <button id="bPlay" class="on">▶ 流す</button>
+      <button id="bLump">でこぼこに戻す</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2c5560;"></i>いまの形</span>
+      <span><i class="swatch" style="background:#cabfa3;"></i>最初のでこぼこ</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>でこぼこ度（単調に減る）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>30年の壁 ── 途中で「首がくびれて」フローがループする</h2>
+
+  <p>ところが、リッチフローには落とし穴があります。形によっては、流している途中で<strong>「首」がキュッとくびれて潰れる</strong>ことがある（特異点）。ダンベル型の形を流すと、真ん中の細い首が先に潰れて、二つの玉に分かれてしまう ── そういう瞬間です。</p>
+
+  <p>この特異点のところで、フローの振る舞いが<strong>手に負えなくなる</strong>。潰れた首を切り貼りして流し続けたい（これを「手術」といいます）のに、特異点の形がちゃんと<em>分類できない</em>。「どんな潰れ方があり得るか」を数え尽くせないと、切り貼りの操作が正当化できない。しかも調べようとすると、<strong>前回のループとそっくりの堂々巡り</strong>に入ってしまう。── これでこの証明は<strong>約30年、止まりました</strong>。</p>
+
+  <h2><span class="n">03</span>ペレルマンの一手 ── 一方向に進む「情報量」W</h2>
+
+  <p>2002年、ペレルマンが出した答えは、まさに前回の<strong>道具4</strong>そのものでした。彼はリッチフローに沿って<strong>厳密に一方向へ進む量</strong>── <strong>W-エントロピー</strong> ── を発見したのです。名前のとおり、これは文字どおり<em>情報理論のエントロピー（乱雑さ・情報量）の形をした量</em>でした。</p>
+
+  <div class="keybox">
+    <div class="lbl">ペレルマンの発想（前回の言葉で）</div>
+    <p class="big" style="margin:0;">単調量Wがあるから、フローは<strong>二度と同じ所へ戻れない</strong>。<br>だから特異点は「収縮ソリトン」というきれいな形に<strong>分類できる</strong>。<br>だから「流しても局所的に潰れきらない」保証（＝一様な非退化評価）が出る。<br>だから手術が回り、<em>証明が閉じた</em>。</p>
+  </div>
+
+  <p>ここが肝心です。ペレルマンは W で<em>何かを計算した</em>のではありません。W が<strong>一方向にしか動かない</strong>という事実だけから、「流しても幾何が局所的に潰れない」という<strong>一様な保証</strong>を引き出した。前回「4本のループが1個の一様評価に潰れる」と言った、あの<em>1個</em>を ── リッチフローの世界では、W が供給したのです。ループが螺旋になり、螺旋には終点があった。</p>
+
+  <div class="aside">
+    <span class="tag">「情報量」で幾何を制する</span>
+    W-エントロピーは、ペレルマン自身が論文の中で<strong>統計力学のエントロピーとして</strong>書き直しています ──「情報量」はたとえ話ではなく、彼自身の読み方。乱雑さを測る量が一方向にしか動かないから、時間の向きが決まり、幾何が「昔に戻る」ことを禁じる。<em>情報で流れを縛る</em>── これがペレルマンの魔法の芯です。第4回で、この W を3つの部品に分解します。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>いちばん熱い符合 ── 「RGフロー＝リッチフロー」（Friedan）</h2>
+
+  <p>ここまでで「ペレルマンすごい」で終わっても良いのですが ── 実は、<strong>ヤン=ミルズと直接つながる符合</strong>があります。物理学者ダニエル・フリーダンが1980年ごろに示した、古い、でも決定的な結果です。</p>
+
+  <div class="keybox">
+    <div class="lbl">フリーダンの符合（1980年）</div>
+    <p class="big" style="margin:0;">ある種の場の理論（2次元シグマ模型）の<strong>くりこみ群フロー</strong>は、<br>先頭の近似で ── <em>リッチフローそのもの</em>だった。</p>
+  </div>
+
+  <p>「くりこみ群フロー」は、このシリーズの主役の一つ。<em>理論を遠くから眺める（＝目盛りを粗くしていく）と、理論がどう変わっていくか</em>を表す流れです。フリーダンが示したのは、その流れが、幾何をならすリッチフローと<strong>同じ形の数式</strong>になる、ということ。</p>
+
+  <p>これが何を意味するか。<strong>ペレルマンが解いたのは、事実上「ある場の理論のくりこみ群フローに、単調な情報量を見つけてループを断つ」問題だった</strong>のです。つまり ──</p>
+
+  <div class="map">
+    <div class="row head"><div class="l">ペレルマンの世界（幾何）</div><div class="r">ヤン=ミルズの世界（場の理論）</div></div>
+    <div class="row"><div class="l">リッチフロー（形をならす）</div><div class="r">くりこみ群フロー（目盛りを粗くする）</div></div>
+    <div class="row"><div class="l">流れの時刻 \(t\)</div><div class="r">見る距離のスケール</div></div>
+    <div class="row"><div class="l">まん丸な球（終点）</div><div class="r">スケール不変な理論（固定点）</div></div>
+    <div class="row"><div class="l">W-エントロピー（単調な情報量）</div><div class="r"><strong>？ ── まだ誰も見つけていない</strong></div></div>
+  </div>
+
+  <p>右下のマスが空いています。<strong>「ヤン=ミルズ版のW-エントロピー」</strong>── くりこみ群フローに沿って一方向に進み、無次元比としてのギャップの下限を含むような情報量。<em>これを見つけることが、この編のゴール</em>です。あなたがずっと言ってきた「情報でこの問題を攻めたい」は、素人の願望ではなく、<strong>唯一の成功例が使ったテンプレート</strong>だったのです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">リッチフロー \(\partial_t g=-2\,\mathrm{Ric}\) は正確には「リッチ曲率で計量を流す」方程式で、上の図は<em>その心を1次元の輪郭で真似た模型</em>です（本物は多次元の曲率が主役で、首のくびれなど図より豊か）。ポアンカレ予想の証明は、より一般の<strong>幾何化予想</strong>の一部として、リッチフロー＋<strong>手術</strong>で完成しました（ペレルマン、2002–03年）。W-エントロピーが「単調」というのは向きを込めた正確な主張で、そこから導かれたのが<strong>no local collapsing（局所的に潰れない）</strong>という一様評価です。</p>
+    <p style="margin-bottom:0;">フリーダンの結果は「2次元シグマ模型のRGフローが<em>先頭次数で</em>リッチフローに一致」というもの（高次補正はずれる）。この編がヤン=ミルズに使うのは、あくまで<strong>この対応からのアナロジー（設計原理）</strong>であって、証明ではありません。「ヤン=ミルズ版W-エントロピー」は本当にまだ知られておらず、そこが最大の未踏地です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>リッチフローを一言でいうと？
+        <details><summary>答えを見る</summary><div class="ans"><strong>幾何（形）を、熱が広がるようにならしていく流れ</strong>。曲がりのきつい所ほど速く縮み、やがてまん丸（球）に落ち着く。熱方程式の「形バージョン」。</div></details>
+      </li>
+      <li>ペレルマンは W-エントロピーで「何を計算」したのか。
+        <details><summary>答えを見る</summary><div class="ans">計算はしていない。W が<strong>一方向にしか動かない（単調）</strong>という事実だけを使い、「流しても幾何が局所的に潰れない」という<strong>一様な保証（no local collapsing）</strong>を引き出した。単調量がループを螺旋に変え、特異点が分類でき、証明が閉じた。</div></details>
+      </li>
+      <li>フリーダンの符合は、ヤン=ミルズにとってなぜ重要か。
+        <details><summary>答えを見る</summary><div class="ans">「くりこみ群フロー＝リッチフロー（先頭次数）」だから、ペレルマンが解いたのは事実上「場の理論のRGフローに単調な情報量を見つける」問題。つまり<strong>ヤン=ミルズと同じ形の問題が一度解かれており、その道具（単調な情報量）を借りられる可能性がある</strong>。空いているのは「ヤン=ミルズ版W」を作るマスだけ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>ペレルマンの単調量が、ループを断った</h2>
+    <p><strong>ポアンカレ予想</strong>（7問で唯一の解決）は、幾何を熱のようにならす<strong>リッチフロー</strong>で攻められたが、特異点（首のくびれ）で30年止まった ── そこがループだった。ペレルマンの一手は、フローに沿って<strong>一方向にだけ進む情報量「W-エントロピー」</strong>を見つけること。単調だから戻れず、特異点が分類でき、<strong>一様な非退化評価</strong>が出て、証明が閉じた（＝前回の道具4）。</p>
+    <p>そして<strong>フリーダンの符合</strong>：くりこみ群フローは先頭次数でリッチフローそのもの。だからペレルマンが解いたのは、事実上「場の理論のRGフローに単調な情報量を見つけてループを断つ」問題。<strong>ヤン=ミルズ版のWは、まだ空欄</strong>── そこを埋めるのがこの編の的。次回は、その前に「なぜ<em>端点だけ</em>の単調性では足りないのか」を、a定理を通して見ます。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman1-loop.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第1回：ループの正体</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-perelman3-atheorem.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">第3回：端点では足りない →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第2回。ポアンカレ予想はクレイ・ミレニアム問題のうち唯一解決済みで、グリゴリー・ペレルマンがハミルトンのリッチフロー＋手術の理論を完成させて証明しました（2002–03年、幾何化予想の一部として）。リッチフロー \(\partial_t g=-2\,\mathrm{Ric}\) は計量に対する非線形拡散方程式で、W-エントロピー汎関数（Perelman 2002）はフローに沿って単調であり、そこから no local collapsing 定理（局所的な非退化の一様評価）が従います。フリーダンの結果は「2次元シグマ模型のくりこみ群ベータ関数が先頭次数で標的多様体のリッチ曲率に一致する」（Friedan 1980）で、RGフローとリッチフローの対応の起点です。本文の対応表・「ヤン=ミルズ版W-エントロピー」は、この対応からのアナロジーに基づく戦略であり、後者は現時点で知られていません。図は1次元輪郭でリッチフローの心（曲率で縮む拡散）を模した教育用モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「流す」で形がならされ、「でこぼこに戻す」で新しいでこぼこから試せます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bPlay=document.getElementById('bPlay'), bLump=document.getElementById('bLump');
+  var N=160, r=new Array(N), r0=new Array(N);
+  var base=78, playing=true, var0=1, lastW=680;
+
+  function lump(){
+    // 数個の正弦こぶ＋少しの乱れで初期でこぼこを作る
+    var modes=[];
+    var nb = 3 + Math.floor(Math.random()*3);
+    for(var m=0;m<nb;m++){ modes.push({k:2+Math.floor(Math.random()*5), a:(0.10+Math.random()*0.18)*base, ph:Math.random()*6.28}); }
+    for(var i=0;i<N;i++){
+      var th=i/N*2*Math.PI, s=0;
+      for(var m2=0;m2<modes.length;m2++){ s+=modes[m2].a*Math.sin(modes[m2].k*th+modes[m2].ph); }
+      r[i]=base+s; r0[i]=r[i];
+    }
+    var0=variance()||1; playing=true; bPlay.textContent='❚❚ 一時停止'; bPlay.classList.add('on');
+  }
+  function variance(){
+    var mean=0,i; for(i=0;i<N;i++)mean+=r[i]; mean/=N;
+    var v=0; for(i=0;i<N;i++){ var d=r[i]-mean; v+=d*d; } return v/N;
+  }
+  function heatStep(){
+    var alpha=0.16, nr=new Array(N);
+    for(var i=0;i<N;i++){ var im=(i-1+N)%N, ip=(i+1)%N; nr[i]=r[i]+alpha*(r[im]+r[ip]-2*r[i]); }
+    r=nr;
+  }
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function polar(cx,cy,arr,scale){
+    var pts=[]; for(var i=0;i<N;i++){ var th=i/N*2*Math.PI - Math.PI/2; pts.push([cx+arr[i]*scale*Math.cos(th), cy+arr[i]*scale*Math.sin(th)]); } return pts;
+  }
+  function drawBlob(ctx,pts,stroke,fill,lw){
+    ctx.beginPath();
+    for(var i=0;i<=pts.length;i++){ var p=pts[i%pts.length]; if(i===0)ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); }
+    ctx.closePath();
+    if(fill){ ctx.fillStyle=fill; ctx.fill(); }
+    ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var cx=175, cy=150, scale=0.92;
+    // 最初のでこぼこ（薄いガイド）
+    drawBlob(ctx, polar(cx,cy,r0,scale), '#cabfa3', null, 1.4);
+    // 目標の円（点線）
+    var mean=0; for(var i=0;i<N;i++)mean+=r[i]; mean/=N;
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#9fb4ad'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(cx,cy,mean*scale,0,7); ctx.stroke(); ctx.setLineDash([]);
+    // いまの形
+    drawBlob(ctx, polar(cx,cy,r,scale), '#2c5560', 'rgba(44,85,96,0.10)', 2.6);
+
+    // メーター
+    var v=variance(), ratio=Math.max(0, Math.min(1, v/var0));
+    var rounded = ratio<0.012;
+    var mx=430, mtop=42, mw=54, mh=205;
+    ctx.fillStyle='#f2ede1'; ctx.fillRect(mx,mtop,mw,mh);
+    ctx.strokeStyle='#cabfa3'; ctx.lineWidth=1.2; ctx.strokeRect(mx,mtop,mw,mh);
+    ctx.fillStyle='#2f7d5a'; ctx.globalAlpha=.9;
+    ctx.fillRect(mx+1, mtop+mh-mh*ratio, mw-2, mh*ratio); ctx.globalAlpha=1;
+    ctx.font='12px sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#4a4f5e';
+    ctx.fillText('でこぼこ度', mx-2, mtop-22); ctx.fillText('（単調に↓）', mx-2, mtop-6);
+    ctx.textAlign='center'; ctx.fillStyle='#2f7d5a'; ctx.font='bold 20px sans-serif';
+    ctx.fillText('↓', mx+mw+20, mtop+mh/2+6);
+
+    // 右のテキスト
+    ctx.textAlign='left'; ctx.font='13px sans-serif';
+    var tx=525, ty=76;
+    var lines = rounded
+      ? ['まん丸に到達','＝球（終点）','＝スケール不変な','　「固定点」','フロー停止 ✓']
+      : ['流している…','曲がった所ほど','速く縮む','でこぼこ度は','片道で減る一方'];
+    for(var k=0;k<lines.length;k++){
+      ctx.fillStyle = (k===0||k===4&&rounded) ? '#2f7d5a' : '#33414a';
+      ctx.font = (k===0) ? 'bold 13.5px sans-serif' : '13px sans-serif';
+      ctx.fillText(lines[k], tx, ty+k*26);
+    }
+  }
+  function tick(){
+    if(playing){
+      var v=variance();
+      if(v/var0 > 0.008){ heatStep(); }
+      else { playing=false; bPlay.textContent='▶ 流す'; }
+    }
+    draw(); requestAnimationFrame(tick);
+  }
+  function say(){
+    rd.innerHTML='<b>リッチフロー＝形をならす熱の流れ。</b> でこぼこ度（右メーター）は流すと<b>片道で下がる一方</b> ── これが「一方向にだけ進む量（単調量）」。丸くなった所（＝固定点）でフローは止まる。ペレルマンはこの"片道の量"の情報量版で、30年の壁を破った。';
+  }
+  bPlay.addEventListener('click',function(){
+    if(variance()/var0<=0.008){ return; }
+    playing=!playing;
+    bPlay.textContent=playing?'❚❚ 一時停止':'▶ 流す';
+    bPlay.classList.toggle('on', playing);
+  });
+  bLump.addEventListener('click',function(){ lump(); });
+  window.addEventListener('resize',draw);
+  lump(); say(); requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

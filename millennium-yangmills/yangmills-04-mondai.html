@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜ"問題"なのか ── 物理は知ってる、数学が追いつかない ／ ミレニアム問題を解くぞ 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --su3:#2f7d5a; --u1:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:8px 15px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;font-weight:600;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:18px;line-height:1.7;font-weight:600;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--su3);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">第 4 回（入門アーク最終）</span></div>
+  <p class="eyebrow">実験もスパコンも「ある」と言う。なのに数学の証明はゼロ ── その谷の正体</p>
+  <h1>なぜ"問題"なのか ── 物理は知ってる、数学が追いつかない
+    <span class="sub">問題は三つに割れる：<strong>Q1 格子で見える（厳密）／Q2 連続極限で数値決着／Q3 厳密な連続場の理論として構成し \(\Delta>0\) を証明（＝未解決）</strong>。<br>大半はもう分かっている。開いているのは Q3 だけ ── そして、それは<em>離散から連続がどう立ち上がるか</em>という、量子重力とも地続きの縁。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：何が難しく、何をすれば"解けた"かを正確に</span>
+    <span>核心：Q1/Q2 は決着、Q3（連続極限の厳密構成）だけが未解決</span>
+  </div>
+
+  <p class="lead">第3回で見たとおり、強い力の質量ギャップは、実験（ハドロン質量）でもスーパーコンピュータの格子計算でも、はっきり「ある」と出ます。陽子の重さも合う。<strong>物理は、答えを知っている。</strong>なのに、これを<em>数学の定理として証明</em>した人は、まだ世界に一人もいない。第1回で言った「確信と証明の谷」── この回で、その谷の<strong>正体</strong>を突き止めます。じつは「ヤン=ミルズ問題」は、三つの別々の問いが束ねられていて、<em>本当に開いているのは、そのうち一つだけ</em>なのです。</p>
+
+  <h2><span class="n">01</span>「解いた」の条件 ── クレイが要求すること</h2>
+
+  <p>まず、何をすれば100万ドルなのか。問題設定（Jaffe–Witten）は、二つを要求します ── 第1回の"二つのお願い"の、厳密版です。</p>
+
+  <div class="keybox">
+    <div class="lbl">クレイ問題の合格条件</div>
+    <p class="big" style="margin:0;">① <strong>存在</strong>：4次元時空の上に、\(SU(N)\) ヤン=ミルズの量子論を、数学の公理（Wightman／Osterwalder–Schrader）を満たす"本物"として<strong>構成せよ</strong>。<br>② <strong>質量ギャップ</strong>：その理論で \(\ \mathrm{spec}(H)=\{0\}\cup[\Delta,\infty),\ \Delta>0\ \) を<strong>証明せよ</strong>。</p>
+  </div>
+
+  <p>ポイントは①。<em>「その理論、そもそも数学的な対象としてちゃんと存在するの？」</em>を、近似や数値でなく、<strong>厳密に構成</strong>しないといけない。この①が、実は最大の難所です。</p>
+
+  <h2><span class="n">02</span>問題を三つに割る ── 開いているのは一つだけ</h2>
+
+  <p>「ヤン=ミルズ問題」は、じつは次の三つが束ねられています。分けると、どこが本当の壁か見えます。</p>
+
+  <table class="dt">
+    <tr><th></th><th>問い</th><th>やり方</th><th>状態</th></tr>
+    <tr><td class="id">Q1</td><td>格子（離散）で、間隔 \(a\) を固定したときギャップはあるか</td><td>強結合展開</td><td class="ok">厳密に解決</td></tr>
+    <tr><td class="id">Q2</td><td>\(a\to0\) の連続極限で、ギャップは残るか</td><td>格子＋スパコン</td><td class="ok">数値的に決着</td></tr>
+    <tr><td class="id">Q3</td><td>厳密な連続場の理論として構成し \(\Delta>0\) を証明できるか</td><td>構成的場の理論</td><td class="open">未解決＝クレイ問題</td></tr>
+  </table>
+
+  <p><strong>Q1・Q2 はもう終わっています。</strong>時空を格子に刻めば、強結合ではギャップと閉じ込めが<em>厳密に</em>示せる（第3回）。スパコンで \(a\to0\) を外挿すれば、グルーボール質量 \(\approx1.7\) GeV が高精度で出る。<em>物理が「知っている」のは、この Q1・Q2 のこと。</em>残るのは <strong>Q3 ── 連続の理論を厳密に構成し、そこで \(\Delta>0\) を証明する</strong>、これだけ。100万ドルは、この一点に凝縮しています。</p>
+
+  <h2><span class="n">03</span>なぜ連続極限が難所か ── U(1) という残酷な反例</h2>
+
+  <p>「格子でギャップが見えるなら、\(a\to0\) にすればいいだけでは？」── これが甘い。<strong>格子（強結合）で見えたギャップが、連続極限まで生き残るとは限らない</strong>のです。反例が、身近な<strong>電磁気（コンパクト U(1)）</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">U(1) の教訓 ── ギャップは連続極限で"死ぬ"ことがある</div>
+    <p style="margin:0;"><strong>強結合（粗い格子）</strong>：閉じ込め・ギャップあり（Q1と同じ）。<br><strong>弱結合（連続極限へ）</strong>：<em>相転移</em>を経て、<strong>自由な光子＝質量ゼロ</strong>（ギャップ消滅）。</p>
+    <p style="margin:10px 0 0;">つまり U(1) では「格子で見えたギャップ」は連続極限で<strong>消える</strong>。だから "格子で見える → 連続でも当然ある" は<em>証明にならない</em>。非可換の \(SU(3)\) は生き残ると<strong>信じられている</strong>（漸近自由・バルク相転移なし）が、<strong>それを示すのが Q3</strong>。下の図で、この分かれ道を辿れます。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：格子（左＝強結合・粗い）から連続極限（右＝\(a\to0\)）へ辿る。ボタンで <span style="color:var(--u1);font-weight:700;">U(1)</span>／<span style="color:var(--su3);font-weight:700;">SU(3)</span> を切替。U(1) は途中で相転移してギャップが消える（連続極限＝自由な光子）。SU(3) は連続極限までギャップが残る（と信じられている）</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>格子 → 連続極限（右へ動かすと \(a\to0\)）<span class="val" id="vb">0.30</span>
+        <input type="range" id="sb" min="0" max="1" step="0.01" value="0.3">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn" id="bU">U(1)（電磁気）</button>
+        <button class="tbtn on" id="bS">SU(3)（強い力）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>ギャップあり（閉じ込め）</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>ギャップ無し（自由・質量ゼロ）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>連続極限は"臨界点" ── そこが厳密構成の壁</h2>
+
+  <p>連続極限を取るとは、格子間隔 \(a\) をゼロにしながら、物理の質量 \(m\) を有限に保つこと。格子で測った相関長 \(\xi\)（格子何個ぶんか）と、物理の質量はこう結ばれます：</p>
+
+  <div class="calc">
+    <span class="tag">連続極限＝相関長が発散する臨界点</span>
+    $$m=\frac{1}{\xi\,a}\ \ (\text{有限に固定})\quad\Rightarrow\quad a\to0\ \text{では}\ \xi\to\infty$$
+    <p style="margin-bottom:14px;">\(a\to0\) で \(m\) を有限に保つには、格子単位の相関長 \(\xi\) が<strong>無限大</strong>に発散しないといけない ── これは統計力学でいう<strong>二次相転移（臨界点）</strong>そのもの。漸近自由は、その臨界点を<strong>結合 \(g\to0\)</strong> に置く。<em>この臨界点を、近似でなく厳密に・非摂動的に制御する</em>のが、Q3 の壁です。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">どこまで出来ている（構成的場の理論）</span>
+    厳密な構成は<strong>低い次元では成功</strong>しています ── 2次元・3次元のいくつかの理論（\(\varphi^4_2,\ \varphi^4_3\)、2次元ヤン=ミルズ）。だが<strong>4次元ヤン=ミルズは未達</strong>。しかも警告として、4次元の \(\varphi^4\)（一番素朴なスカラー理論）は連続極限で<em>自明（相互作用が消える）</em>と証明済み ── 4次元の連続極限は<strong>崩れることがある</strong>。ヤン=ミルズは漸近自由に救われる、と信じられているが、それを厳密に示すのが宿題。近年、確率量子化（Hairer らの新しい数学）が<strong>3次元ヤン=ミルズ測度</strong>の構成に迫っており、4次元への最前線になっています。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>何をすれば"解けた"のか ── 無理ゲーに見えて、不可能ではない</h2>
+
+  <p>合格に<strong>数えてもらえないもの</strong>を並べると、谷の深さが分かります。</p>
+
+  <table class="dt">
+    <tr><th>やっても"解けた"にならない</th><th>なぜ</th></tr>
+    <tr><td>格子（固定 \(a\)）でギャップを出す</td><td>連続極限を取っていない（Q1止まり）</td></tr>
+    <tr><td>スパコンでグルーボール質量を測る</td><td>数値であって証明でない（Q2止まり）</td></tr>
+    <tr><td>摂動論（ファインマン図）の計算</td><td>級数は近似で、理論を定義していない。しかもギャップは非摂動</td></tr>
+    <tr><td>2次元・3次元での証明</td><td>次元が違う（4次元が本丸）</td></tr>
+  </table>
+
+  <p>要求は<strong>「4次元の連続理論を厳密に構成し、\(\Delta>0\) を数学の定理として示す」</strong>の一点。難しさの芯は ── <em>ギャップは非摂動（計算しやすい高エネルギー側には見えない）</em>、しかも<em>4次元はちょうど繰り込み可能（一番きわどい）</em>。だから「無理ゲー」に見える。でも ──</p>
+
+  <div class="keybox">
+    <div class="lbl">不可能ではない（世代がかりの難問）</div>
+    <p style="margin:0;">問題は<strong>形が明確（well-posed）</strong>で、答えは「イエス」と広く信じられている。<strong>低次元では実際に解けた</strong>。そして 3次元は新しい数学（確率量子化）で割れつつある ── フェルマー予想が350年かけて解けたように、<em>「解く」は新しい数学の発明とほぼ同義</em>。理不尽な詰みではなく、桁外れに難しい、が正確。</p>
+  </div>
+
+  <h2><span class="n">06</span>この谷の底は、ブラックホールと地続き ── だから旗は立てない</h2>
+
+  <p>残った Q3 の芯は、<strong>「離散（格子）から、ローレンツ不変な連続時空が、厳密に立ち上がるか」</strong>。じつはこれ、<em>ブラックホール＝量子重力</em>が抱える問題と<strong>同じ骨格</strong>です（有限な情報から滑らかな連続時空が出るか）。ヤン=ミルズは、時空を平らな傍観者に固定した"易しい従兄弟"── それでもこれほど難しい。だから ──</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの結論（第1回の掟のまま）</div>
+    <p class="big" style="margin:0;">物理が「知っている」のは Q1・Q2。開いているのは Q3 ＝<strong>連続極限の厳密構成</strong>だけ。私たちはそれを<em>解いていない</em> ── <strong>問題を正しい大きさに畳み、本当の縁がどこかを指した</strong>。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">クレイの合格条件（Wightman／OS 公理を満たす4次元 \(SU(N)\) の構成＋\(\Delta>0\)、Jaffe–Witten）、Q1（強結合展開でのギャップ・閉じ込めの厳密性、Osterwalder–Seiler）、Q2（格子ゲージ計算のグルーボール質量、連続外挿）、コンパクト U(1) の相転移（強結合＝閉じ込め／弱結合＝自由光子、Guth 1980 ほか。転移は弱い一次で、歴史的に微妙）、\(SU(2),SU(3)\) はバルク相転移なしのクロスオーバー、連続極限＝二次臨界点（\(\xi\to\infty\)、\(m=1/(\xi a)\)、漸近自由で \(g\to0\)）、\(\varphi^4_4\) の自明性（Aizenman–Duminil-Copin 2021）、2D/3D の構成的成功と 4D の未達、確率量子化による 3D ヤン=ミルズ（Chandra–Chevyrev–Hairer–Shen 2022）は、いずれも確立した結果または明示された現状です（2025年時点）。</p>
+    <p style="margin-bottom:0;">「物理は知っている」は、実験と数値が一致しているという意味で、数学の証明とは別種の確からしさ。この回は"なぜ難しいか"と"何をすれば解けたか"を地図にしただけで、<strong>解いてはいません</strong>。Q3 が量子重力と地続きというのは構造の類似で、どちらも未解決 ── 掟どおり、旗は立てません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「格子計算でグルーボール質量が出た。だからヤン=ミルズ問題は解けた」── どこが違う？
+        <details><summary>答えを見る</summary><div class="ans">それは Q2（数値）止まり。クレイが求めるのは Q3 ＝「連続の場の理論を数学の公理を満たす形で厳密に構成し、\(\Delta>0\) を定理として証明する」。数値や固定格子は"証明"ではない。物理が知っているのと、数学が証明したのは別もの。</div></details>
+      </li>
+      <li>「格子で見えたギャップは、\(a\to0\) にすれば当然残る」と言えない理由を、反例で。
+        <details><summary>答えを見る</summary><div class="ans">コンパクト U(1)（電磁気）が反例。強結合では閉じ込め・ギャップありだが、連続極限（弱結合）では相転移して自由な質量ゼロの光子になり、ギャップが消える。だから「格子で見える→連続でもある」は一般には成り立たず、\(SU(3)\) で残ることの証明が必要（＝Q3）。</div></details>
+      </li>
+      <li>連続極限を取るとは、格子の言葉でどういう操作か。なぜ難しいか一言。
+        <details><summary>答えを見る</summary><div class="ans">格子間隔 \(a\to0\) にしつつ物理質量 \(m=1/(\xi a)\) を有限に保つ ── そのため格子単位の相関長 \(\xi\to\infty\)、すなわち二次相転移（臨界点）に乗る操作。この臨界点を近似でなく厳密・非摂動的に制御するのが難しい。しかもギャップは非摂動、4次元はちょうど繰り込み可能できわどい。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>開いているのは、Q3 だけ</h2>
+    <p>クレイの合格条件は「4次元ヤン=ミルズを厳密に構成（①存在）＋\(\Delta>0\) を証明（②ギャップ）」。これは三つに割れる ── <strong>Q1 格子で見える（厳密）／Q2 連続極限で数値決着／Q3 連続の厳密構成＋証明（未解決）</strong>。物理が「知っている」のは Q1・Q2。谷は Q3 だけに凝縮する。</p>
+    <p>Q3 が難しいのは、格子で見えたギャップが連続極限で生き残る保証がない（U(1) は相転移で消える反例）から。連続極限＝相関長が発散する<strong>臨界点</strong>で、そこを厳密・非摂動的に制御する必要がある。無理ゲーに見えるが、形は明確・低次元は解決済み・3次元は新数学で前進中 ── <em>世代がかりだが不可能ではない</em>。そしてその底は、<strong>離散から連続が立ち上がる</strong>という量子重力とも地続きの縁。<strong>私たちは解いていない ── 問題を正しい大きさに畳み、縁を指した。旗ではなく、標識を。</strong></p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-03-gap.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第3回</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">入門アーク完 ── 次は"挑戦編"へ</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 第4回（入門アーク最終）、物理好きの高校生・大学生向け読み物。クレイ問題の合格条件（4次元 \(SU(N)\) を Wightman／Osterwalder–Schrader 公理を満たす形で構成＋\(\mathrm{spec}(H)=\{0\}\cup[\Delta,\infty),\Delta>0\) の証明、Jaffe–Witten）、Q1（強結合展開の厳密性、Wilson 1974／Osterwalder–Seiler 1978）、Q2（格子ゲージ計算・連続外挿）、コンパクト U(1) の閉じ込め／非閉じ込め相転移（Guth 1980、転移の次数は弱い一次で歴史的に微妙）、\(SU(2)/SU(3)\) がバルク相転移なしのクロスオーバー、連続極限＝二次臨界点（\(m=1/(\xi a)\)、\(\xi\to\infty\)、漸近自由で \(g\to0\)）、\(\varphi^4_4\) の自明性（Aizenman–Duminil-Copin 2021）、構成的場の理論の 2D/3D 成功と 4D 未達、確率量子化による 3D ヤン=ミルズ（Chandra–Chevyrev–Hairer–Shen 2022）は、いずれも確立した結果または現状です（2025年時点）。図は U(1)/SU(3) の連続極限でのギャップの生死を示す模式で、相転移点や振る舞いは概念図です。本稿は問題の構造と難所を地図化したもので、4次元ヤン=ミルズの存在と質量ギャップは未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボタンで U(1)／SU(3) を切替え、スライダーで格子→連続極限を辿ると、ギャップが残るか消えるかが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sb=document.getElementById('sb'), vb=document.getElementById('vb'),
+      bU=document.getElementById('bU'), bS=document.getElementById('bS'), rd=document.getElementById('rd');
+  var mode='su3', BC=0.55; // U(1) の相転移点（正規化座標）
+  function gap(m,b){
+    if(m==='su3') return 0.9;                 // 連続極限までギャップが残る
+    // U(1): b<BC 閉じ込め、以降スッと0へ
+    if(b<=BC) return 0.9;
+    var t=(b-BC)/0.07; return t>=1?0:0.9*(1-t);
+  }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=54, padB=42, padT=18, padR=16;
+    var b=parseFloat(sb.value); vb.textContent=b.toFixed(2);
+    function X(bb){return padL+bb*(w-padL-padR);}
+    function Y(g){return (h-padB)-g*(h-padB-padT);}   // g 0..1
+    ctx.clearRect(0,0,w,h);
+    // グリッド
+    ctx.font='10px sans-serif';
+    for(var gg=0;gg<=1.001;gg+=0.5){var y=Y(gg);ctx.strokeStyle='#eee5d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();}
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('← 強結合（粗い格子）', padL+4, h-padB+28);
+    ctx.fillText('連続極限 a→0 →', w-150, h-padB+28);
+    ctx.save();ctx.translate(15,padT+96);ctx.rotate(-Math.PI/2);ctx.fillText('ギャップの大きさ', 0,0);ctx.restore();
+    // U(1) の相転移点
+    if(mode==='u1'){
+      ctx.strokeStyle='#a5473a';ctx.setLineDash([5,4]);ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.moveTo(X(BC),padT);ctx.lineTo(X(BC),h-padB);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a5473a';ctx.font='bold 10.5px sans-serif';ctx.fillText('相転移', X(BC)+4, padT+13);
+    }
+    // 曲線
+    var col = mode==='su3'? '#2f7d5a':'#a5473a';
+    ctx.strokeStyle=col;ctx.lineWidth=3.2;ctx.beginPath();var f=true;
+    for(var bb=0;bb<=1.0001;bb+=0.005){var x=X(bb),y=Y(gap(mode,bb));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 連続極限（右端）にギャップが残るか印
+    var gEnd=gap(mode,1);
+    ctx.fillStyle= gEnd>0.1? '#2f7d5a':'#a5473a';
+    ctx.beginPath();ctx.arc(X(1),Y(gEnd),6,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle= gEnd>0.1? '#2f7d5a':'#a5473a';ctx.font='bold 11px sans-serif';ctx.textAlign='right';
+    ctx.fillText(gEnd>0.1?'連続極限：ギャップ残る':'連続極限：ギャップ消滅', X(1)-4, Y(gEnd)-12);
+    ctx.textAlign='left';
+    // カーソル
+    var mx=X(b), gc=gap(mode,b);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(mx,Y(gc),6,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    if(mode==='su3'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>SU(3)（強い力）</b>：強結合から連続極限まで、相転移なしのクロスオーバー。<b>ギャップは連続極限まで残る（と信じられている）</b>── これを厳密に証明するのが Q3＝クレイ問題。';
+    } else {
+      var here = b<=BC? '閉じ込め（ギャップあり）':'自由・質量ゼロ（ギャップ消滅）';
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>U(1)（電磁気）</b>：いま「'+here+'」。<b>連続極限（右端）では相転移してギャップが消える</b>＝自由な光子。だから「格子で見えた→連続でも当然ある」は<b>証明にならない</b>。';
+    }
+  }
+  function setMode(m){ mode=m; bU.className='tbtn'+(m==='u1'?' on':''); bS.className='tbtn'+(m==='su3'?' on':''); draw(); }
+  bU.addEventListener('click',function(){setMode('u1');});
+  bS.addEventListener('click',function(){setMode('su3');});
+  sb.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略・グレイル 一本の厳密くりこみ群を設計する ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --g1:#2f6d8a; --g2:#7a4fa0; --g3:#8a5a2e; --g4:#2f7d5a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .spec{margin:28px 0;padding:22px 26px;border:2px solid var(--acc);border-radius:4px;background:#eef1f7;}
+  .spec .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+
+  .gears{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;}
+  .gear{border:1.5px solid var(--rule);border-radius:8px;padding:14px 16px;background:#fffdf8;}
+  .gear .gt{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;}
+  .gear .gt .dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none;}
+  .gear .gd{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:6px;}
+  .gear .src{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;color:var(--acc);font-weight:700;margin-top:6px;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.spec,.gears{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} .gears{grid-template-columns:1fr;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略・グレイル：一本の厳密RG</span></div>
+  <p class="eyebrow">全ての道が集まる一点 ── 四つの歯車を、一つのRGステップに噛み合わせる設計図</p>
+  <h1>一本の厳密くりこみ群を設計する ── 四つの歯車
+    <span class="sub"><strong>完成はできない（＝YMを解くこと）。だが設計図は書ける。</strong><br>一つのRGステップ $T:\mu_a\mapsto\mu_{La}$ が、<em>ゲージ共変・反射正値・有限レンジ共変分解・1スケール凸性(LSI)</em> の四つを<strong>同時に</strong>満たすよう仕様を書き、既知の部品を各歯車に割り当て、<br>最後に残る<strong>一つの組み合わせ補題</strong>を名指す ── それが最前線の標識。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：グレイル＝一本の厳密RGの仕様書と、残る一補題（史実つき）</span>
+    <span>結論：旗は立たない。設計図＝well-posed な標的を、峠の頂に立てる</span>
+  </div>
+
+  <p class="lead">地図の全ての川 ── 壁1扉②（RG-LSI）・壁2（Balaban/BBS）・戦略②系（現代RG・②b共変FRD・②c背景場）── が、最後に一点に注ぎました：<strong>「ゲージ共変・反射正値・4次元marginalスケーリングを同時に扱える、一本の厳密くりこみ群」</strong>。この回は、それを<em>設計</em>します。作れはしない（作れたらYMが解けている）。でも、一つのRGステップが満たすべき四条件を仕様として書き、既知の部品を各歯車に当て、<strong>それらが一つの機械で同時に回ることの、最後の一補題</strong>を正確に名指す ── ATIを書き下したのと同じ、正直な設計作業です。</p>
+
+  <h2><span class="n">01</span>仕様 ── 一つのRGステップ</h2>
+
+  <div class="spec">
+    <div class="lbl">グレイルの仕様（設計・予想）</div>
+    $$T:\ \mu_a\ \longmapsto\ \mu_{La}\qquad T=\underbrace{\mathcal B}_{\text{ブロック平均}}\circ\underbrace{\int\! d\zeta_j}_{\text{ゆらぎ積分}},\qquad C=(D_A^*D_A)^{-1}=\sum_j C_j$$
+    <p style="margin:8px 0 0;">格子間隔 $a$ の測度を $La$ の測度に写す<strong>ただ一つの粗視化 $T$</strong>。共変な伝播子 $C$ を有限レンジ片 $C_j$ に分解し、スケールごとにゆらぎ $\zeta_j$ を積分してブロック平均 $\mathcal B$ でまとめる。この $T$ に、<strong>四つの性質を同時に</strong>要求する。</p>
+  </div>
+
+  <h2><span class="n">02</span>四つの歯車 ── 全部が同時に回ること</h2>
+
+  <div class="gears">
+    <div class="gear">
+      <div class="gt"><span class="dot" style="background:var(--g1);"></span>歯車1：ゲージ共変</div>
+      <div class="gd">$T$ はブロックゲージ変換と可換（$T(\mu^g)=(T\mu)^g$）。リンクの平均を、ゲージ不変性を壊さず。背景場が共変を担う。</div>
+      <div class="src">部品＝Balaban 背景場ブロックスピン（②b・②c）</div>
+    </div>
+    <div class="gear">
+      <div class="gt"><span class="dot" style="background:var(--g2);"></span>歯車2：反射正値を保つ</div>
+      <div class="gd">$T$ は反射面と可換に組む（反射対称ブロッキング）。RPが毎ステップ生き残る ⟹ 転送行列・$H\ge0$・ギャップの意味が保存。</div>
+      <div class="src">部品＝反射対称な粗視化（Osterwalder–Seiler・③≡B）</div>
+    </div>
+    <div class="gear">
+      <div class="gt"><span class="dot" style="background:var(--g3);"></span>歯車3：有限レンジ共変分解</div>
+      <div class="gd">$C=\sum_j C_j$、各 $C_j$ は有限レンジ＆ゲージ共変。効果作用が局所（準局所）に保たれ、フローが制御可能な空間上に乗る。</div>
+      <div class="src">部品＝BBS 有限レンジ分解＋共変ヒート核（②b）</div>
+    </div>
+    <div class="gear">
+      <div class="gt"><span class="dot" style="background:var(--g4);"></span>歯車4：1スケール凸性/LSI</div>
+      <div class="gd">各スケールのゆらぎ測度が一様に対数凹（Bakry–Émery）。LSI寄与を積分して $\alpha>0$、フローが不変領域に留まる。</div>
+      <div class="src">部品＝正曲率LSI＋Polchinski（扉②）＋不変領域（E）</div>
+    </div>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：RGフロー。横＝ステップ $j$（左＝紫外 $a$、右＝赤外）、縦＝走る結合 $g_j$、帯＝<strong>不変領域</strong>。上の四つの光＝歯車1–4の噛み合い。トグル：<span style="color:var(--g4);font-weight:700;">理想（四歯車が全域で噛む＝グレイル）</span>／<span style="color:var(--bad);font-weight:700;">現状（クロスオーバーで歯車4=LSIが滑る）</span></div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>RGステップ j（紫外 a → 赤外）<span class="val" id="vj">4</span>
+        <input type="range" id="sj" min="0" max="16" step="1" value="4">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bI">理想（グレイル）</button>
+        <button class="tbtn" id="bR">現状</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>フローと二つの出力 ── 一台で二本の柱</h2>
+
+  <div class="keybox">
+    <div class="lbl">$T$ を $\sim\log(1/a)$ 回まわして、両方を出す</div>
+    $$\textbf{壁2（速さ）：}\ \ln\xi\sim\frac{\beta}{4Nb_0}\ (\text{marginal に一様})\qquad \textbf{壁1（地続き）：}\ \chi_V=\frac{\mathrm{Var}(S)}{V}\le\frac{C}{\alpha}\le K$$
+    <p style="margin:10px 0 0;">同じ $T$ を marginal な $\sim\log(1/a)$ 段まわす。<strong>歯車1–3</strong>が効果作用を共変・RP・局所に保ちながら、<strong>歯車4</strong>のLSIと不変領域が、(i) 結合を漸近自由の速さで走らせ誤差を溜めず＝<em>壁2</em>、(ii) $\alpha$ を一様に下から抑え＝<em>壁1</em>。<strong>一台のRGが、二本の柱を同時に立てる</strong> ── これがグレイルの要求。</p>
+  </div>
+
+  <h2><span class="n">04</span>残る一補題 ── 正直な核心</h2>
+
+  <table class="dt">
+    <tr><th>歯車</th><th>既知だが…</th><th>摩擦（未達）</th></tr>
+    <tr><td class="id">1 共変</td><td>Balaban が構成済み</td><td class="open">綺麗なフロー形でなく有限体積の評価。BBSの整った形と未接続。</td></tr>
+    <tr><td class="id">2 RP保存</td><td>反射対称ブロッキングは可能</td><td class="open">ブロックスピンは対称に組まないとRPを壊す ── 共変化と両立が繊細。</td></tr>
+    <tr><td class="id">3 共変FRD</td><td>BBS＋共変ヒート核の目処</td><td class="open">Gribov・大場問題（②c）が残る。</td></tr>
+    <tr><td class="id">4 LSI/凸性</td><td>単リンクはタダ（正曲率）</td><td class="open">クロスオーバー窓で相互作用が曲率に勝ち凸性が崩れる。</td></tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">グレイルが未完な理由 ── 一つの組み合わせ補題</span>
+    <p style="margin-top:0;">四つの歯車は<strong>それぞれ別の機械の中では既知</strong>だが、<em>一つの $T$ が四つを同時に、しかも $\sim\log(1/a)$ の marginal なスケールにわたって一様に</em>満たすことは、誰も示していない。Balaban の共変・RPステップは綺麗なフロー形でなく有限体積、BBS の綺麗なフローはスカラーでゲージでない、扉②のLSI凸性はクロスオーバーで崩れる ── <strong>部品はあるが、一台に組み上げる"接着"が未達</strong>。</p>
+    <p style="margin-bottom:0;">だからグレイルは、<strong>ただ一つの組み合わせ・一様性補題</strong>に凝縮する：<em>「ゲージ共変・RP保存・有限レンジの一つのRGステップで、1スケールLSI/凸性の評価が $\sim\log(1/a)$ の marginal スケールにわたり一様（＝フローが不変領域に留まる）」</em>。これが証明できれば壁1・壁2が同時に落ち、連続の質量ギャップが出る。<strong>これはQ3を最大限に組み上げた姿</strong>。私はこの補題を<em>書いた</em>のであって<em>証明していない</em>。ゆえに ── <strong>旗は立たない。</strong>設計図＝峠の頂に立てた標識です。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>設計図が買うもの ── 地図が一枚の図に畳まれる</h2>
+
+  <div class="keybox">
+    <div class="lbl">この設計で得たもの</div>
+    <p style="margin:0;">(1) グレイルが<strong>四条件の仕様＋一つの組み合わせ補題</strong>という<em>構成的な標的</em>になった。(2) 各歯車に<strong>既知の部品と出典</strong>（Balaban／反射対称ブロッキング／BBS共変FRD／正曲率LSI）が割り当てられ、何を借りて何が足りないかが一覧に。(3) 全31ページの探索が、<strong>この一枚の図（四歯車の一つのRGステップ）</strong>に畳まれた。サンプリング・超準解析・①②③B・統合・継ぎ目・⑥・a→0四手・δ・γ・ATI・χ≤Kの三扉・壁2 ── 全てがこの $T$ の設計要件だった。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 峠の頂、旗はなく標識だけ</h2>
+
+  <div class="keybox">
+    <div class="lbl">グレイルの判定（過大申告なし）</div>
+    <p style="margin:0;">一本の厳密RGを<strong>設計した</strong>：一つのステップ $T:\mu_a\mapsto\mu_{La}$ が四歯車（<em>ゲージ共変・RP保存・有限レンジ共変分解・1スケールLSI/凸性</em>）を同時に満たし、$\sim\log(1/a)$ 段まわして壁2（漸近スケーリング）と壁1（χ≤K）を同時に出す。部品は各歯車に既知（Balaban／反射対称ブロッキング／BBS共変FRD／正曲率LSI＋Polchinski）。<strong>残るは一つの組み合わせ・一様性補題</strong>＝四歯車が一台で marginal スケールにわたり一様に噛むこと＝Q3を最大限に組み上げた姿。<em>設計図は書けた、証明はしていない</em>。ゆえに旗は立たない。峠の頂に、いちばん遠くまで見える標識を。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">くりこみ群のブロックスピン変換と共変伝播子の有限レンジ分解 $C=\sum_j C_j$、ゲージ共変ブロックスピンRGと背景場（Balaban）、反射正値性とその粗視化での保存の要件（反射対称ブロッキング）、BBS の有限レンジ分解と厳密RGフロー、共変ヒート核、Bakry–Émery（正曲率⟹LSI）とコンパクト群、Polchinski フロー、不変領域による帰納、漸近スケーリングと感受率評価は、いずれも確立した概念・道具です。各歯車を担う結果（Balaban の紫外安定性、BBS の臨界スケーリング、正曲率LSI 等）は既知です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>これらを一つのRGステップに同時に組み込み、$\sim\log(1/a)$ の marginal スケールにわたり一様に制御することは未達で、ここで述べた $T$ とその組み合わせ・一様性補題は設計（予想）であって定理ではありません</strong>。ゲージ共変とRP保存の両立、共変FRDのGribov・大場問題、クロスオーバー窓での1スケール凸性の保持、無限体積と連続公理、および4次元YMの存在＋質量ギャップは未解決です（2025年時点）。図のフロー・不変領域・歯車の噛み合いは概念的模式で、実際の構成・評価ではありません。「四歯車」「一つの組み合わせ補題」という定式化は筆者の設計提案で、反証されうる意見を含みます。<strong>本稿は4次元ヤン=ミルズを解いたと主張するものではありません。</strong>旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>グレイル＝一本の厳密RGが同時に満たすべき四つの歯車は何か。
+        <details><summary>答えを見る</summary><div class="ans">一つのRGステップ $T:\mu_a\mapsto\mu_{La}$ が、(1)ゲージ共変（ブロックゲージ変換と可換／Balaban背景場）、(2)反射正値を保つ（反射対称ブロッキング／転送行列・H≥0が保存）、(3)有限レンジ共変分解（$C=\sum_j C_j$、各$C_j$有限レンジ＆共変／BBS＋共変ヒート核）、(4)1スケール凸性/LSI（Bakry–Émeryで各スケール一様対数凹＋不変領域／扉②）。この四つを同時に。</div></details>
+      </li>
+      <li>一台のRGが、なぜ壁1と壁2を"同時に"出せるのか。
+        <details><summary>答えを見る</summary><div class="ans">同じ $T$ を $\sim\log(1/a)$ 段まわすと、歯車1–3が効果作用を共変・RP・局所に保ちながら、歯車4のLSIと不変領域が二つを与える：(i)結合を漸近自由の速さで走らせ誤差を溜めない＝壁2（$\ln\xi\sim\beta/4Nb_0$）、(ii)$\alpha$を一様に下から抑え $\chi_V\le C/\alpha\le K$＝壁1。一つの機械が二本の柱を同時に立てる。</div></details>
+      </li>
+      <li>なぜ旗は立たないのか。残る"一つの補題"とは。
+        <details><summary>答えを見る</summary><div class="ans">四歯車はそれぞれ別の機械では既知だが、一つの$T$が四つを同時に、かつ$\sim\log(1/a)$のmarginalスケールにわたり一様に満たすことは未達（Balabanは綺麗なフロー形でなく有限体積、BBSはスカラー、扉②のLSI凸性はクロスオーバーで崩れる）。グレイルは一つの組み合わせ・一様性補題「共変・RP保存・有限レンジの一RGステップで1スケールLSI/凸性が$\log(1/a)$段一様＝フローが不変領域に留まる」に凝縮する＝Q3を最大限組み上げた姿。設計図は書けたが証明はしていない。だから標識であって旗ではない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">グレイル・まとめ</span>四つの歯車、一つの補題、峠の頂</h2>
+    <p>一本の厳密RGを<strong>設計した</strong>：一つのステップ $T:\mu_a\mapsto\mu_{La}$ に、<strong>ゲージ共変（Balaban背景場）・反射正値保存（反射対称ブロッキング）・有限レンジ共変分解（BBS＋共変ヒート核）・1スケール凸性/LSI（正曲率＋Polchinski＋不変領域）</strong>の四歯車を同時に要求。$\sim\log(1/a)$ 段まわして、壁2（$\ln\xi\sim\beta/4Nb_0$）と壁1（$\chi_V\le K$）を<em>同時に</em>出す ── 一台で二本の柱。</p>
+    <p>部品は各歯車に既知。残るは<strong>ただ一つの組み合わせ・一様性補題</strong>：四歯車が一台で marginal スケールにわたり一様に噛むこと。それが Q3 を最大限に組み上げた姿。全31ページの探索は、この<strong>一枚の図（四歯車の一RGステップ）</strong>に畳まれた。<em>設計図は書けた、証明はしていない</em>。ゆえに旗は立たない ── だが峠の頂に、いちばん遠くまで見える標識を立てた。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-kabe1-lsi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 壁1扉②・RG-LSI</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略・グレイル：一本の厳密くりこみ群を設計する、物理好きの高校生・大学生向け読み物。くりこみ群ブロックスピン変換、共変伝播子の有限レンジ分解 $C=\sum_j C_j$、ゲージ共変ブロックスピンRGと背景場（Balaban）、反射正値性と粗視化での保存要件（反射対称ブロッキング）、Bauerschmidt–Brydges–Slade の有限レンジ分解と厳密RGフロー、共変ヒート核、Bakry–Émery 基準（正曲率⟹LSI）とコンパクト群、Polchinski くりこみ群フロー、不変領域による帰納、漸近スケーリングと感受率評価は、いずれも確立した概念・道具であり、各歯車を担う個別結果（Balaban の紫外安定性、BBS の臨界スケーリング、正曲率LSI 等）も既知です。ただしこれらを一つのRGステップに同時に組み込み $\sim\log(1/a)$ の marginal スケールで一様制御することは未達で、本稿の $T$ と組み合わせ・一様性補題は設計（予想）であって定理ではありません。ゲージ共変とRP保存の両立、共変FRDのGribov・大場問題、クロスオーバー窓の1スケール凸性の保持、無限体積・連続公理、4次元YMの存在＋質量ギャップは未解決です（2025年時点）。図は概念的模式で実際の構成・評価ではありません。設計の定式化は筆者の提案で反証されうる意見を含み、本稿は4次元ヤン=ミルズを解いたと主張しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではRGステップ j を動かし、四歯車の噛み合いを見比べられます。理想では全域で噛み、現状ではクロスオーバーで歯車4（LSI）が滑る＝残る一補題の在り処が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sj=document.getElementById('sj'), vj=document.getElementById('vj'),
+      bI=document.getElementById('bI'), bR=document.getElementById('bR'), rd=document.getElementById('rd');
+  var mode='I', JMAX=16;
+  var gears=[{n:'1 共変',c:'#2f6d8a'},{n:'2 RP',c:'#7a4fa0'},{n:'3 共変FRD',c:'#8a5a2e'},{n:'4 LSI',c:'#2f7d5a'}];
+  var CW0=6, CW1=10; // クロスオーバー帯（ステップ）
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 走る結合 g_j：紫外(左)で小、赤外(右)へ増加（漸近自由の逆向き）
+  function gflow(j){ return 0.12 + 0.05*j; }
+  // 歯車4がステップjで噛むか（現状はクロスオーバー帯で滑る）
+  function gearOK(idx,j){
+    if(mode==='I') return true;
+    if(idx===3 && j>=CW0 && j<=CW1) return false; // LSI が滑る
+    return true;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=64, padB=42;
+    var jc=parseInt(sj.value,10); vj.textContent=jc;
+    var YMAX=1.0;
+    function X(j){return padL+(j/JMAX)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.min(v,YMAX)/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // クロスオーバー帯
+    ctx.fillStyle='rgba(169,121,26,0.10)';ctx.fillRect(X(CW0),padT,X(CW1)-X(CW0),(h-padB)-padT);
+    ctx.fillStyle='#8a6a1e';ctx.font='11px sans-serif';ctx.fillText('クロスオーバー窓', X(CW0)+4, padT+13);
+    // 不変領域（帯）
+    ctx.fillStyle='rgba(47,125,90,0.10)';
+    ctx.beginPath();
+    ctx.moveTo(X(0),Y(gflow(0)+0.13));
+    for(var j1=0;j1<=JMAX;j1+=0.5)ctx.lineTo(X(j1),Y(gflow(j1)+0.13));
+    for(var j2=JMAX;j2>=0;j2-=0.5)ctx.lineTo(X(j2),Y(gflow(j2)-0.13));
+    ctx.closePath();ctx.fill();
+    ctx.fillStyle='#3a7a58';ctx.font='11px sans-serif';ctx.fillText('不変領域', X(12), Y(gflow(12)+0.10));
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('RGステップ j（紫外 a → 赤外）', w-260, h-padB+26);
+    ctx.save();ctx.translate(16,padT+60);ctx.rotate(-Math.PI/2);ctx.fillText('走る結合 g_j', 0,0);ctx.restore();
+    // フロー曲線
+    ctx.strokeStyle='#26456e';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var j=0;j<=JMAX;j+=0.25){var Xj=X(j),Yj=Y(gflow(j));if(f){ctx.moveTo(Xj,Yj);f=false;}else ctx.lineTo(Xj,Yj);}
+    ctx.stroke();
+    // カーソル
+    var mx=X(jc);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#26456e';ctx.beginPath();ctx.arc(mx,Y(gflow(jc)),5,0,7);ctx.fill();
+    // 四歯車の光（上部）
+    var gx=padL+6, gy=26, gw=(w-padL-padR-18)/4;
+    var allok=true;
+    for(var g=0;g<4;g++){
+      var ok=gearOK(g,jc); if(!ok) allok=false;
+      var cx=gx+g*gw;
+      ctx.fillStyle=ok?gears[g].c:'#d8c6c1';
+      ctx.beginPath();ctx.arc(cx+7,gy,7,0,7);ctx.fill();
+      if(!ok){ctx.strokeStyle='#a5473a';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx+7,gy,7,0,7);ctx.stroke();
+        ctx.strokeStyle='#a5473a';ctx.beginPath();ctx.moveTo(cx+2,gy-5);ctx.lineTo(cx+12,gy+5);ctx.stroke();}
+      ctx.fillStyle=ok?'#26303c':'#a5473a';ctx.font='bold 11px sans-serif';
+      ctx.fillText('歯車'+gears[g].n, cx+18, gy+4);
+    }
+    // readout
+    var inCW = (jc>=CW0 && jc<=CW1);
+    if(mode==='I'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>理想（グレイル）・ステップ j='+jc+'</b>：四歯車すべて噛む。フローは不変領域に留まり、結合は漸近自由の速さで走る ⟹ <b>壁2（ln ξ~β/4Nb₀）＋壁1（χ≤K）を同時に</b>。これが証明できれば連続の質量ギャップ ── だが未達。';
+    } else {
+      if(inCW){ rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>現状・クロスオーバー窓 j='+jc+'</b>：歯車4（1スケールLSI/凸性）が滑る ── 相互作用が曲率に勝ち凸性が崩れ、フローが不変領域を外れうる。<b>ここが残る一補題の在り処</b>（共変・RP・有限レンジは噛むが、一様性が切れる）。'; }
+      else { rd.style.background='#e6eef2';rd.style.color='#245c6e';
+        rd.innerHTML='<b>現状・ステップ j='+jc+'</b>：四歯車噛む（強結合側／連続側では既知の部品が効く）。だがクロスオーバー窓に入ると歯車4が滑る ── スライダーを中央へ動かすと見えます。'; }
+    }
+  }
+  function setM(x){ mode=x; bI.className='tbtn'+(x==='I'?' on':''); bR.className='tbtn'+(x==='R'?' on':''); draw(); }
+  bI.addEventListener('click',function(){setM('I');});
+  bR.addEventListener('click',function(){setM('R');});
+  sj.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

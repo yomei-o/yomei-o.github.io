@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSIの鎖と、すでに動いているエンジン ── 前線はどこで止まるか ／ ペレルマン編 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrl{display:flex;align-items:center;gap:12px;margin:14px 0 0;flex-wrap:wrap;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrl input[type=range]{flex:1;min-width:200px;accent-color:var(--acc);}
+  .ctrl .val{font-weight:700;color:var(--acc);min-width:120px;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .chain{margin:26px 0;display:flex;flex-direction:column;gap:0;}
+  .chain .link{border:1px solid var(--rule);border-left:5px solid var(--side);border-radius:6px;padding:13px 18px;background:#fff;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .chain .link .h{font-size:14px;font-weight:700;color:var(--side);}
+  .chain .link .d{font-size:13.5px;color:#33414a;line-height:1.7;margin-top:2px;}
+  .chain .arrow{text-align:center;color:var(--gold);font-size:20px;font-weight:700;line-height:1;margin:3px 0;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.chain{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .ctrl{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 5 回</span></div>
+  <p class="eyebrow">Wと質量ギャップを結ぶ橋＝LSI ── そのエンジンは、すでに現実に回っている</p>
+  <h1>LSIの鎖と、すでに動いているエンジン
+    <span class="sub">前回覚えた<strong>LSI（対数ソボレフ不等式）</strong>は、<em>「LSI → 相関の指数減衰 → 質量ギャップ」</em>という鎖でギャップに直結する。しかもこのエンジンは<strong>強結合側で、もう回っている</strong>（Shen–Zhu–Zhu）。<br>問題は、それが<em>どこで、なぜ止まるか</em> ── そして欠けている一手は何か。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：LSI→ギャップの鎖を組み、前線の止まる理由と欠けた一手を特定する</span>
+    <span>一言で：単一スケールのBEは強結合で成功、要るのは「フローに沿ったBE」</span>
+  </div>
+
+  <p class="lead">前回の最後、Wの最小値が<strong>LSI（対数ソボレフ不等式）の最良定数</strong>だと分かりました。今回は、そのLSIが<em>どうやって質量ギャップにつながるか</em>を鎖でつなぎます。そして驚くべきことに ── ペレルマンの道具箱（曲率の正値性 → エントロピー不等式 → 潰れない保証）の<strong>確率論バージョンが、いまこの問題の最前線で実際に動いている</strong>のです。ただし、ある場所まで。<em>どこで、なぜ止まるのか。</em>それが分かると、欠けている一手が正確に名指しできます。</p>
+
+  <h2><span class="n">01</span>LSIの鎖 ── 一本の不等式が、ギャップを生む</h2>
+
+  <p>LSIは「その測度がどれだけ速く釣り合いに向かうか」を測る不等式です。難しく見えますが、大事なのは<strong>3本の橋でギャップにつながる</strong>こと。</p>
+
+  <div class="chain">
+    <div class="link"><div class="h">出発点：一様なLSI（物理単位で、連続極限まで）</div><div class="d">格子ヤン=ミルズの測度が、格子を細かくしても<em>ヘタらない</em>強さのLSIを持つ。</div></div>
+    <div class="arrow">↓ ①（標準：バクリー–エムリー／Rothaus）</div>
+    <div class="link"><div class="h">LSI → スペクトルギャップ</div><div class="d">LSIがあれば、その下にポアンカレ不等式＝スペクトルギャップが従う。</div></div>
+    <div class="arrow">↓ ②（Stroock–Zegarlinski）</div>
+    <div class="link"><div class="h">一様LSI ⇔ 相関の指数減衰（混合）</div><div class="d">格子スピン系では、体積に一様なLSIと、相関関数が距離で指数的に消えることが同値。</div></div>
+    <div class="arrow">↓ ③（指数クラスタリング＋反射正値性 ＝ 第1回の道具3）</div>
+    <div class="link"><div class="h">→ 転送行列の質量ギャップ</div><div class="d">相関の指数減衰＋反射正値性で、質量ギャップ \(\Delta>0\) が出る。</div></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">鎖をつなぐと ── 問題が「一本の不等式」に</div>
+    <p class="big" style="margin:0;">格子ヤン=ミルズの測度に、<strong>連続極限まで一様なLSI定数（物理単位）</strong>を一つ示せれば、<em>質量ギャップが従う。</em><br><span style="font-size:15px;font-weight:400;color:var(--ink-soft);">＝ 第4回の「W＝LSI下限＝潰れない保証」の★マスが、そのままギャップに直結する。</span></p>
+  </div>
+
+  <p>そして ── ここが熱いところ ── LSIを示す<strong>現代の道具立てが、まさに「RGフローに沿ってエントロピーを制御する」形</strong>をしています。Bauerschmidt–Bodineau らは、<strong>ポルチンスキー方程式</strong>（RGフローの微分方程式）を乗り物にして、バクリー–エムリー型の議論でLSIを証明する ── これはまさに<em>ペレルマンの構造（フロー＋エントロピー＋曲率の正値性）の確率論版</em>です。sine-Gordon や \(\varphi^4\) では実績が出ている。<strong>ただしゲージ理論では、まだ。</strong></p>
+
+  <h2><span class="n">02</span>エンジンは強結合側で「稼働済み」 ── Shen–Zhu–Zhu</h2>
+
+  <p>ゲージ理論でも、この鎖は<em>もう一部動いています</em>。Shen–Zhu–Zhu（2022–23年）の仕事です。格子ヤン=ミルズに<strong>ランジュバン動力学（確率量子化）</strong>でアプローチし、't Hooftスケーリングで結合が十分小さい（＝<strong>強結合</strong>）という仮定のもとで、次を証明しました。</p>
+
+  <div class="aside">
+    <span class="tag">Shen–Zhu–Zhu（2022–23）が証明したこと</span>
+    強結合の仮定 \(|\beta|<\tfrac{1}{16(d-1)}\) のもとで、無限体積の測度の<strong>一意性</strong>、<strong>指数エルゴード性</strong>、そしてその測度に対する<strong>対数ソボレフ不等式（LSI）とポアンカレ不等式</strong>。ここから、広いクラスの相関の<strong>指数減衰 ＝ 厳密に正の質量ギャップ</strong>が従う。機構も予想どおりで、<em>'t Hooft領域で<strong>バクリー–エムリー条件</strong>が検証でき</em>、そこから全部が流れ出る。2025年にはヤン=ミルズ–ヒッグス系へも拡張。
+  </div>
+
+  <p>つまり<strong>ペレルマンの道具箱の確率論版は、夢物語ではなく、いま現在この問題の最前線で実際に回っているエンジン</strong>です。到達しているのは<em>強結合まで</em>── 昔クラスター展開で証明された領域を、現代の道具（曲率＝バクリー–エムリー）で取り直した形。<strong>橋の手前の錨（第1回の道具1）が、ペレルマンの言葉で打ち直された</strong>のです。</p>
+
+  <h2><span class="n">03</span>なぜ、そこで止まるのか ── 曲率 vs 非凸性の綱引き</h2>
+
+  <p>止まる理由も、前回の部品②の言葉できれいに言えます。バクリー–エムリー条件は一言でいうと ──<strong>「空間の曲がり（味方）が、作用のデコボコ＝非凸性（敵）に勝てるか」</strong>。この綱引きです。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2;">
+    <li><strong>味方：群の曲率（一定）。</strong>格子ヤン=ミルズの空間はリンク変数の積 ── コンパクト群なので、<em>正の曲率を固定量として</em>持っている（前回のバクリー–エムリーの下地）。</li>
+    <li><strong>敵：作用の非凸性（\(\beta\) に比例して育つ）。</strong>連続極限に向かって \(\beta\) を上げるほど、プラケット作用のデコボコが大きくなる。</li>
+  </ul>
+
+  <p>だから \(\beta\) が小さいうち（強結合）は味方が勝ってLSIが出る。でも連続極限へ \(\beta\) を上げると、<strong>作用の非凸性が群の曲率を食い破る</strong> ── ちょうど無人地帯の入口で、素朴なバクリー–エムリーが死ぬ。下のスライダーで、その綱引きを動かしてみてください。<em>前線がそこに引かれているのは偶然ではなく、構造的</em>です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>曲率（味方・一定）vs 作用の非凸性（敵・\(\beta\)に比例）</strong>の綱引き。スライダーで結合 \(\beta\)（左＝強結合 → 右＝連続極限）を動かす。\(\beta<\beta_c\) では味方が勝ち<span style="color:#2f7d5a;font-weight:700;">LSI成立＝ギャップ証明済み（Shen–Zhu–Zhu領域）</span>。\(\beta_c\) を越えると<span style="color:#a5473a;font-weight:700;">素朴なBEが死ぬ（無人地帯）</span>。</div>
+    <canvas id="cv" width="680" height="290"></canvas>
+    <div class="ctrl">
+      <span>結合 β：</span>
+      <input type="range" id="sl" min="0" max="100" value="22">
+      <span class="val" id="val"></span>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2c5560;"></i>群の曲率（味方・一定）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>作用の非凸性（敵・β↑）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>証明済み領域</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>だから、欠けている一手が名指しできる</h2>
+
+  <p>ペレルマンの解剖（第4回）と突き合わせると、足りない動きが<strong>一つに絞れます</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">欠けている一手</div>
+    <p class="big" style="margin:0;">Shen–Zhu–Zhu がやったのは<strong>「単一スケールでの曲率条件」</strong>（一発で味方が勝てと要求）。<br>ペレルマン（とスカラー場のBauerschmidt–Bodineau）がやったのは<strong>「フローに沿った曲率条件」</strong> ── <em>一発の勝負をあきらめ、RGの1ステップごとに、そのスケールぶんの凸性だけを要求し、ポルチンスキー流でスケールからスケールへエントロピー不等式を運ぶ。</em><br>スカラー場では成功済み。<strong>ゲージ理論で誰もやっていないのが、まさにこの一手。</strong></p>
+  </div>
+
+  <p>そしてゲージでやろうとすると、第4回の部品①と、幾何ルートが<strong>必然的に呼び出されます</strong>。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:2.05;">
+    <li><strong>ゲージ共変なフローが要る</strong> → 格子QCDにはすでにある ── <strong>リュッシャーの勾配流（Wilson flow）</strong> \(\partial_t A=-D^*F\)。これは<em>ヤン=ミルズ作用の勾配流＝リッチフローのYM版そのもの</em>（リッチフローもペレルマンのF汎関数の勾配流だった）。「勾配流＝RG」の同定は格子業界で実際に研究されている。</li>
+    <li><strong>デコボコをゲージ軌道の分だけ差し引く</strong> → 実効凸性は<em>軌道空間</em>で測るべき → Singerの軌道空間曲率が、飾りではなく<strong>必須部品</strong>として戻ってくる。</li>
+    <li><strong>流儀依存の吸収</strong> → 部品①：走る作用と走る参照測度のペアに量を定義する。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">更新された「問題の最終形」</div>
+    <p style="margin:0;font-size:16px;line-height:1.8;">リュッシャー勾配流（＝YM版リッチフロー）に沿った格子YMの有効作用の列に対し、<strong>くりこまれたバクリー–エムリー評価</strong>（各スケールでの実効曲率の下限、軌道空間上で）を確立し、<strong>LSI定数が物理単位で \(a\to0\) まで一様に下から抑えられる</strong>ことを示せ。<em>強結合端はShen–Zhu–Zhuが供給済み。弱結合端はほぼガウスで良性。残るは中間の帯一本。</em></p>
+  </div>
+
+  <p>4本のループ → 1個の一様評価 → <strong>1本の関数不等式（くりこまれたLSI）</strong>まで、問題が煮詰まりました。両端に錨があり、道具（ポルチンスキー流のBE・勾配流・軌道空間曲率）は全部実在して、それぞれ別の場所で実績がある。<em>未踏なのは「組み合わせ」だけ</em>── ただし、それが簡単だとは言いません。次回、その中間の帯に潜む「泥」を正直に測ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">LSI→ポアンカレ不等式（スペクトルギャップ）はBakry–Émery／Rothausの標準結果、一様LSI⇔指数減衰はStroock–Zegarlinski、指数クラスタリング＋反射正値性→転送行列ギャップも標準です。<strong>Shen–Zhu–Zhu（2022–23）</strong>は確率量子化（ランジュバン）で格子YMを扱い、't Hooftスケーリングの強結合条件 \(|\beta|<\tfrac{1}{16(d-1)}\) のもと、無限体積測度の一意性・指数エルゴード性・LSI・ポアンカレ不等式・相関の指数減衰（＝正の質量ギャップ）を証明、機構はBakry–Émery条件の検証です（2025年にYM–Higgsへ拡張）。これは<em>強結合領域</em>の結果で、連続極限（\(\beta\to\infty\)）の質量ギャップ＝クレイ問題そのものではありません。</p>
+    <p style="margin-bottom:0;">Bauerschmidt–Bodineau（–Dagallier）のPolchinski流＋Bakry–Émeryによる一様LSIはスカラー場（\(\varphi^4_2,\varphi^4_3\)、sine-Gordon）での結果。リュッシャーの勾配流（Wilson flow）\(\partial_t A=-D^*F\) は実在し「勾配流＝RG粗視化」の同定も研究されていますが、<strong>ゲージ理論での「フローに沿ったくりこまれたBakry–Émery」＋一様LSIは未達</strong>で、そこが本文の「欠けた一手」です。図の綱引きは機構を1変数で模した模型で、\(\beta_c\) の値や曲線は模式です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>LSIから質量ギャップまでの鎖を、3つの橋で言うと？
+        <details><summary>答えを見る</summary><div class="ans">①一様LSI → スペクトルギャップ（Bakry–Émery/Rothaus）、②一様LSI ⇔ 相関の指数減衰（Stroock–Zegarlinski）、③指数減衰＋反射正値性 → 転送行列の質量ギャップ。つなぐと「連続極限まで一様なLSI（物理単位）を示せば質量ギャップが従う」。</div></details>
+      </li>
+      <li>強結合で証明できて、連続極限に向かうと素朴なやり方が死ぬのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">バクリー–エムリー＝「群の曲率（味方・一定）vs 作用の非凸性（敵・\(\beta\)に比例）」の綱引き。\(\beta\)小（強結合）では味方が勝つが、連続極限へ \(\beta\) を上げると<strong>非凸性が曲率を食い破る</strong>。前線が無人地帯の入口に引かれるのは構造的。</div></details>
+      </li>
+      <li>「欠けている一手」を一言で。
+        <details><summary>答えを見る</summary><div class="ans">単一スケールの一発勝負をあきらめ、<strong>フローに沿って、RGの1ステップごとに凸性を要求し、エントロピー不等式をスケールからスケールへ運ぶ（くりこまれたバクリー–エムリー）</strong>。スカラー場では成功済み、ゲージ理論では未踏。実行にはゲージ共変なフロー（リュッシャー勾配流＝YM版リッチフロー）と軌道空間曲率、部品①のペア化が要る。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>橋はLSI、エンジンは半分もう回っている</h2>
+    <p>Wと質量ギャップを結ぶ橋は<strong>LSI</strong>。鎖は3本：①LSI→スペクトルギャップ、②一様LSI⇔相関の指数減衰、③指数減衰＋反射正値性→転送行列ギャップ。つなぐと「連続極限まで一様なLSIを示せばギャップが従う」。しかも<strong>Shen–Zhu–Zhu</strong>が、確率量子化＋バクリー–エムリーで<em>強結合側のLSI＝ギャップを実際に証明済み</em>── ペレルマンの道具箱の確率論版が、もう回っている。</p>
+    <p>止まる理由は構造的：<strong>群の曲率 vs 作用の非凸性</strong>の綱引きで、連続極限へ向かうと非凸性が勝つ。欠けた一手は<strong>「フローに沿ったくりこまれたバクリー–エムリー」</strong>（単一スケール→多スケール）で、スカラーでは成功済み・ゲージで未踏。乗り物は<strong>リュッシャー勾配流＝YM版リッチフロー</strong>。問題は<em>1本の関数不等式（くりこまれたLSI）</em>に煮詰まった。残るは中間の帯 ── 次回、その「泥」を測る。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman4-wentropy.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第4回：Wの解剖</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-perelman6-doro.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">第6回：泥か壁か・2次元の実験室 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第5回。LSI→スペクトルギャップ（Bakry–Émery/Rothaus）、一様LSI⇔相関の指数減衰（Stroock–Zegarlinski）、指数クラスタリング＋反射正値性→転送行列質量ギャップは、いずれも標準的な結果です。Shen–Zhu–Zhu（Hao Shen, Rongchan Zhu, Xiangchan Zhu ら, 2022–2023）は確率量子化（ランジュバン動力学）による格子ヤン=ミルズで、't Hooftスケーリングの強結合条件 \(|\beta|<1/(16(d-1))\) のもと無限体積測度の一意性・指数エルゴード性・LSI・ポアンカレ不等式・相関の指数減衰（正の質量ギャップ）を証明し、機構はBakry–Émery条件の検証、2025年にYang–Mills–Higgsへ拡張されています。これは強結合領域の結果で連続極限の質量ギャップ（クレイ問題）ではありません。Bauerschmidt–Bodineau（–Dagallier）のPolchinski流＋Bakry–ÉmeryによるLSIはスカラー場での結果、リュッシャーの勾配流（Wilson flow）\(\partial_t A=-D^*F\) と「勾配流＝RG」の同定も実在しますが、ゲージ理論での「くりこまれたBakry–Émery＋一様LSI」は未達です。図・\(\beta_c\)・曲線は機構を模した模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とスライダー・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで結合 β を動かすと、綱引きの勝敗と前線が変わります。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var sl=document.getElementById('sl'), val=document.getElementById('val');
+  var lastW=680;
+  var BC=48; // beta_c on 0..100 slider
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var beta=+sl.value;
+    var curv=0.55;                       // 味方（一定）
+    var ncx=0.12+beta/100*0.95;          // 敵（βに比例）
+    var win = curv>=ncx;
+
+    // two bars
+    var baseY=200, x0=70, barW=150, gap=90;
+    // 味方
+    ctx.fillStyle='#2c5560';
+    var hh1=curv*150; ctx.fillRect(x0, baseY-hh1, barW, hh1);
+    ctx.fillStyle='#22343a'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('群の曲率（味方）', x0+barW/2, baseY+20);
+    ctx.fillText('一定', x0+barW/2, baseY+37);
+    // 敵
+    var x1=x0+barW+gap;
+    ctx.fillStyle='#a5622a';
+    var hh2=Math.min(1.05,ncx)*150; ctx.fillRect(x1, baseY-hh2, barW, hh2);
+    ctx.fillStyle='#6a3d18';
+    ctx.fillText('作用の非凸性（敵）', x1+barW/2, baseY+20);
+    ctx.fillText('β に比例 ↑', x1+barW/2, baseY+37);
+    // baseline
+    ctx.strokeStyle='#b9ad8f'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x0-16,baseY); ctx.lineTo(x1+barW+16,baseY); ctx.stroke();
+
+    // verdict panel (right)
+    var px=x1+barW+50, pw=w-px-16;
+    if(px+pw>w-10) pw=w-px-10;
+    ctx.fillStyle = win? '#e3efe8':'#f6e3de';
+    ctx.fillRect(px,40,pw,190);
+    ctx.strokeStyle = win? '#2f7d5a':'#a5473a'; ctx.lineWidth=1.4; ctx.strokeRect(px,40,pw,190);
+    ctx.textAlign='center'; ctx.font='bold 15px sans-serif'; ctx.fillStyle= win? '#2f7d5a':'#a5473a';
+    ctx.fillText(win?'味方が勝つ':'敵が勝つ', px+pw/2, 66);
+    ctx.font='12.5px sans-serif'; ctx.fillStyle='#33414a';
+    var lines = win
+      ? ['LSI 成立','↓','相関の指数減衰','↓','質量ギャップ Δ>0','','＝ Shen–Zhu–Zhu','　が証明済みの領域']
+      : ['素朴なBEが死ぬ','','無人地帯','（中間結合）','','← 欠けた一手','「フローに沿った','　くりこまれたBE」'];
+    for(var i=0;i<lines.length;i++){ ctx.fillStyle=(i===6&&win)?'#2f7d5a':((i===5&&!win)?'#a5473a':'#33414a'); ctx.font=(i===6&&win)||(i===5&&!win)?'bold 12.5px sans-serif':'12.5px sans-serif'; ctx.fillText(lines[i], px+pw/2, 88+i*17); }
+
+    // frontier bar at bottom
+    var fT=248, fB=270, fL=x0-16, fR=x1+barW+16;
+    ctx.fillStyle='#e3efe8'; ctx.fillRect(fL,fT,(fR-fL)*(BC/100),fB-fT);
+    ctx.fillStyle='#f6e3de'; ctx.fillRect(fL+(fR-fL)*(BC/100),fT,(fR-fL)*(1-BC/100),fB-fT);
+    ctx.strokeStyle='#b9ad8f'; ctx.strokeRect(fL,fT,fR-fL,fB-fT);
+    // beta marker
+    var mxk=fL+(fR-fL)*(beta/100);
+    ctx.fillStyle=win?'#2f7d5a':'#a5473a'; ctx.beginPath(); ctx.moveTo(mxk,fT-6); ctx.lineTo(mxk-5,fT-14); ctx.lineTo(mxk+5,fT-14); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#4a4f5e'; ctx.font='11px sans-serif'; ctx.textAlign='left'; ctx.fillText('強結合', fL+2, fB-6);
+    ctx.textAlign='right'; ctx.fillText('連続極限', fR-2, fB-6);
+    ctx.textAlign='center'; ctx.fillStyle='#8a4b2f'; ctx.fillText('βc', fL+(fR-fL)*(BC/100), fT-2);
+  }
+  function say(){
+    var beta=+sl.value; var win=beta<BC;
+    val.textContent = (beta<BC? '強結合側':'連続極限側') + '（β='+beta+'）';
+    rd.innerHTML = win
+      ? '<b>β &lt; βc（強結合）：味方が勝つ。</b> 群の曲率が作用の非凸性に勝ち、<b>LSI → 指数減衰 → 質量ギャップ</b>が出る。これが Shen–Zhu–Zhu の<b>証明済み領域</b>。錨がペレルマンの言葉で打ち直された場所。'
+      : '<b>β &gt; βc（連続極限へ）：敵が勝つ。</b> 作用の非凸性が群の曲率を食い破り、<b>素朴なバクリー–エムリーが死ぬ</b>。ここが無人地帯 ── 欠けた一手「フローに沿ったくりこまれたBE」が要る場所。';
+  }
+  sl.addEventListener('input',function(){ draw(); say(); });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

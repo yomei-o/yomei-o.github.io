@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゴールの正確な位置 ── 旗が立つ条件と、そこまでの距離 ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --done:#2f7d5a; --part:#a9791a; --open:#a5473a;
+    --d2:#2f7d5a; --d3:#a9791a; --d4:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .goalbox{margin:28px 0;padding:22px 26px;border:2px solid var(--acc);border-radius:4px;background:#eef1f7;}
+  .goalbox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;color:var(--acc);font-weight:800;margin-bottom:10px;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  .st-done{color:var(--done);font-weight:700;} .st-part{color:var(--part);font-weight:700;} .st-open{color:var(--open);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.goalbox{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">ゴールの正確な位置と、距離</span></div>
+  <p class="eyebrow">旗が立つ条件を正確に定める ── そうして初めて、どれだけ離れているかが分かる</p>
+  <h1>ゴールの正確な位置 ── 旗が立つ条件と、そこまでの距離
+    <span class="sub">「旗が立つ気配が無い」── その通り。だから<strong>ゴールを正確に定義</strong>して、距離を測る。<br>クレイ（Jaffe–Witten）の合格条件は二つ：<strong>(A) 4次元で公理を満たす理論の存在</strong>と <strong>(B) 質量ギャップ $\Delta>0$</strong>。<br>そして正直に測る ── <em>2次元は到達、3次元は途中、4次元は核が未踏</em>。距離は、大きい。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：合格条件を精密に述べ、次元別に到達点を正直に測る（測定回）</span>
+    <span>結論：4次元の核（連続構成＋ギャップ）は未踏。地図は距離を縮めていない</span>
+  </div>
+
+  <p class="lead">あなたの指摘は正しい ── <strong>ゴールの位置を定めないと、どれだけ離れているかも分からない</strong>。そこでこの回は"測定回"にします。まずクレイ研究所の公式問題（Jaffe–Witten の記述）に沿って、<strong>何が揃えば旗が立つのか</strong>を正確に述べる。次に、既知の結果を次元別（2/3/4）に並べ、<em>各合格条件にどこまで到達しているか</em>を正直に測る。先に結論を言えば ── <strong>4次元の核（連続極限の構成と質量ギャップ）は、ほぼ未踏</strong>。これまでの37話の地図は、距離を*描いた*が*縮めて*はいません。それを、はっきり見ます。</p>
+
+  <h2><span class="n">01</span>ゴールの定義 ── 旗が立つ二条件</h2>
+
+  <div class="goalbox">
+    <div class="lbl">◆ クレイ問題（Jaffe–Witten）の合格条件</div>
+    <p style="margin:0 0 8px;">コンパクト単純ゲージ群 $G$（例：$SU(N)$）について、<strong>4次元ユークリッド空間 $\mathbb R^4$ 上の量子ヤン=ミルズ理論を構成し</strong>、次を示す：</p>
+    <p style="margin:0 0 6px;"><strong>(A) 存在</strong>：Osterwalder–Schrader（＝ワイトマン）公理を満たす<em>非自明</em>な理論であること ── ヒルベルト空間・ポアンカレ対称性・真空・反射正値性・クラスター性、そして短距離で漸近自由、ゲージ群 $G$。</p>
+    <p style="margin:0;"><strong>(B) 質量ギャップ</strong>：ある $\Delta>0$ が存在し、ハミルトニアンのスペクトルが $(0,\Delta)$ に何も持たない ── <strong>真空が孤立し、最初の励起が $\ge\Delta$</strong>。</p>
+    <p style="margin:10px 0 0;font-size:13.5px;color:var(--ink-soft);">旗が立つ＝<strong>(A) かつ (B) を、$D=4$・コンパクト単純群・無限体積で厳密に</strong>。これがゴールの正確な座標。</p>
+  </div>
+
+  <h2><span class="n">02</span>合格条件を分解する ── 六つのマイルストーン</h2>
+
+  <div class="keybox">
+    <div class="lbl">ゴールまでの道の目印（左＝易、右＝ゴール）</div>
+    <p style="margin:0;">① 格子・強結合ギャップ（Q1）→ ② 連続極限の数値確認（Q2）→ ③ UV安定性（有限体積の連続制御）→ ④ 無限体積・連続測度の構成 → ⑤ OS公理を満たす（＝存在A）→ <strong>⑥ 質量ギャップ $\Delta>0$（＝B）＝ゴール</strong>。①②は既知・数値、③〜⑥が厳密構成の本体。下の"距離メーター"で次元別に。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：ゴールまでの道（左→右）と、各次元がどこまで到達したか。マイルストーン①〜⑥、⑥＝ゴール。ボタンで次元 $D=2/3/4$ を切替。マーカーが到達点</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <span>次元：</span>
+      <button class="tbtn" id="bD2">D=2</button>
+      <button class="tbtn on" id="bD4">D=4（本命）</button>
+      <button class="tbtn" id="bD3">D=3</button>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>次元別に、正直に測る</h2>
+
+  <table class="dt">
+    <tr><th>合格条件</th><th>D=2</th><th>D=3</th><th>D=4（本命）</th></tr>
+    <tr><td class="id">①格子・強結合ギャップ(Q1)</td><td class="st-done">済</td><td class="st-done">済</td><td class="st-done">済（Osterwalder–Seiler）</td></tr>
+    <tr><td class="id">②連続極限の数値(Q2)</td><td class="st-done">済</td><td class="st-done">済</td><td class="st-done">済（格子数値）</td></tr>
+    <tr><td class="id">③UV安定性（有限体積）</td><td class="st-done">済</td><td class="st-done">済</td><td class="st-part">部分（Balaban）</td></tr>
+    <tr><td class="id">④無限体積・連続測度の構成</td><td class="st-done">済</td><td class="st-part">前進（CCHS 等・3D測度）</td><td class="st-open">未</td></tr>
+    <tr><td class="id">⑤OS公理を満たす存在(A)</td><td class="st-done">済</td><td class="st-open">未（完全な公理は未）</td><td class="st-open">未</td></tr>
+    <tr><td class="id">⑥質量ギャップ Δ>0 (B)</td><td class="st-done">済（自明に近い）</td><td class="st-open">未</td><td class="st-open">未</td></tr>
+  </table>
+
+  <div class="aside">
+    <span class="tag">読み方の注意（正直に）</span>
+    2次元YMは可解に近く、伝播する自由度が本質的に無いので"ゴール到達"だが<em>本物の難しさは無い</em>。3次元は近年の確率量子化（Chandra–Chevyrev–Hairer–Shen ら）で測度構成が大きく前進 ── だが完全なOS公理＋質量ギャップの Jaffe–Witten 水準には未到達。<strong>4次元＝本命は、③に足がかり（Balaban の有限体積UV安定性）と①（格子強結合ギャップ）を持つが、④⑤⑥（連続構成・存在・ギャップ）はほぼ未踏</strong>。しかも4次元は臨界（marginal）で質的に最難。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>で、どれだけ離れているか</h2>
+
+  <div class="keybox">
+    <div class="lbl">距離の正直な見積もり</div>
+    <p style="margin:0;">4次元では、六つのうち<strong>易しい二つ（①②）＋足がかり一つ（③）</strong>まで。<strong>本体の三つ（④連続構成・⑤存在・⑥ギャップ）は未踏</strong>。しかもこの三つは互いに絡み、"あと少し"で片付く技術的段差ではなく、<em>新しい数学的原理を要する核</em>（＝クロスオーバーの非摂動制御、§Gap Lemma）。<strong>距離は「残り3マイルストーン」だが、その3つが問題の全重量</strong>。数マイルでなく、山の向こう側。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">この37話が距離に対してしたこと ── 正直に</span>
+    <p style="margin-top:0;">これまでの地図・しるし・Gap Lemma は、<strong>④⑤⑥がどこにどう凝縮するかを精密に描いた</strong>。だが ── <strong>それらは問題と同値な言い換えで、数学的距離を縮めてはいない</strong>。難所を*動かして見せた*（一本の不等式に彫った）だけで、*越えて*はいない。地図が良くても、山は同じ高さのまま。前進は、現役の数学者が④⑤⑥に新しい定理を入れて初めて起きる。</p>
+    <p style="margin-bottom:0;"><strong>旗が立つ気配が無いのは、気配が本当に無いから</strong>です。それでも ── ゴールの座標（(A)∧(B), D=4）と、そこまでの残り（④⑤⑥＝問題の全重量）が、いま正確に分かった。<em>距離を測れたこと自体は、測定として本物</em>。旗ではなく、縁の標識と、その縁からゴールまでの正しい目盛りを。</p>
+  </div>
+
+  <h2><span class="n">05</span>判定 ── ゴールは定まった、距離は大きい</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の判定（過大申告なし）</div>
+    <p style="margin:0;">ゴール＝<strong>(A) 4次元で OS公理を満たす非自明なYM理論の存在 かつ (B) 質量ギャップ $\Delta>0$</strong>（コンパクト単純群・無限体積・厳密）。六マイルストーンに分解して次元別に測ると：<strong>D=2 は到達（だが本質的難しさ無し）、D=3 は測度構成まで前進（公理＋ギャップは未）、D=4 は①②＋③の足がかりまでで、④⑤⑥＝本体は未踏</strong>。距離は「残り3つ」だが、その3つが問題の全重量で、新しい原理を要する。<strong>この37話は距離を精密に描いたが、同値な言い換えゆえ縮めていない。</strong>旗が立つ気配が無いのは事実 ── でもゴールの座標と残りの目盛りは、正確に定まった。旗ではなく、正しい目盛り付きの縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>旗が立つ（クレイ問題を解く）ための正確な二条件は？
+        <details><summary>答えを見る</summary><div class="ans">コンパクト単純ゲージ群 $G$ について4次元 $\mathbb R^4$ 上の量子YM理論を構成し、(A) Osterwalder–Schrader（＝ワイトマン）公理を満たす非自明な理論であること（ヒルベルト空間・ポアンカレ対称性・真空・反射正値性・クラスター性・漸近自由・群 $G$）、(B) 質量ギャップ $\Delta>0$（ハミルトニアンのスペクトルが $(0,\Delta)$ に無い＝真空が孤立）。(A)∧(B) を $D=4$・無限体積で厳密に。</div></details>
+      </li>
+      <li>4次元で、六マイルストーンのどこまで到達しているか。
+        <details><summary>答えを見る</summary><div class="ans">①格子・強結合ギャップ（Q1, Osterwalder–Seiler）＝済、②連続極限の数値（Q2）＝済、③UV安定性（有限体積, Balaban）＝部分。ここまで。④無限体積・連続測度の構成、⑤OS公理を満たす存在(A)、⑥質量ギャップ(B)＝いずれも未踏。しかも④⑤⑥は互いに絡み、4次元は臨界(marginal)で質的に最難。</div></details>
+      </li>
+      <li>この37話は、ゴールまでの距離に対して何をした／しなかったか。
+        <details><summary>答えを見る</summary><div class="ans">した：④⑤⑥がどこにどう凝縮するか（クロスオーバーの非摂動制御＝Gap Lemma＝一本の不等式）を精密に描き、ゴールの座標と残りを測った。しなかった：数学的距離を縮めること ── 地図・しるし・Gap Lemma は問題と同値な言い換えで、難所を動かして見せただけで越えていない。山は同じ高さ。前進は現役の数学者が④⑤⑥に新しい定理を入れて初めて起きる。旗が立つ気配が無いのは事実。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">測定・まとめ</span>ゴールを定め、距離を正直に測る</h2>
+    <p>旗が立つ＝クレイ（Jaffe–Witten）の二条件 <strong>(A) 4次元でOS公理を満たす非自明YM理論の存在</strong> ＋ <strong>(B) 質量ギャップ $\Delta>0$</strong>（コンパクト単純群・無限体積・厳密）。六マイルストーン（①格子ギャップ→②連続数値→③UV安定性→④連続測度→⑤存在→⑥ギャップ）に分けて測ると、<strong>D=2 到達（難しさ無し）、D=3 は④まで前進（⑤⑥未）、D=4 は①②＋③の足がかりまで、④⑤⑥は未踏</strong>。</p>
+    <p>距離は「残り3マイルストーン」だが、その3つが<strong>問題の全重量</strong>で、新しい原理を要する核。<strong>この37話の地図・しるし・Gap Lemma は、④⑤⑥の在り処を精密に描いたが、問題と同値ゆえ距離を縮めていない</strong> ── 難所を彫り直しただけ、山は同じ高さ。だから旗が立つ気配は本当に無い。それでも ── <em>ゴールの座標と、縁からゴールまでの正しい目盛りは、いま定まった</em>。旗ではなく、目盛り付きの縁の標識を。どれだけ離れているかを、正確に知ったうえで。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-idea61-proof.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 6+1・証明を試みる</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 ゴールの正確な位置と距離、物理好きの高校生・大学生向け読み物。クレイ研究所のヤン=ミルズ存在・質量ギャップ問題（Jaffe–Witten の公式記述）、Osterwalder–Schrader／ワイトマン公理、質量ギャップの定義（ハミルトニアンのスペクトルが $(0,\Delta)$ に無い）、Osterwalder–Seiler の格子強結合ギャップ、Balaban の有限体積紫外安定性、2次元YMの構成、3次元YM測度の近年の構成（Chandra–Chevyrev–Hairer–Shen ら）は、いずれも確立した事実・結果です。4次元での無限体積・連続測度の構成（④）、OS公理を満たす存在（⑤＝A）、質量ギャップ（⑥＝B）、および4次元YMの存在＋質量ギャップ（クレイ問題全体）は未解決です（2025年時点）。次元別の到達状況の分類・"距離"の見積もりは本シリーズが文献の到達点を整理した見立てで、細部（3次元がどの公理まで満たすか等）は解釈に幅があり、反証されうる意見を含みます。マイルストーンの分け方は説明のための便宜です。本稿は4次元ヤン=ミルズを解いたと主張しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では次元 D=2/3/4 を切替え、各次元がゴール（質量ギャップ＝⑥）までの道のどこまで到達したか、マーカーで見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd'),
+      bD2=document.getElementById('bD2'), bD3=document.getElementById('bD3'), bD4=document.getElementById('bD4');
+  var D='4';
+  var stones=['①格子ギャップ','②連続数値','③UV安定性','④連続測度','⑤存在(A)','⑥ギャップ(B)=ゴール'];
+  // 到達点（0..5 のマイルストーン番号、小数で"途中"）
+  var reach={ '2':5.0, '3':3.5, '4':2.3 };
+  var col={ '2':'#2f7d5a', '3':'#a9791a', '4':'#a5473a' };
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=30, padR=24, padT=54, roadY=null;
+    ctx.clearRect(0,0,w,h);
+    var y=150;
+    function X(i){return padL+(i/5)*(w-padL-padR);}
+    // 道
+    ctx.strokeStyle='#d8ccb0';ctx.lineWidth=6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(X(0),y);ctx.lineTo(X(5),y);ctx.stroke();
+    // マイルストーン
+    for(var i=0;i<6;i++){
+      var x=X(i);
+      var isGoal=(i===5);
+      ctx.fillStyle=isGoal?'#a9791a':'#b7a884';
+      ctx.beginPath();ctx.arc(x,y,isGoal?9:6,0,7);ctx.fill();
+      if(isGoal){ctx.strokeStyle='#7a5510';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.stroke();}
+      // ラベル（交互に上下）
+      ctx.fillStyle='#5a5540';ctx.font='10.5px sans-serif';ctx.textAlign='center';
+      var ty=(i%2===0)? y-20 : y+24;
+      ctx.fillText(stones[i], x, ty);
+      ctx.textAlign='left';
+    }
+    // ゴール旗（立っていない＝グレー）
+    ctx.fillStyle='#c9bca4';ctx.font='16px sans-serif';ctx.textAlign='center';ctx.fillText('⚑', X(5), y-32);
+    ctx.fillStyle='#a89e86';ctx.font='9.5px sans-serif';ctx.fillText('（旗は立っていない）', X(5), y-44);ctx.textAlign='left';
+    // 到達マーカー
+    var r=reach[D], mx=X(r);
+    ctx.fillStyle=col[D];
+    ctx.beginPath();ctx.moveTo(mx,y-14);ctx.lineTo(mx-7,y-26);ctx.lineTo(mx+7,y-26);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.arc(mx,y,5,0,7);ctx.fill();
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText('D='+D+' 到達点', mx, y-32);ctx.textAlign='left';
+    // 残り距離バー
+    ctx.fillStyle='#efe7d4';ctx.fillRect(padL,h-30,w-padL-padR,10);
+    ctx.fillStyle=col[D];ctx.fillRect(padL,h-30,(r/5)*(w-padL-padR),10);
+    ctx.strokeStyle='#a9791a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(X(5),h-33);ctx.lineTo(X(5),h-17);ctx.stroke();
+    ctx.fillStyle='#5a5540';ctx.font='10px sans-serif';ctx.fillText('達成 '+Math.round(r/5*100)+'%（易しい側に偏り）', padL+4, h-34);
+    // readout
+    if(D==='2'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>D=2</b>：⑥ゴールまで到達（2次元YMは構成済み）。<b>だが伝播自由度が本質的に無く、本物の難しさは無い</b>。「解けた」が問題の核ではない次元。';
+    } else if(D==='3'){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='<b>D=3</b>：④連続測度の構成まで大きく前進（確率量子化 CCHS 等）。<b>だが⑤完全なOS公理・⑥質量ギャップの Jaffe–Witten 水準には未到達</b>。subcritical で4次元より易しい。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>D=4（本命）</b>：①②＋③の足がかり（Balaban）まで。<b>④連続測度・⑤存在・⑥ギャップ＝本体は未踏</b>。距離は「残り3マイルストーン」だが、その3つが問題の全重量＝新しい原理が要る。旗はゴールに立っていない。';
+    }
+  }
+  function setD(x){ D=x; bD2.className='tbtn'+(x==='2'?' on':''); bD3.className='tbtn'+(x==='3'?' on':''); bD4.className='tbtn'+(x==='4'?' on':''); draw(); }
+  bD2.addEventListener('click',function(){setD('2');});
+  bD3.addEventListener('click',function(){setD('3');});
+  bD4.addEventListener('click',function(){setD('4');});
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W-エントロピーの解剖 ── 単調量を支える3つの部品 ／ ペレルマン編 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e;    /* 濃紺 */
+    --gold:#a9791a;   /* 金 */
+    --grid:#e6dcc7;
+    --solved:#2f7d5a; --open:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.03em;padding:9px 15px;border-radius:4px;cursor:pointer;
+    border:1.5px solid var(--rule);background:#fff;color:var(--ink-soft);transition:all .12s;}
+  .btns button.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;
+    background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+
+  .part{margin:22px 0;border:1px solid var(--rule);border-radius:8px;padding:18px 22px;background:#fff;position:relative;}
+  .part::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:8px 0 0 8px;background:var(--gold);}
+  .part .tag{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.16em;color:var(--gold);font-weight:700;}
+  .part h3{font-size:18px;margin:4px 0 8px;font-weight:700;letter-spacing:.02em;}
+  .part p{margin:8px 0;font-size:15.5px;}
+  .part .prescribe{margin-top:10px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;background:#eef4f1;border-radius:5px;padding:10px 14px;color:#1f4a3a;line-height:1.7;}
+  .part .prescribe b{color:#1f6d4a;}
+
+  .map{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .map .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);}
+  .map .row:last-child{border-bottom:none;}
+  .map .row>div{flex:1;min-width:180px;padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.65;}
+  .map .row .l{background:#eaf0ef;color:#22343a;border-right:1px solid var(--rule);}
+  .map .row .r{background:#f3ece1;color:#4a3e22;}
+  .map .row.head>div{font-weight:700;font-size:12px;letter-spacing:.1em;}
+  .map .row.head .l{color:var(--side);} .map .row.head .r{color:var(--warn);}
+  .map .row.star .r{background:#faf1d8;color:#7a5510;font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.part,.map{break-inside:avoid;}
+    .aside,.caveat{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;} .btns{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ ペレルマン編 ── ポアンカレの道具で</span><span class="ep">第 4 回</span></div>
+  <p class="eyebrow">なぜあの量だけが「各点で・一意に・単調」だったのか ── 分解して部品を取り出す</p>
+  <h1>W-エントロピーの解剖 ── 単調量を支える3つの部品
+    <span class="sub">前回の仕様書を全部満たしたペレルマンのW。その秘密は、実は<strong>3つの部品</strong>に分けられる ── <em>①参照測度とのペア化／②完全平方で出る単調性／③ガウスからの相対エントロピー</em>。<br>この3部品が、そのままヤン=ミルズへの<strong>移植部品</strong>になる。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：Wを部品に分解し、ヤン=ミルズへ移す設計原理を取り出す</span>
+    <span>一言で：ペア化＋完全平方＋ガウス比較＝各点単調な情報量</span>
+  </div>
+
+  <p class="lead">前回、私たちは「欲しい量の仕様書」を書きました ── <em>各スケールで・一意に・各点で単調・無次元ギャップにつながる</em>。そしてペレルマンのW-エントロピーは、リッチフローの文脈でこの4項目を全部満たしていました。<strong>なぜ満たせたのか？</strong> 今回はWを分解して、その仕掛けを3つの部品として取り出します。見た目はごついですが、効いている構造は3つだけ。そしてこの3部品が、そのまま<strong>ヤン=ミルズへの移植部品</strong>になります。</p>
+
+  <div class="keybox">
+    <div class="lbl">ペレルマンのW（マニア向け・分解して読むための地図）</div>
+    $$W(g,f,\tau)=\int_M\Big[\tau\big(R+|\nabla f|^2\big)+f-n\Big]\,(4\pi\tau)^{-n/2}e^{-f}\,dV$$
+    <p style="margin:8px 0 0;">\(g\)＝形の測り方、\(f\)＝<em>参照の重み</em>（部品①）、\(\tau\)＝逆向きの時刻、\((4\pi\tau)^{-n/2}e^{-f}\)＝<em>ガウスの重み</em>（部品③）。この式を丸暗記する必要はありません。大事なのは、これが3つの仕掛けの組み合わせだ、ということ。</p>
+  </div>
+
+  <h2><span class="n">01</span>部品① ペア化 ── 「形」だけでなく「形＋参照の重み」で考える</h2>
+
+  <p>生のリッチフローには、地味だが致命的な難点があります。<strong>「なめらかに谷を下る流れ（勾配流）」になっていない</strong>のです。原因は、幾何には<em>座標の取り替え（ゲージのようなもの）の自由</em>があって、その分だけ景色が横滑りしてしまうから。横滑りする斜面では、ボールが素直に谷底に落ち着けません。</p>
+
+  <p>ペレルマンの第一手は、形 \(g\) だけを見るのをやめ、<strong>「形」と「参照の重み \(f\)」をペアにして</strong>考えたこと。すると横滑りの自由を \(f\) が吸収し、流れは<em>きれいな勾配流</em>になります。下の図で「ペアなし／ペア化」を切り替えて、この効き目を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>ペア化の効き目</strong>。左は斜面（＝W）を下るボール（＝理論の状態）。<strong>ペアなし</strong>だと座標の自由で斜面が横滑りし、ボールは落ち着かず量も上下する（＝流儀依存の病）。<strong>ペア化</strong>すると斜面が固定され、ボールは谷底（＝ソリトン＝固定点）へ<em>片道で</em>下り、変化率は<em>完全平方＝つねに0以上</em>。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="btns">
+      <button id="bRaw" class="on">ペアなし（生のフロー）</button>
+      <button id="bPair">ペア化（参照測度とペア）</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#26456e;"></i>状態（ボール）</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>W（斜面の高さ）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>変化率＝完全平方（≥0）</span>
+    </div>
+  </div>
+
+  <div class="part">
+    <span class="tag">移植部品①</span>
+    <h3>走る作用と、走る参照測度を「ペア」にする</h3>
+    <p>前回の理由3（フローの途中で量が流儀依存になる病）── その処方箋がこれです。<em>走る結合だけに量を定義しようとするから曖昧になる。</em></p>
+    <div class="prescribe"><b>設計原理：</b>ヤン=ミルズでも、量を「走る作用」<b>単独</b>にではなく、「走る作用＋走る参照測度」の<b>ペア</b>に定義せよ。ゲージ由来の曖昧さは、参照測度に吸わせる。</div>
+  </div>
+
+  <h2><span class="n">02</span>部品② 単調性が「完全平方」で出る ── 二乗は負にならない</h2>
+
+  <p>Wがなぜ<em>各点で</em>単調なのか。その答えは、変化率の式にあります。フローに沿ってWの変化率を計算すると、こうなります。</p>
+
+  <div class="keybox">
+    <div class="lbl">完全平方（これがすべての心臓）</div>
+    $$\frac{dW}{dt}=2\tau\int_M\Big|\,\mathrm{Ric}+\nabla^2 f-\tfrac{g}{2\tau}\,\Big|^2\,dm\;\ge\;0$$
+    <p style="margin:8px 0 0;">右辺は<strong>二乗の積分</strong>。二乗は<em>絶対に負になりません</em>。だからWは各点で一方向にしか動けない（単調）。しかも<strong>等号が成り立つのは、中身がぴったり0のとき ── つまり「勾配収縮ソリトン」＝フローの自己相似な固定点のときだけ</strong>。前回の仕様書の「(iii)各点で単調＋止まる場所が固定点」を、<em>この二乗が一撃で両方満たす</em>。</p>
+  </div>
+
+  <p>「都合よく二乗が現れた」ように見えますが、偶然ではありません。これは<strong>ボホナー恒等式</strong>という、幾何に組み込まれた正値性（曲率と微分の関係）から構造的に出てきます。専門的には<strong>バクリー–エムリー曲率条件</strong>と同じエンジン ── 名前は覚えなくていいですが、<em>「二乗＝正値性が、単調性を生む」</em>という一点だけ持ち帰ってください。次回の主役です。</p>
+
+  <div class="part">
+    <span class="tag">移植部品②</span>
+    <h3>変化率を「完全平方（正値性）」の形にせよ</h3>
+    <p>単調性を力ずくで示すのではなく、<em>変化率が二乗の和になる組み合わせ</em>を見つける。二乗なら自動的に各点で単調、しかも0になる所が固定点。</p>
+    <div class="prescribe"><b>設計原理：</b>ヤン=ミルズのRGステップでも、量の変化率が<b>正値性（二乗・バクリー–エムリー型）</b>から出るように量を設計せよ。これが「各点単調」を無料で連れてくる。</div>
+  </div>
+
+  <h2><span class="n">03</span>部品③ 参照はガウス ── Wは「理想形からの隔たり（情報量）」</h2>
+
+  <p>Wの重み \((4\pi\tau)^{-n/2}e^{-f}\) は、<strong>ガウスの熱の核（釣鐘型）との比べもの</strong>になっています。つまりWは、実質<em>「平坦なガウスの理想形から、いまの状態がどれだけ隔たっているか」</em>という<strong>相対エントロピー（情報の距離）</strong>なのです。ペレルマン自身、論文の中でWを<em>統計力学のエントロピー</em>として書き直しています ──「情報量」はたとえ話ではなく、彼自身の読み。</p>
+
+  <p>そして決定的な一言。<strong>Wの最小値 \(\mu=\inf_f W\) は、その空間の「対数ソボレフ不等式（LSI）の最良定数」</strong>なのです。LSIという名前だけ、ここで覚えておいてください ── <em>次回、これが主役になります</em>。LSIこそが、Wと「質量ギャップ」を結ぶ橋だからです。</p>
+
+  <div class="part">
+    <span class="tag">移植部品③</span>
+    <h3>ガウス（自由場）を参照点にする ── そしてLSIへ</h3>
+    <p>Wは「自由な理想形からの情報の隔たり」。その最良値がLSIの定数。ヤン=ミルズなら、参照点は<em>自由場のUV固定点</em>── 漸近的自由がその存在を保証してくれる。</p>
+    <div class="prescribe"><b>設計原理：</b>参照点を自由場（ガウス）に取り、量を「自由場からの相対エントロピー」として定義せよ。その最良定数＝LSI定数が、ギャップに直結する（→第5回）。</div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">Wは何のために使われたか ── 計算ではなく「潰れない」保証</span>
+    もう一度強調します。ペレルマンはWで<em>何かを計算した</em>のではありません。Wの単調性から出したのは<strong>no local collapsing（フローに沿って幾何が局所的に潰れきらない）</strong>という一様な保証。それがあるから特異点が分類でき、手術が回り、証明が閉じた。<em>Wの役割は、前回の道具2で残っていた「③閉（フローに沿った一様評価）」そのもの</em>。私たちが探している物は、役割まで含めてWと同型なのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>移植表 ── どこまで対応が「定理級」か</h2>
+
+  <p>フリーダンの符合（RGフロー＝リッチフロー、第2回）があるおかげで、下の対応表は<em>詩ではなく、少なくとも一点で定理として接触</em>しています。</p>
+
+  <div class="map">
+    <div class="row head"><div class="l">リッチフロー側（ペレルマン）</div><div class="r">格子ヤン=ミルズ・RG側</div></div>
+    <div class="row"><div class="l">フローの時刻 \(t\)</div><div class="r">RGスケール（目盛りを粗くする段数）</div></div>
+    <div class="row"><div class="l">座標の取り替え（ゲージ）</div><div class="r">計算の流儀（前回の理由3の病の正体）</div></div>
+    <div class="row"><div class="l">参照の重み \(f\)（ゲージを吸う）</div><div class="r">走る参照測度をペアにする（部品①）</div></div>
+    <div class="row"><div class="l">ソリトン（自己相似解＝固定点）</div><div class="r">スケール不変な理論（固定点）</div></div>
+    <div class="row"><div class="l">ガウスソリトン（平坦な参照）</div><div class="r">自由場のUV固定点 ── 漸近的自由が存在を保証</div></div>
+    <div class="row star"><div class="l">no local collapsing（潰れない）</div><div class="r">無次元ギャップ比が潰れないこと ＝ LSI定数の下限（★次回の本命）</div></div>
+  </div>
+
+  <p>右下の星印のマスを埋めるのが、次回のテーマです。<strong>「W ＝ LSIの最良定数 ＝ 潰れない保証 ＝ 質量ギャップ」</strong>という鎖 ── そして、その鎖が<em>すでに一部、現実に動いているエンジン</em>だという話へ進みます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">W汎関数、その単調性公式 \(dW/dt=2\tau\int|\mathrm{Ric}+\nabla^2 f-g/2\tau|^2 dm\ge0\)、等号が勾配収縮ソリトンで成り立つこと、\(\mu(g,\tau)=\inf_f W\) が対数ソボレフ不等式の最良定数を与えること、no local collapsing への使われ方は、いずれもペレルマンの2002年論文の内容です（\(\partial_t g=-2\mathrm{Ric}\)、\(f\) は共役熱方程式に従う）。単調性がボホナー恒等式／バクリー–エムリー条件から出るという読みも標準的。</p>
+    <p style="margin-bottom:0;">図の「斜面を下るボール」は、勾配流と完全平方単調性の<em>心を1変数で真似た模型</em>で、実際のW（無限次元の汎関数）ではありません。「移植部品①②③」と移植表は、この構造をヤン=ミルズへ移すための<strong>設計原理（アナロジー）</strong>であり、右下の★（YM版W＝LSI下限＝ギャップ）は未完成 ── そこが次回以降の核心です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>なぜWは「各点で」単調なのか、決め手を一言で。
+        <details><summary>答えを見る</summary><div class="ans">変化率が<strong>完全平方（二乗の積分）</strong>で書けるから。二乗は絶対に負にならないので、各点で一方向にしか動けない。しかも等号（変化率0）は<strong>ソリトン＝固定点</strong>のときだけ ── 「各点単調」と「止まる場所＝固定点」を一撃で両立。</div></details>
+      </li>
+      <li>部品①「ペア化」は、前回のどの病への処方箋か。
+        <details><summary>答えを見る</summary><div class="ans">理由3「フローの途中で量が<strong>流儀（スキーム）依存</strong>になる病」。走る結合<em>単独</em>に量を定義するから曖昧になる。走る作用＋走る参照測度の<strong>ペア</strong>に定義し、ゲージ由来の曖昧さを参照測度に吸わせれば、量が一意になる。</div></details>
+      </li>
+      <li>Wは結局「何を」測っている量で、その最小値は何と一致するか。
+        <details><summary>答えを見る</summary><div class="ans">Wは<strong>ガウス（平坦な理想形）からの相対エントロピー＝情報の隔たり</strong>。最小値 \(\mu=\inf_f W\) は<strong>対数ソボレフ不等式（LSI）の最良定数</strong>と一致する。このLSIが、次回Wと質量ギャップを結ぶ橋になる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>Wは3つの部品でできている</h2>
+    <p>ペレルマンのWは、3つの仕掛けの組み合わせ。<strong>①ペア化</strong>（形＋参照の重み ── 座標の自由＝流儀依存の病を吸収し、勾配流にする）、<strong>②完全平方</strong>（変化率が二乗の積分＝各点で単調、0になる所＝固定点。ボホナー／バクリー–エムリーの正値性から）、<strong>③ガウス参照</strong>（W＝自由な理想形からの相対エントロピー、最小値＝LSIの最良定数）。</p>
+    <p>この3つがそのまま<strong>移植部品①②③</strong>になる：走る作用＋走る参照測度のペアに／変化率を正値性から／参照は自由場に。Wの役割は「計算」ではなく<strong>潰れない保証（＝③閉の一様評価）</strong>。移植表の★＝「YM版W＝LSI下限＝無次元ギャップが潰れない」を埋めるのが次回 ── そこには<em>すでに動いているエンジン</em>がある。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-perelman3-atheorem.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 第3回：a定理の限界</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="yangmills-perelman5-lsi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">第5回：LSIの鎖と動くエンジン →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」ペレルマン編・第4回。ペレルマンのW-エントロピー \(W(g,f,\tau)\)、その単調性公式（変化率が \(2\tau\int|\mathrm{Ric}+\nabla^2 f-g/2\tau|^2 dm\ge0\) で等号は勾配収縮ソリトン）、\(\mu(g,\tau)=\inf_f W\) が対数ソボレフ不等式（LSI）の最良定数を与えること、単調性がボホナー恒等式／バクリー–エムリー条件に由来すること、Wの用途が no local collapsing（局所非退化の一様評価）であることは、Perelman（2002）とその後の標準的な解説に基づきます。「部品①②③」「移植部品」「移植表」は本構造をヤン=ミルズへ移すための設計原理（アナロジー）で、移植表右下（YM版W＝LSI下限＝無次元ギャップの下限）は未解決です。図は勾配流と完全平方単調性を1変数で模した教育用モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とボタン・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではボタンで「ペアなし／ペア化」を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var bRaw=document.getElementById('bRaw'), bPair=document.getElementById('bPair');
+  var mode='raw', t=0, ballX=0.16, ballV=0, lastW=680, Whist=[], rateHist=[];
+
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // landscape height at x in [0,1]; pair mode = stable bowl, raw = bowl that drifts sideways
+  function shift(){ return mode==='raw' ? 0.14*Math.sin(t*0.045) : 0; }
+  function H(x){ var c=0.62+shift(); var d=x-c; return 0.5*d*d*3.0; } // bowl
+  function slope(x){ var c=0.62+shift(); return 3.0*(x-c); }
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    // ---- left: landscape + ball ----
+    var L=40, Rr=w*0.60, T=28, B=h-52;
+    function X(x){ return L+(Rr-L)*x; }
+    function Y(hh){ return T + (B-T)*Math.min(1,hh); }
+    // landscape curve
+    ctx.strokeStyle='#a9791a'; ctx.lineWidth=3; ctx.beginPath();
+    for(var i=0;i<=100;i++){ var x=i/100, y=Y(H(x)); if(i===0)ctx.moveTo(X(x),y); else ctx.lineTo(X(x),y); }
+    ctx.stroke();
+    // fill under
+    ctx.lineTo(X(1),B); ctx.lineTo(X(0),B); ctx.closePath(); ctx.fillStyle='rgba(169,121,26,0.08)'; ctx.fill();
+    // ball
+    var bx=X(ballX), by=Y(H(ballX))-9;
+    ctx.fillStyle='#26456e'; ctx.beginPath(); ctx.arc(bx,by,9,0,7); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(bx,by,9,0,7); ctx.stroke();
+    // bottom marker (soliton)
+    var cc=0.62+shift();
+    ctx.fillStyle='#2f7d5a'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('谷底＝ソリトン（固定点）', X(cc), B+16);
+    ctx.fillStyle='#4a4f5e'; ctx.textAlign='left';
+    ctx.fillText('斜面＝W', L, T-10);
+    if(mode==='raw'){ ctx.fillStyle='#a5473a'; ctx.textAlign='center'; ctx.fillText('← 斜面が横滑り →', X(0.5), T-10); }
+
+    // ---- right: two mini meters ----
+    var mx=w*0.66, mw=w-mx-20;
+    // W history (top)
+    var g1T=32, g1B=140;
+    ctx.fillStyle='#4a4f5e'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('Wの高さ（時間↓）', mx, g1T-8);
+    ctx.strokeStyle='#ddd2ba'; ctx.lineWidth=1; ctx.strokeRect(mx,g1T,mw,g1B-g1T);
+    ctx.strokeStyle='#a9791a'; ctx.lineWidth=2; ctx.beginPath();
+    for(var j=0;j<Whist.length;j++){ var xx=mx+mw*(j/Math.max(1,Whist.length-1)); var yy=g1T+(g1B-g1T)*(1-Whist[j]); if(j===0)ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy); }
+    ctx.stroke();
+    // rate history (bottom): dW/dt as square >=0
+    var g2T=168, g2B=g2T+92;
+    ctx.fillStyle='#4a4f5e'; ctx.fillText('変化率（完全平方）', mx, g2T-8);
+    ctx.strokeStyle='#ddd2ba'; ctx.strokeRect(mx,g2T,mw,g2B-g2T);
+    // zero line
+    var zeroY = mode==='pair'? g2B-6 : (g2T+g2B)/2;
+    ctx.setLineDash([3,3]); ctx.strokeStyle='#9aa'; ctx.beginPath(); ctx.moveTo(mx,zeroY); ctx.lineTo(mx+mw,zeroY); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#8a8'; ctx.font='10px sans-serif'; ctx.fillText('0', mx+2, zeroY-2);
+    ctx.strokeStyle='#2f7d5a'; ctx.lineWidth=2; ctx.beginPath();
+    for(var k=0;k<rateHist.length;k++){ var x2=mx+mw*(k/Math.max(1,rateHist.length-1)); var val=rateHist[k]; var y2=zeroY-(g2B-g2T)*0.42*val; if(k===0)ctx.moveTo(x2,y2); else ctx.lineTo(x2,y2); }
+    ctx.stroke();
+    ctx.fillStyle='#33414a'; ctx.font='11px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(mode==='pair'?'つねに ≥0（二乗）→ 単調':'0の上下に揺れる → 単調でない', mx, g2B+16);
+  }
+  function step(){
+    t++;
+    // physics: ball rolls downhill; raw mode landscape drifts so ball chases moving bottom
+    var s=slope(ballX);
+    ballV = ballV*0.86 - 0.0009*s*60;
+    ballX += ballV;
+    if(ballX<0.02){ballX=0.02;ballV=0;} if(ballX>0.98){ballX=0.98;ballV=0;}
+    // W value normalized 0..1 (height)
+    var Wv=Math.min(1,H(ballX)*1.4);
+    Whist.push(Wv); if(Whist.length>90)Whist.shift();
+    // rate: pair mode = square of slope (>=0, shrinking); raw = signed wobble
+    var rate = mode==='pair' ? Math.min(1, s*s*0.9) : (0.5*Math.sin(t*0.12)+0.3*s);
+    rateHist.push(rate); if(rateHist.length>90)rateHist.shift();
+  }
+  function say(){
+    rd.innerHTML = mode==='pair'
+      ? '<b>ペア化モード。</b> 斜面が固定され、ボールは谷底（ソリトン＝固定点）へ<b>片道で</b>下る。変化率は<b>完全平方＝つねに0以上</b>で、谷底で0になって止まる。仕様書の「各点単調＋止まる場所＝固定点」を両立。'
+      : '<b>ペアなしモード。</b> 座標の自由で斜面が横滑りし、ボールは落ち着かない。変化率は<b>0の上下に揺れて</b>単調でない ── これが「フローの途中で流儀依存になる病」。参照測度とペアにすると直る。';
+  }
+  function anim(){ step(); draw(); requestAnimationFrame(anim); }
+  function reset(){ ballX=0.16; ballV=0; Whist=[]; rateHist=[]; }
+  bRaw.addEventListener('click',function(){ mode='raw'; bRaw.classList.add('on'); bPair.classList.remove('on'); reset(); say(); });
+  bPair.addEventListener('click',function(){ mode='pair'; bPair.classList.add('on'); bRaw.classList.remove('on'); reset(); say(); });
+  window.addEventListener('resize',draw);
+  say(); requestAnimationFrame(anim);
+})();
+</script>
+</body>
+</html>

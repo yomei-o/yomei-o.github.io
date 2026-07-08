@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>壁1扉②・RG-LSI 深掘り Polchinskiフローで一様対数ソボレフ ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --sc:#2f7d5a; --cw:#a5473a; --peak:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:26px;line-height:1.34;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--sc);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:19pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:20px;} body{font-size:16px;} table.dt{font-size:11.5px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">壁1扉②・RG-LSI 深掘り</span></div>
+  <p class="eyebrow">最有力の扉を一段 ── Langevin動力学の一様対数ソボレフを、Polchinskiフローで</p>
+  <h1>扉② 深掘り ── Polchinskiフローで一様LSI
+    <span class="sub">$\chi_V=\mathrm{Var}(S)/V$ だから、ゲージ測度の Langevin 動力学に<strong>体積に一様な対数ソボレフ不等式（LSI）</strong>があれば $\chi_V\le K$。<br>それを<strong>Polchinski くりこみ群フローに沿って</strong>出す（Bauerschmidt–Bodineau–Dagallier）。<br>資源＝<em>1リンクのLSIはタダ（コンパクト群の正曲率＝Bakry–Émery）</em>。壁＝共変分解・非凸相互作用・クロスオーバー。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：最有力ルートの機械を一段具体化し、資源と壁を名指す（史実つき）</span>
+    <span>核心：1スケールの凸性を積分／単リンクLSIは曲率でタダ／窓で凸性が崩れる</span>
+  </div>
+
+  <p class="lead">壁1の三つの扉のうち、最有力と見たのが扉②＝<strong>くりこみ群による一様対数ソボレフ</strong>でした。ここを一段深掘りします。$\chi_V\le K$ は $\mathrm{Var}(S)/V$ の一様有界＝<em>Langevin（確率量子化）動力学の一様スペクトルギャップ／LSI</em>。それを近年の <strong>Polchinski フロー＋一様LSI</strong>（Bauerschmidt–Bodineau–Dagallier）の機械で出す ── その中身と、ゲージへ載せるときの資源（コンパクト群の正曲率で単リンクLSIはタダ）と壁（共変分解・非凸相互作用・クロスオーバー）を、正直に名指します。①確率量子化・②現代RG・②b共変FRD・γが、ここで一つに合流します。</p>
+
+  <h2><span class="n">01</span>χ≤K ＝ 動力学の一様LSI</h2>
+
+  <div class="keybox">
+    <div class="lbl">分散 → 対数ソボレフ → χ≤K</div>
+    $$\chi_V=\frac{\mathrm{Var}_\mu(S)}{V},\qquad \mathrm{Ent}_\mu(f^2)\le \frac{2}{\alpha}\,\mathcal E(f,f)\ (\textbf{LSI})\ \Rightarrow\ \mathrm{Var}_\mu(S)\le\frac{1}{\alpha}\mathcal E(S,S)$$
+    <p style="margin:10px 0 0;">対数ソボレフ定数 $\alpha$ はPoincaré（分散評価）より強く、$\alpha$ が<strong>体積に一様に下から有界</strong>なら、$\mathcal E(S,S)=O(V)$（作用は局所的）より $\chi_V\le C/\alpha=K$。<em>非可換相関不等式を作る＝この $\alpha$ を一様に下から抑える</em>こと。動力学は確率量子化（戦略①）の Langevin：$dU=(-\nabla S)\,dt+\text{(ブラウン運動 on 群)}$。</p>
+  </div>
+
+  <h2><span class="n">02</span>資源 ── 単リンクのLSIは"タダ"（正曲率）</h2>
+
+  <div class="keybox">
+    <div class="lbl">Bakry–Émery：コンパクト群は正の Ricci 曲率</div>
+    $$\mathrm{Ric}\ge \kappa>0\ \text{on }SU(N)\quad\Rightarrow\quad \text{熱核が LSI 定数}\ \alpha\ge\kappa\ \text{を満たす}$$
+    <p style="margin:10px 0 0;">相互作用の無い1リンク（$L^2(SU(N))$ 上の熱核）は、<strong>コンパクト群の正曲率</strong>により Bakry–Émero の基準で LSI をタダで満たす。<em>電気項のカシミアギャップ（戦略B・δ）と同じ資源の別の顔</em>。出発点の $\alpha$ は正 ── 問題は<strong>プラケット相互作用を着けて、スケールを重ねても $\alpha$ が消えないか</strong>。</p>
+  </div>
+
+  <h2><span class="n">03</span>機械 ── Polchinskiフローに沿ってLSIを積分</h2>
+
+  <div class="calc">
+    <span class="tag">スケール分解 → 各スケールの凸性 → 積分</span>
+    $$\mu=\mu_0*\zeta_1*\zeta_2*\cdots\ (\text{有限レンジ/熱核分解}),\qquad \alpha^{-1}=\int_0^\infty \!\!\big(\text{各スケール }t\text{ の寄与}\big)\,dt$$
+    <p style="margin-bottom:14px;">Polchinski フローは測度をスケールごとに畳み込みで育てる。各スケールで<strong>条件付き測度が一様に対数凹（1スケールの Bakry–Émery／凸性）</strong>なら、その LSI 寄与をフローに沿って<em>積分</em>して全体の $\alpha$ を得る（Bauerschmidt–Bodineau–Dagallier）。臨界の $|\phi|^4$ 等で実証済みの筋。下の図で、スケールごとの LSI 寄与を。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：スケール $j$（左＝紫外、右＝赤外）ごとの LSI 寄与 $\alpha_j$。積分（総和）が全体の $\alpha$。<span style="color:var(--sc);font-weight:700;">強結合：全スケールで凸性が効き $\alpha>0$ 一様（χ≤K）</span>／<span style="color:var(--cw);font-weight:700;">クロスオーバー：中間スケールで凸性が崩れ $\alpha_j\to0$（LSI劣化）</span></div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>見るスケール j（紫外→赤外）<span class="val" id="vj">4</span>
+        <input type="range" id="sj" min="0" max="12" step="1" value="4">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">強結合</button>
+        <button class="tbtn" id="bC">クロスオーバー窓</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>各スケールの凸性 α_j</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>一様下限（要 α&gt;0）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>ゲージへ載せる ── 三つの障害</h2>
+
+  <table class="dt">
+    <tr><th></th><th>障害</th><th>手当て／現状</th></tr>
+    <tr><td class="id">A</td><td class="open">場が群値（非線形）</td><td>Bakry–Émery を<strong>コンパクト群の積</strong>で。単リンクLSIはタダ（正曲率）＝資源。多リンクの結合が問題。</td></tr>
+    <tr><td class="id">B</td><td class="open">ゲージ不変（平坦方向）</td><td>測度にゲージ軌道の平坦方向 ⟹ <strong>ゲージ共変なスケール分解が要る＝戦略②b の共変FRD</strong>。ここで②bと合流。</td></tr>
+    <tr><td class="id">C</td><td class="open">クロスオーバー（非凸）</td><td>1スケールの凸性は相互作用が曲率に負けない時だけ。窓では<strong>相互作用が優勢＝凸性が崩れ $\alpha_j\to0$</strong>。＝また峠。</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>現実的な勝ち ── 強結合の一様LSI</h2>
+
+  <div class="keybox">
+    <div class="lbl">狙える部分成果</div>
+    <p style="margin:0;"><strong>「強結合で、ゲージ測度の一様LSI（従って $\chi_V\le K$・一様クラスタリング）を、正曲率＋弱相互作用の Bakry–Émery 摂動で厳密に」</strong> ── 単リンクの正曲率LSI＋小さいプラケット結合＝1スケール凸性が全スケールで効く領域。<em>本物の部分成果</em>（強結合クラスタリングのLSI版、δ・摂動論のLSI版）。残る壁＝クロスオーバーで凸性を保つ（共変FRDで平坦方向を除き、非凸を制御）＝壁2（Balaban/BBS）と同じ厳密RGの課題。</p>
+  </div>
+
+  <h2><span class="n">06</span>判定 ── 最有力の扉、鍵は共変RGと窓</h2>
+
+  <div class="keybox">
+    <div class="lbl">扉② 深掘りの判定（過大申告なし）</div>
+    <p style="margin:0;">$\chi_V\le K$＝Langevin動力学の一様LSI（$\alpha$ の一様下限）。機械は<strong>Polchinskiフロー＋1スケール凸性の積分</strong>（BBD、臨界$|\phi|^4$で実証）。資源＝<strong>コンパクト群の正曲率で単リンクLSIはタダ</strong>（電気カシミアギャップの別の顔）。障害＝(A)群値の結合、(B)ゲージ平坦方向→<strong>共変FRD（②b）が要る</strong>、(C)クロスオーバーで凸性が崩れる。現実的な勝ち＝<strong>強結合の一様LSI（Bakry–Émery摂動）</strong>。残る壁＝共変RGで窓の凸性を保つ＝壁2と同じ厳密RGの課題。<em>最有力の扉だが、鍵はやはり共変な厳密RGと、クロスオーバー窓</em>。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">$\chi_V=\mathrm{Var}(S)/V$ と対数ソボレフ不等式（LSI）による分散評価、Bakry–Émery 基準（正 Ricci 曲率 ⟹ LSI）とコンパクト Lie 群（$SU(N)$）の正曲率、確率量子化の Langevin 動力学（群上のブラウン運動）、Polchinski（くりこみ群）フローと有限レンジ/熱核分解、Polchinski フローに沿う一様LSIの証明（Bauerschmidt–Bodineau 2019、Bauerschmidt–Dagallier）、ゲージ共変な有限レンジ分解の必要性（戦略②b）は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>これらの一様LSI証明は主に線形場・可換/弱相互作用・(near-)critical のスカラー模型で確立</strong>しており、ゲージ測度（群値・ゲージ不変・非可換）への移植、クロスオーバー窓での1スケール凸性の保持、および4次元YMの質量ギャップは未解決です（2025年時点）。図のスケール分解・$\alpha_j$ の形は概念的模式で、実際のLSI定数の計算ではありません。「扉②が最有力」「強結合LSIが現実的な勝ち」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>なぜ $\chi_V\le K$ が「動力学の一様LSI」に化けるのか。
+        <details><summary>答えを見る</summary><div class="ans">$\chi_V=\mathrm{Var}_\mu(S)/V$。LSI（定数 $\alpha$）は Poincaré を含み $\mathrm{Var}_\mu(S)\le(1/\alpha)\mathcal E(S,S)$ を与える。作用 $S$ は局所的なので Dirichlet エネルギー $\mathcal E(S,S)=O(V)$。よって $\alpha$ が体積に一様に下から有界なら $\chi_V\le C/\alpha=K$。動力学はゲージ測度の Langevin（確率量子化＝戦略①）。</div></details>
+      </li>
+      <li>「単リンクのLSIはタダ」とはどういうことか。何の別の顔か。
+        <details><summary>答えを見る</summary><div class="ans">相互作用の無い1リンク（$L^2(SU(N))$ の熱核）は、コンパクト群 $SU(N)$ の正の Ricci 曲率により Bakry–Émery 基準で LSI をタダで満たす（$\alpha\ge\kappa>0$）。これは電気項のカシミアギャップ（戦略B・δ）と同じ資源の別の顔。出発点の LSI 定数は正で、問題はプラケット結合を着けスケールを重ねても $\alpha$ が消えないか。</div></details>
+      </li>
+      <li>ゲージへ載せる三つの障害と、どこで戦略②b・壁2と合流するか。
+        <details><summary>答えを見る</summary><div class="ans">(A)場が群値（非線形）→Bakry–Émeryをコンパクト群の積で、単リンクはタダ。(B)ゲージ不変の平坦方向→<strong>ゲージ共変なスケール分解＝戦略②bの共変FRD</strong>が要る（ここで②bと合流）。(C)クロスオーバーで相互作用が曲率に勝ち1スケール凸性が崩れる→また峠。残る壁は「共変RGで窓の凸性を保つ」で、これは壁2（Balaban/BBS）と同じ厳密RGの課題＝全ての道が厳密RGに集まる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">扉②・まとめ</span>正曲率という資源、共変RGという鍵</h2>
+    <p>$\chi_V\le K$＝ゲージ測度の Langevin 動力学の<strong>一様対数ソボレフ（$\alpha$ の一様下限）</strong>。機械は<strong>Polchinskiフロー＋1スケール凸性の積分</strong>（Bauerschmidt–Bodineau–Dagallier、臨界$|\phi|^4$で実証）。資源＝<strong>コンパクト群の正曲率で単リンクLSIはタダ</strong>（電気カシミアギャップの別の顔）。</p>
+    <p>障害は三つ：(A)群値の結合、(B)ゲージ平坦方向→<strong>共変FRD（②b）が要る</strong>、(C)クロスオーバーで凸性が崩れる。現実的な勝ち＝<strong>強結合の一様LSI</strong>（正曲率＋弱相互作用のBakry–Émery摂動）。残る壁＝<em>共変な厳密RGで窓の凸性を保つ</em>＝壁2（Balaban/BBS）と同じ課題。最有力の扉②も、①確率量子化・②b共変FRD・γ・壁2と共に、<strong>厳密くりこみ群という一点</strong>に集まる。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-kabe2-scaling.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 壁2・漸近スケーリング</a>
+    <a href="yangmills-map.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">戦略地図</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 壁1扉②・RG-LSI 深掘り、物理好きの高校生・大学生向け読み物。感受率と分散 $\chi_V=\mathrm{Var}(S)/V$、対数ソボレフ不等式（LSI）と Poincaré による分散評価、Bakry–Émery 基準（正 Ricci 曲率 ⟹ LSI）とコンパクト Lie 群 $SU(N)$ の正曲率、確率量子化の Langevin 動力学（群上のブラウン運動）、Polchinski くりこみ群フローと有限レンジ/熱核分解、Polchinski フローに沿う一様LSIの証明（Bauerschmidt–Bodineau 2019、Bauerschmidt–Dagallier）、ゲージ共変な有限レンジ分解の必要性（戦略②b）は、いずれも確立した事実・道具です。これらの一様LSI証明は主に線形場・可換または弱相互作用・(near-)critical のスカラー模型で確立しており、ゲージ測度（群値・ゲージ不変・非可換）への移植、クロスオーバー窓での1スケール凸性の保持、4次元YMの質量ギャップは未解決です（2025年時点）。図のスケール分解と $\alpha_j$ の形は概念的模式で、実際のLSI定数の計算ではありません。見立ては筆者のもので反証されうる意見を含みます。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスケール j を動かし、各スケールのLSI寄与が強結合では一様に正（χ≤K）、クロスオーバーでは中間スケールで崩れる様子を見比べられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sj=document.getElementById('sj'), vj=document.getElementById('vj'),
+      bS=document.getElementById('bS'), bC=document.getElementById('bC'), rd=document.getElementById('rd');
+  var reg='S', JMAX=12;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var FLOOR=0.28; // 一様下限（要 α_j>0）
+  // 強結合：全スケールで凸性 α_j 一様に正
+  function aS(j){ return 0.72 - 0.02*Math.abs(j-6); }
+  // クロスオーバー：中間スケールで凸性が崩れ 0 付近へ
+  function aC(j){ var d=(j-6)/3.0; return 0.72 - 0.62*Math.exp(-d*d); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=14, padT=18, padB=42;
+    var jcur=parseInt(sj.value,10); vj.textContent=jcur;
+    var YMAX=0.9;
+    function X(j){return padL+(j/JMAX)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(Math.max(0,Math.min(v,YMAX))/YMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 一様下限ライン
+    ctx.strokeStyle='#a9791a';ctx.setLineDash([6,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(padL,Y(FLOOR));ctx.lineTo(w-padR,Y(FLOOR));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.font='11px sans-serif';ctx.fillText('要：α_j ≥ 一様下限 > 0', w-padR-190, Y(FLOOR)-6);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('スケール j（紫外 → 赤外）', w-210, h-padB+26);
+    ctx.save();ctx.translate(16,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('各スケールの凸性 α_j', 0,0);ctx.restore();
+    // 棒（各スケールの寄与）
+    var fn=(reg==='S')?aS:aC;
+    for(var j=0;j<=JMAX;j++){
+      var bw=Math.max(6,(w-padL-padR)/(JMAX+1)-6), x=X(j)-bw/2, yb=Y(fn(j));
+      var okk=fn(j)>=FLOOR;
+      ctx.fillStyle=(j===jcur)?(okk?'#2f7d5a':'#a5473a'):(okk?'rgba(47,125,90,0.5)':'rgba(165,71,58,0.55)');
+      ctx.fillRect(x, yb, bw, (h-padB)-yb);
+    }
+    // readout
+    var val=fn(jcur), okc=val>=FLOOR;
+    if(reg==='S'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>強結合・スケール j='+jcur+'</b>：α_j='+val.toFixed(2)+' ≥ 一様下限。<b>全スケールで凸性が効き、積分した α>0 が一様</b>（正曲率＋弱相互作用のBakry–Émery摂動）⟹ χ≤K。扉②が開く領域＝現実的な勝ち。';
+    } else {
+      if(okc){ rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+        rd.innerHTML='<b>クロスオーバー・スケール j='+jcur+'</b>：α_j='+val.toFixed(2)+'（まだ正）。だが中間スケールへ動かすと ──'; }
+      else { rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+        rd.innerHTML='<b>クロスオーバー・中間スケール j='+jcur+'</b>：α_j='+val.toFixed(2)+' が一様下限を割る＝<b>相互作用が曲率に勝ち1スケール凸性が崩れる</b>。積分した α が劣化 ⟹ LSIが一様に取れない＝壁。共変RGで窓の凸性を保てるかが鍵。'; }
+    }
+  }
+  function setR(x){ reg=x; bS.className='tbtn'+(x==='S'?' on':''); bC.className='tbtn'+(x==='C'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setR('S');});
+  bC.addEventListener('click',function(){setR('C');});
+  sj.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

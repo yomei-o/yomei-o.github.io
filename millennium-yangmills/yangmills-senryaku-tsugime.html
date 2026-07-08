@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>継ぎ目を掘る ── 4つの対立とグレイル ／ ミレニアム問題を解くぞ 戦略編</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --conf:#a5473a; --bridge:#2f7d5a; --neu:#a9791a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:#e9edf3;color:#24344a;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:18px;line-height:1.7;font-weight:600;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:8px 10px;text-align:center;line-height:1.55;vertical-align:middle;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12px;}
+  table.dt td.name{text-align:left;font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .y{color:#2f7d5a;font-weight:700;} table.dt .n{color:#a5473a;font-weight:700;} table.dt .m{color:#a9791a;font-weight:700;}
+
+  .conf{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .conf .row{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.6;}
+  .conf .row:last-child{border-bottom:none;}
+  .conf .k{flex-shrink:0;width:26px;font-weight:700;color:var(--conf);font-size:15px;}
+  .conf .txt{color:var(--ink-soft);} .conf .txt b{color:#2c2a2e;font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.conf{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:11px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略編・最終回（継ぎ目の奥）</span></div>
+  <p class="eyebrow">4つの難題ではない ── 4つの、道具どうしが互いに衝突する要求</p>
+  <h1>継ぎ目を掘る ── 4つの対立とグレイル
+    <span class="sub">統合像の"継ぎ目"＝<strong>一本のRGで UV＋IR＋反射正値性＋ゲージ共変を4次元同時制御</strong>。<br>掘ると分かる ── 難しさは各要求単体でなく、<em>片方に効く道具が、もう片方を壊す</em>という<strong>対立</strong>。金字塔はどれも必ず一つ落とす。欠けているのは、<strong>三重両立する粗視化</strong>という一個の数学的対象。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：継ぎ目の"対立構造"と、欠けた一個の物（研究スケッチ）</span>
+    <span>核心：4要求の対立マトリクス／グレイル＝RP保存∧ゲージ共変∧対数一様なRG</span>
+  </div>
+
+  <p class="lead">統合像（前回）で、本命ルートの残る継ぎ目は「<strong>一本のくりこみ群で、UV構成・IRギャップ下限・反射正値性・ゲージ共変性を、4次元で同時に制御する</strong>」だと絞りました。この最終回は、その継ぎ目を<em>さらに掘り下げます</em>。正直に、研究スケッチとして ── <strong>まだ誰も作れていない、未解決の核心</strong>です。いちばん大事な気づきはこれ：<em>これは"4つの難題"ではなく、"4つの、道具どうしが衝突する要求"</em>。UV制御に最適な道具が反射正値性を壊し、ゲージ共変を買えばGribovで詰む ── <strong>"同時"が指数的に難しい</strong>。その対立の地図を描き、欠けている一個の物を名指しします。</p>
+
+  <h2><span class="n">01</span>4つの要求（おさらい）</h2>
+
+  <div class="keybox">
+    <div class="lbl">一本のRGが同時に満たすべき4つ</div>
+    <p style="margin:0;"><strong>UV（構成）</strong>：\(a\to0\) の極限が存在（繰り込み・臨界を御す）。<br>
+    <strong>IR（ギャップ）</strong>：相関の指数減衰＝正の弦張力を、\(a\) に一様に。<br>
+    <strong>反射正値性(RP)</strong>：全域で保つ → OS再構成で \(H\ge0\)、減衰→ギャップの翻訳。<br>
+    <strong>ゲージ共変</strong>：フローがゲージ対称性（Ward–Slavnov–Taylor）と両立、軌道空間で。</p>
+  </div>
+
+  <h2><span class="n">02</span>対立の地図 ── 道具どうしが衝突する</h2>
+
+  <p>4つを別々に満たす道具は、それぞれ存在します。問題は<strong>同時</strong>。下の図で、4要求のペアをクリックすると、その間の<em>対立</em>（赤）または<em>橋</em>（緑）が読めます。</p>
+
+  <div class="fig">
+    <div class="cap">図：4要求の対立マトリクス。辺を<strong>クリック</strong> ── <span style="color:var(--conf);font-weight:700;">赤＝対立（道具が互いを壊す）</span>、<span style="color:var(--bridge);font-weight:700;">緑＝橋（味方）</span>、<span style="color:var(--neu);font-weight:700;">黄＝比較的軽い</span>。中央の帯＝周辺性 E（4次元＝対数の走りで全評価が脆い）</div>
+    <canvas id="cv" width="680" height="350"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#a5473a;"></i>対立</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>橋（味方）</span>
+      <span><i class="swatch" style="background:#a9791a;"></i>比較的軽い</span>
+    </div>
+  </div>
+
+  <div class="conf">
+    <div class="row"><span class="k">A</span><span class="txt"><b>UV ⊥ 反射正値性</b>：ブロック変換（UV粗視化）が反射面をまたぐと<b>RPを壊す</b>。部分解＝反射面をまたがないブロック／decimation。</span></div>
+    <div class="row"><span class="k">B</span><span class="txt"><b>UV ⊥ ゲージ共変</b>：群値リンクの素朴な平均はゲージ不変を壊す。部分解＝平行移動つきの<b>共変ブロック</b>（Balabanが超技術的になった元凶）。</span></div>
+    <div class="row"><span class="k">C</span><span class="txt"><b>ゲージ ⊥ 反射正値性</b>：ゲージ固定はRPを壊し<b>Gribov多価性</b>（非摂動でゲージ固定が一意でない）に当たる。部分解＝ゲージ不変（軌道空間・Wilsonループ）で行く＝RGが未発達。</span></div>
+    <div class="row"><span class="k">D</span><span class="txt"><b>UV ⊥ IR（無人地帯）</b>：弱結合(UV)と強結合(IR)の間のクロスオーバー(\(\sim\Lambda\))は、摂動RGも強結合展開も効かない<b>無人地帯</b>。一本のRGで一様に渡らねばならない。</span></div>
+    <div class="row"><span class="k">E</span><span class="txt"><b>周辺性（4次元・全体に効く）</b>：\(d=4\) は臨界＝結合の走りが<b>対数（遅い）</b>。\(\log(1/a)\) 個のスケールで誤差が累積し、<b>全評価が脆い</b>。</span></div>
+  </div>
+
+  <p>いっぽう<strong>橋</strong>もある ── <em>IR ↔ 反射正値性</em>は味方：RPが相関の指数減衰を転送行列のギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\) に翻訳する（対立でなく、むしろ後半の要）。<em>IR ↔ ゲージ</em>も比較的軽い：Wilsonループはゲージ不変にIR観測量を与える。<strong>要するに ── UVを中心に、RPとゲージが三つ巴で対立し、そこへ無人地帯と対数脆さが重なる。</strong></p>
+
+  <h2><span class="n">03</span>金字塔は、必ず一つ落とす</h2>
+
+  <table class="dt">
+    <tr><th>達成</th><th>UV構成</th><th>IRギャップ</th><th>反射正値性</th><th>ゲージ共変</th><th>4次元</th></tr>
+    <tr><td class="name">Balaban RG</td><td class="y">✓</td><td class="n">✗</td><td class="m">△</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td class="name">CCHS（SPDE）</td><td class="y">✓</td><td class="m">△</td><td class="m">？</td><td class="y">✓</td><td class="n">✗(3D)</td></tr>
+    <tr><td class="name">BBS 現代RG</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗(スカラー)</td><td class="y">✓</td></tr>
+    <tr><td class="name">強結合展開</td><td class="n">✗</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+  </table>
+
+  <p><strong>どの行にも、全部の✓は無い。</strong>クレイ問題＝この表の<em>全列を一行で✓</em>にすること。「一本のRGで4つ同時」の正体は、これです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>和解の建築案</h2>
+
+  <table class="dt">
+    <tr><th>案</th><th>骨子</th><th>賭け</th></tr>
+    <tr><td class="name">案1 Balaban++</td><td style="text-align:left;">Balabanの共変RGを、BBS流の綺麗な確率論的RGで書き直し、①反射面をまたがないブロックでRP保存、②弦張力(IR下限)を"流れる量"として運ぶ</td><td class="m">保守本命</td></tr>
+    <tr><td class="name">案2 軌道空間SPDE＋多スケール</td><td style="text-align:left;">CCHSのゲージ共変SPDE（軌道空間）の上で、ノイズを多スケール分解＝RG。不変測度がRP＋ギャップを持つと示す（①②③④の合流）</td><td class="y">一番の賭け ★</td></tr>
+    <tr><td class="name">案3 厳密な汎関数RG</td><td style="text-align:left;">ゲージ不変な厳密RG方程式（Wetterich・背景場法）。物理では閉じ込めに使われる。厳密化が遠く、RPが非自明</td><td class="m">別筋</td></tr>
+  </table>
+
+  <h2><span class="n">05</span>欠けている"一個の物" ── グレイル</h2>
+
+  <div class="keybox">
+    <div class="lbl">求む：三重両立する粗視化写像</div>
+    <p class="big" style="margin:0;"><strong>反射正値性を保存し、かつゲージ共変で、その反復が周辺的（対数）UVとIRを一様におさえる、粗視化写像 \(\mathcal R\)。</strong></p>
+    <p style="margin:12px 0 0;">各性質を<em>単独で</em>満たす \(\mathcal R\) はある。<strong>RP保存 ∧ ゲージ共変 ∧ 対数一様</strong> を<em>同時に</em>満たす一個の \(\mathcal R\) が、まだ存在しない。これが作れれば統合像のStep 2が閉じ、UV(①)とIR(③)が一本の流れで繋がる。<em>逆に、これが無いことが未解決の正体</em> ── すべての対立が、この一点に落ちる。</p>
+  </div>
+
+  <p>だから、最初のブレークスルーは「問題が解けた」ではなく、たぶん<strong>「二つの対立を、一つのスキームで同時に解消した」</strong>という形で来る ── 例：<em>反射正値性を保存する、ゲージ共変なブロック変換の発明</em>（対立A＋B＋Cを一手で和らげる）。それが継ぎ目に最初に差し込まれる楔になる、と僕は見ています。</p>
+
+  <h2><span class="n">06</span>正直な締め ── 縁の、そのまた縁</h2>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">反射正値性→OS再構成→\(H\ge0\)・転送行列ギャップ、ブロックスピンRGが一般にRPやゲージ不変を壊すこと、ゲージ共変ブロッキングの必要（Balaban）、非摂動ゲージ固定のGribov多価性、4次元の周辺性＝対数的な走り、Balaban のUV安定性・CCHS(2022)の3次元SPDE・Bauerschmidt–Brydges–Slade の4次元臨界スカラーの厳密RG・強結合展開の面積則(Osterwalder–Seiler) ── いずれも確立した結果・描像です。</p>
+    <p style="margin-bottom:0;">だが ── <strong>「4次元・非可換で、RP保存かつゲージ共変かつ対数一様な一本のRG」は存在せず、4次元YMの存在＋質量ギャップは未解決</strong>（2025年時点）。この回は、その未解決の核心を"対立の地図＋欠けた一個の物"として言語化した<em>研究スケッチ</em>であって、解法ではありません。案2への賭けや「最初の楔」の予想は、僕個人の見立て＝反証されうる意見です。表の△・？は評価に幅があります。ここは<strong>縁の、そのまた縁</strong> ── 旗は、絶対に立てません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>「4つの要求」は、なぜ"4つの難題"より"4つの対立"と呼ぶ方が正確か。
+        <details><summary>答えを見る</summary><div class="ans">各要求は単独なら満たす道具がある。難しさは同時性 ── UV粗視化のブロックRPを壊し(A)、共変ブロックが要り(B)、ゲージ固定はRP破壊＋Gribov(C)、UV/IRの間は無人地帯(D)、4次元の対数で全評価が脆い(E)。片方に効く道具がもう片方を壊す＝対立の構造だから。</div></details>
+      </li>
+      <li>反射正値性は、4要求の中で"対立"か"橋"か。両面を。
+        <details><summary>答えを見る</summary><div class="ans">両面。UV粗視化（A）やゲージ固定（C）とは対立（それらがRPを壊す）。だがIRとは橋 ── RPが相関の指数減衰を転送行列のギャップ \(\Delta=-\tfrac1a\ln(\lambda_1/\lambda_0)\) に翻訳し、統合の後半を成立させる。だから「RPを壊さないRG」を作るのが鍵。</div></details>
+      </li>
+      <li>この回が名指しする「欠けた一個の物（グレイル）」とは？
+        <details><summary>答えを見る</summary><div class="ans">反射正値性を保存し、ゲージ共変で、その反復が周辺的（対数）UVとIRを一様におさえる、一個の粗視化写像。各性質単独のスキームはあるが、三重同時が無い。これが作れれば統合のStep2が閉じる＝未解決の核心。最初の進歩は「二つの対立を一手で解消するスキーム」の形で来るだろう。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">継ぎ目まとめ</span>難しさは"対立"に凝縮、欠けは"一個の物"</h2>
+    <p>統合像の継ぎ目＝「一本のRGで UV＋IR＋反射正値性＋ゲージ共変を4次元同時制御」。掘ると、これは4つの難題でなく<strong>4つの対立</strong> ── UV粗視化 ⊥ RP(A)、UV ⊥ ゲージ共変(B)、ゲージ ⊥ RP＋Gribov(C)、UV ⊥ IR＝無人地帯(D)、そして4次元の周辺性＝対数脆さ(E)。UVを中心にRPとゲージが三つ巴、そこへ無人地帯と対数が重なる。金字塔（Balaban・CCHS・BBS・強結合）は<em>どれも必ず一つ落とす</em>。</p>
+    <p>欠けているのは一個の数学的対象 ── <strong>RP保存 ∧ ゲージ共変 ∧ 対数一様な、粗視化写像</strong>。単独のスキームはあるが三重同時が無い。これが未解決の正体で、最初の楔はたぶん「二つの対立を一手で解消するスキーム（例：RP保存なゲージ共変ブロック）」の形で差し込まれる。案2（軌道空間SPDE＋多スケール）が僕の一番の賭け。── ここは縁の、そのまた縁。これは設計図の奥の設計図であって、建った理論ではない。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku-tougou.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 統合像</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">縁の、そのまた縁</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略編・最終回、物理好きの高校生・大学生向け読み物。反射正値性→Osterwalder–Schrader 再構成→\(H\ge0\)・転送行列 \(T=e^{-aH}\)・質量ギャップ＝固有値比、ブロックスピンくりこみ群が一般に反射正値性やゲージ不変性を壊すこと（反射面をまたぐ平均・群値変数の平均）、ゲージ共変ブロッキングの必要性（Bałaban の4次元格子ゲージRG）、非摂動的ゲージ固定のGribov多価性、4次元の周辺（臨界）性と結合の対数的走り、Bauerschmidt–Brydges–Slade の4次元臨界スカラーの厳密くりこみ群、Chandra–Chevyrev–Hairer–Shen(2022)の3次元ヤン=ミルズSPDE、強結合展開の面積則（Osterwalder–Seiler 1978）、汎関数くりこみ群（Wetterich・背景場法）は、いずれも確立した結果・道具です。4次元 \(SU(N)\) の存在と質量ギャップは未解決で（2025年時点）、RP保存かつゲージ共変かつ対数一様な一本のRGは存在しません。本稿は未解決の核心を対立構造として言語化した研究スケッチであり、解法ではありません。建築案の優劣・「最初の楔」の予想・表の△/？は筆者個人の見立てで、反証されうる意見です。図は4要求の関係を示す概念的模式で、辺の色（対立/橋/軽い）は本文の議論の要約です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではクリック図と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では対立マトリクスの辺をクリックすると、4要求のペアの間の対立（赤）や橋（緑）の中身が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var nodes={
+    UV:{x:0.24,y:0.28,label:'UV 構成',col:'#2f6d8a'},
+    G:{x:0.76,y:0.28,label:'ゲージ共変',col:'#7a4fa0'},
+    RP:{x:0.24,y:0.80,label:'反射正値性',col:'#7a4fa0'},
+    IR:{x:0.76,y:0.80,label:'IR ギャップ',col:'#2f7d5a'}
+  };
+  var edges=[
+    {a:'UV',b:'G', key:'B', type:'conf', desc:'<b>対立B：UV ⊥ ゲージ共変</b> ── 群値リンクの素朴な平均はゲージ不変を壊す。部分解＝平行移動つきの共変ブロック（Balabanが超技術的になった元凶）。'},
+    {a:'UV',b:'RP',key:'A', type:'conf', desc:'<b>対立A：UV ⊥ 反射正値性</b> ── ブロック変換（UV粗視化）が反射面をまたぐとRPを壊す。部分解＝反射面をまたがないブロック／decimation。'},
+    {a:'G', b:'RP',key:'C', type:'conf', diag:true, desc:'<b>対立C：ゲージ ⊥ 反射正値性</b> ── ゲージ固定はRPを壊し、Gribov多価性（非摂動でゲージ固定が一意でない）に当たる。部分解＝ゲージ不変（軌道空間・Wilsonループ）で行く＝RGが未発達。'},
+    {a:'UV',b:'IR',key:'D', type:'conf', diag:true, desc:'<b>対立D：UV ⊥ IR（無人地帯）</b> ── 弱結合(UV)と強結合(IR)の間のクロスオーバー(∼Λ)は、摂動RGも強結合展開も効かない無人地帯。一本のRGで一様に渡る必要。'},
+    {a:'RP',b:'IR',key:'橋', type:'bridge', desc:'<b>橋：反射正値性 ↔ IR</b> ── RPが相関の指数減衰を転送行列のギャップ Δ=−(1/a)ln(λ₁/λ₀) に翻訳。対立でなく味方＝統合の後半の要。'},
+    {a:'G', b:'IR',key:'軽', type:'neu', desc:'<b>比較的軽い：ゲージ ↔ IR</b> ── Wilsonループはゲージ不変にIR観測量を与える。ここは相対的に問題が小さい。'}
+  ];
+  var sel=-1, lastW=680;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function colOf(t){ return t==='conf'?'#a5473a':(t==='bridge'?'#2f7d5a':'#a9791a'); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=54; lastW=w;
+    function X(u){return pad+u*(w-2*pad);}
+    function Y(v){return pad+v*(h-2*pad);}
+    ctx.clearRect(0,0,w,h);
+    // 周辺性E の帯（中央）
+    ctx.fillStyle='rgba(138,75,47,0.07)';
+    ctx.fillRect(X(0.5)-30, pad-6, 60, h-2*pad+12);
+    ctx.save();ctx.translate(X(0.5), h/2);ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='#8a4b2f';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('E：4次元＝対数の走りで全評価が脆い', 0, 4);ctx.restore();ctx.textAlign='left';
+    // 辺
+    for(var i=0;i<edges.length;i++){ var e=edges[i], A=nodes[e.a], B=nodes[e.b];
+      var x1=X(A.x),y1=Y(A.y),x2=X(B.x),y2=Y(B.y), isSel=(sel===i);
+      ctx.strokeStyle=colOf(e.type);ctx.lineWidth=isSel?5:(e.type==='conf'?3:2.4);
+      if(e.diag){ctx.setLineDash([7,5]);}else{ctx.setLineDash([]);}
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+      // ラベル（中点）
+      var mxp=(x1+x2)/2, myp=(y1+y2)/2;
+      ctx.fillStyle='#fff';ctx.strokeStyle=colOf(e.type);ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(mxp,myp,12,0,7);ctx.fill();ctx.stroke();
+      ctx.fillStyle=colOf(e.type);ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText(e.key, mxp, myp+4);ctx.textAlign='left';
+    }
+    // ノード
+    for(var k in nodes){ var n=nodes[k], x=X(n.x),y=Y(n.y);
+      ctx.fillStyle=n.col;ctx.globalAlpha=0.92;ctx.beginPath();ctx.arc(x,y,30,0,7);ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,30,0,7);ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      var parts=n.label.split(' ');
+      for(var p=0;p<parts.length;p++) ctx.fillText(parts[p], x, y+4-(parts.length-1)*7+p*14);
+      ctx.textAlign='left';
+    }
+    // readout
+    if(sel<0){
+      rd.innerHTML='4要求の間の辺を<b>クリック</b> ── 赤＝対立、緑＝橋、黄＝軽い。中央の帯は E（4次元の対数脆さ）。<b>UVを中心に、反射正値性とゲージが三つ巴で対立し、そこへ無人地帯(D)と対数(E)が重なる</b>のが継ぎ目の正体。';
+    } else {
+      rd.innerHTML=edges[sel].desc;
+    }
+  }
+  function d2seg(px,py,x1,y1,x2,y2){
+    var dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy; if(L2<1e-9)return Math.hypot(px-x1,py-y1);
+    var t=((px-x1)*dx+(py-y1)*dy)/L2; t=Math.max(0,Math.min(1,t));
+    return Math.hypot(px-(x1+t*dx), py-(y1+t*dy));
+  }
+  cv.addEventListener('click',function(ev){
+    var rect=cv.getBoundingClientRect(), sc=lastW/rect.width;
+    var mx=(ev.clientX-rect.left)*sc, my=(ev.clientY-rect.top)*sc;
+    var d=setupHiDPI(cv), w=d.w, h=d.h, pad=54;
+    function X(u){return pad+u*(w-2*pad);} function Y(v){return pad+v*(h-2*pad);}
+    var best=-1, bd=18;
+    for(var i=0;i<edges.length;i++){ var e=edges[i],A=nodes[e.a],B=nodes[e.b];
+      var dd=d2seg(mx,my,X(A.x),Y(A.y),X(B.x),Y(B.y)); if(dd<bd){bd=dd;best=i;} }
+    sel=best; draw();
+  });
+  window.addEventListener('resize',draw);
+  setTimeout(draw,50); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

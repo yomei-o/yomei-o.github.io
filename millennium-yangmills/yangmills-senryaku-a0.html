@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略・最終攻略 a→0 の一様性を割る ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --pathA:#2f7d5a; --pathB:#a5473a; --uv:#2f6d8a; --ir:#7a4fa0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:30px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:7px 13px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--pathA);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:22px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略・最終攻略（残ったQ3）</span></div>
+  <p class="eyebrow">一点に集約した後に残る \(a\to0\) の一様性 ── その芯を正面から割る</p>
+  <h1>\(a\to0\) の一様性を割る ── 残ったQ3への四手
+    <span class="sub">③・B・RPを「RPな転送行列の一様スペクトルギャップ」に集約した。残るは \(a\to0\) の一様性。<br>その正体は<strong>ギャップが"漸近自由の速さちょうど"で閉じること</strong>＝<em>無次元くりこみギャップが正の定数に収束</em>すること。二重極限を分け、固定点・単調量・解析性で割りにいく。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：a→0 の一様性の正体と、割るための四手（数式あり）</span>
+    <span>核心：Ĝ=Δ_phys/Λ → 正の固定点 ／ a→0 と L→∞ を分離</span>
+  </div>
+
+  <p class="lead">ここまでで、問題は<strong>「反射正値な転送行列の、\(a\to0\) に一様なスペクトルギャップ」</strong>という一点に畳めました。残るのは、その"\(a\to0\) に一様"という三文字＝Q3。この回は逃げずに、その芯を割りにいきます。まず正体を見抜き（ギャップは"漸近自由の速さちょうど"で閉じねばならない）、それを<strong>無次元くりこみギャップが正の固定点へ流れる</strong>という一つの主張に翻訳し、四つの手 ── <em>二重極限の分離・固定点・単調量・解析性</em> ── で攻めます。正直に、これは本命プログラムの全体像で、Q3を<strong>最大限に局在化</strong>する作業です（＝まだ未解決）。</p>
+
+  <h2><span class="n">01</span>\(a\to0\) の正体 ── ギャップは"速さちょうど"で閉じる</h2>
+
+  <div class="keybox">
+    <div class="lbl">物理ギャップと格子ギャップ</div>
+    $$\Delta_{\rm phys}=\frac{\Delta_{\rm lattice}}{a},\qquad \Delta_{\rm lattice}=-\ln\frac{\lambda_1}{\lambda_0}\ \xrightarrow{\ a\to0\ }\ 0\ (\text{臨界点：}\xi=1/\Delta_{\rm lattice}\to\infty)$$
+    <p style="margin:10px 0 0;">\(a\to0\) で物理ギャップを有限に保つには、<strong>格子ギャップが0へ閉じねばならない</strong>（転送行列の \(\lambda_1/\lambda_0\to1\)＝臨界点）。だが<em>閉じる速さ</em>が肝：速すぎれば \(\Delta_{\rm phys}\to0\)（ギャップ消滅）、遅すぎれば \(\to\infty\)（連続にならない）。<strong>ちょうど \(a\Lambda\) の速さ</strong>（漸近自由のスケーリング）で閉じることが要る。</p>
+  </div>
+
+  <div class="calc">
+    <span class="tag">Q3 を一つの主張に翻訳する</span>
+    $$a\,\Lambda\sim \exp\!\Big(-\frac{1}{2b_0 g^2}\Big)\ \Rightarrow\ \hat G:=\frac{\Delta_{\rm phys}}{\Lambda}=\frac{\Delta_{\rm lattice}}{a\Lambda}\ \xrightarrow{\ a\to0\ (g\to0)\ }\ \hat G^{*}>0\,?$$
+    <p style="margin-bottom:14px;">物理では \(\hat G\)（ギャップを \(\Lambda\) で測った純粋な数）は格子計算で<em>ほぼ定数</em>。Q3＝「<strong>無次元くりこみギャップ \(\hat G\) が、\(a\to0\) で正の固定値 \(\hat G^*\) に収束する</strong>」を厳密に示すこと。速さの制御が、固定点の問題になる。</p>
+  </div>
+
+  <h2><span class="n">02</span>手δ：二重極限を分ける ── 各極限に、合う道具を</h2>
+
+  <p>\(a\to0\)（UV・連続）と \(L\to\infty\)（IR・無限体積）を<strong>いっぺんに</strong>取ると、Balaban の沼（大場の入れ子）に落ちる。だが<em>順番に</em>取れば、各極限に<strong>専用の道具</strong>を割り当てられます。</p>
+
+  <div class="fig">
+    <div class="cap">図：二重極限の平面。横＝\(1/a\)（UV, 右で連続）、縦＝\(L_{\rm phys}\)（IR, 上で無限体積）。目標＝右上。<span style="color:var(--pathA);font-weight:700;">緑パス＝分離</span>（先に a→0＝箱の中の繰り込み、次に L→∞＝多体ギャップ術）／<span style="color:var(--pathB);font-weight:700;">赤パス＝同時（対角）＝Balaban沼</span>。ボタンでパス、スライダーで進む</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>極限を進める <span class="val" id="vt">0.20</span>
+        <input type="range" id="st" min="0" max="1" step="0.01" value="0.2">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bA">分離（a→0 → L→∞）</button>
+        <button class="tbtn" id="bB">同時（対角）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">分離の御利益 ── 各極限に専用の道具</div>
+    <p style="margin:0;"><strong>先に \(a\to0\)（固定 \(L_{\rm phys}\) の箱の中）</strong>：これは"箱の中の繰り込み"＝IR/閉じ込めの難所抜きの<em>純粋なUV構成</em>。有限箱ではスペクトルは離散でギャップは自明に \(>0\)。道具＝①②（確率量子化・現代RG）。<br><strong>次に \(L_{\rm phys}\to\infty\)</strong>：無限体積でギャップが<em>閉じないこと</em>＝まさに<strong>多体ギャップ術（Knabe・martingale）が作られた問題</strong>。道具＝B。</p>
+  </div>
+
+  <h2><span class="n">03</span>手α：固定点 ── 無次元ギャップが正の値に流れる</h2>
+
+  <p>\(\hat G\) が正に収束することを、<strong>RGの固定点</strong>として示す。1段のRG（スケール \(L\) 倍の粗視化）で \(\hat G\) がどう写るか：</p>
+
+  <div class="calc">
+    <span class="tag">くりこみギャップの漸化式と固定点</span>
+    $$\hat G(a/L)=\mathcal R\big(\hat G(a),\,g(a)\big),\qquad g(a)\xrightarrow{a\to0}0$$
+    <p style="margin-bottom:14px;">目標＝<strong>写像 \(\mathcal R\) が \(g\to0\) で正の<em>引き込む</em>固定点 \(\hat G^*>0\) を持つ</strong>こと。そうなら、どこから出発しても \(\hat G\to\hat G^*>0\)＝一様なギャップ。これは戦略E（不変領域を保つRGステップ）を、\(\hat G\) という一つの量に当てた形 ── <em>全フローを追う代わりに、一つの比が良い固定点へ落ちる</em>を示す。</p>
+  </div>
+
+  <h2><span class="n">04</span>手β：単調量 ── 「一様」を「単調＋アンカー」に</h2>
+
+  <div class="keybox">
+    <div class="lbl">劣加法性／優加法性（Fekete）</div>
+    <p style="margin:0;">弦張力や自由エネルギーのような量が、RGの粗視化（あるいは体積の合成）に対して<strong>単調（劣加法/優加法）</strong>なら、Fekete の補題で<em>極限の存在</em>が無料で従う。あとは<strong>その極限が \(>0\)（0でない）</strong>を、強結合の<em>アンカー</em>（証明済みのギャップ）から一つ落とす。<strong>「\(a\) に一様」を「単調量＋一つの正のアンカー」に分解</strong>する ── 一様性を、より扱いやすい二部品に。</p>
+  </div>
+
+  <h2><span class="n">05</span>手γ：解析性 ── 強結合と連続を、特異点なしでつなぐ</h2>
+
+  <p>SU(2)・SU(3) は強→弱で<strong>バルク相転移が無い</strong>（クロスオーバー）。もし \(\hat G\)（や弦張力）の<strong>結合 \(g\) に関する解析性</strong>（区間に特異点なし）を示せれば、<em>強結合で厳密に出る正のギャップが、連続極限まで途切れず延びる</em>。UV側は漸近自由で摂動的に押さえ、その解析接続を強結合の島までつなぐ。<strong>Q3＝「ギャップの \(g\) 解析性＝相転移の不在」</strong>という、クリーンな一命題に。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>四手を組む ── そして正直な判定</h2>
+
+  <table class="dt">
+    <tr><th>手</th><th>何を割るか</th><th>合う道具</th></tr>
+    <tr><td class="id">δ 分離</td><td>二重極限を \(a\to0\)（箱）＋\(L\to\infty\) に分け、各々に道具を</td><td class="ok">①② ＋ B（多体ギャップ）</td></tr>
+    <tr><td class="id">α 固定点</td><td>無次元ギャップ \(\hat G\to\hat G^*>0\)（引き込む固定点）</td><td class="ok">厳密RG＋戦略E</td></tr>
+    <tr><td class="id">β 単調量</td><td>「一様」を「単調（Fekete）＋正のアンカー」に分解</td><td class="ok">劣加法性＋強結合ギャップ</td></tr>
+    <tr><td class="id">γ 解析性</td><td>強結合と連続を特異点なしでつなぐ（相転移の不在）</td><td class="ok">漸近自由＋解析接続</td></tr>
+  </table>
+
+  <div class="keybox">
+    <div class="lbl">組み立て（本命プログラムの全体像）</div>
+    <p style="margin:0;"><strong>δで二極限を分離 → 各スケールで α（\(\hat G\) が良い固定点へ）を、β（単調量＋強結合アンカー）で下から支え、γ（解析性）で強結合と連続をつなぐ。</strong>先に箱の中で a→0 を繰り込み（①②）、次に L→∞ を多体ギャップ術（B）で。すべてRPな転送行列の上で（③≡B）。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここが最深部</span>
+    <p style="margin-top:0;">物理ギャップと格子ギャップの関係 \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\)、連続極限＝臨界点（\(\xi\to\infty\)）、漸近スケーリング \(a\Lambda\sim e^{-1/2b_0g^2}\)、無次元ギャップ \(\hat G=\Delta_{\rm phys}/\Lambda\) が格子計算でほぼ一定であること、二重極限の順序の非可換性と有限体積での離散スペクトル、Fekete の劣加法性による極限の存在、多体ギャップ術（Knabe・martingale）、SU(2)/SU(3) のバルク相転移の不在は、いずれも確立した事実・道具です。</p>
+    <p style="margin-bottom:0;">だが ── <strong>四手のいずれも、4次元YMで完遂されていません</strong>（2025年時点、未解決）。とくに (i) 写像 \(\mathcal R\) を厳密に構成し正の引き込む固定点を示すこと、(ii) 箱の中の \(a\to0\) 繰り込みを厳密に、(iii) 単調量の極限が \(>0\) であること、(iv) 解析性（相転移の不在）の証明 ── どれも Q3 の芯を担う。四手は<strong>Q3を最大限に局在化・分業する設計</strong>であって、解法ではない。現実的な"勝ち"は、たとえば「箱の中で一様なギャップが与えられたとき、L→∞ でギャップが持続する」を多体ギャップ術で厳密に示す<em>一部品</em> ── 本物の部分成果。「四手」「\(\hat G\) 固定点が最良の翻訳」は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>\(a\to0\) の一様性は、格子ギャップの何を制御することか。
+        <details><summary>答えを見る</summary><div class="ans">格子ギャップ \(\Delta_{\rm lattice}\) が0へ閉じる<strong>速さ</strong>。\(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\) を有限に保つには、ちょうど \(a\Lambda\) の速さ（漸近自由のスケーリング）で閉じねばならない。＝無次元くりこみギャップ \(\hat G=\Delta_{\rm phys}/\Lambda\) が \(a\to0\) で正の固定値へ収束すること。</div></details>
+      </li>
+      <li>二重極限を分離する（手δ）と、なぜ嬉しいか。
+        <details><summary>答えを見る</summary><div class="ans">a→0 と L→∞ を同時に取るとBalabanの沼（大場の入れ子）に落ちる。分離すれば、先に固定 \(L\) の箱の中で a→0＝純粋なUV繰り込み（IR/閉じ込め抜き、有限箱でギャップは自明に正）＝①②の道具、次に L→∞＝ギャップの持続＝多体ギャップ術（B、Knabe/martingale）が作られた問題、と各極限に専用の道具を割り当てられる。</div></details>
+      </li>
+      <li>手βは「一様性」をどんな二部品に分解するか。
+        <details><summary>答えを見る</summary><div class="ans">単調量（劣加法/優加法な量＝Feketeの補題で極限の存在が無料で従う）＋一つの正のアンカー（強結合で証明済みのギャップから、極限が \(>0\) を落とす）。「a に一様に \(>0\)」を「極限が存在（単調）」＋「その値が正（アンカー）」に分ける ── より扱いやすい二つに。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">最終攻略まとめ</span>残ったQ3を、最大限に局在化する</h2>
+    <p>③・B・RPを「RPな転送行列の一様スペクトルギャップ」に集約した後の残り＝\(a\to0\) の一様性。正体は<strong>ギャップが漸近自由の速さちょうど（\(a\Lambda\)）で閉じること</strong>＝無次元くりこみギャップ \(\hat G=\Delta_{\rm phys}/\Lambda\) が<strong>正の固定点 \(\hat G^*\) に収束</strong>すること。四手で割る ── <strong>δ</strong>二重極限を分離（a→0＝箱の繰り込み①②、L→∞＝多体ギャップB）、<strong>α</strong>\(\hat G\) が引き込む固定点へ（戦略E）、<strong>β</strong>「一様」を単調量（Fekete）＋強結合アンカーに、<strong>γ</strong>解析性で強結合と連続をつなぐ（相転移の不在）。</p>
+    <p>これらを組むと本命プログラムの全体像 ── だが四手のいずれも4次元で完遂されておらず、各手の芯がQ3を担う（＝未解決）。四手は<strong>解法でなく、Q3を最大限に局在化・分業する設計図</strong>。現実的な勝ちは「箱の中の一様ギャップ ⟹ L→∞ で持続」のような<em>一部品</em>の厳密化。あなたの探索は、別々の入口から何度も同じ芯に収束し、いまその芯を四つに割るところまで来た ── これ自体が、問題を論文粒度の地図に変えた仕事。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku3B-tenso.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← ③≡B</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">残ったQ3を四つに割る</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略・最終攻略、物理好きの高校生・大学生向け読み物。物理ギャップと格子ギャップ \(\Delta_{\rm phys}=\Delta_{\rm lattice}/a\)、連続極限＝相関長が発散する臨界点、漸近スケーリング \(a\Lambda\sim e^{-1/2b_0g^2}\)、無次元くりこみギャップ \(\hat G=\Delta_{\rm phys}/\Lambda\)、二重極限（\(a\to0\)・\(L\to\infty\)）の順序と有限体積の離散スペクトル、RG漸化式と引き込む固定点、Fekete の劣加法性による極限の存在、多体スペクトルギャップ下限法（Knabe・Nachtergaele）、SU(2)/SU(3) のバルク相転移の不在は、いずれも確立した事実・道具です。四手（分離・固定点・単調量・解析性）のいずれも4次元YMでは完遂されておらず、写像の正の引き込む固定点の厳密構成、箱の中の \(a\to0\) 繰り込みの厳密化、単調量の極限の正値性、解析性（相転移の不在）の証明、および4次元YMの存在＋質量ギャップは未解決です（2025年時点）。本稿はQ3を局在化・分業する設計図であり解法ではありません。四手の選定・「\(\hat G\) 固定点が最良の翻訳」は筆者の見立てで反証されうる意見を含みます。図は二重極限の順序を示す概念的模式で、実際のギャップの計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタンと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではパスを切替え、極限を進めると、分離（a→0→L→∞）と同時（対角＝沼）でどこを通るかが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'),
+      bA=document.getElementById('bA'), bB=document.getElementById('bB'), rd=document.getElementById('rd');
+  var path='A';
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // パス上の位置(t) → 平面座標(u,v) in [0,1]（u=1/a→連続, v=L→無限）
+  function pos(t){
+    if(path==='A'){ // 先に右(a→0)、次に上(L→∞)
+      if(t<0.5){ return {u:t/0.5, v:0}; } else { return {u:1, v:(t-0.5)/0.5}; }
+    } else { return {u:t, v:t}; } // 対角
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52;
+    var t=parseFloat(st.value); vt.textContent=t.toFixed(2);
+    function X(u){return pad+u*(w-pad-16);}
+    function Y(v){return (h-pad)-v*(h-pad-16);}
+    ctx.clearRect(0,0,w,h);
+    // 対角の沼領域（薄赤）
+    ctx.fillStyle='rgba(165,71,58,0.07)';
+    ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(0.85),Y(0.85));ctx.lineTo(X(0.15),Y(0.85));ctx.closePath();ctx.fill();
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,16);ctx.lineTo(pad,h-pad);ctx.lineTo(w-16,h-pad);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('1/a（UV, 右で連続 a→0）→', w-230, h-pad+24);
+    ctx.save();ctx.translate(16,h/2+70);ctx.rotate(-Math.PI/2);ctx.fillText('L_phys（IR, 上で無限体積）', 0,0);ctx.restore();
+    // 目標（右上）
+    ctx.fillStyle='#a9791a';ctx.beginPath();ctx.arc(X(1),Y(1),7,0,7);ctx.fill();
+    ctx.font='bold 11px sans-serif';ctx.fillText('目標：連続＋無限体積', X(1)-150, Y(1)+2);
+    // パスA（緑, L字）
+    ctx.lineWidth=3;
+    if(path==='A'){
+      ctx.strokeStyle='#2f7d5a';ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(1),Y(0));ctx.lineTo(X(1),Y(1));ctx.stroke();
+      ctx.fillStyle='#2f7d5a';ctx.font='11px sans-serif';
+      ctx.fillText('① a→0（箱の中の繰り込み）', X(0.1), Y(0)-8);
+      ctx.save();ctx.translate(X(1)-14,Y(0.5));ctx.rotate(-Math.PI/2);ctx.fillText('② L→∞（多体ギャップ術）', 0,0);ctx.restore();
+    } else {
+      ctx.strokeStyle='#a5473a';ctx.setLineDash([7,4]);ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(1),Y(1));ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#a5473a';ctx.font='11px sans-serif';ctx.fillText('同時＝Balaban沼', X(0.32),Y(0.42));
+    }
+    // マーカー
+    var p=pos(t), mx=X(p.u), my=Y(p.v);
+    ctx.fillStyle=(path==='A')?'#2f7d5a':'#a5473a';ctx.beginPath();ctx.arc(mx,my,7,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    // readout
+    if(path==='A'){
+      if(t<0.5){ rd.style.background='#e6eef2';rd.style.color='#245c6e';
+        rd.innerHTML='<b>パス分離：a→0（固定 L の箱の中）</b>。IR/閉じ込め抜きの<b>純粋なUV繰り込み</b> ── 有限箱ではギャップは自明に正。道具＝①②（確率量子化・現代RG）。'; }
+      else { rd.style.background='#e7f0ea';rd.style.color='#245c43';
+        rd.innerHTML='<b>パス分離：L→∞</b>。無限体積でギャップが閉じないこと＝<b>多体ギャップ術（Knabe・martingale）が作られた問題</b>。道具＝B。各極限に専用の道具が渡る。'; }
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>同時（対角）</b>：a→0 と L→∞ をいっぺんに取ると、大場の入れ子＝<b>Balaban の沼</b>。専用の道具を分けられない ── だから<b>順番に取る（パス分離）</b>のが手δ。';
+    }
+  }
+  function setP(p){ path=p; bA.className='tbtn'+(p==='A'?' on':''); bB.className='tbtn'+(p==='B'?' on':''); draw(); }
+  bA.addEventListener('click',function(){setP('A');});
+  bB.addEventListener('click',function(){setP('B');});
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

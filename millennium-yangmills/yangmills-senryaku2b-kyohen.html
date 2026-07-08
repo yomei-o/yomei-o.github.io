@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦略②補 共変FRDは作れそうか ── 共変ヒート核ルート ／ ミレニアム問題を解くぞ</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e;
+    --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#2c5560; --side-bg:#e9f0f0;
+    --warn:#8a4b2f;
+    --calc:#26456e; --calc-bg:#e9edf3;
+    --rule:#ddd2ba; --hair:#cabfa3;
+    --acc:#26456e; --gold:#a9791a;
+    --grid:#e6dcc7;
+    --c1:#2f6d8a; --c2:#7a4fa0; --c3:#a5622a; --ok:#2f7d5a; --bad:#a5473a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--gold);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e2b8 62%);padding:0 .05em;}
+  strong{font-weight:700;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3dbe6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:700;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .tbtn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--acc);background:#fff;color:var(--acc);
+    border-radius:5px;padding:8px 15px;transition:all .12s ease;}
+  .tbtn.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;font-weight:600;background:#e9edf3;color:#24344a;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;font-size:12.5px;}
+  table.dt .id{font-weight:700;color:var(--acc);white-space:nowrap;}
+  table.dt .ok{color:var(--ok);font-weight:700;} table.dt .open{color:var(--warn);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef1f6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22344a;line-height:1.8;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#efe9db);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:21pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:23px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ 第一部 ヤン=ミルズ</span><span class="ep">戦略②補（深掘り）</span></div>
+  <p class="eyebrow">戦略②の核心の障害を、正面から ── 共変な有限レンジ分解は作れるのか</p>
+  <h1>共変FRDは作れそうか ── 共変ヒート核ルート
+    <span class="sub">戦略②の勝ち筋は<strong>ゲージ共変な有限レンジ分解(FRD)</strong>。作れそう？── <em>半分イエス</em>。<br>FRDはスカラー専用でなく（一般化済み）、共変な多スケール分解は Balaban に既にあり、<strong>共変ヒート核</strong>という自然で有望なルートもある。だが「綺麗にBBSへ差せる非アーベル版」は、<em>共変⇒場依存</em>の谷で未達。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：共変FRDの実現性を、有望と障害の両面で（数式あり）</span>
+    <span>核心：共変ヒート核 e^{−tD*D} は正・共変 ／ 障害＝場依存 vs 固定</span>
+  </div>
+
+  <p class="lead">戦略②で、現代RG（BBS）をゲージに移植する勝ち筋は「<strong>ゲージ共変な有限レンジ分解</strong>を作ること」だと絞りました。では、それは作れそうなのか。正直な答えは<em>半分イエス</em> ── 楽観すべき根拠が三つ、止めるべき谷が四つ。両方を並べ、一番有望な具体ルート（<strong>共変ヒート核</strong>）を名指しし、非アーベルでどこが最後に残るかを見ます。</p>
+
+  <h2><span class="n">01</span>FRDのおさらい ── そして"共変"にすると何が変わる</h2>
+
+  <div class="keybox">
+    <div class="lbl">有限レンジ分解（スカラー）</div>
+    $$C=(-\Delta+m^2)^{-1}=\sum_{j\ge1}C_j,\qquad C_j(x,y)=0\ \ (|x-y|>L^{j}),\ \ C_j\succeq0$$
+    <p style="margin:10px 0 0;">自由共分散を、<strong>スケールごとの有限レンジ・正定値</strong>な部品に割る。しかも<em>場に依らず固定</em>。これがBBSの綺麗さの源（各段が局所的・独立）。<strong>共変にすると、この"固定"が揺らぐ</strong> ── それが本題。</p>
+  </div>
+
+  <h2><span class="n">02</span>楽観の根拠 ── むしろ有望</h2>
+
+  <table class="dt">
+    <tr><th>根拠</th><th>中身</th></tr>
+    <tr><td class="id">FRDは一般化する</td><td>元はラプラシアン（Brydges–Guadagni–Mitter・Brydges–Talarczyk）。<strong>ベクトル値・勾配模型・一般の正作用素へ拡張済み</strong>（Adams–Kotecký–Müller）。群値/行列値への素地がある。</td></tr>
+    <tr><td class="id">共変分解は既に在る</td><td>Balaban の共変平均核＋補助場は、事実上<strong>ゲージ共変な多スケール分解</strong>。"存在するか"はイエス。問題は綺麗さ。</td></tr>
+    <tr><td class="id">共変ヒート核ルート</td><td>スカラーFRDはヒート核から作れる（Bauerschmidt）。<strong>共変ヒート核 \(e^{-tD_A^*D_A}\) は生まれつき共変かつ正</strong>。分解が共変性・正値性を自動で継ぐ見込み。</td></tr>
+  </table>
+
+  <div class="calc">
+    <span class="tag">一番有望なルート ── 共変ヒート核から共変FRDを作る</span>
+    $$C_{\rm cov}=(D_A^*D_A)^{-1}=\int_0^\infty e^{-t\,D_A^*D_A}\,dt,\qquad e^{-t\,D_A^*D_A}\succeq0,\ \text{共変}$$
+    <p style="margin-bottom:14px;">共変ヒート核は<strong>正・共変</strong>で、短時間 \(t\) は短距離＝<em>ほぼ有限レンジ</em>。時間 \(t\) をスケールごとに区切って積分すれば、<strong>共変性と正値性を自動で継ぐFRD</strong>ができる見込み。自然で筋が良い ── これが②の具体的な入口。</p>
+  </div>
+
+  <h2><span class="n">03</span>止める谷 ── なぜ formality でないか</h2>
+
+  <table class="dt">
+    <tr><th></th><th>谷</th><th>中身</th></tr>
+    <tr><td class="id">①</td><td class="open">共変 ⇒ 場依存（核心）</td><td>\(C_{\rm cov}=(D_A^*D_A)^{-1}\) は背景場 \(A\) に依存 → FRDも \(A\) 依存。だがBBSの綺麗さは<strong>分解が固定</strong>であることに依る。「共変」と「固定・モジュラー」が引っ張り合う。</td></tr>
+    <tr><td class="id">②</td><td class="open">三重両立</td><td>各 \(C_j\) に 有限レンジ ∧ 正値(RP) ∧ 共変 を同時に。継ぎ目の対立A・Bが分解の中に凝縮。</td></tr>
+    <tr><td class="id">③</td><td class="open">非ガウス・非アーベル</td><td>大域ガウスが無く"自由"にゲージ固定が要る（Gribov）。<strong>アーベル(U(1))は射程内、非アーベルが本番</strong>。</td></tr>
+    <tr><td class="id">④</td><td class="open">市場のシグナル</td><td>Balaban の共変分解は在ったが問題を閉じず、BBS 整備後 約10年 "ゲージ版"は未出現 ── 易しくない証拠。</td></tr>
+  </table>
+
+  <p>核心は①。下の図で体感できます ── スカラーは<strong>場を動かしても分解が不変（固定）</strong>だから、BBSの局所化がそのまま回る。共変にすると<strong>場 \(A\) で"割れ目"が動く</strong>（スケールが場と絡む）。共変ヒート核のおかげで<em>正値・共変は保てる</em>が、<em>固定性が崩れる</em>のが障害の本体です。</p>
+
+  <div class="fig">
+    <div class="cap">図：共分散 \(C(r)\) の有限レンジ分解 \(C=\sum_j C_j\)（色つき＝各スケール部品、黒線＝合計）。ボタンで<strong>スカラー／共変</strong>、スライダーで<strong>場の強さ A</strong>。<span style="color:var(--ok);font-weight:700;">スカラー＝A を動かしても分解は不変（固定＝BBSが回る）</span>／<span style="color:var(--bad);font-weight:700;">共変＝A で割れ目が動く（場依存＝障害）</span></div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>場の強さ A <span class="val" id="va">0.0</span>
+        <input type="range" id="sa" min="0" max="1" step="0.02" value="0">
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="tbtn on" id="bS">スカラー（固定）</button>
+        <button class="tbtn" id="bC">共変（場依存）</button>
+      </div>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f6d8a;"></i>C₁（短レンジ）</span>
+      <span><i class="swatch" style="background:#7a4fa0;"></i>C₂（中）</span>
+      <span><i class="swatch" style="background:#a5622a;"></i>C₃（長）</span>
+      <span><i class="swatch" style="background:#26456e;height:3px;"></i>合計 C(r)</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>攻め順 ── もし挑むなら</h2>
+
+  <ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.95;">
+    <li><strong>U(1) で共変ヒート核FRDを完成</strong>（連続は自由でも、機械のテストベッド）。</li>
+    <li><strong>場依存を"粗い背景"で捌く</strong>（多スケール背景場：各スケールの分解を、そのスケールの粗い \(A\) にだけ依存させ、スケール間を疎結合に）。</li>
+    <li><strong>非アーベルへ跳ぶ</strong>＋正値/反射正値性を保つ（共変ヒート核の正値性を活用）。</li>
+  </ol>
+
+  <h2><span class="n">05</span>判定 ── 不可能でも formality でもない</h2>
+
+  <div class="keybox">
+    <div class="lbl">共変FRDの実現性（正直な判定）</div>
+    <p style="margin:0;"><strong>アーベル・"存在するか"＝ほぼイエス</strong>（一般化FRD＋Balaban＋共変ヒート核）。<strong>綺麗・モジュラー・RP両立・非アーベル版＝未達</strong>で、難所は「共変⇒場依存 vs BBSの固定分解」＝グレイルのミニチュア。しかも<strong>必要であって十分でない</strong> ── 共変FRDができても、局所化を共変に回し・RPを保ち・周辺的な対数を追う仕事が残る。あなたの嗅覚は正しい方向を指しているが、指した先は本丸の入口。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">有限レンジ分解（Brydges–Guadagni–Mitter、Brydges–Talarczyk；ヒート核からの構成 Bauerschmidt；ベクトル値・勾配模型・一般正作用素への拡張 Adams–Kotecký–Müller）、Balaban の共変多スケール分解、共変ヒート核 \(e^{-tD_A^*D_A}\) の正値性・共変性は、いずれも確立した数学です。共変propagatorの積分表示 \((D_A^*D_A)^{-1}=\int_0^\infty e^{-tD_A^*D_A}dt\) も標準。</p>
+    <p style="margin-bottom:0;">ただし ── <strong>「共変ヒート核から、綺麗・モジュラー・RP両立の非アーベルFRDを作り、BBSに差してYMを構成する」は未達で、4次元YMは未解決</strong>（2025年時点）。「共変ヒート核ルートで共変性・正値性を自動で継ぐ」は<em>有望な期待</em>であって定理ではない（有限レンジ性・場依存の制御・非アーベルの曲率項に固有の困難が残る ── 次の深掘りで扱う）。攻め順や"アーベルは射程内"は筆者の見立てで、反証されうる意見です。旗ではなく、縁の標識を。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回でわかります）</div>
+    <ol>
+      <li>共変FRDが「まったく不可能」ではない根拠を二つ。
+        <details><summary>答えを見る</summary><div class="ans">(1) FRDはスカラー専用でなく、ベクトル値・一般の正作用素へ拡張済み（Adams–Kotecký–Müller）。(2) 共変な多スケール分解は Balaban に既にある（存在はイエス）。加えて共変ヒート核 \(e^{-tD_A^*D_A}\) が正・共変で、そこからFRDを作る自然なルートがある。</div></details>
+      </li>
+      <li>共変FRDの核心の障害を一言で。
+        <details><summary>答えを見る</summary><div class="ans">共変 ⇒ 場依存。共変propagator \((D_A^*D_A)^{-1}\) は背景場 \(A\) に依存するため、FRDも \(A\) 依存になる。だがBBSの綺麗さ（局所化・スケールの独立）は分解が固定であることに依る。「共変」と「固定・モジュラー」が引っ張り合う＝グレイルのミニチュア。</div></details>
+      </li>
+      <li>共変FRDができれば戦略②は完了するか。
+        <details><summary>答えを見る</summary><div class="ans">しない。必要であって十分でない。共変FRDができても、局所化（relevant/irrelevant の帳簿）を共変に回し、反射正値性を保ち、4次元の周辺的な対数を追う仕事が残る。FRDは重要だが一部品。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">②補まとめ</span>半分イエス ── 有望ルートあり、谷は"共変⇒場依存"</h2>
+    <p>ゲージ共変FRDは「作れそう？」に半分イエス。根拠＝FRDの一般化（Adams–Kotecký–Müller）、Balaban の既存の共変分解、そして<strong>共変ヒート核 \(e^{-tD_A^*D_A}\)（正・共変）からFRDを作る有望ルート</strong>。谷＝①共変⇒場依存 vs BBSの固定、②三重両立(有限レンジ∧正値∧共変)、③非ガウス・非アーベル（アーベルは射程内）、④市場シグナル。</p>
+    <p>攻め順＝U(1)テストベッド → 粗い背景で場依存を疎結合化 → 非アーベル＋RP。判定＝<strong>不可能でも formality でもない</strong>、非アーベルの綺麗な版が②の勝ち筋そのもので未達。しかも必要十分でない（局所化・RP・対数が残る）。あなたの嗅覚は正しい方向 ── 指した先が本丸の入口。次の深掘りで、共変ヒート核FRDを具体的に組み、非アーベルの<strong>曲率 \([F,\cdot]\)</strong> がどこで牙をむくかを見る。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="yangmills-senryaku2-gendaiRG.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">← 戦略②</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef1f6;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <span style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:#a89e86;padding:10px 16px;">次：曲率 [F,·] はどこで牙をむくか</span>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」第一部・ヤン=ミルズ問題 戦略②補（深掘り）、物理好きの高校生・大学生向け読み物。有限レンジ分解（Brydges–Guadagni–Mitter 2004、Brydges–Talarczyk 2006、ヒート核からの構成 Bauerschmidt 2013、ベクトル値・勾配模型・一般正作用素への拡張 Adams–Kotecký–Müller）、Bałaban のゲージ共変な多スケール分解、共変ヒート核 \(e^{-tD_A^*D_A}\) の正値性・共変性、共変propagatorの積分表示 \((D_A^*D_A)^{-1}=\int_0^\infty e^{-tD_A^*D_A}dt\) は、いずれも確立した数学です。共変ヒート核から綺麗でモジュラー・反射正値性両立の非アーベル有限レンジ分解を構成し、BBS流RGでヤン=ミルズを構成することは未達で、4次元 \(SU(N)\) の存在と質量ギャップは未解決です（2025年時点）。「共変ヒート核ルートで共変性・正値性を自動継承」は有望な期待であって定理ではなく、有限レンジ性・場依存の制御・非アーベルの曲率項の困難が残ります。攻め順・"アーベルは射程内"は筆者の見立てで反証されうる意見です。図は共分散の有限レンジ分解の概念的模式で、共変版の場依存は説明のためのモデル表現（実際の共変ヒート核の計算ではありません）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では切替と解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスカラー／共変を切替え、場の強さ A を動かすと、分解が固定のまま（スカラー）か割れ目が動く（共変）かが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sa=document.getElementById('sa'), va=document.getElementById('va'),
+      bS=document.getElementById('bS'), bC=document.getElementById('bC'), rd=document.getElementById('rd');
+  var mode='scalar', RMAX=10;
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function smooth(x){ if(x<=0)return 0; if(x>=1)return 1; return x*x*(3-2*x); }
+  // 部分の窓の境界（スカラー：固定／共変：Aで動く）
+  function bounds(A){
+    if(mode==='scalar') return {b1:1.6,b2:4.2};
+    // 共変：場でスケール境界が動く（場依存の模式）
+    return {b1:1.6*(1+0.7*A*Math.sin(3.0)), b2:4.2*(1-0.45*A)};
+  }
+  function Ctot(r){ return Math.exp(-r/2.2); } // 合計共分散（decaying）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=20, padR=14, padT=16, padB=40;
+    var A=parseFloat(sa.value); va.textContent=A.toFixed(2);
+    var bd=bounds(A), b1=bd.b1, b2=bd.b2;
+    function X(r){return padL+r/RMAX*(w-padL-padR);}
+    function Y(v){return (h-padB)-v*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 軸
+    ctx.strokeStyle='#c9bca4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';ctx.fillText('距離 r（点 x, y の隔たり）→', w-210, h-padB+26);
+    ctx.save();ctx.translate(14,padT+70);ctx.rotate(-Math.PI/2);ctx.fillText('共分散 C(r)', 0,0);ctx.restore();
+    // 窓（partition of unity）：w1 [0,b1], w2 [b1,b2], w3 [b2,∞)
+    function w1(r){return 1-smooth((r-b1*0.6)/(b1*0.8));}
+    function w3(r){return smooth((r-b2*0.7)/(b2*0.6));}
+    function w2(r){return Math.max(0,1-w1(r)-w3(r));}
+    // 各部品を塗る（下から積む）
+    function fillComp(fn,col){
+      ctx.fillStyle=col;ctx.globalAlpha=0.55;ctx.beginPath();ctx.moveTo(X(0),Y(0));
+      for(var r=0;r<=RMAX;r+=0.05){ ctx.lineTo(X(r),Y(Ctot(r)*fn(r))); }
+      ctx.lineTo(X(RMAX),Y(0));ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+    }
+    fillComp(w3,'#a5622a'); fillComp(w2,'#7a4fa0'); fillComp(w1,'#2f6d8a');
+    // 合計 C(r)
+    ctx.strokeStyle='#26456e';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var r2=0;r2<=RMAX;r2+=0.04){var x=X(r2),y=Y(Ctot(r2));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 境界線（割れ目）
+    [b1,b2].forEach(function(bb){ ctx.strokeStyle=(mode==='scalar')?'#9aa8b2':'#a5473a';ctx.setLineDash([4,3]);ctx.lineWidth=1.3;
+      ctx.beginPath();ctx.moveTo(X(bb),padT);ctx.lineTo(X(bb),h-padB);ctx.stroke();ctx.setLineDash([]); });
+    // readout
+    if(mode==='scalar'){
+      rd.style.background='#e7f0ea';rd.style.color='#245c43';
+      rd.innerHTML='<b>スカラー（固定）</b>：場の強さ A を動かしても<b>割れ目（点線）は不動＝分解は固定</b>。だから各スケールが独立・局所的に扱え、BBSの局所化がそのまま回る。';
+    } else {
+      rd.style.background='#f6ede4';rd.style.color='#7a2f1c';
+      rd.innerHTML='<b>共変（場依存）</b>：A を上げると<b>割れ目が動く＝分解が場に依存</b>（スケールが場と絡む）。共変ヒート核で正値・共変は保てるが、<b>"固定"が崩れる</b>のが障害の本体（＝共変⇒場依存の谷）。';
+    }
+  }
+  function setMode(m){ mode=m; bS.className='tbtn'+(m==='scalar'?' on':''); bC.className='tbtn'+(m==='covariant'?' on':''); draw(); }
+  bS.addEventListener('click',function(){setMode('scalar');});
+  bC.addEventListener('click',function(){setMode('covariant');});
+  sa.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
