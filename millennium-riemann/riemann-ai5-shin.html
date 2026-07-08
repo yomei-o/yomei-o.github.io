@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>残る赤い芯を機械へ開く ── 臨界の剛性と無限素点 ／ リーマン・AI証明編 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#0e6b7a; --side-bg:#e4f0f1; --warn:#8a4b2f; --calc:#0e6b7a; --calc-bg:#e4f0f1;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#0e6b7a; --gold:#a9791a; --grid:#e6dcc7;
+    --heat:#c05a2a; --solved:#2f7d5a; --open:#a5473a; --line:#0e6b7a; --human:#8a5a2e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);
+    margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;
+    margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3e6 62%);padding:0 .05em;} strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#123;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .ctrlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .ctrlrow label{display:flex;gap:8px;align-items:center;}
+  input[type=range]{width:230px;accent-color:#0e6b7a;}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.03em;
+    padding:8px 13px;border:1.5px solid var(--rule);border-radius:4px;background:#e4f0f1;color:var(--acc);cursor:pointer;}
+  .btn.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#123;}
+  .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .routes{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .routes .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);align-items:stretch;} .routes .row:last-child{border-bottom:none;}
+  .routes .row .l{flex:0 0 168px;background:#e4f0f1;color:var(--side);border-right:1px solid var(--rule);padding:12px 14px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;font-weight:700;line-height:1.5;}
+  .routes .row .r{flex:1;min-width:180px;padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.65;color:#243;}
+  .routes .tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:20px;margin-left:6px;}
+  .tag-real{background:#e3efe8;color:#2f7d5a;} .tag-spec{background:#f5ecd9;color:#8a6a2e;}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e4f0f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#123;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#e9efe0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.routes{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;} details{display:none;} .no-print{display:none;} .ctrlrow{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・AI証明編 ── すべてを機械に寄せる</span><span class="ep">第 5 回</span></div>
+  <p class="eyebrow">三層すべてが同じ一点で止まった ── ではその一点を、機械が採点できる形に変えられるか</p>
+  <h1>残る赤い芯を機械へ開く ── 臨界の剛性と無限素点
+    <span class="sub">「臨界で鋭い」は<em>安い数値スコアで測れない</em>（有限計算は臨界に漸近するだけ）。だから探索の舵＝採点が効かない ── これが赤い芯の正体。<br>純粋な流れの単調量では、間違った半分と臨界の鈍さは<strong>分離できない</strong>。<em>素数側（正値性）の入力で対称性を破る</em>しか道がない。<br>この一点を、機械が climb できる地形に変える研究の道筋を、正直に。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：機械化できない一点の正体を突き止め、それを採点可能にする道筋を示す</span>
+    <span>一言で：平坦な地形に、勾配を作れるか</span>
+  </div>
+
+  <p class="lead">ここまでで、還元・探索・検証の三層すべてが<strong>同じ臨界 \(\Lambda=0\) の壁</strong>で止まりました。この回は正面から問います ── <strong>その「赤い芯」を、機械が扱える形に変えられるのか？</strong> 芯の正体は前回までに見えています：<em>「臨界で鋭い」という良さを、安く厳密に採点する方法が無い</em>。採点が無ければ、第3回の探索ループは<strong>舵を失って平坦な地形をさまよう</strong>。だから問題は「賢いモデルを待つ」ではなく、<strong>平坦な地形に、機械が下れる勾配を作れるか</strong>に尽きます。今日の対話でやった診断が、その入口になります。</p>
+
+  <h2><span class="n">01</span>芯の正体 ── 散逸性は、そのまま方向性だった</h2>
+
+  <p>今日の対話で、次候補（log-ガスの自由エネルギーに<strong>相対エントロピー項</strong>を足したもの）を実際に解析しました。結果は示唆的です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今日の診断（Part 1 の結論）</div>
+    <p class="big" style="margin:0;">相対エントロピー完備で <strong>\(dW/dt = -I(\rho_t\,|\,\rho_\infty)\)</strong>（完全平方、平衡でのみ0）── これは <em>V より鋭い</em>（Bakry–Émery で収束レートまで出る、まさにペレルマンのW型）。<br><strong>だが</strong>その鋭さは <em>\(t\to+\infty\) の平衡へ向かう</em>鋭さで、RHが要る <em>\(t=0\) の接触</em>ではない。<br>＝<strong>「臨界で鈍い（崩れ②）」を直すと、「間違った半分（崩れ①）」へ collapse する。</strong></p>
+  </div>
+
+  <p>なぜ分離できないのか。深い理由が一つ ── <strong>散逸性そのものが方向性だから</strong>。勾配流はエネルギーを一方向に減らす（＝時間の矢）。その「一方向」が、まさに「間違った半分」の向き。純粋な流れの単調量である限り、<em>鋭さ（②）を得るほど方向（①）に縛られる</em>。これが赤い芯が消えない構造的な理由です。だから ──</p>
+
+  <div class="keybox" style="border-color:var(--open);">
+    <div class="lbl" style="color:var(--open);">脱出の唯一の口</div>
+    <p class="big" style="margin:0;">流れの内部（幾何・統計）だけでは対称性を破れない。<br><strong>素数側の入力 ── 正値性（Weil・Connes）── を注入して、初めて \(t=0\) 側に錨が打てる。</strong><br>これがペレルマン編で「Gは統計、Pは正値性」と分けた理由の、AI版の言い換え。<em>零点の流れ</em>に、<em>素数の剛性</em>を接ぐ。</p>
+  </div>
+
+  <h2><span class="n">02</span>平坦な地形に勾配を作る ── 採点を作り替える三つの手</h2>
+
+  <p>芯を機械へ開くとは、<strong>採点できない目標を、採点できる代理目標に化けさせる</strong>こと。下の図がその心臓です。スライダー「構造の注入」を 0 から上げると ── 最初は<strong>平坦でノイズだらけの地形</strong>（ループの球が転がる先が無い＝採点が効かない）が、だんだん<strong>なめらかな谷</strong>になり、球が最小へ転がり込む。<em>採点が効くとは、地形に勾配ができること</em>です。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>採点可能性＝地形の勾配</strong>。球＝探索ループの現在候補。スライダーで<strong>「構造の注入」</strong>（素数側の入力＋代理目標への作り替え）を上げると、<span style="color:#a5473a;font-weight:700;">平坦でノイズだらけ（勾配なし＝さまよう）</span>から<span style="color:#2f7d5a;font-weight:700;">なめらかな谷（勾配あり＝下れる）</span>へ。「▶ ループを回す」で球が転がる。</div>
+    <canvas id="cv" width="680" height="290"></canvas>
+    <div class="ctrlrow">
+      <label>構造の注入：<input type="range" id="sl" min="0" max="100" value="10"></label>
+      <span id="kv" style="font-weight:700;color:var(--acc);"></span>
+      <button class="btn" id="bRun">▶ ループを回す</button>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#a5473a;"></i>勾配なし（採点が効かない）</span>
+      <span><i class="swatch" style="background:#2f7d5a;"></i>勾配あり（機械が下れる）</span>
+    </div>
+  </div>
+
+  <p>「構造の注入」の中身が、この編の一番<em>研究寄り</em>の部分です。三つの具体的な手があります。</p>
+
+  <div class="routes">
+    <div class="row"><div class="l">A. 目標を作り替える<span class="tag tag-real">実在の芽</span></div><div class="r">「RHを証明できたか（測れない）」でなく、<strong>有限Nの族のスケーリング指数</strong>を採点する。Nを上げると指数がどう動くか＝<em>臨界の接触を、測れるレートに翻訳</em>。Polymathが上界を押したのと同型で、機械が最適化できる量になる。</div></div>
+    <div class="row"><div class="l">B. 汎関数を学習する<span class="tag tag-spec">研究段階</span></div><div class="r">単調量（リアプノフ／W型）を<strong>ニューラルに探索・学習</strong>する。力学系のリアプノフ関数を機械学習で見つける研究は実在。RHでは「臨界で鋭い」を代理損失にできるかが鍵 ── まだ未確立。</div></div>
+    <div class="row"><div class="l">C. 有限体版を教師にする<span class="tag tag-real">実在の芽</span></div><div class="r"><strong>有限体版RHは証明済み（Deligne）</strong>── 欲しい「剛性の証明書」の<em>本物の実例</em>が手元にある。その構造を機械に学ばせ、整数版へ<strong>転移</strong>する。ground truth があるのは大きな資産。</div></div>
+    <div class="row"><div class="l">D. Connesを形式化する<span class="tag tag-spec">研究段階</span></div><div class="r">RH＝Weil正値性への還元（Connes）をLeanで形式化し、<strong>無限素点∞の継ぎ目</strong>を具体的な補題に落とす。機械が攻める的が定まる。舞台の構成（戦略④）はまだ人間側。</div></div>
+  </div>
+
+  <h2><span class="n">03</span>無限素点 ∞ ── 芯の、そのまた芯</h2>
+
+  <p>もう一つの芯が<strong>無限素点</strong>です。今日の対話でも顔を出しました ── log-ガスの自由エネルギーを閉じるのに必要な<em>正規化定数</em>が、実はアルキメデス素点（∞）のデータだった。Connesの跡公式でも、正値性がすべて片づくのに<strong>∞の一点だけ継ぎ目が残る</strong>（戦略②・グレイル）。手Aの「代理目標」も手Cの「転移」も、<em>最後は∞をどう含めるか</em>にぶつかります。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ ∞ は機械にとって特別か</span>
+    有限素点 \(p\) の寄与は<em>離散・代数的</em>で、機械が数え上げ・SDPで扱える。だが無限素点は<strong>連続・解析的（ガンマ因子・アルキメデス解析）</strong>で、有限切断に乗らない。第2回の「正値性は無限次元、SDPは有限切断」の壁が、素点の言葉では「有限素点は機械化できる、∞は継ぎ目」として現れる。<em>芯を機械へ開く＝∞を有限的に捕まえる代理を作る</em>、と言い換えてもいい。
+  </div>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">この回の到達点（正直に）</div>
+    <p style="margin:0;font-size:16.5px;line-height:1.85;">赤い芯＝<strong>「臨界で鋭い」を安く採点できないこと</strong>。純粋な流れの単調量では鋭さと方向が分離できず、<strong>素数側の正値性の注入</strong>でしか \(t=0\) に錨は打てない。芯を機械へ開く道は<strong>A 代理目標（スケーリング指数）／B 学習された汎関数／C 有限体版を教師に転移／D Connesの形式化</strong>── AとCには<em>実在の芽</em>があり、BとDは<em>研究段階</em>。そして最深の継ぎ目は<strong>無限素点 ∞</strong>。<em>旗はまだ立たない。だが芯は、もう名前と座標を持っている。</em></p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">本文の「相対エントロピー完備で \(dW/dt=-I(\rho|\rho_\infty)\)、Bakry–Émeryで収束レート」は、log-ガス／McKean–Vlasov型勾配流の標準的事実に基づく<em>今日の対話での解析</em>で、その鋭さが平衡（\(t\to\infty\)）向きでありRHが要る \(t=0\) を後押ししない、という診断もそこから従います（勾配流の散逸＝方向性）。ただしこれは<strong>トイモデル上の構造的観察</strong>で、RHの証明ではありません。手Aのスケーリング指数、手Bの学習されたリアプノフ／単調量、手Dの形式化は<em>方向性であって確立した手法ではなく</em>、とくにB・Dは研究段階です。</p>
+    <p style="margin-bottom:0;">手C：有限体版RH（Weil予想）が Deligne（1974）で証明済みで、そこでは零点がフロベニウスの固有値＝コホモロジーのスペクトルとして<em>剛性つきで</em>実現される（挑戦編⑤・戦略④）のは事実。ただし整数版への「転移」を機械が行う具体的方法は未確立です。無限素点∞が継ぎ目であること（Connes 1999、戦略②）も事実。図は「構造の注入で最適化地形に勾配ができる」という探索可能性の比喩で、実際のRHの解空間ではありません。RH（Λ=0）は未証明で、本稿はそれが近く機械で証明できると主張しません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>「赤い芯」＝機械化できない一点の正体を、一言で。
+        <details><summary>答えを見る</summary><div class="ans"><strong>「臨界で鋭い」を安く厳密に採点する方法が無い</strong>こと。採点が無いと探索ループは舵を失い平坦な地形をさまよう。有限計算は臨界に漸近するだけで、勾配（＝改善の方向）が作れない。</div></details>
+      </li>
+      <li>なぜ純粋な流れの単調量では、この芯を越えられないのか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>散逸性そのものが方向性</strong>だから。勾配流はエネルギーを一方向に減らす＝時間の矢で、その向きが「間違った半分」。鋭さ（臨界での切れ味）を得るほど方向に縛られ、\(t=0\)側に錨を打てない。<strong>素数側の正値性の注入</strong>でしか対称性を破れない。</div></details>
+      </li>
+      <li>芯を機械へ開く四つの手のうち、「実在の芽」があるのはどれか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>A（有限Nのスケーリング指数を代理目標にする ── Polymath型で測れる量）</strong>と<strong>C（証明済みの有限体版RHを教師にして転移）</strong>。Bのニューラルなリアプノフ探索とDのConnes形式化は研究段階。最深の継ぎ目は<strong>無限素点∞</strong>。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>平坦な地形に、勾配を作れるか</h2>
+    <p>赤い芯の正体は<strong>「臨界で鋭い」を安く採点できないこと</strong>。今日の対話の診断 ── 相対エントロピー完備は<em>V より鋭い</em>が、その鋭さは平衡（\(t\to\infty\)）向きで、RHが要る \(t=0\) には効かない。<strong>散逸性＝方向性</strong>だから、純粋な流れでは鋭さと方向を分離できない。<em>素数側の正値性を注入して初めて \(t=0\) に錨が打てる</em>。</p>
+    <p>芯を機械へ開く＝<strong>採点できない目標を、勾配のある代理に化けさせる</strong>。手は四つ ── A 有限Nのスケーリング指数／B 学習された単調量／C 証明済み有限体版を教師に転移／D Connesの形式化。A・Cに実在の芽、B・Dは研究段階、最深は<strong>無限素点∞</strong>。旗はまだ立たない ── だが芯は名前と座標を得た。次回（完）、これらを一本の<strong>統合パイプライン</strong>に組み、今日<em>実際に作れるもの</em>と<em>まだ概念待ちのもの</em>を仕分ける。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-ai4-kenshou.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">← 第4回：数値を証明に変える</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-ai6-touitsu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">第6回（完）：統合パイプライン →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・AI証明編・第5回。相対エントロピー完備の自由エネルギーが勾配流に沿って単調（dW/dt=−相対Fisher情報、平衡でのみ0）でBakry–Émeryにより収束レートを持つのはlog-ガス／McKean–Vlasov型の標準事実で、その鋭さが平衡（t→∞）向きであり t=0 を後押ししない（散逸＝方向性）という診断は本対話でのトイモデル解析です（RHの証明ではありません）。有限体版RH（Weil予想）のDeligne（1974）による証明、零点がフロベニウス固有値＝コホモロジーのスペクトルとして剛性つきで実現されること、Connes（1999）のアデール類空間への還元と無限素点∞の継ぎ目は事実。手A（有限Nスケーリング指数の代理目標）・B（学習された単調量／リアプノフ）・C（有限体版からの転移）・D（Connes形式化）は研究の方向性で、A・Cに実在の芽、B・Dは研究段階です。図は探索可能性（地形の勾配）の比喩で実際の解空間ではありません。RHは未証明で、本稿は近い機械証明を主張しません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図とスライダー・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで「構造の注入」を上げ、「▶ループを回す」で球が谷へ転がる様子を見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var sl=document.getElementById('sl'), kv=document.getElementById('kv'), bRun=document.getElementById('bRun');
+  var lastW=680, ballX=0.5, ballV=0, running=false;
+  function K(){ return (+sl.value)/100; }
+  // landscape: at K=0 flat + noise (no gradient); at K=1 smooth valley
+  function noise(x){ return Math.sin(x*37.1)*Math.cos(x*19.3)+Math.sin(x*61.7); }
+  function height(x, k){
+    var valley = 1.6*(x-0.5)*(x-0.5);      // smooth bowl, min at 0.5
+    var flat = 0.9 + 0.14*noise(x);          // bumpy plateau, no useful slope
+    return (1-k)*flat + k*valley;
+  }
+  function slope(x,k){ var e=0.001; return (height(x+e,k)-height(x-e,k))/(2*e); }
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var k=K(), L=40,R=w-30,T=30,B=h-40;
+    function X(x){ return L+(R-L)*x; }
+    function Y(hh){ return B-(B-T)*(hh/2.0); }
+    var hasGrad = k>0.42;
+    var col = hasGrad? '#2f7d5a':'#a5473a';
+    // curve
+    ctx.strokeStyle=col; ctx.lineWidth=2.6; ctx.beginPath();
+    for(var i=0;i<=300;i++){ var x=i/300; var yy=height(x,k); var px=X(x),py=Y(yy); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+    ctx.stroke();
+    // fill under
+    ctx.lineTo(X(1),B); ctx.lineTo(X(0),B); ctx.closePath();
+    ctx.fillStyle= hasGrad? 'rgba(47,125,90,0.10)':'rgba(165,71,58,0.08)'; ctx.fill();
+    // ball
+    var by=height(ballX,k);
+    ctx.fillStyle='#0e6b7a'; ctx.beginPath(); ctx.arc(X(ballX),Y(by)-8,9,0,7); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    // target (true min at 0.5 when valley)
+    if(hasGrad){ ctx.fillStyle='#2f7d5a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('★ 解（臨界で鋭い量）', X(0.5), Y(height(0.5,k))+22); }
+    // banner
+    ctx.textAlign='center'; ctx.font='bold 13.5px sans-serif'; ctx.fillStyle=col;
+    ctx.fillText(hasGrad? '勾配あり ── 機械が★へ下れる（採点が効く）'
+                        : '勾配なし ── 球はさまよう（採点が効かない＝赤い芯）', w/2, T-8);
+  }
+  function run(){
+    if(running){
+      var k=K(); var s=slope(ballX,k);
+      ballV = ballV*0.86 - s*0.0016;
+      // add exploration noise when flat (loop wandering)
+      var expl = (1-k)*0.004*(Math.sin(ballX*99)+Math.cos(ballX*57));
+      ballX += ballV + expl;
+      if(ballX<0.02){ballX=0.02;ballV=0;} if(ballX>0.98){ballX=0.98;ballV=0;}
+    }
+    draw(); say(); requestAnimationFrame(run);
+  }
+  function say(){
+    var k=K(); kv.textContent=Math.round(k*100)+'%';
+    var hasGrad=k>0.42;
+    rd.innerHTML = hasGrad
+      ? '<b>勾配あり（構造の注入 '+Math.round(k*100)+'%）。</b> 代理目標＋素数側の入力で地形に谷ができ、探索ループが★（臨界で鋭い量）へ下れる。<b>芯が機械へ開いた状態</b>。'
+      : '<b>勾配なし（構造の注入 '+Math.round(k*100)+'%）。</b> 「RHを証明できたか」を直接採点しようとすると地形は平坦＋ノイズで、球はさまようだけ ── これが<b>赤い芯</b>。スライダーを上げて、勾配を作ってみて。';
+  }
+  bRun.addEventListener('click',function(){ running=!running; bRun.classList.toggle('on',running); bRun.textContent=running?'❚❚ 停止':'▶ ループを回す'; if(running&&(ballX<0.03||ballX>0.97))ballX=0.5; });
+  sl.addEventListener('input',function(){ draw(); say(); });
+  window.addEventListener('resize',draw);
+  draw(); say(); requestAnimationFrame(run);
+})();
+</script>
+</body>
+</html>

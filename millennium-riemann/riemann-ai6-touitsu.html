@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>統合パイプラインと、正直な限界 ── 今日作れるもの ／ リーマン・AI証明編 第6回（完）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#0e6b7a; --side-bg:#e4f0f1; --warn:#8a4b2f; --calc:#0e6b7a; --calc-bg:#e4f0f1;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#0e6b7a; --gold:#a9791a; --grid:#e6dcc7;
+    --heat:#c05a2a; --solved:#2f7d5a; --open:#a5473a; --line:#0e6b7a; --human:#8a5a2e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);
+    margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;
+    margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3e6 62%);padding:0 .05em;} strong{font-weight:700;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#123;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#123;} .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:19px;line-height:1.7;font-weight:600;}
+  .map{margin:26px 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .map .row{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);} .map .row:last-child{border-bottom:none;}
+  .map .row>div{flex:1;min-width:150px;padding:12px 18px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;line-height:1.6;}
+  .map .row .l{background:#e4f0f1;color:#123;border-right:1px solid var(--rule);} .map .row .r{background:#eef3ec;color:#243;}
+  .map .row.head>div{font-weight:700;font-size:12px;letter-spacing:.08em;} .map .row.head .l{color:var(--side);} .map .row.head .r{color:var(--solved);}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e4f0f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#123;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#e9efe0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:18mm 16mm;} body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:22pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} .lead{font-size:12.5pt;}
+    .aside,.caveat,.keybox,.record,.prob,.fig,.map{break-inside:avoid;} .aside,.caveat{font-size:9.7pt;} details{display:none;} .no-print{display:none;}}
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・AI証明編 ── すべてを機械に寄せる</span><span class="ep">第 6 回（完）</span></div>
+  <p class="eyebrow">旗は立てない ── だが「どこまで機械に落とせば、残りが一点になるか」の座標は打てる</p>
+  <h1>統合パイプラインと、正直な限界 ── 今日作れるもの
+    <span class="sub">還元器→生成器→検証器を一本に組んだ、RHを攻めるAIの全体設計。<br>各段を<em>クリック</em>すると、<strong>今日そのまま作れるもの</strong>（緑）と<strong>まだ概念待ちのもの</strong>（赤）が分かる。<br>結論：<em>正値性ルートの有限切断ループは、今日のチームが実際に組める</em>。臨界の剛性だけが、概念を待っている。</span>
+  </h1>
+  <div class="byline">
+    <span>この回の狙い：五つの部品を統合し、今日の実装可能性を正直に仕分ける</span>
+    <span>一言で：ループは組める、芯は待つ ── 縁の座標を打って完</span>
+  </div>
+
+  <p class="lead">最終回です。①〜⑤で組んだ部品 ── <strong>還元（機械可読化）・探索（生成ループ）・検証（区間演算＋Lean）・芯オープナー（臨界の剛性）</strong>── を、一本のパイプラインに統合します。そして、このシリーズの掟どおり正直に仕分けます ── <strong>今日そのまま作れるもの</strong>と、<strong>まだ数学の概念を待っているもの</strong>。旗は立てません。でも「AIでRHを」という夢を、<em>実装のブロック図</em>と<em>残る一点の座標</em>まで、具体に落とします。</p>
+
+  <h2><span class="n">01</span>統合パイプライン ── クリックして仕分ける</h2>
+
+  <p>下の図は、RHを攻めるAIの全体像です。五つの段を<strong>クリック</strong>すると、各段が「今日作れる（緑）／概念待ち（赤）」のどちらで、何が要るかが出ます。ループは反時計回りに ── 生成→検証→（診断が）還元へフィードバック、と閉じています。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>RHを攻めるAIの統合パイプライン</strong>。各段をクリックで詳細。<span style="color:#2f7d5a;font-weight:700;">緑＝今日作れる</span>／<span style="color:#a5473a;font-weight:700;">赤＝概念待ち</span>。矢印＝閉じたループ（生成→検証→フィードバックで還元を更新）。中央＝ループを回す制御。</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>今日そのまま作れる</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>まだ概念待ち</span>
+      <span><i class="swatch" style="background:#8a5a2e;"></i>人間＋機械の協働</span>
+    </div>
+  </div>
+
+  <p>読み取れる形はこうです ── <strong>ループの大半（生成・検証・機械可読化）は緑＝今日組める</strong>。実際、正値性ルートの有限切断について「LLMが候補 → SDPで採点 → 区間演算＋Leanで厳密化 → 診断を還元へ戻す」ループは、既存技術の組合せで<em>動く</em>。赤いのは一点だけ ── <strong>芯オープナー（臨界で鋭い量を、機械が採点できる形にする）</strong>。</p>
+
+  <h2><span class="n">02</span>今日作れるもの ／ まだ概念待ちのもの</h2>
+
+  <div class="map">
+    <div class="row head"><div class="l">今日そのまま作れる（緑）</div><div class="r">まだ概念待ち（赤）</div></div>
+    <div class="row"><div class="l">ゴール命題の機械可読化（Lean/mathlib にRHは記述済み）</div><div class="r">臨界 Λ=0 で鋭い単調量／正値性の<strong>発明</strong>（リーマン版W）</div></div>
+    <div class="row"><div class="l">正値性の<strong>有限切断</strong>をSOS/SDPで探索（λₙの下位、Weil形式の有限次元版）</div><div class="r">有限切断から<strong>無限全体</strong>への飛躍（無限素点∞で閉じる）</div></div>
+    <div class="row"><div class="l">区間演算で残差を厳密化（Polymath15型）＋Leanで封</div><div class="r">「臨界で鋭い」を<strong>安く採点する代理目標</strong>の確立</div></div>
+    <div class="row"><div class="l">FunSearch型ループで<strong>Λの上界を押す</strong>／既知不等式を改善</div><div class="r">Deningerの<strong>舞台の構成</strong>（葉層空間・コホモロジー）</div></div>
+  </div>
+
+  <p>つまり ── <strong>「AIでRHを攻めるチーム」は、今日でも立ち上がる</strong>。できることは山ほどある：Λの上界をさらに押す、Li係数の正値性を高い \(n\) まで厳密検証する、既知の判定条件をLeanで形式化する、有限体版の剛性証明書を機械に学ばせる。<em>これらはどれも本物の前進</em>で、赤い芯に少しずつ迫る。だが芯そのもの ── 臨界の剛性を機械が採点できる形にする ── だけは、まだ人間の概念（あるいは、第5回の手A〜Dの成功）を待っています。</p>
+
+  <div class="keybox">
+    <div class="lbl">今日、実際に立ち上げられるプロジェクト（例）</div>
+    <p style="margin:0 0 6px;"><strong>P1</strong>：正値性の有限切断ループ ── LLM候補＋SDP採点＋区間演算＋Lean封。Λの上界や λₙ≥0 を機械で押す。<span style="color:#2f7d5a;font-weight:700;">今日可</span></p>
+    <p style="margin:0 0 6px;"><strong>P2</strong>：有限体版RHの剛性証明書を教師データに、単調量／正値性の「形」を学習。<span style="color:#8a5a2e;font-weight:700;">研究</span></p>
+    <p style="margin:0;"><strong>P3</strong>：Connesの跡公式・無限素点の継ぎ目をLeanで形式化し、機械が攻める補題を定める。<span style="color:#8a5a2e;font-weight:700;">研究</span></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>縁の座標 ── AI証明編のしめくくり</h2>
+
+  <p><strong>旗は立ちません。</strong>リーマン予想は、今も未解決です。でもこの編で、「AIで解けるのか」という漠然とした問いを、次の一文まで絞り込みました ──</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">AIで攻める、いちばん精密な現在地</div>
+    <p style="margin:0;font-size:16.5px;line-height:1.85;">RHを攻めるAIの<strong>還元→探索→検証ループは、正値性の有限切断について今日組める</strong>。残る唯一の空白は ── <strong>臨界 Λ=0 で鋭い剛性を、機械が安く厳密に採点できる代理目標に翻訳し、無限素点 ∞ まで閉じること</strong>。純粋な流れの単調量では届かず（散逸＝方向性）、<em>素数側の正値性の注入</em>が要る。これが機械化の最前線の、一点の座標。</p>
+  </div>
+
+  <p>ペレルマン編は「臨界で鋭く∞で閉じる<em>一個の量を作れ</em>」という標識を打ちました。AI証明編はそれを<strong>「その量を、機械が探索できる採点付きの問題に翻訳せよ」</strong>と一段だけ進めた。<em>数学の宿題を、工学の仕様に翻訳した</em>とも言えます。仕様が書ければ、②探索・③検証の機械が全力で回せる ── だから、この翻訳こそが次の鍵。</p>
+
+  <div class="aside">
+    <span class="tag">三つの編を貫く、同じ縁</span>
+    ヤン=ミルズ編、リーマン・ペレルマン編、そしてこのAI証明編 ── どれも同じ形の縁に立つ。<strong>フローも単調量も揃い、両端の錨も近い。足りないのは、臨界で一つも外さない鋭さ、ただ一つ。</strong>物理の谷（質量ギャップ）も数論の谷（臨界線）も、ペレルマンの道具の前で同じ一点に凝縮し、その一点は<em>AIの前では「採点できない目標」</em>として現れる。旗ではなく、<strong>縁の、そのまた縁の座標</strong>を打つ ── それがこのシリーズの、変わらぬ掟です。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線（この編の総まとめ）</span>
+    <p style="margin-top:0;">統合パイプラインの各部品は事実に基づきます：RHの命題は Lean/mathlib に記述済み（証明は未完）、正値性の有限切断はSOS/SDPで探索可能、区間演算による厳密化はPolymath15（Λ≤0.2）で実証、FunSearch/AlphaEvolveはLLM＋評価ループで新しい構成を発見。「今日作れる」列（機械可読化・有限切断探索・厳密化・上界押し）は既存技術の組合せで実装可能です。</p>
+    <p style="margin-bottom:0;">「まだ概念待ち」列 ── 臨界で鋭い単調量／正値性の発明、有限→無限（無限素点∞）の飛躍、臨界を採点する代理目標、Deningerの舞台の構成 ── は<em>いずれも未解決の研究課題</em>で、本稿はそれらが近く達成される、あるいはAIがRHを近く証明する、とは主張しません。P2・P3は研究段階の提案です。三つの編の対応・「同じ縁」はペレルマン型／AI型レンズによるアナロジーで、諸問題の数学的同一性を主張しません。リーマン予想は未証明です。 ── これでリーマン・AI証明編は完結。姉妹編（ヤン=ミルズ・ペレルマン編、AI外伝）と合わせ、ミレニアム問題を「フロー＋単調量」と「機械化」の二つのレンズで見た記録になります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この回で答えられます）</div>
+    <ol>
+      <li>統合パイプラインで「今日そのまま作れる」のはどの部分か。
+        <details><summary>答えを見る</summary><div class="ans">ループの大半 ── <strong>機械可読化（Lean/mathlib）・正値性の有限切断のSOS/SDP探索・区間演算＋Leanでの厳密化・Λの上界押し</strong>。既存技術の組合せで動く。赤いのは芯オープナー（臨界の剛性を採点可能にする）一点。</div></details>
+      </li>
+      <li>ペレルマン編の標識を、AI証明編はどう一段進めたか。
+        <details><summary>答えを見る</summary><div class="ans">ペレルマン編：「臨界で鋭く∞で閉じる<em>一個の量を作れ</em>」。AI証明編：「その量を<strong>機械が探索できる採点付きの問題に翻訳せよ</strong>」。<em>数学の宿題を工学の仕様に翻訳</em>した。仕様が書ければ探索・検証の機械が全力で回せる。</div></details>
+      </li>
+      <li>三つの編（ヤン=ミルズ／ペレルマン／AI）を貫く「同じ縁」とは。
+        <details><summary>答えを見る</summary><div class="ans">どれも<strong>フローも単調量も揃い、両端の錨も近いのに、臨界で一つも外さない鋭さだけが無い</strong>。その一点が、ペレルマンの前では「鋭い単調量の空白」、AIの前では「採点できない目標」として現れる。物理の谷も数論の谷も、同じ一点に凝縮する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">リーマン・AI証明編・完</span>ループは組める、芯は待つ</h2>
+    <p>還元器→生成器→検証器を統合すると ── <strong>ループの大半（機械可読化・有限切断のSOS/SDP探索・区間演算＋Leanの厳密化・上界押し）は今日そのまま組める</strong>。「AIでRHを攻めるチーム」は今日立ち上がり、本物の前進を積める。赤いのは一点、<strong>芯オープナー ── 臨界の剛性を機械が採点できる形に翻訳すること</strong>。</p>
+    <p>ペレルマン編の「一個の量を作れ」を、AI証明編は「<strong>その量を、採点付きの探索問題に翻訳せよ</strong>」まで進めた ── 数学の宿題を工学の仕様へ。純粋な流れでは届かず（散逸＝方向性）、素数側の正値性の注入が要る。旗は立たない。だが縁は、<em>実装のブロック図と、残る一点の座標</em>まで具体になった。物理の谷も数論の谷も、ペレルマンとAIの前で同じ一点に凝縮する ── これが三つの編の、共通の結晶です。<strong>AI証明編・完。</strong></p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="riemann-ai5-shin.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">← 第5回：残る赤い芯を機械へ</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman1-netsuryu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">ペレルマン編を読み直す →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・AI証明編・第6回（完）。統合パイプラインの部品は事実に基づきます：RHの命題は Lean/mathlib に記述済み（証明未完）、正値性の有限切断はSOS/SDPで探索可能、区間演算による厳密化はPolymath15（2019、Λ≤0.2）で実証、FunSearch（2023）・AlphaEvolve（2025）はLLM＋評価ループで新構成を発見。「今日作れる」部品（機械可読化・有限切断探索・厳密化・上界押し）は既存技術の組合せで実装可能です。「概念待ち」の部品 ── 臨界で鋭い単調量／正値性の発明、有限→無限（無限素点∞）の飛躍、臨界を採点する代理目標、Deningerの舞台の構成 ── は未解決の研究課題で、本稿はそれらの近い達成やAIによるRHの近い証明を主張しません。三編の対応・「同じ縁」はレンズによるアナロジーです。リーマン予想は未証明です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では動く図・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではパイプラインの各段をクリックすると、今日作れる／概念待ちの仕分けが読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var lastW=680, sel=0;
+  var nodes=[
+    {tag:'R', name:'① 還元器', who:'人間＋LLM', state:'mix',
+     desc:'RHを正値性（λₙ≥0／Weil）へ翻訳し、Lean/mathlibの機械可読な命題に結ぶ。翻訳の骨格は人間、機械可読化とLeanは今日可。臨界で鋭い量の発明だけが概念待ち。'},
+    {tag:'G', name:'② 生成器', who:'LLM＋探索', state:'green',
+     desc:'候補（SOS分解・単調量・mollifier重み）をLLMが大量提案し、FunSearch型ループで作り直す。今日そのまま作れる。生成は安く、間違いを含んでよい。'},
+    {tag:'V', name:'③ 検証器', who:'区間演算＋Lean', state:'green',
+     desc:'候補を区間演算で厳密に採点（残差の下限>0で証明）、Leanで封。LLMのもっともらしい嘘を弾く。Polymath15型で今日可。'},
+    {tag:'C', name:'④ 芯オープナー', who:'まだ概念', state:'red',
+     desc:'臨界Λ=0で鋭い剛性を、機械が安く採点できる代理目標へ翻訳する段。純粋な流れでは届かず素数側の正値性の注入が要る。無限素点∞が最深の継ぎ目。ここだけ赤。'},
+    {tag:'L', name:'⑤ ループ制御', who:'機械', state:'green',
+     desc:'生成→検証→診断を還元へフィードバックして回す制御。診断が次の提案を導く。今日可 ── ただし④が採点を出せない限り、臨界へは収束しない。'}
+  ];
+  var boxes=[];
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function colOf(st){ return st==='green'? '#2f7d5a' : (st==='red'? '#a5473a' : '#8a5a2e'); }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2, cy=150, Rr=Math.min(w,h)*0.30;
+    // ring positions (4 around) + center loop control
+    var pos=[];
+    var ang=[-Math.PI/2, -Math.PI/2+2*Math.PI/4, -Math.PI/2+2*2*Math.PI/4, -Math.PI/2+3*2*Math.PI/4];
+    for(var i=0;i<4;i++){ pos.push({x:cx+Rr*Math.cos(ang[i]), y:cy+Rr*Math.sin(ang[i])}); }
+    pos.push({x:cx, y:cy}); // center = loop control (node 4)
+    // arrows around ring (clockwise loop)
+    ctx.strokeStyle='#c9bfa6'; ctx.lineWidth=2;
+    for(var a=0;a<4;a++){
+      var p=pos[a], q=pos[(a+1)%4];
+      ctx.beginPath();
+      var mx=(p.x+q.x)/2, my=(p.y+q.y)/2;
+      ctx.moveTo(p.x,p.y); ctx.quadraticCurveTo(cx+(mx-cx)*0.6, cy+(my-cy)*0.6, q.x,q.y); ctx.stroke();
+      // arrowhead
+      var dx=q.x-mx, dy=q.y-my, L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+      ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(q.x-8*dx-4*dy,q.y-8*dy+4*dx); ctx.lineTo(q.x-8*dx+4*dy,q.y-8*dy-4*dx); ctx.closePath(); ctx.fillStyle='#c9bfa6'; ctx.fill();
+    }
+    boxes=[];
+    var order=[0,1,2,3,4]; // R top, then clockwise G,V,C ; center L
+    for(var n=0;n<5;n++){
+      var idx=order[n]; var nd=nodes[idx]; var p=pos[n<4?n:4];
+      var bw=118, bh=54; var x=p.x-bw/2, y=p.y-bh/2;
+      boxes.push({x:x,y:y,w:bw,h:bh,i:idx});
+      var isSel=(idx===sel); var col=colOf(nd.state);
+      ctx.fillStyle='#fff'; roundRect(ctx,x,y,bw,bh,9); ctx.fill();
+      ctx.strokeStyle=isSel?col:'#cabfa3'; ctx.lineWidth=isSel?3:1.4; roundRect(ctx,x,y,bw,bh,9); ctx.stroke();
+      // status dot
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x+16,y+18,7,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillText(nd.tag,x+16,y+22);
+      ctx.fillStyle='#1a1e28'; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='left'; ctx.fillText(nd.name, x+30, y+20);
+      ctx.fillStyle='#6a6552'; ctx.font='10px sans-serif'; ctx.fillText(nd.who, x+30, y+36);
+      ctx.fillStyle=col; ctx.font='bold 10px sans-serif';
+      ctx.fillText(nd.state==='green'?'今日可':(nd.state==='red'?'概念待ち':'協働'), x+12, y+bh-8);
+    }
+    ctx.fillStyle='#8a7a52'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('各段をクリック ── 中央=ループ制御、外周=還元→生成→検証→芯', w/2, h-10);
+  }
+  function say(){
+    var nd=nodes[sel]; var col=colOf(nd.state);
+    var badge = nd.state==='green'?'今日そのまま作れる':(nd.state==='red'?'まだ概念待ち':'人間＋機械の協働');
+    rd.innerHTML='<b>'+nd.name+'（'+nd.who+'／'+badge+'）</b> ── '+nd.desc;
+  }
+  cv.addEventListener('click',function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); say(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

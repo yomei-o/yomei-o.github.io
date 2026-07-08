@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無限素点∞を閉じる ── 本物の未解決研究で、具体的に何をするのか ／ リーマン・AI証明編 番外</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#0e6b7a; --side-bg:#e4f0f1; --warn:#8a4b2f; --calc:#0e6b7a; --calc-bg:#e4f0f1;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#0e6b7a; --gold:#a9791a; --grid:#e6dcc7;
+    --heat:#c05a2a; --solved:#2f7d5a; --open:#a5473a; --line:#0e6b7a; --human:#8a5a2e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:800px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);
+    margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:31px;line-height:1.32;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;
+    margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3e6 62%);padding:0 .05em;} strong{font-weight:700;}
+  code{background:#eef3ec;border-radius:3px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#123;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;margin-top:12px;padding:11px 14px;border-radius:3px;line-height:1.7;background:var(--calc-bg);color:#123;} .readout b{color:var(--acc);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;} .swatch{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:18px;line-height:1.7;font-weight:600;}
+  .task{margin:24px 0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;}
+  .task .hd{background:#e4f0f1;padding:11px 20px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-weight:700;color:var(--side);font-size:14.5px;}
+  .task ul{margin:12px 0;padding:0 22px 6px 40px;} .task li{margin:9px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;color:#243;}
+  .st{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:20px;letter-spacing:.05em;margin-right:6px;vertical-align:1px;}
+  .st-done{background:#e3efe8;color:#2f7d5a;} .st-part{background:#f5ecd9;color:#8a6a2e;} .st-open{background:#f6e2dd;color:#a5473a;}
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e4f0f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:700;letter-spacing:.04em;} details[open] summary{margin-bottom:8px;} .ans{color:#123;line-height:1.8;}
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;background:linear-gradient(180deg,#fffdf8,#e9efe0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:16mm 14mm;} body{background:#fff;font-size:10.5pt;line-height:1.68;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:21pt;} h2{font-size:14pt;margin-top:22pt;break-after:avoid;}
+    .aside,.caveat,.keybox,.task,.prob,.fig,.record{break-inside:avoid;} details{display:none;} .no-print{display:none;} .readout{display:none;}}
+  @media (max-width:640px){ .sheet{padding:38px 16px 56px;margin:0;} h1{font-size:23px;} body{font-size:16px;} }
+  .hint{max-width:800px;margin:18px auto 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:#6a6552;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・AI証明編 ── 番外</span><span class="ep">∞を閉じる</span></div>
+  <p class="eyebrow">実験で削れる縁は削った ── ここから先は、本物の未解決研究の地図</p>
+  <h1>無限素点∞を閉じる ── 本物の未解決研究で、具体的に何をするのか
+    <span class="sub">実験ノートは「残るは∞のアルキメデス正値性」で終わった。では<strong>「∞を閉じる」とは具体的に何をすることか</strong>。<br>三つの本物の研究プログラム ── <strong>Connes–Consani／Deninger／F₁幾何</strong>── が、それぞれ∞で何を作ろうとしているか。着手できる小問題まで、正直に地図にする。</span>
+  </h1>
+  <div class="byline">
+    <span>この番外の狙い：「∞を閉じる」を、着手可能な具体的タスクの地図に変える</span>
+    <span>一言で：欲しいのは∞での正値性 ── その作り方が三つ、どれも未完</span>
+  </div>
+
+  <p class="lead">実験ノートは、こう終わりました ── 「零点＝∞の背骨＋素数のゆらぎ。RH＝Weil正値性を、超フラットな臨界まで制御し切ること＝<strong>∞のアルキメデス解析を閉じること</strong>」。ここから先は、コードで押せる縁の外 ── <em>本物の未解決研究</em>です。でも「∞を閉じる」は霧の中の呪文ではなく、<strong>具体的に何を構成すればよいか</strong>が、驚くほどはっきり分かっています。ただ、誰もまだ作れていない。この番外は、その「何を作るか」を地図にします。</p>
+
+  <h2><span class="n">01</span>なぜ∞だけが継ぎ目か ── 有限素点は代数的、∞は解析的</h2>
+
+  <p>戦略編②で見たとおり、数には「物差し」が素数ごとに一つずつ（p進距離）、それに加えて<strong>ふつうの絶対値＝無限素点 ∞</strong>があります（積公式 \(\prod_v |x|_v=1\)）。RHをアデール上の跡公式・正値性に還元すると、<strong>有限素点 p の寄与はすべて片づくのに、∞ の一点だけが残る</strong>。理由は実験4で見たとおり：</p>
+
+  <div class="keybox">
+    <div class="lbl">有限素点 p ／ 無限素点 ∞ の違い</div>
+    <p style="margin:0 0 4px;"><strong>有限素点 p</strong>：寄与は <code>Σ (log p) p^{-k/2} g(k log p)</code> ── <em>離散・代数的</em>。数え上げ・SDP・区間演算で機械が扱える。</p>
+    <p style="margin:0;"><strong>無限素点 ∞</strong>：寄与は <code>(1/2π)∫ h(r) Re ψ(1/4+ir/2) dr</code>（ガンマ因子） ── <em>連続・解析的</em>。有限切断に乗らない。そして<strong>零点の平均密度そのもの＝舞台を作る</strong>項（実験4B）。</p>
+  </div>
+
+  <p>だから「∞を閉じる」とは、大づかみに言えば ── <strong>この連続・解析的なアルキメデス項を、有限素点と同じ土俵（幾何・コホモロジー・正値性）に載せ切ること</strong>。Weil が有限体で成功したのは、∞に相当する困難が無かった（すべてが代数的だった）からで、整数の世界の難しさは<em>ほぼ全部この一点に凝縮</em>しています。</p>
+
+  <h2><span class="n">02</span>「閉じる」の具体的な意味 ── 欲しいのは∞での正値性</h2>
+
+  <p>もっとも古典的で確かな言い方をします。Weil は<strong>有限体版RH</strong>を、曲面 \(C\times C\) 上の<strong>交点理論の正値性（Hodge指数定理）</strong>で証明しました。整数版RHは、その<em>アルキメデス版</em>です：</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">「∞を閉じる」＝ アルキメデス版・Hodge指数定理</div>
+    <p style="margin:0;font-size:16px;line-height:1.8;">Weil正値性（RHと同値）は、\(\overline{\mathrm{Spec}\,\mathbb{Z}}\)（∞を足して"完備化"した整数の幾何）上の<strong>交点形式の正値性</strong>と読める。<br>「∞を閉じる」＝<strong>この正値性が、アルキメデス素点の寄与（ガンマ因子）を含めて成り立つと示すこと</strong>。<br>有限体では Hodge指数定理で片づいたものの、整数版・∞込みの実物が要る。</p>
+  </div>
+
+  <p>問題は、この「\(\overline{\mathrm{Spec}\,\mathbb{Z}}\) 上の交点理論」も「零点を固有値に生むコホモロジー」も、<strong>∞を含む形ではまだ構成されていない</strong>こと。そこを作ろうとするのが、次の三つのプログラムです。</p>
+
+  <h2><span class="n">03</span>三つのプログラムと、∞で何を作るか ── クリックで詳細</h2>
+
+  <p>下の図は、三つの本物の研究プログラムが、それぞれ別の道から<strong>同じ ∞ の門</strong>へ向かう様子です。各パスを<strong>クリック</strong>すると、そのプログラムが∞で具体的に何を作ろうとしていて、どこまで来ているかが出ます。</p>
+
+  <div class="fig">
+    <div class="cap">図：<strong>∞の門へ向かう三つの道</strong>。各パスをクリックで、着手すべき具体タスクと現在地。<span style="color:#2f7d5a;font-weight:700;">緑＝到達</span>／<span style="color:#8a6a2e;font-weight:700;">黄＝部分的</span>／<span style="color:#a5473a;font-weight:700;">赤＝未構成</span>。三つとも門（∞での正値性）の手前で止まっている。</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#2f7d5a;"></i>到達済み</span>
+      <span><i class="swatch" style="background:#8a6a2e;"></i>部分的</span>
+      <span><i class="swatch" style="background:#a5473a;"></i>未構成（∞の門）</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div class="hd">道A：Connes–Consani ── 跡公式と算術トポス（戦略編②の先）</div>
+    <ul>
+      <li><span class="st st-done">到達</span>アデール類空間上で明示公式を<strong>跡公式</strong>にし、RHを<strong>Weil正値性</strong>に還元（Connes 1999）。<strong>半局所（有限個の素点）版は証明済み</strong>。</li>
+      <li><span class="st st-part">部分</span><strong>算術サイト／スケーリングサイト</strong>（Connes–Consani）── \(\overline{\mathrm{Spec}\,\mathbb{Z}}\) を熱帯・べき等幾何とトポスで実現し、<strong>Riemann–Roch 型の定理</strong>を得た。</li>
+      <li><span class="st st-open">未構成</span>やるべきこと：<strong>大域（全素点同時）の跡公式</strong>を確立し、その正値性＝Weil正値性を出す。核心は<em>∞（アルキメデス）の項の符号を、半局所の外で制御</em>すること。「サイトの自己交点」に相当する対象がまだ実物として無い。</li>
+    </ul>
+  </div>
+
+  <div class="task">
+    <div class="hd">道B：Deninger ── 力学系とコホモロジー（戦略編④の先）</div>
+    <ul>
+      <li><span class="st st-done">到達</span><strong>辞書は完成</strong>：素数＝閉軌道（長さ log p）、零点＝ある流れの生成子の<strong>スペクトル</strong>、明示公式＝<strong>レフシェツ跡公式</strong>、RH＝<strong>Hodge型の正値性（Hard Lefschetz）</strong>。有限体版ではこの辞書は<em>実物として成立</em>。</li>
+      <li><span class="st st-open">未構成</span>やるべきこと：整数のための<strong>葉層空間とその葉方向コホモロジー</strong>を作る。零点を生成子のスペクトルとして実現し、Hard Lefschetz を証明。<em>∞は「流れの無限遠のファイバー」に対応し、そこで葉方向Hodge理論の正値性を成立させる</em>のが最深の一点。設計図はある、建物が無い。</li>
+    </ul>
+  </div>
+
+  <div class="task">
+    <div class="hd">道C：F₁幾何 ── 「一元体」と Spec ℤ の完備化（戦略編・グレイル）</div>
+    <ul>
+      <li><span class="st st-part">部分</span>有限体版RHの成功は、<strong>フロベニウス作用素＋エタール・コホモロジー＋Hodge指数</strong>による。整数を「\(\mathbb{F}_1\)（一元体）上の曲線」と見て、同じ機構を移す構想。部分的な圏・幾何は構築されつつある。</li>
+      <li><span class="st st-open">未構成</span>やるべきこと：\(\mathrm{Spec}\,\mathbb{Z}\) を <strong>∞ で"点を足して"コンパクトな曲線 \(\overline{\mathrm{Spec}\,\mathbb{Z}}\)</strong> にし、<strong>フロベニウス類似の写像と、\(\overline{\mathrm{Spec}\,\mathbb{Z}}\times\overline{\mathrm{Spec}\,\mathbb{Z}}\) 上の交点理論</strong>を作る。RH＝その交点の正値性（Hodge指数のアルキメデス版）。<em>∞での交点数・自己交点を、正しい符号で定義する</em>のが門。</li>
+    </ul>
+  </div>
+
+  <div class="aside">
+    <span class="tag">三つの道は、同じ門を別の言葉で言っている</span>
+    Connesの<strong>「跡公式の正値性」</strong>、Deningerの<strong>「葉方向Hodgeの正値性」</strong>、F₁の<strong>「交点形式の正値性（Hodge指数のアルキメデス版）」</strong>── 呼び名は違うが、どれも<em>∞を含めた一つの正値性</em>を作れ、と言っている。実験3・4の pinch の「下の錨（deficit≥0）」の、幾何的な正体がこれ。三つの道が同じ門に集まるのは、そこにしか鍵が無いから。
+  </div>
+
+  <h2><span class="n">04</span>実際に着手できる小問題 ── どこから手をつけるか</h2>
+
+  <p>「∞を閉じよ」は大きすぎる。研究者が実際に手をつけるのは、その手前の<strong>着手可能な小問題</strong>です。正直な現在地つきで並べます。</p>
+
+  <div class="task">
+    <div class="hd">着手できる小問題（milestones）</div>
+    <ul>
+      <li><span class="st st-part">部分</span><strong>半局所→もう一素点</strong>：Connesの半局所跡公式を、素点を一つ増やして成立させる。どこで∞が効き始めるかが見える。</li>
+      <li><span class="st st-open">開</span><strong>アルキメデス項の正値性の局所評価</strong>：ガンマ因子の寄与 <code>Re ψ(1/4+ir/2)</code> を含む2次形式の符号を、検定関数の族で厳密に評価（実験4Aの全域版）。<em>ここは区間演算＋SDPで機械が助けられる</em>。</li>
+      <li><span class="st st-open">開</span><strong>スケーリングサイトの自己交点</strong>：Connes–Consani のサイトで「対角線の自己交点数」に相当する量を定義し、望む正値性が出るか確かめる。</li>
+      <li><span class="st st-open">開</span><strong>Deningerの葉層のトイ構成</strong>：一素点だけ／数体の小さな場合で、葉方向コホモロジーと Hard Lefschetz が本当に零点を出すミニ実物を作る。</li>
+      <li><span class="st st-done">済</span><strong>有限体版の完全理解</strong>：Deligne の証明は<em>欲しい構造の本物の実例</em>。∞が無い世界での「正値性の出方」を教師として使える（AI編⑤の手C）。</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">05</span>ここで機械は何を助けられるか ── AI編との接続</h2>
+
+  <p>∞を閉じる<em>概念</em>の発明は人間側です（AI編⑤の赤い芯）。でも、その周りの<strong>厳密計算</strong>は機械が強い：</p>
+
+  <div class="keybox">
+    <div class="lbl">機械が助けられる部分</div>
+    <p style="margin:0 0 6px;"><strong>①</strong> アルキメデス2次形式の正値性の<strong>有限次元切断を SDP/SOS で探索</strong>し、区間演算＋Lean で厳密化（実験4Aの全域版＝小問題2）。</p>
+    <p style="margin:0 0 6px;"><strong>②</strong> 半局所跡公式・スケーリングサイトの候補構成を<strong>LLMが提案→CAS/Lean が検算</strong>（AI編③の生成ループ）。</p>
+    <p style="margin:0;"><strong>③</strong> 有限体版の剛性構造を<strong>教師データに転移</strong>し、∞込みの類似構造の候補を出す（AI編⑤手C）。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">本ページの三プログラムは実在の研究です：<strong>Connes（1999）</strong>のアデール類空間・跡公式・Weil正値性への還元と半局所版の証明、<strong>Connes–Consani</strong>の算術サイト／スケーリングサイトと Riemann–Roch 型の結果、<strong>Deninger</strong>の力学系・葉方向コホモロジーによる辞書、<strong>F₁幾何</strong>と \(\overline{\mathrm{Spec}\,\mathbb{Z}}\) の完備化・Weil正値性＝Hodge指数のアルキメデス版という描像。いずれも本物の枠組みですが、<strong>RHを与える大域的な正値性／コホモロジー／交点理論は、∞を含む形ではまだ構成されていません</strong>（＝未解決）。</p>
+    <p style="margin-bottom:0;">「着手できる小問題」は方向性の例示で、難易度や成否を保証しません。三プログラムが「同じ門」を指すのはアナロジーであり、数学的同一性の主張ではありません。機械が助けられるのは厳密計算・候補生成・検証の部分で、∞を閉じる中心概念の発明ではありません。図は三つの道と∞の門の関係を表す模式です。リーマン予想（Λ=0）は未証明で、本ページはそれが近く解けると主張しません ── 「本物の未解決研究で、具体的に何をするか」の地図です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">たしかめ問題（この番外で答えられます）</div>
+    <ol>
+      <li>なぜ有限素点は片づくのに∞だけ残るのか。
+        <details><summary>答えを見る</summary><div class="ans">有限素点pの寄与は<strong>離散・代数的</strong>（Σ(log p)p^{-k/2}…）で数え上げ・SDP・区間演算で扱える。∞はガンマ因子＝<strong>連続・解析的</strong>で有限切断に乗らず、しかも零点の平均密度＝舞台を作る項（実験4B）。だから最後の継ぎ目になる。</div></details>
+      </li>
+      <li>「∞を閉じる」を、もっとも古典的に言うと何か。
+        <details><summary>答えを見る</summary><div class="ans"><strong>アルキメデス版のHodge指数定理</strong>。Weilは有限体版RHを曲面C×C上の交点の正値性（Hodge指数）で証明した。整数版は \(\overline{\mathrm{Spec}\,\mathbb{Z}}\)（∞込み）上の交点形式の正値性＝Weil正値性を、∞のガンマ因子込みで示すこと。</div></details>
+      </li>
+      <li>三つのプログラムは結局、何を共通に作ろうとしているか。
+        <details><summary>答えを見る</summary><div class="ans"><strong>∞を含めた一つの正値性</strong>。Connes＝跡公式の正値性、Deninger＝葉方向Hodgeの正値性、F₁＝交点形式の正値性。呼び名は違うが同じ門で、pinch実験の「下の錨（deficit≥0）」の幾何的正体。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>門の名前も、道も分かっている ── 鍵だけが無い</h2>
+    <p>「∞を閉じる」は霧の呪文ではない。具体的には ── <strong>アルキメデス素点（ガンマ因子）の寄与を含めて、Weil正値性＝\(\overline{\mathrm{Spec}\,\mathbb{Z}}\) 上の交点形式の正値性を成立させること</strong>。有限素点は代数的で片づくが、∞は連続・解析的で、しかも零点の舞台（平均密度）そのもの。</p>
+    <p>そこへ向かう本物の道が三つ ── <strong>Connes–Consani（跡公式・算術サイト）／Deninger（力学系・葉方向Hodge）／F₁（Spec ℤ の完備化・交点正値性）</strong>。どれも半局所や辞書までは到達し、<em>∞での正値性の門</em>の手前で止まっている。着手できる小問題（半局所の拡張、アルキメデス2次形式の正値性評価、サイトの自己交点、葉層のトイ構成）もあり、その厳密計算は<strong>機械が助けられる</strong>。<em>門の名前も道も分かっている。まだ誰も鍵を作れていない</em> ── それがこの縁の、いちばん正直な現在地です。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:40px 0 0;">
+    <a href="riemann-ai-jikken.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">← 番外：実験ノート</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-senryaku2-connes.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">戦略編②：コンヌの跡公式 →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・AI証明編・番外（∞を閉じる）。三プログラムは実在の研究です：Connes（1999）のアデール類空間・跡公式・Weil正値性への還元と半局所版、Connes–Consaniの算術サイト／スケーリングサイトとRiemann–Roch型の結果、Deningerの力学系・葉方向コホモロジーの辞書、F₁幾何と \(\overline{\mathrm{Spec}\,\mathbb{Z}}\) の完備化・Weil正値性＝Hodge指数のアルキメデス版という描像。RHを与える大域的な正値性・コホモロジー・交点理論は∞を含む形で未構成（未解決）。着手できる小問題は方向性の例示。機械が助けられるのは厳密計算・候補生成・検証で、中心概念の発明ではありません。図は模式。RHは未証明で、本ページは近い解決を主張しません。 ── 印刷はブラウザの「印刷→PDFに保存」から（動く図は静止）。
+  </div>
+
+</div>
+<p class="hint no-print">画面では∞の門へ向かう三つの道（Connes–Consani／Deninger／F₁）のパスをクリックすると、着手すべき具体タスクと現在地が読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var lastW=680, sel=0;
+  var paths=[
+    {tag:'A', name:'Connes–Consani', col:'#0e6b7a', reach:0.62,
+     desc:'跡公式＋算術/スケーリングサイト。到達=RH⟺Weil正値性へ還元＋半局所版証明＋Riemann–Roch型。門=大域跡公式の正値性、とくに∞項の符号を半局所の外で制御。'},
+    {tag:'B', name:'Deninger', col:'#5a2a6e', reach:0.42,
+     desc:'力学系＋葉方向コホモロジー。到達=辞書完成(素数=閉軌道, 零点=生成子スペクトル, RH=Hard Lefschetz)＋有限体版は実物。門=整数の葉層空間を構成し∞のファイバーで葉方向Hodge正値性を成立させる。'},
+    {tag:'C', name:'F₁ 幾何', col:'#8a5a2e', reach:0.5,
+     desc:'一元体＋Spec ℤ の完備化。到達=有限体版の機構(フロベニウス+エタール+Hodge指数)＋部分的な圏。門=Spec ℤ を∞でコンパクト化し、交点理論とフロベニウス類似を作り、交点正値性(Hodge指数のアルキメデス版)を出す。'}
+  ];
+  var boxes=[];
+  function setupHiDPI(c){
+    var rr=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*rr); c.height=Math.round(cssH*rr);
+    var ctx=c.getContext('2d'); ctx.setTransform(rr,0,0,rr,0,0); return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h; lastW=w;
+    ctx.clearRect(0,0,w,h);
+    var gateX=w-92, startX=40, topY=52, gap=(h-104)/2;
+    // gate (∞) on the right
+    ctx.fillStyle='#f6e2dd'; ctx.strokeStyle='#a5473a'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.roundRect(gateX,40,64,h-90,10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#a5473a'; ctx.font='bold 30px serif'; ctx.textAlign='center'; ctx.fillText('∞', gateX+32, h/2-6);
+    ctx.font='bold 10.5px sans-serif'; ctx.fillText('∞での', gateX+32, h/2+14); ctx.fillText('正値性', gateX+32, h/2+28);
+    ctx.fillText('の門', gateX+32, h/2+42);
+    // lock
+    ctx.fillStyle='#a5473a'; ctx.font='16px sans-serif'; ctx.fillText('🔒', gateX+32, 34);
+    boxes=[];
+    for(var i=0;i<3;i++){
+      var y=topY+i*gap, p=paths[i], isSel=(i===sel);
+      var pathEndX=startX+(gateX-startX-10)*p.reach;
+      // full path (dashed, faint = remaining)
+      ctx.strokeStyle='#d8cdb4'; ctx.lineWidth=2; ctx.setLineDash([5,5]);
+      ctx.beginPath(); ctx.moveTo(pathEndX,y); ctx.lineTo(gateX,y); ctx.stroke(); ctx.setLineDash([]);
+      // reached part (solid colored)
+      ctx.strokeStyle=p.col; ctx.lineWidth=isSel?5:3;
+      ctx.beginPath(); ctx.moveTo(startX,y); ctx.lineTo(pathEndX,y); ctx.stroke();
+      // start node
+      ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(startX,y,16,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.fillText(p.tag,startX,y+5);
+      // frontier marker
+      ctx.fillStyle=p.reach>0.55?'#8a6a2e':'#a5473a'; ctx.beginPath(); ctx.arc(pathEndX,y,6,0,7); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+      // label
+      ctx.fillStyle=isSel?p.col:'#3a3f4a'; ctx.font=(isSel?'bold ':'')+'13.5px sans-serif'; ctx.textAlign='left';
+      ctx.fillText(p.name, startX+26, y-14);
+      ctx.fillStyle='#8a7a52'; ctx.font='10.5px sans-serif';
+      ctx.fillText('到達 '+Math.round(p.reach*100)+'% → 門の手前で停止', startX+26, y+20);
+      boxes.push({x:startX-16,y:y-24,w:gateX-startX+30,h:gap-6,i:i});
+    }
+    ctx.fillStyle='#8a7a52'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('道をクリック ── 三つとも同じ「∞での正値性」の門で止まる', (startX+gateX)/2, h-10);
+  }
+  function say(){
+    var p=paths[sel];
+    rd.innerHTML='<b>道'+p.tag+'：'+p.name+'</b> ── '+p.desc;
+  }
+  cv.addEventListener('click',function(e){
+    var rect=cv.getBoundingClientRect(), sx=lastW/rect.width;
+    var mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+    for(var i=0;i<boxes.length;i++){ var b=boxes[i];
+      if(my>=b.y&&my<=b.y+b.h){ sel=b.i; draw(); say(); break; }
+    }
+  });
+  window.addEventListener('resize',draw);
+  draw(); say();
+})();
+</script>
+</body>
+</html>

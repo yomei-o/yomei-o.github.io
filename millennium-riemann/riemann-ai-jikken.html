@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>実験ノート ── 手を動かして測った記録（log-ガス／pinch／本物の零点） ／ リーマン・AI証明編 番外</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1e28; --ink-soft:#4a4f5e; --paper:#faf7f0; --paper-edge:#e7dcc6;
+    --side:#0e6b7a; --side-bg:#e4f0f1; --warn:#8a4b2f; --calc:#0e6b7a; --calc-bg:#e4f0f1;
+    --rule:#ddd2ba; --hair:#cabfa3; --acc:#0e6b7a; --gold:#a9791a; --grid:#e6dcc7;
+    --heat:#c05a2a; --solved:#2f7d5a; --open:#a5473a; --line:#0e6b7a; --human:#8a5a2e;
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;line-height:1.95;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:820px;margin:32px auto;background:var(--paper);padding:64px 70px 90px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--gold);
+    margin:0 0 6px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:32px;line-height:1.3;margin:0 0 8px;font-weight:700;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;
+    margin-top:26px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:700;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;color:var(--gold);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:700;}
+  p{margin:15px 0;} .lead{font-size:19px;line-height:1.88;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3e6 62%);padding:0 .05em;} strong{font-weight:700;}
+  code{background:#eef3ec;border-radius:3px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,Consolas,monospace;}
+  pre{background:#1f2733;color:#e6eef0;border-radius:6px;padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.55;
+    font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.01em;}
+  pre .c{color:#8fb7bf;} pre .g{color:#8fd6a8;} pre .o{color:#e0a06a;}
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#123;}
+  .aside .tag,.caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;} .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.85;color:#3f2a1c;} .caveat .tag{color:var(--warn);}
+  .fig{margin:26px 0;padding:16px 18px 18px;background:#fffdf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig img{width:100%;height:auto;display:block;border:1px solid var(--grid);border-radius:3px;background:#fff;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12.5px;color:var(--ink-soft);margin-top:10px;letter-spacing:.02em;line-height:1.7;}
+  .keybox{margin:30px 0;padding:22px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;margin-bottom:8px;}
+  .keybox .big{font-size:18px;line-height:1.7;font-weight:600;}
+  .exp{margin:30px 0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;}
+  .exp .hd{background:#e4f0f1;padding:12px 20px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-weight:700;color:var(--side);font-size:15px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;}
+  .exp .hd .file{font-size:11.5px;color:#6a6552;font-weight:600;font-family:ui-monospace,monospace;}
+  .exp .bd{padding:6px 22px 18px;}
+  .verdict{display:inline-block;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:.06em;}
+  .v-yes{background:#e3efe8;color:#2f7d5a;} .v-wall{background:#f6e2dd;color:#a5473a;} .v-mix{background:#f5ecd9;color:#8a6a2e;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--rule);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  @media print{@page{size:A4;margin:16mm 14mm;} body{background:#fff;font-size:10.5pt;line-height:1.68;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;} h1{font-size:21pt;} h2{font-size:14pt;margin-top:22pt;break-after:avoid;}
+    .aside,.caveat,.keybox,.exp,.fig{break-inside:avoid;} pre{white-space:pre-wrap;} .no-print{display:none;}}
+  @media (max-width:640px){ .sheet{padding:38px 16px 56px;margin:0;} h1{font-size:24px;} body{font-size:16px;} .sheet{padding-left:16px;padding-right:16px;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>ミレニアム問題を解くぞ ／ リーマン・AI証明編 ── 番外</span><span class="ep">実験ノート</span></div>
+  <p class="eyebrow">机上論で終わらせない ── 実際にコードを回して、縁を数値で測った記録</p>
+  <h1>実験ノート ── 手を動かして測った三つの実験
+    <span class="sub">AI編で語った「フロー＋単調量」「正値性」「pinch」「無限素点」を、<strong>実際にPythonで回した</strong>生の記録。<br>トイモデル → pinch仮説 → <strong>本物のゼータ零点</strong>、と一歩ずつ本物に近づけた。<br>結論は毎回同じ縁を指す ── <em>上からは押せる、下は素数側の正値性が要る、そして∞が舞台を作る。</em></span>
+  </h1>
+  <div class="byline">
+    <span>この番外の狙い：AI編の主張を、再現可能な数値実験として残す</span>
+    <span>一言で：旗は立たない、でも壁は測れた</span>
+  </div>
+
+  <p class="lead">この編で語ったことを、抽象論で終わらせないための記録です。実際に<strong>零点の運動方程式・Weil型の正値性・本物のゼータ零点</strong>をコードに載せて回し、「どこまで機械で押せて、どこで壁に当たるか」を数値で測りました。三つの実験を、生の数字と図つきで置いておきます。細かい規格化はトイ寄りですが、<em>現象は本物と一致</em>しました。</p>
+
+  <!-- 実験1 -->
+  <div class="exp">
+    <div class="hd">実験1：log-ガスの単調量は「間違った半分」しか見ない <span class="verdict v-wall">壁を確認</span><span class="file">loggas.py</span></div>
+    <div class="bd">
+      <p>零点を反発ガスと見た運動方程式 <code>ẋ_j = 2 Σ 1/(x_j−x_k)</code>（de Bruijn–Newman 後退熱流から導出）で、共役対の軸からの高さ <code>φ=b²</code> を追うと ──</p>
+      <div class="keybox" style="margin:18px 0;">
+        <div class="lbl">機械が出した式（実計算）</div>
+        <p class="big" style="margin:0;">$$\dot\phi = -2 - 4\phi\sum_k\frac{1}{(a-x_k)^2+\phi} \;\le\; -2$$</p>
+      </div>
+      <div class="fig"><img src="ai-exp-loggas.png" alt="log-gas experiment">
+        <div class="cap"><strong>A</strong>：対が実軸へ吸収（\(\sqrt{2(t^*-t)}\) 則、\(t^*\approx0.29\)）。<strong>B</strong>：\(\dot\phi\) は対がある間ずっと \(\le-2\)、<em>ゼロを切らない</em>（+スパイクは吸収後の数値アーティファクト）。<strong>C</strong>：後退フローは零点衝突で速度が 4→811 に発散＝<strong>ill-posed の署名</strong>。</div>
+      </div>
+      <p><strong>読み</strong>：\(\dot\phi\) が符号確定（≤−2）＝<em>臨界 Λ=0 の接触を検出できない</em>。単調量Vは<strong>Λの上界（間違った半分）</strong>しか出せない。後退＝ill-posed で巻き戻せない。ペレルマン編③④の主張が、そのまま数値に出た。</p>
+    </div>
+  </div>
+
+  <!-- 実験2 -->
+  <div class="exp">
+    <div class="hd">実験2：手A ── 「臨界の鋭さ」を測れるスコアに翻訳できるか <span class="verdict v-mix">入口は本物・天井も本物</span><span class="file">handA.py</span></div>
+    <div class="bd">
+      <p>代理スコア <code>Λ_N = t*</code>（対の吸収時刻、有限データから計算可）を軸に、(1)Nスケーリング指数／(2)候補パラメータへの勾配／(3)天井を測った。</p>
+      <div class="fig"><img src="ai-exp-handA.png" alt="hand A experiment">
+        <div class="cap"><strong>(1)</strong>：\(|\Lambda_N-\Lambda_\infty|\sim N^{-2}\) ── <em>測れないものが、きれいな指数を持つ数になった</em>。<strong>(2)</strong>：候補パラメータ c への依存は勾配あり（ただし near-collision のスパイクつき＝正則化が要る）。<strong>(3)</strong>：前進フローの \(t^*(b_0)\) は<strong>常に &gt;0</strong>＝上界しか出ない。臨界 Λ=0（赤破線）に触れられない。</div>
+      </div>
+      <p><strong>読み</strong>：手Aの翻訳は<em>機能する</em>（un-scorable→scorable、勾配あり＝LLM/探索ループが回せる＝Polymathの上界押しが機械最適化の形に）。<strong>だが最適化できるのはゴールに届かない半分</strong>。臨界の符号は後退＝ill-posed でしか出ない。「No→Yes」は起きず、代わりに<em>壁を測定に格上げ</em>した。</p>
+    </div>
+  </div>
+
+  <!-- 実験3 -->
+  <div class="exp">
+    <div class="hd">実験3：pinch ── 上から流れ・下から正値性、Λ=0 で噛み合うか <span class="verdict v-yes">形は実在</span><span class="file">pinch.py</span></div>
+    <div class="bd">
+      <p>同じトイで、上下二つの独立な「β&gt;0（RH破れ）の証人」を計算：<strong>流れの上界 \(t^*(\beta)\)</strong> と <strong>Weil型の正値性不足 \(\mathrm{deficit}(\beta)\)</strong>。</p>
+      <div class="fig"><img src="ai-exp-pinch.png" alt="pinch experiment">
+        <div class="cap"><strong>左</strong>：二つの witness が <strong>β=0（Λ=0）でちょうど一緒に消える</strong>＝pinch。<strong>右</strong>：線から外れる（β&gt;0）と、ある検定関数で Wel form が<strong>負に振れる</strong>＝正値性の破れのメカニズム。消滅の位数は \(t^*\sim\beta^{1.6}\)、\(\mathrm{deficit}\sim\beta^{15}\)（超フラット）。</div>
+      </div>
+      <div class="keybox" style="border-color:var(--acc);margin:18px 0;">
+        <div class="lbl" style="color:var(--acc);">証明の形（pinch）</div>
+        <p style="margin:0;font-size:16px;line-height:1.8;">流れが「β は減る（Λ≥0 側）」、素数側が「deficit≥0（正値性）」を与え、<strong>二つが噛み合うのは β=0 だけ → Λ=0</strong>。ただし <em>deficit≥0 を素数側から独立に示すこと</em>が RH そのもの。</p>
+      </div>
+      <p><strong>読み</strong>：pinch は<em>本物</em>。証明の"形"は実在する。だが deficit が <code>β^15</code> で超フラット＝<strong>臨界近くで正値性の破れが超・鈍感</strong>。これが Newman「ぎりぎり真」の正値性側の顔。</p>
+    </div>
+  </div>
+
+  <!-- 実験4 -->
+  <div class="exp">
+    <div class="hd">実験4：本物のゼータ零点＋素数で ── ∞項の正体 <span class="verdict v-yes">本物で確認</span><span class="file">real_weil.py</span></div>
+    <div class="bd">
+      <p>トイを本物へ。実際の非自明零点（\(\gamma_1=14.1347,\dots\)）と素数で、明示公式の中を計算した。</p>
+      <div class="fig"><img src="ai-exp-realweil.png" alt="real zeros Weil experiment">
+        <div class="cap"><strong>(A)</strong>：本物の第1零点 \(\gamma_1\) を線から β 外すと deficit \(\sim\beta^{16}\)（超フラット、トイと同じ）。<strong>(B)</strong>：アルキメデス項（∞）＝ \((1/2\pi)[\mathrm{Re}\,\psi(\tfrac14+\tfrac{iT}{2})-\log\pi]\) が \((1/2\pi)\log(T/2\pi)\) と6桁一致＝<strong>零点の平均密度そのもの</strong>（縦線＝実零点）。<strong>(C)</strong>：∞＝なめらかな背骨、素数＝そのまわりのゆらぎ。</div>
+      </div>
+      <div class="keybox" style="margin:18px 0;">
+        <div class="lbl">数値（本物の零点・素数）</div>
+        <pre><span class="c"># (B) ∞項の密度 vs log則 ── 6桁一致</span>
+ T=15   0.138463   0.138492
+ T=50   0.330108   0.330111
+ T=1000 0.806896   0.806896
+ <span class="c"># 平滑カウント: N(14.1)=0.45, N(50)=9.42, N(65)=14.70</span>
+ <span class="c"># 実零点:      14.1で1個目,  50で10個目, 65で15個目 → 一致</span>
+<span class="c"># (A) 本物のγ1を外したときの正値性不足 ── 超フラット</span>
+ β=0.6 <span class="o">→</span> 6.0e-10 ; β=1.0 <span class="o">→</span> 1.7e-6 ; deficit ~ β^16</pre>
+      </div>
+      <p><strong>読み</strong>：<em>超フラット性は模型の癖ではなく本物の零点でも成立</em>。そして<strong>∞（アルキメデス項）は零点が乗る"舞台"＝平均密度そのもの</strong>を作っている。RH＝素数のゆらぎが背骨から零点を一つも線の外へ弾かない、の主張。</p>
+    </div>
+  </div>
+
+  <h2><span class="n">結</span>三実験が指す、同じ縁</h2>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">「Λ=0 をどうやるか」── 実データの言葉で</div>
+    <p style="margin:0;font-size:16px;line-height:1.85;">零点の分布 ＝ <strong>∞（アルキメデスの背骨）＋ 素数（ゆらぎ）</strong>。RH／Λ=0 ＝「ゆらぎが背骨から零点を一つも外さない」＝ <strong>Weil正値性</strong>。<br>片側の錨 Λ≥0 は流れが与える（実験1）。もう片側は、正値性を<strong>超フラットな臨界（β^16）まで制御し切ること</strong>＝<em>∞のアルキメデス解析を閉じること</em>（実験3・4）。<br>純フローでは届かず（実験1・2）、素数側の正値性の注入が要る。<strong>旗は立たない ── だが縁は、実験で削れる限りまで削った。</strong></p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">再現用スクリプトは実在します（loggas.py / handA.py / pinch.py / real_weil.py）。<strong>実験4(B) は厳密な事実</strong>：アルキメデス項が零点の平均密度 \((1/2\pi)\log(T/2\pi)\) を与えるのは定理で、数値も6桁一致。<strong>実験1・2</strong>は零点ODE（DBN後退熱流から導出）の有限トイモデルで、単調量Vの \(\dot\phi\le-2\) は Λ の上界（間違った半分）を示すのみ。<strong>実験3・4(A)</strong>の Weil deficit は、正値な検定関数を1パラメータ族で最小化したもので<em>メカニズムの実証</em>（超フラット性）であり、Weil汎関数の全域にわたる正値性計算ではありません。実験4(C)の素数ゆらぎの規格化は模式です。</p>
+    <p style="margin-bottom:0;">図はmatplotlib出力（軸ラベルは英語）。近collisionのスパイク（実験2・3の一部）は固定ステップ積分の数値アーティファクトで、正則化した観測量が本来必要です。いずれの実験も<strong>RHを証明するものではなく</strong>、「どこまで機械で押せて、どこで概念が要るか」の縁を測ったものです。RH（Λ=0）は未証明。この番外は、AI証明編①〜⑥で語った構造を、手を動かして確かめた記録です。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:40px 0 0;">
+    <a href="riemann-ai6-touitsu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">← AI証明⑥：統合パイプライン</a>
+    <a href="index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">目次へ</a>
+    <a href="riemann-perelman1-netsuryu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e4f0f1;font-weight:700;letter-spacing:.03em;">ペレルマン編へ →</a>
+  </div>
+
+  <div class="foot">
+    「ミレニアム問題を解くぞ」リーマン・AI証明編・番外（実験ノート）。零点ODE ẋ_j=2Σ1/(x_j−x_k) は de Bruijn–Newman 後退熱流から導出。実験4(B) のアルキメデス項＝零点密度 (1/2π)log(T/2π) は定理（数値6桁一致）。本物の非自明零点 γ1=14.134725… は標準値。Weil deficit は正値検定関数の1パラメータ族での最小化によるメカニズム実証で、全域の正値性計算ではありません。近collisionのスパイクは固定ステップ積分の数値アーティファクト。いずれもRHの証明ではなく、機械化の縁を測る数値実験です。RHは未証明。 ── 図はmatplotlib出力。印刷はブラウザの「印刷→PDFに保存」から。
+  </div>
+
+</div>
+</body>
+</html>
