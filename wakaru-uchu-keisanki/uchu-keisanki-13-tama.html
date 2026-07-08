@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>玉なんて無かった ── 物質もさざ波、原子は鐘、陽子の中は渦巻く海</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#10231f; --ink-soft:#3f5852;
+    --paper:#eef5f2; --paper-edge:#cfe2db;   /* 翡翠の紙：さざ波・共鳴 */
+    --side:#1d5c4f; --side-bg:#e0efe9;
+    --warn:#8a5622;
+    --calc:#136053; --calc-bg:#e2efea;
+    --rule:#c7ded6; --hair:#a4c8bd;
+    --acc:#147a66;    /* アクセント＝翡翠 */
+    --wave:#c86a2f;   /* さざ波の暖色 */
+    --grid:#d6e8e2;
+    --grav:#4a4670; --em:#0d7d84; --weak:#a02b8c; --strong:#b5432a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#173029;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3d7 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#183530;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f2ece0;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3d2f18;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c5ddd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f6faf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:180px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.7;
+    background:#e2efea;color:#1c5347;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td b.old{color:#9a6a3a;} table.dt td b.new{color:var(--acc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#f7fbf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#e7f2ee;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#123f35;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#f7fbf9,#e5f0eb);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#557067;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 13 回（延長）／ 玉なんて無かった</span></div>
+  <p class="eyebrow">「電子が陽子のまわりを回る、クォークが中を動く」── その"玉"を、最後まで追うと消える</p>
+  <h1>玉なんて無かった
+    <span class="sub">力だけでなく<strong>物質もさざ波</strong>。電子は回る玉ではなく、陽子のすり鉢で<strong>鳴る定在波</strong>＝原子は鐘。陽子の中は<strong>渦巻く海</strong>。玉を全部、さざ波に置き換える回。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：物質も別のバネ網のさざ波／原子は回らず"鳴る"／陽子の中は非線形の海</span>
+    <span>フック像：軌道＝定在波（共鳴モード）</span>
+  </div>
+
+  <p class="lead">前回、力とは「バネ網を薄まりながら隣へ伝わるさざ波」だと見ました。すると自然に問いが出ます ── <em>「じゃあ電子が陽子のまわりを回るとか、陽子の中のクォークって、このバネの格子をくるくる動いてることでしょ？」</em>。良い踏み込みです。半分あたっていて、<strong>半分はもっと面白い方向に外れて</strong>います。この回は、その"玉"を最後まで追って、<strong>玉が一つも残らない</strong>ところまで行きます。</p>
+
+  <div class="aside">
+    <span class="tag">この回だけ読む人へ（前提の一枚）</span>
+    シリーズ「宇宙は計算機」は、宇宙を<strong>計算の過程</strong>として眺める読み物です。前回（第12回）で一つの絵にたどり着きました ── <strong>「場」＝空間にびっしり並べたおもりを隣どうしバネでつないだ網</strong>（トランポリンの面や水面のイメージ）。どこかをつつくと、へこみが隣へ隣へ伝わり広がりながら弱まる。この<em>伝わるさざ波</em>が「力」の正体でした。<strong>この回は、その続きとして「物質（電子やクォーク）」の正体を開けます。</strong> 前の回を読んでいなくても大丈夫なように書きます。
+  </div>
+
+  <h2><span class="n">01</span>上書き①　電子は「バネ網を動く玉」ではなく、電子自身がさざ波</h2>
+
+  <p>いちばん大事な訂正から。バネ網は<strong>力の場（電磁場）</strong>だけではありません。<strong>電子には電子の場、クォークにはクォークの場</strong>があって、それぞれが<em>独自のバネ網</em>です。つまり世界は「一枚のバネ網の上を玉が転がる」のではなく：</p>
+
+  <div class="keybox">
+    <div class="lbl">世界の作り</div>
+    <p style="margin:6px 0 0;"><strong>同じ空間に、種類ごとのバネ網が何枚も重ねて張ってあり、たがいに紐で結ばれている。</strong> 電子＝電磁バネ網を動く玉、ではなく、<strong>電子＝電子バネ網に立った一粒のさざ波</strong>。それが電磁バネ網と結ばれている（結び目の強さ＝電荷）。玉は一つも出てきません ── <em>全部さざ波</em>。</p>
+  </div>
+
+  <p>第12回で「力＝さざ波」と言いました。この回の一段深い層はこうです ── <strong>物質もまた、さざ波だった</strong>。粒子と波は別物ではなく、同じバネ網の<em>二つの顔</em>。だから「玉が格子を動く」という絵は、出発点としては自然でも、追いつめると<strong>玉のほうが幻</strong>で、残るのは網とその上のさざ波だけ、になります。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">02</span>上書き②　電子は回らない。"鳴っている"</h2>
+
+  <p>ここがいちばん面白い。電子は陽子のまわりを、惑星のように<strong>回っていません</strong>（この"回る玉"の絵は、量子力学が100年前に葬りました）。電子のさざ波は、陽子が作る<strong>すり鉢状の引力</strong>の中に閉じこめられると、特定の形で<em>じっと震える波</em>＝<strong>定在波</strong>に落ち着きます。定在波とは、ギターの弦や太鼓の膜のように「進まずにその場で揺れる」波のこと。すると：</p>
+
+  <div class="keybox">
+    <div class="lbl">言い換えの芯</div>
+    <p style="margin:6px 0 0;"><strong>原子＝鐘（ベル）。</strong> 電子の「軌道」（オービタル）＝太鼓の膜やギター弦の<strong>振動パターン</strong>。エネルギー準位＝その鐘が鳴らせる<strong>特定の音（共鳴周波数）</strong>。原子が出す光の色（スペクトル線）＝文字どおりその<strong>倍音</strong>。だから「くるくる回る」は <strong>「決まった形で共鳴して鳴っている」</strong> に置き換わる。</p>
+  </div>
+
+  <p>そしてこれは前回（第11回）に直結します。回る玉なら、曲がる運動でエネルギーを光として撒き散らし、らせんを描いて陽子に落ちてしまう ── 古典物理ではそうなる。ところが<strong>定在波は、一番低い音（基底状態）で安定に鳴りつづけ、落ちない</strong>。安定に鳴れる引力の形が、ちょうど逆二乗（\(D=2\)）だったのが第11回の話。玉では説明できなかった「なぜ原子が潰れないか」が、<em>波だと当たり前</em>になります。</p>
+
+  <div class="fig">
+    <div class="cap">図：波を<strong>四角い箱に閉じこめる</strong>と、進めなくなった波は「その場で震える定在波」になり、<strong>音（モード）ごとに違う形</strong>で鳴る。スライダー \(p,q\) で音を選ぶと、揺れの山と谷（<span style="color:var(--wave)">暖色＝手前へ</span>／<span style="color:#2f7d8c">寒色＝奥へ</span>）と、動かない<strong>節（ふしめ）の線</strong>が変わる。<em>これが原子オービタルと同じ"共鳴"の数学</em>（正確な水素の形ではなく、同じ仲間のいちばん素直な例＝「量子の箱」）。節が多い音ほど高い＝エネルギーが高い。</div>
+    <canvas id="cv" width="680" height="420"></canvas>
+    <div class="controls">
+      <label>横の音 p<span class="val" id="vp">2</span>
+        <input type="range" id="sp" min="1" max="5" step="1" value="2">
+      </label>
+      <label>縦の音 q<span class="val" id="vq">1</span>
+        <input type="range" id="sq" min="1" max="5" step="1" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで p, q を変えると、鳴る形（定在波）が切り替わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#c86a2f;"></i>手前へのゆれ（＋）</span>
+      <span><i class="swatch" style="background:#2f7d8c;"></i>奥へのゆれ（−）</span>
+      <span><i class="swatch" style="background:#eef5f2;border:1px solid #a4c8bd;"></i>節（動かない線）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>上書き③　クォークは玉どころか「渦巻く海」</h2>
+
+  <p>陽子の中は、もっと過激です。クォークも玉として袋の中を跳ね回ってはいません。強い力のバネは<strong>非線形</strong>（第10・12回：揺れどうしが激しく影響し合う）で、しかも<em>真空そのものが沸き立って</em>います：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;">
+    <li>クォークと反クォークの対が、絶えず<strong>湧いては消える「海」</strong>。</li>
+    <li>グルーオン（強い力のさざ波）が<strong>自分どうし絡まって</strong>、力の管（フラックスチューブ）を作る。</li>
+    <li>だから<strong>陽子の重さの約99%は、中身のクォークの重さではなく、この場のエネルギー</strong>。\(E=mc^2\) で、渦巻く動きと張力そのものが「重さ」に化けている。</li>
+    <li>クォークを引き抜こうとすると管が伸び、最後は<strong>千切れて新しい対</strong>になる ── だから単独のクォークは取り出せない（閉じ込め）。</li>
+  </ul>
+
+  <p>つまりクォークは「格子をくるくる動く玉」ではなく、<strong>閉じ込められた非線形バネ網の、渦巻く共鳴状態</strong>。あまりに激しく絡み合っているので、原子のようなきれいな定在波の式では書けません ── だからこそ<strong>格子QCD</strong>（第12回：時空を格子に刻んでスパコンで実際に回す）で数値的に求める。「だから計算機に載る」が、ここでいちばん切実に効きます。</p>
+
+  <table class="dt">
+    <tr><th>素朴な絵（玉）</th><th>本当の姿（さざ波）</th></tr>
+    <tr><td><b class="old">電子が陽子を回る</b></td><td><b class="new">電子の波が、すり鉢の中で定在波として鳴る</b>（原子＝鐘、準位＝音）</td></tr>
+    <tr><td><b class="old">電子は電磁場を動く玉</b></td><td><b class="new">電子は電子場のさざ波</b>（場が何枚も重なり結ばれている）</td></tr>
+    <tr><td><b class="old">クォークが陽子内を動く</b></td><td><b class="new">閉じ込められた非線形場の渦巻く海</b>（質量の99%は場のエネルギー）</td></tr>
+  </table>
+
+  <h2><span class="n">04</span>正直な線</h2>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 本物・きれいさ・穴</span>
+    <p style="margin-top:0;"><strong>「力も物質も、すべては場＝バネ網のさざ波」は、標準的な場の量子論そのもの</strong>（本物）。玉ではなく波、というのは奇説でなく本線です。原子を<strong>定在波＝鐘</strong>として見るのも、量子力学のきれいに成り立つ描像。</p>
+    <p style="margin-bottom:0;">ただし穴が二つ。<strong>①</strong> バネ網の"格子"を literal に取りすぎないこと ── 格子が世界の土台か、計算のための足場かは<em>未決</em>（第12回）。<strong>②</strong> 原子はきれいな定在波で書けるが、<strong>陽子の中は結合が強すぎて、きれいな波の式が書けない</strong>。そもそも「なぜ強い力の場が<em>有限の最低の音</em>を持つのか（＝陽子に質量があるのか）」は、数学の未解決難問（<strong>質量ギャップ問題・ミレニアム懸賞</strong>）です。ここは埋めません ── 描像は本物、基層と最難関は開けたまま。「解けた」とは言わない、が全体の掟。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>「電子が陽子のまわりを回る」の何が間違い？
+        <details><summary>答えを見る</summary><div class="ans">回る玉という絵が間違い。電子は電子場のさざ波で、陽子の引力のすり鉢の中では「進まずその場で震える定在波」になる。惑星のような軌道運動ではなく、太鼓の膜のような共鳴パターン（オービタル）。回る玉なら光を出して落ちるが、定在波は基底状態で安定に鳴りつづける（第11回）。</div></details>
+      </li>
+      <li>原子が出す光に決まった色（スペクトル線）があるのはなぜ？
+        <details><summary>答えを見る</summary><div class="ans">鐘が決まった音しか出せないのと同じ。電子の定在波は特定の共鳴周波数（エネルギー準位）でしか鳴れず、その間を移るときに差のぶんの光が出る。だから色（振動数）はとびとび＝倍音の並び。図で p,q がとびとびの整数しか取れないのがそれ。</div></details>
+      </li>
+      <li>陽子の重さは、ほとんど何でできている？
+        <details><summary>答えを見る</summary><div class="ans">中のクォークの重さではなく、強い力の場のエネルギー（約99%）。渦巻く運動と力の管の張力が \(E=mc^2\) で重さに化けている。だから陽子は「玉が3つ入った袋」ではなく、閉じ込められた非線形場の渦巻く海。きれいな式で書けず、格子QCDで回して求める（第12回）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>玉を全部、さざ波に置き換える</h2>
+    <p>「電子やクォークがバネ格子をくるくる動く玉」── これを最後まで追うと、<strong>玉は一つも残りません</strong>。物質もまた、種類ごとのバネ網に立ったさざ波。電子は回る玉ではなく、陽子のすり鉢で鳴る<strong>定在波</strong>＝原子は鐘、準位は音、スペクトル線は倍音。だから原子は潰れず安定に鳴る（第11回が波の言葉で当たり前になる）。陽子の中はさらに激しく、閉じ込められた非線形場の<strong>渦巻く海</strong>で、重さの99%は場のエネルギー。</p>
+    <p>力も物質も、すべては場のさざ波 ── これは標準的な場の量子論そのもの。そして全部が場だから、<strong>格子に刻んで計算機で回せる</strong>（第12回の背骨がここでも効く）。ただし格子が土台か足場かは未決、陽子の最低の音がなぜ有限か（質量ギャップ）は未解決の難問。玉なんて無かった ── 残ったのは、鳴っている網。地図は描いた、旗は立てなかった。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-12-bane.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e7f2ee;font-weight:600;letter-spacing:.03em;">← 第12回：バネ網ひとつで</a>
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#e7f2ee;font-weight:600;letter-spacing:.03em;">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ延長第13回です。場の量子論の基本描像（あらゆる粒子はそれぞれの量子場の励起＝さざ波であり、粒子・波は同一のものの別側面）、水素原子の束縛状態が定常波（エネルギー固有状態）でありスペクトルがその遷移であること、古典電磁気での軌道電子の放射崩壊を量子力学の定常状態が回避すること（第11回：逆二乗と束縛の安定性）、陽子質量の大部分（約99%）がクォークの静止質量でなくQCDの場のエネルギーに由来すること、強い力の非線形性・クォーク閉じ込め・真空の量子ゆらぎ（海クォーク・グルーオン）、強結合ゆえ摂動が効かず格子QCDの数値計算が必要なこと、ヤン–ミルズ理論の質量ギャップ存在がミレニアム懸賞問題であることは、いずれも確立した物理／数学（および公式の未解決問題）です。新しい主張は含みません。図は「2次元の箱に閉じた波の定在モード \(\sin(p\pi x)\sin(q\pi y)\)」で、原子オービタルと同じ固有モードの最も素直な例であり、正確な水素の波動関数ではありません。時空が literal に格子か、質量ギャップの証明は現行の未解決問題。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では p, q を変えると定在波（鳴る形）が切り替わり、節の線が増減します。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sp=document.getElementById('sp'), sq=document.getElementById('sq'),
+      vp=document.getElementById('vp'), vq=document.getElementById('vq'), rd=document.getElementById('rd');
+  var GW=200, GH=124;                       // 箱の格子解像度（横長）
+  var S=new Float32Array(GW*GH);            // 空間パターン sin(pπx)sin(qπy)
+  var off=document.createElement('canvas'); off.width=GW; off.height=GH;
+  var octx=off.getContext('2d'); var img=octx.createImageData(GW,GH);
+  var PR={r:238,g:245,b:242}, WM={r:200,g:106,b:47}, CL={r:47,g:125,b:140}; // 紙・暖・寒
+  var pval=2, qval=1;
+  function rebuild(){
+    pval=parseInt(sp.value,10); qval=parseInt(sq.value,10);
+    vp.textContent=pval; vq.textContent=qval;
+    for(var y=0;y<GH;y++){
+      var sy=Math.sin(qval*Math.PI*(y+0.5)/GH);
+      for(var x=0;x<GW;x++){
+        S[y*GW+x]=Math.sin(pval*Math.PI*(x+0.5)/GW)*sy;
+      }
+    }
+  }
+  var ratio=1, cssW=680, cssH=420, ctx=cv.getContext('2d');
+  function setup(){
+    ratio=window.devicePixelRatio||1; cssW=cv.clientWidth||680; cssH=cssW*(420/680);
+    cv.width=Math.round(cssW*ratio); cv.height=Math.round(cssH*ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+  }
+  var phase=0;
+  function render(){
+    var amp=Math.cos(phase), data=img.data;
+    for(var i=0;i<GW*GH;i++){
+      var v=S[i]*amp; if(v>1)v=1; if(v<-1)v=-1;
+      var r,g,b;
+      if(v>=0){ r=PR.r+(WM.r-PR.r)*v; g=PR.g+(WM.g-PR.g)*v; b=PR.b+(WM.b-PR.b)*v; }
+      else { var t=-v; r=PR.r+(CL.r-PR.r)*t; g=PR.g+(CL.g-PR.g)*t; b=PR.b+(CL.b-PR.b)*t; }
+      var k=i*4; data[k]=r; data[k+1]=g; data[k+2]=b; data[k+3]=255;
+    }
+    octx.putImageData(img,0,0);
+    ctx.imageSmoothingEnabled=true; ctx.clearRect(0,0,cssW,cssH);
+    ctx.drawImage(off,0,0,cssW,cssH);
+    // 箱の枠
+    ctx.strokeStyle='#1d5c4f';ctx.lineWidth=2;ctx.strokeRect(1,1,cssW-2,cssH-2);
+  }
+  function info(){
+    var nodes=(pval-1)+(qval-1);           // 内部の節線の本数
+    var E=pval*pval+qval*qval;              // 音の高さ（∝ p²+q²）
+    rd.innerHTML='モード <b>(p,q)=('+pval+','+qval+')</b>：内部の節の線 <b>'+nodes+' 本</b>、音の高さ ∝ <b>'+E+'</b>（＝p²+q²）。'
+      +'節が多いほど高い音＝エネルギーが高い。<b>とびとびの整数</b>しか鳴れないのが、原子のスペクトルがとびとびである理由。';
+  }
+  var omega=0.06;
+  function tick(){
+    omega=0.028*Math.sqrt(pval*pval+qval*qval);   // 高い音ほど速く震える
+    phase+=omega; if(phase>1e6)phase=0;
+    render();
+    raf=window.requestAnimationFrame(tick);
+  }
+  var raf=null;
+  function onChange(){ rebuild(); info(); }
+  sp.addEventListener('input',onChange); sq.addEventListener('input',onChange);
+  window.addEventListener('resize',function(){ setup(); render(); });
+  function boot(){ setup(); rebuild(); info();
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){ phase=0; render(); } else if(!raf){ raf=window.requestAnimationFrame(tick); }
+  }
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){ MathJax.startup.promise.then(boot); }
+  setTimeout(boot,60); window.addEventListener('load',function(){ setup(); render(); });
+})();
+</script>
+</body>
+</html>

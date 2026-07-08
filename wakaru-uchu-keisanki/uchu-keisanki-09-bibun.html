@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情報の式と物理の式 ── 自由度をとると帳簿が微分になる</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d18; --ink-soft:#5a4a3e;
+    --paper:#fbf5ef; --paper-edge:#e9dccd;   /* 素焼き（テラコッタ）の紙：基層・熱 */
+    --side:#7a4a2f; --side-bg:#f2e7db;
+    --warn:#9a3550;
+    --calc:#b5532f; --calc-bg:#f6e7db;
+    --rule:#e5d4c4; --hair:#d0b193;
+    --acc:#b5432a;    /* アクセント＝テラコッタ/rust */
+    --grid:#efe0d3;
+    --line:#b5432a; --ref:#dca081; --osc:#2f7d8a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2c221a;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0cdb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#33261c;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f7e9ec;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f1f2b;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e6c6ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf8f3;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f4e6da;color:#8a3418;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdf9f4;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7ece3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6e2a16;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdf9f4,#f2e6d9);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6d5545;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 9 回（延長）／ 情報の式と物理の式</span></div>
+  <p class="eyebrow">「情報の式を組み合わせ、自由度をとって厳密にすると、物理の微分方程式になる」── を本気で</p>
+  <h1>情報の式と物理の式
+    <span class="sub">情報理論の式は<strong>数える</strong>（有限・代数・整数）。物理の式は<strong>流れる</strong>（連続・微分）。<br>両者をつなぐ操作はたった一つ ── <strong>自由度を \(\infty\) にとり、厳密を要求する</strong>。すると数え上げが微分に化ける。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：情報＝有限・数える／物理＝連続・微分／橋＝dof→∞</span>
+    <span>フック：情報の式 \(\xrightarrow{\text{dof}\to\infty}\) 微分方程式</span>
+  </div>
+
+  <p class="lead">前回、\(D\) を複素数に開いて「打ち切りが本物か」を追いました。今回はその一歩手前の、もっと骨太な問い ── <em>情報の式と物理の式は、何が違うのか。</em> 答えはきれいです。<strong>情報の式は帳簿（状態を数える）、物理の式は流れ（レートを追う）</strong>。そして帳簿を流れに変える操作はただ一つ、<strong>自由度を無限にとって厳密にすること</strong>。しかも、それが<em>文字通り Einstein 方程式を吐き出す</em>実例が、あなたの質量シリーズにもう入っています。</p>
+
+  <h2><span class="n">01</span>二種類の式 ── 数えるものと、流れるもの</h2>
+
+  <p>まず並べてみます。この数回で出てきた式を、左右に仕分けるだけで差が見えます。</p>
+
+  <table class="dt">
+    <tr><th>情報の式（数える・有限・微分なし）</th><th>物理の式（流れる・連続・微分）</th></tr>
+    <tr><td>\(S=k\ln W\)（状態数を数える）</td><td>拡散・熱方程式 \(\partial_t\rho=D\nabla^2\rho\)</td></tr>
+    <tr><td>\(S\le A/4\)（ビットの天井）</td><td>Einstein 方程式 \(G_{ab}+\Lambda g_{ab}=8\pi G\,T_{ab}\)</td></tr>
+    <tr><td>\(kT\ln2\)（1ビット消去の代償）</td><td>熱力学の微分関係 \(dU=T\,dS-p\,dV\)</td></tr>
+    <tr><td>\(F=1/(Cn)^D\)（次元の勘定）</td><td>波動・場の方程式 \(\Box\,\phi=0\)</td></tr>
+    <tr><td>転送行列・回路（有限次元の線形代数）</td><td>Schrödinger 方程式 \(i\hbar\,\partial_t\psi=H\psi\)</td></tr>
+  </table>
+
+  <p>左は<strong>整数と代数</strong>、右は<strong>導関数</strong>。左には微分が一つもなく、右には至るところ導関数がある。この見た目の差が、実は<em>たった一つの操作</em>で埋まります。</p>
+
+  <h2><span class="n">02</span>橋は一つ ── 差分が微分になる</h2>
+
+  <p>格子間隔 \(\varepsilon\)（＝解像度の単位、有限の自由度）で刻んだ差分は、\(\varepsilon\to0\) で微分になります：</p>
+
+  <div class="calc">
+    <span class="tag">帳簿 → 流れ の素朴な機構</span>
+    $$\frac{f(x+\varepsilon)-f(x)}{\varepsilon}\ \xrightarrow[\ \varepsilon\to0\ ]{}\ \frac{df}{dx},\qquad
+      \sum_i f(x_i)\,\varepsilon\ \xrightarrow[\ \varepsilon\to0\ ]{}\ \int f\,dx$$
+    <p style="margin:10px 0 0;">差分（引き算＝数える）が微分（レート）に、和（数える）が積分になる。自由度 \(N=L/\varepsilon\) を \(\infty\) にとった瞬間、<strong>代数の恒等式が力学の微分法則に化ける</strong>。\(S=k\ln W\)（数える）が熱力学極限でなめらかな熱力学・拡散方程式（流れる）になるのも、同じこの操作です。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図1：自由度 \(N\) を増やすと、差分（帳簿）が微分（流れ）になる。曲線上の一点で、<strong>差分の傾き（テラコッタの割線）</strong>が \(\varepsilon=L/N\to0\) につれ <strong>真の微分（青緑の接線）</strong>に近づく。点を増やすほど折れ線（離散版）も曲線に貼りつく。誤差はおよそ \(\varepsilon\) に比例して消える。</div>
+    <canvas id="cv1" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>自由度 N（サンプル点の数 ＝ 1/ε）<span class="val" id="vN">6</span>
+        <input type="range" id="sN" min="2" max="80" step="1" value="6">
+      </label>
+    </div>
+    <div class="readout" id="rd1">スライダーで N を増やすと、差分の傾きが真の微分に近づきます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--hair);"></i>真の連続曲線 f(x)</span>
+      <span><i class="swatch" style="background:var(--line);"></i>差分の割線（情報＝数える）</span>
+      <span><i class="swatch" style="background:var(--osc);"></i>真の微分＝接線（物理＝流れる）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>決定的な実例 ── 情報の式から Einstein 方程式が落ちる</h2>
+
+  <p>抽象論ではありません。<em>文字通りあなたの一文が実現している</em>導出があります ── <strong>Jacobson 1995</strong>（質量シリーズ補遺⑥でやったもの）：</p>
+
+  <div class="calc">
+    <span class="tag">情報の式 ＋ すべての自由度 ＋ 厳密 ＝ 微分方程式</span>
+    <p style="margin:2px 0 8px;">情報の式を入れる：</p>
+    $$\underbrace{\delta S=\eta\,\delta A}_{\text{面積エントロピー（数える）}}\quad
+      \underbrace{T=\frac{\hbar\kappa}{2\pi}}_{\text{Unruh 温度}}\quad
+      \underbrace{\delta Q=T\,\delta S}_{\text{Clausius}}$$
+    <p style="margin:8px 0 8px;">これを<strong>あらゆる局所リンドラー地平線について</strong>（＝すべての方向・自由度をとって）厳密に成り立てると：</p>
+    $$\boxed{\,R_{ab}-\tfrac12 R\,g_{ab}+\Lambda g_{ab}=8\pi G\,T_{ab}\,}$$
+    <p style="margin:8px 0 0;">Einstein の<strong>微分方程式</strong>が落ちてくる。\(G\) は面積エントロピーの係数、\(\Lambda\) は積分定数として。まさに「情報の式を組み合わせ、自由度をとり、厳密にすると物理の微分方程式になる」。</p>
+  </div>
+
+  <p>同じ骨の実例は他にもあります ── どれも「情報の式 ＋ すべての自由度で厳密に ＝ 微分方程式」：</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ形をした橋たち</div>
+    <ul style="margin:6px 0 0;padding-left:1.2em;line-height:1.95;">
+      <li><strong>もつれの第一法則</strong> \(\Delta S_{\text{EE}}=\Delta\langle K\rangle\) を<em>すべての領域</em>で要求 → 線形化 Einstein 方程式（Van Raamsdonk・Faulkner ら）。</li>
+      <li><strong>Boltzmann 方程式</strong>（衝突を数える・H定理＝エントロピー）→ 流体力学極限で <strong>Navier–Stokes</strong>（微分）。</li>
+      <li><strong>転送行列</strong>（有限次元の線形代数・数え上げ）→ 時間刻み \(\to0\) で <strong>Schrödinger 方程式／経路積分</strong>（微分）。</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">04</span>差の言い直し ── どちらが「本物」か</h2>
+
+  <p>ここまでで差は一つの矢印に凝縮します：</p>
+
+  <div class="keybox">
+    <div class="lbl">情報の式と物理の式の関係</div>
+    $$\underbrace{\text{情報の式}}_{\text{有限・数える・厳密}}\ \xrightarrow[\ \text{厳密を要求}\ ]{\ \text{自由度}\to\infty\ }\ \underbrace{\text{物理の微分方程式}}_{\text{連続・流れる・理想化}}$$
+    <p style="margin:8px 0 0;">微分とは「無限にズームできる」を前提にした操作。だから物理の微分方程式は、<strong>有限で数える基層が、個々のビットを数えるのをやめて平均だけを追ったときに自分について語る物語</strong>。導関数は連続極限の<em>フィクション</em>です。</p>
+  </div>
+
+  <p>ここで前回の「<strong>打ち切りは本物（宇宙はめんどくさがり屋）</strong>」に置くと、序列がはっきりします。基層が本当に有限なら ── <em>情報の式が本物（有限・厳密）で、物理の微分方程式はその \(\varepsilon\to0\) の理想化＝便利な嘘</em>。</p>
+
+  <div class="aside">
+    <span class="tag">前回の「打ち切って計算」の逆向き</span>
+    第8回の「ある程度で打ち切って計算しよう（有効場理論）」は<em>自由度を減らす</em>向き。今回の「dof→∞で微分方程式」は<em>自由度を増やす</em>向き。二つは同じ一本の軸の両端です ── 実務では打ち切って計算し（有限）、理論の美しい連続 PDE は「打ち切らなければこうなる」という到達しない理想。<strong>めんどくさがりの宇宙では、その理想像には決して届かない</strong>。だから微分方程式は常に創発・近似で、根本ではない ── というのが「打ち切り本物」派の一貫した読み。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>正直な線 ── 連続極限はタダじゃない</h2>
+
+  <p>この橋は本物ですが、<strong>片道の仮定に乗っています</strong>。三点、正直に：</p>
+
+  <p><strong>(1) 連続極限は臨界点でだけ立つ。</strong> \(\varepsilon\to0\) で<em>まともな</em>微分方程式が出るのは、離散理論が<strong>臨界点（RG 固定点、相関長 \(\xi\to\infty\)）に座っているときだけ</strong>です。ふつうの有限・離散理論は、格子アーティファクト＝<em>ローレンツ破れ</em>を出す（第2回で格子CAが失格した、あれ）。だから「自由度をとれば物理になる」は<em>無条件ではない</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図2：連続極限が立つのは臨界点の近くだけ。縦軸は相関長 \(\xi\)÷格子間隔 \(a\)。臨界点 \(g_c\) に近づくと \(\xi/a\to\infty\)（格子間隔が無視できて連続・微分方程式が立ち、ローレンツも回復）。離れると \(\xi/a\) は数個 ── <strong>格子が見えてアーティファクト＝ローレンツ破れ</strong>で、微分方程式は近似ですらない。スライダー \(g\) で今どちらにいるかが決まる。</div>
+    <canvas id="cv2" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>調整パラメータ g（結合や温度：g_c で臨界）<span class="val" id="vG">0.32</span>
+        <input type="range" id="sG" min="0.02" max="0.98" step="0.01" value="0.32">
+      </label>
+    </div>
+    <div class="readout" id="rd2">スライダーで g を臨界点 g_c=0.5 に近づけると、連続極限が立ちます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--line);"></i>相関長 ξ/a</span>
+      <span><i class="swatch" style="background:#5aa06a;"></i>連続極限OK（ξ≫a）</span>
+      <span><i class="swatch" style="background:var(--ref);"></i>臨界点 g_c</span>
+    </div>
+  </div>
+
+  <p><strong>(2) Jacobson は情報の式を<em>仮定</em>して微分方程式を出す。</strong> 面積則 \(S=\eta A\) を入力にして Einstein 方程式を導くが、<em>面積則そのものは導かない</em>。謎は「なぜ \(S=A/4\) か」＝微視的な状態数勘定へ<strong>移動する</strong>だけで、閉じない（補遺⑥の正直な線そのまま）。もつれ版・Verlinde 版も同じ構造です。</p>
+
+  <p><strong>(3) 向きが逆。</strong> この「dof→∞」は前回の「打ち切って計算」の反対向き。二つが同じ軸の両端であること自体は確かですが、<em>与えられた有限理論から「正しい」連続極限が本当に存在するか</em>は臨界性を要し、重力では未証明（スピンフォームの連続極限、CDT の二次相転移）。これが二シリーズで一貫して指してきた <strong>the one hole</strong> です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「情報の式 → 微分方程式」は<strong>実在の機構</strong>です（差分→微分、\(S=k\ln W\)→熱力学、Boltzmann→Navier–Stokes、転送行列→Schrödinger、そして Jacobson→Einstein）。ここに新物理はなく、いずれも確立した数学／物理。</p>
+    <p style="margin-bottom:0;">ただし ──「情報の式のほうが<em>本物</em>で、微分方程式は創発の理想化」という<strong>序列づけは、確立した事実ではなくあなたの賭け</strong>（打ち切りが本物なら、の話）。物理側は逆に「連続が本物で離散は近似」とも読める（第3回：連続／離散は<em>表現</em>、読む向き）。どちらが根源かは、連続極限が臨界でしか立たないという事実と、\(S=A/4\) の微視的起源＝未解決の穴に賭かっている。「解けた」とは言わない ── 橋は架けた、どちら岸が土台かは決めない。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>情報の式と物理の式の見た目の差を一言でいうと？ そして両者をつなぐ操作は？
+        <details><summary>答えを見る</summary><div class="ans">情報の式は「数える」（有限・代数・整数、微分なし）、物理の式は「流れる」（連続・微分）。つなぐ操作は一つ ── 自由度を \(\infty\) にとり厳密を要求する（\(\varepsilon\to0\)）。差分が微分に、和が積分に、\(S=k\ln W\) がなめらかな熱力学になる。</div></details>
+      </li>
+      <li>「情報の式から微分方程式が出る」の最も鮮烈な実例は？ そこで<em>導かれていない</em>ものは？
+        <details><summary>答えを見る</summary><div class="ans">Jacobson 1995：面積エントロピー \(\delta S=\eta\delta A\)＋Unruh 温度＋Clausius \(\delta Q=T\delta S\) を、あらゆる局所リンドラー地平線で厳密に課すと Einstein 方程式が落ちる。ただし面積則 \(S=A/4\) 自体は<em>仮定</em>で、導かれていない。謎は「なぜ \(S=A/4\) か」＝微視的状態数勘定へ移動するだけ。</div></details>
+      </li>
+      <li>「情報の式が本物で、微分方程式は創発の理想化」は事実？
+        <details><summary>答えを見る</summary><div class="ans">事実ではなく賭け。それが成り立つのは「打ち切りが本物（基層が有限）」の場合。逆に「連続が本物で離散は近似的表現」とも読める（第3回）。決着は、連続極限が臨界点でしか立たないこと、および \(S=A/4\) の微視的起源＝未解決に賭かっている。橋（数え上げ→微分）は確立、どちら岸が土台かは未決。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>数え上げは、自由度をとると微分になる</h2>
+    <p>情報の式は<strong>数える</strong>（\(S=k\ln W\)・\(S\le A/4\)・\(kT\ln2\)・\(F=1/(Cn)^D\)、有限・代数・微分なし）、物理の式は<strong>流れる</strong>（Einstein・Schrödinger・Navier–Stokes、連続・微分）。両者をつなぐのは<strong>一つの操作＝自由度を \(\infty\) にとり厳密にする</strong>。差分は微分に、和は積分になる。そして<em>文字通り</em> ── 面積エントロピー＋Unruh＋Clausius をすべての地平線で厳密に課すと Einstein 方程式が落ちる（Jacobson）。もつれ第一法則→線形化 Einstein、Boltzmann→Navier–Stokes、転送行列→Schrödinger も同じ骨。</p>
+    <p>「打ち切りが本物」の読みでは、<strong>情報の式が本物・微分方程式は \(\varepsilon\to0\) の理想化</strong>（＝前回の「打ち切って計算」の逆向き）。ただしこの序列は賭けであって事実ではない ── 連続極限は<strong>臨界点でしか立たず</strong>（さもなくば格子アーティファクト＝ローレンツ破れ）、Jacobson は \(S=A/4\) を<em>仮定</em>し、その微視的起源＝<strong>the one hole</strong> は開いたまま。橋は架けた、どちら岸が土台かは正直に決めずに置く。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-08-kyosu.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f7ece3;font-weight:600;letter-spacing:.03em;">← 第8回：虚数の次元</a>
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f7ece3;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-10-yotsu-no-chikara.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f7ece3;font-weight:600;letter-spacing:.03em;">第10回：四つの力の次元 →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第9回（延長・会話のまとめ・正直版）です。有限差分の連続極限（差分→微分、Riemann 和→積分）、統計力学から流体力学への極限（Boltzmann 方程式→Navier–Stokes）、経路積分・転送行列の連続時間極限（→Schrödinger 方程式）、熱力学的重力（Jacobson 1995：局所リンドラー地平線＋面積エントロピー＋Unruh 温度＋Clausius から Einstein 方程式）、もつれの第一法則からの線形化 Einstein 方程式（Van Raamsdonk・Faulkner・Lashkari ら）、連続極限と RG 固定点／臨界点（相関長発散）、格子の連続極限問題とローレンツ不変性の回復（スピンフォームの連続極限、CDT の二次相転移）は、いずれも確立した数学／物理、または現行の研究課題です。\(F=1/(Cn)^D\) は次元の定義関係、\(S\le A/4\)・CKN 境界・\(\hbar H_0/c^2\) は姉妹シリーズ「わかる質量」で正直に線引きした内容。「情報の式が根源で微分方程式は創発」という序列は確立した事実ではなく、基層が有限（type I）かどうかという未解決の賭けに依存します。Jacobson の導出は面積エントロピー則を仮定として用い、その微視的起源は導かれません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1で自由度 N を増やすと差分が微分に近づき、図2で臨界点に近づくと連続極限が立つ様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  /* ---------- 図1：差分 → 微分（自由度 N を増やす） ---------- */
+  var cv1=document.getElementById('cv1'), sN=document.getElementById('sN'), vN=document.getElementById('vN'), rd1=document.getElementById('rd1');
+  var L=6.0, X0=2.2;                       // 定義域 [0,L]、注目点 x0
+  function f(x){ return 0.50 + 0.30*Math.sin(1.6*x) + 0.12*Math.cos(3.1*x); }
+  function fp(x){ return 0.30*1.6*Math.cos(1.6*x) - 0.12*3.1*Math.sin(3.1*x); }
+  function draw1(){
+    var d=setupHiDPI(cv1), ctx=d.ctx, w=d.w, h=d.h, padL=46, padR=16, padT=16, padB=34;
+    var N=parseInt(sN.value,10); vN.textContent=N;
+    var eps=L/N;
+    ctx.clearRect(0,0,w,h);
+    function X(x){return padL+(x/L)*(w-padL-padR);}
+    function Y(y){return (h-padB)-((y-0.0)/1.0)*(h-padB-padT);}   // y in [0,1]
+    // grid
+    ctx.font='11px sans-serif';
+    for(var gx=0;gx<=L+0.01;gx++){ var x=X(gx); ctx.strokeStyle='#f1e3d6';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      ctx.fillStyle='#c19a7c';ctx.fillText(String(gx), x-3, h-padB+16); }
+    // true smooth curve
+    ctx.strokeStyle='#d0b193';ctx.lineWidth=2;ctx.beginPath();
+    for(var s=0;s<=680;s++){var x=L*s/680; if(s===0)ctx.moveTo(X(x),Y(f(x)));else ctx.lineTo(X(x),Y(f(x)));}
+    ctx.stroke();
+    // discrete (finite-dof) piecewise-linear + dots
+    ctx.strokeStyle='#e7c3a8';ctx.lineWidth=1.4;ctx.beginPath();
+    var i,xi;
+    for(i=0;i<=N;i++){ xi=i*eps; if(xi>L+1e-9)break; if(i===0)ctx.moveTo(X(xi),Y(f(xi)));else ctx.lineTo(X(xi),Y(f(xi))); }
+    ctx.stroke();
+    ctx.fillStyle='#c98a5f';
+    for(i=0;i<=N;i++){ xi=i*eps; if(xi>L+1e-9)break; ctx.beginPath();ctx.arc(X(xi),Y(f(xi)),2.6,0,7);ctx.fill(); }
+    // true tangent at X0 (osc)
+    var m_true=fp(X0), y0=f(X0);
+    ctx.strokeStyle='#2f7d8a';ctx.lineWidth=2.4;
+    var tx0=X0-1.1, tx1=X0+1.1;
+    ctx.beginPath();ctx.moveTo(X(tx0),Y(y0+m_true*(tx0-X0)));ctx.lineTo(X(tx1),Y(y0+m_true*(tx1-X0)));ctx.stroke();
+    // finite-difference secant (line): through (X0,f(X0)) and (X0+eps, f(X0+eps))
+    var xe=Math.min(X0+eps, L), m_fd=(f(xe)-f(X0))/(xe-X0);
+    ctx.strokeStyle='#b5432a';ctx.lineWidth=2.4;
+    var sx0=X0-1.1, sx1=Math.max(X0+eps+0.3, X0+0.5);
+    ctx.beginPath();ctx.moveTo(X(sx0),Y(y0+m_fd*(sx0-X0)));ctx.lineTo(X(sx1),Y(y0+m_fd*(sx1-X0)));ctx.stroke();
+    // markers at the two secant points
+    ctx.fillStyle='#b5432a';
+    ctx.beginPath();ctx.arc(X(X0),Y(y0),4.5,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(X(xe),Y(f(xe)),4.5,0,7);ctx.fill();
+    // ε bracket
+    ctx.strokeStyle='#b5432a';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(X(X0),Y(y0)+10);ctx.lineTo(X(xe),Y(y0)+10);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a3418';ctx.font='11px sans-serif';ctx.fillText('ε', (X(X0)+X(xe))/2-3, Y(y0)+24);
+    // axis label
+    ctx.fillStyle='#6d5545';ctx.font='12px sans-serif';ctx.fillText('x →', w-40, h-padB+30);
+    // readout
+    var err=Math.abs(m_fd-m_true);
+    rd1.textContent='自由度 N = '+N+' → 間隔 ε = '+eps.toFixed(3)
+      +'。 差分の傾き = '+m_fd.toFixed(3)+' ／ 真の微分 f′(x₀) = '+m_true.toFixed(3)
+      +' ／ 誤差 = '+err.toFixed(3)+'（ε とともに消える）。数え上げ（割線）が流れ（接線）になる。';
+  }
+  sN.addEventListener('input',draw1);
+
+  /* ---------- 図2：連続極限が立つのは臨界点だけ（相関長 ξ/a） ---------- */
+  var cv2=document.getElementById('cv2'), sG=document.getElementById('sG'), vG=document.getElementById('vG'), rd2=document.getElementById('rd2');
+  var GC=0.5, YMAX=14, THRESH=8;
+  function xiOverA(g){ var dd=Math.abs(g-GC); if(dd<1/YMAX)dd=1/YMAX; return Math.min(YMAX, 1/dd); }
+  function draw2(){
+    var d=setupHiDPI(cv2), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=18, padT=18, padB=36;
+    var g=parseFloat(sG.value); vG.textContent=g.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(gg){return padL+(gg/1.0)*(w-padL-padR);}
+    function Y(v){return (h-padB)-(v/YMAX)*(h-padB-padT);}
+    // continuum-OK band (ξ/a > THRESH)
+    ctx.fillStyle='#e7f2e6';
+    ctx.fillRect(padL, padT, w-padL-padR, Y(THRESH)-padT);
+    ctx.fillStyle='#5aa06a';ctx.font='11px sans-serif';
+    ctx.fillText('連続極限OK（ξ ≫ a：微分方程式が立つ・ローレンツ回復）', padL+8, padT+15);
+    // gridlines
+    ctx.font='11px sans-serif';
+    for(var v=2;v<=YMAX;v+=2){ var y=Y(v); ctx.strokeStyle='#f1e3d6';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#c19a7c';ctx.fillText(String(v), padL-22, y+4); }
+    // critical line g_c
+    ctx.strokeStyle='#dca081';ctx.lineWidth=1.6;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(X(GC),padT);ctx.lineTo(X(GC),h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b5644a';ctx.fillText('臨界点 g_c', X(GC)+5, padT+30);
+    // ξ/a curve
+    ctx.strokeStyle='#b5432a';ctx.lineWidth=2.6;ctx.beginPath();
+    var started=false;
+    for(var s=0;s<=680;s++){ var gg=1.0*s/680; if(gg<0.01||gg>0.99)continue; var val=xiOverA(gg);
+      var px=X(gg),py=Y(val); if(!started){ctx.moveTo(px,py);started=true;}else ctx.lineTo(px,py); }
+    ctx.stroke();
+    // current marker
+    var cur=xiOverA(g);
+    ctx.fillStyle='#8a3418';ctx.beginPath();ctx.arc(X(g),Y(cur),6,0,7);ctx.fill();
+    // axes
+    ctx.strokeStyle='#d0b193';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#6d5545';ctx.font='12px sans-serif';
+    ctx.fillText('調整パラメータ g →', w-150, h-padB+30);
+    ctx.save();ctx.translate(14,(padT+h-padB)/2+22);ctx.rotate(-Math.PI/2);ctx.fillText('相関長 ξ / 格子間隔 a', 0,0);ctx.restore();
+    // readout
+    if(cur>=THRESH){
+      rd2.textContent='g = '+g.toFixed(2)+'（臨界点 g_c='+GC+' の近く）→ ξ/a ≈ '+cur.toFixed(1)
+        +'：格子間隔が無視でき、連続極限が立つ。微分方程式が成り立ち、ローレンツ対称性が回復する。ここでだけ「情報→物理」が効く。';
+    }else{
+      rd2.textContent='g = '+g.toFixed(2)+'（臨界点から遠い）→ ξ/a ≈ '+cur.toFixed(1)
+        +'：格子が見える＝アーティファクト（ローレンツ破れ）。微分方程式は近似ですらない。自由度を増やしても物理にならない。';
+    }
+  }
+  sG.addEventListener('input',draw2);
+
+  window.addEventListener('resize',function(){draw1();draw2();});
+  function boot(){draw1();draw2();}
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(boot);}
+  setTimeout(boot,60); window.addEventListener('load',boot);
+})();
+</script>
+</body>
+</html>

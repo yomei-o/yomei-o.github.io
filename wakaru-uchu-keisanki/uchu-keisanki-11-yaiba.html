@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D=2 は刃の上 ── なぜ2だけが存在を許すか、そして我々はそれを測って隠れた次元を探す</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#26161a; --ink-soft:#5c4148;
+    --paper:#faf2f1; --paper-edge:#ecd9d6;   /* ガーネットの紙：刃・精密 */
+    --side:#7a2b3a; --side-bg:#f3e3e2;
+    --warn:#8a5622;
+    --calc:#8a3446; --calc-bg:#f4e4e4;
+    --rule:#e6cfcc; --hair:#d3adaa;
+    --acc:#9c2a3a;    /* アクセント＝ガーネット */
+    --grid:#eedad7;
+    --ok:#2f7d54; --bad:#a02b8c;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2e181c;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #eec6c6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#331519;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f5ece0;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2f17;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2c9cc;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf7f6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.7;
+    background:#f4e4e4;color:#6a2130;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+  table.dt td .ok{color:var(--ok);font-weight:700;} table.dt td .bad{color:var(--bad);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefaf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f8ecec;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5a1a26;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefaf9,#f4e6e5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#7a5a5f;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 11 回（延長）／ D=2 は刃の上</span></div>
+  <p class="eyebrow">「\(D\) は読み値にすぎない」── そう言ってきた。でも一つの目盛りだけが、存在を支えている</p>
+  <h1>D=2 は刃の上
+    <span class="sub">次元 \(D\) は読み値。でも <strong>ちょうど 2</strong> だけが、原子も惑星系も壊さず「状態を保持」させる。だから我々は \(D\) を<strong>実験で測って</strong>、隠れた次元を探している。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：\(D\) は読み値、でも 2 だけが構造を許す刃／そのズレは余剰次元の署名</span>
+    <span>フック式：\(F\sim 1/r^{\,d-1},\quad d=3\Rightarrow D=2\)</span>
+  </div>
+
+  <p class="lead">第1回で「次元は世界が持つ数ではなく、こちらの読み値」と言いました。第8回では \(D\) を虚数へ、第10回では四つの力で \(2\to\infty,\ 2\to0\) と走らせた。<em>ここで一度、逆を向きます。</em> \(D\) が読み値なら、なぜ我々の世界は<strong>ちょうど 2</strong> なのか。答えは痺れます ── <strong>2 だけが、束縛（＝状態を保持すること）を許す刃の上の値</strong>。そして \(D\) は測定量だから、我々はいま <strong>逆二乗を極限まで精密に測って「\(D\) は本当に厳密に 2 か」を実験で問うている</strong> ── そのズレは、隠れた次元の署名になる。</p>
+
+  <h2><span class="n">01</span>反転 ── 読み値の中に、たった一つ「load-bearing」な目盛りがある</h2>
+
+  <p>ものさし \(D=-d\ln F/d\ln r\) の目盛りに、物理的な上下はないはずでした。1 も 2 も 2.7 も、ただの読み。ところが力に関しては ── <strong>その値そのものが、宇宙に構造を許すか許さないかを決めてしまう</strong>。計算屋の言い方に直すと：</p>
+
+  <div class="keybox">
+    <div class="lbl">この回の仕掛け</div>
+    <p style="margin:6px 0 0;"><strong>\(D=2\) は、宇宙が通す checksum。</strong> この値を外すと、物質は安定に軌道を回れず、原子も潰れる ── つまり<em>「状態を保持する」＝情報を蓄えることができない</em>。読み値にすぎないはずの \(D\) の、たった一つの目盛りだけが、存在の前提になっている。</p>
+  </div>
+
+  <h2><span class="n">02</span>エーレンフェスト ── 空間が3次元でないと、軌道が閉じない</h2>
+
+  <p>空間が \(d\) 次元なら、点源が撒く場は球面 \(\propto r^{\,d-1}\) に薄まる。フラックス保存から力は \(F\propto 1/r^{\,d-1}\)。我々の \(d=3\) で \(F\propto1/r^2\)、つまり \(D=2\)。ではこの肩を動かすとどうなるか。軌道を決める<strong>有効ポテンシャル</strong>で見ます（\(L\) は角運動量）：</p>
+
+  <div class="calc">
+    <span class="tag">計算 ── 有効ポテンシャルに井戸があるか</span>
+    $$V_{\text{eff}}(r)=\underbrace{\frac{L^2}{2r^2}}_{\text{外へ（遠心）}}\;-\;\underbrace{\frac{k}{(p-1)\,r^{\,p-1}}}_{\text{内へ（引力, }F\sim1/r^{p})}$$
+    <p style="margin:10px 0 0;">安定な軌道＝この曲線に<strong>谷（極小）</strong>があること。円軌道が安定な条件は \(p<3\)：</p>
+    <ul style="margin:8px 0 2px;padding-left:1.2em;line-height:1.85;">
+      <li>\(p=2\)（我々の \(d=3\)）：\(V_{\text{eff}}=\frac{L^2}{2r^2}-\frac{k}{r}\) に<strong>谷ができる</strong> → 惑星も原子も安定。</li>
+      <li>\(p=3\)（\(d=4\)）：遠心と引力が同じ \(1/r^2\) で拮抗 → 谷が消える<strong>境目</strong>。</li>
+      <li>\(p\ge3\)（\(d\ge4\)）：内向きが勝ち、少し押すと<strong>中心へ落ちるか無限へ飛ぶ</strong> ── 安定な束縛が存在しない。</li>
+    </ul>
+  </div>
+
+  <p>量子でも同じ結論が出ます。\(d\ge4\) の水素原子はシュレディンガー方程式が<strong>基底状態を持たず「中心への落下」</strong>を起こす。古典でも量子でも、\(D=2\)（\(d=3\)）だけが原子を成立させる。</p>
+
+  <div class="fig">
+    <div class="cap">図1：力の指数 \(D\)（＝\(p\)）を動かすと、有効ポテンシャルに<strong>谷（安定な軌道）</strong>ができるかが変わる。スライダーが \(D<3\) なら谷あり＝束縛できる、\(D\ge3\) なら谷が消え＝落下／散逸。我々の宇宙は <strong>\(D=2\)</strong> ── 境目 3 の手前、安全側の刃の上。</div>
+    <canvas id="cv1" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>力の指数 \(D\)（＝ \(p\)。\(d\) 次元空間なら \(D=d-1\)）<span class="val" id="vp">2.00</span>
+        <input type="range" id="sp" min="1.2" max="3.6" step="0.02" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rd1">スライダーで D を動かすと、谷が出たり消えたりします。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>有効ポテンシャル \(V_{\text{eff}}(r)\)</span>
+      <span><i class="swatch" style="background:var(--ok);"></i>安定（谷あり）</span>
+      <span><i class="swatch" style="background:var(--bad);"></i>不安定（谷なし）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>ベルトランの定理 ── 「閉じる軌道」は二つの力しか作らない</h2>
+
+  <p>もう一段きつい定理があります。中心力で<strong>閉じた（＝ずれずに戻る）軌道</strong>を生むポテンシャルは、宇宙広しといえど<strong>二つだけ</strong>：</p>
+
+  <table class="dt">
+    <tr><th>力の形</th><th>指数 D</th><th>軌道</th><th>正体</th></tr>
+    <tr><td>逆二乗 \(F\sim1/r^2\)</td><td><span class="d">2</span></td><td><span class="ok">閉じる</span></td><td>重力・電磁気（ケプラー）</td></tr>
+    <tr><td>バネ \(F\sim r\)</td><td><span class="d">−1</span></td><td><span class="ok">閉じる</span></td><td>調和振動子</td></tr>
+    <tr><td>その他すべて</td><td>それ以外</td><td><span class="bad">閉じない</span></td><td>歳差してほどける</td></tr>
+  </table>
+
+  <div class="aside">
+    <span class="tag">計算屋の読み</span>
+    第1回で「一番楽な次元は現象ごと（＝上部臨界次元）」と言いました。今度はその<em>力学版</em>：<strong>「安定に状態を保持できる指数」は宇宙にほぼ一つ（\(D=2\)）だけ</strong>。バネ（\(D=-1\)）は無限に伸びる系がなく現実の長距離力にならないので、実質 \(D=2\) の独壇場。読み値だと言った \(D\) の、この一目盛りが構造・記憶・生命の前提になっている ── これが反転の芯。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>だから測る ── \(D\ne2\) は「隠れた次元」の署名</h2>
+
+  <p>\(D\) は思弁ではなく<strong>測定量</strong>です。なら問える：<em>逆二乗は本当に厳密に \(D=2\) か？</em> ここに現代物理のスリルがあります。もし小さく丸まった<strong>余剰次元</strong>（サイズ \(R\)）があれば、それより近く \(r<R\) では場が余分な方向にも薄まり、力は \(1/r^{\,2+n}\) に化ける ── つまり<strong>短距離で \(D\) が 2 から跳ね上がる</strong>。</p>
+
+  <div class="calc">
+    <span class="tag">余剰次元があるなら</span>
+    $$D(r)=\begin{cases}2 & (r\gg R)\quad\text{ふつうの3次元に見える}\\[2pt] 2+n & (r\ll R)\quad\text{隠れた }n\text{ 次元が開く}\end{cases}$$
+    <p style="margin:10px 0 0;">だから \(D\) を短距離で精密に測れば、\(2\) からのズレ＝隠れた次元の直接の証拠になる。これは実際に動いている実験（ねじれ天秤 Eöt-Wash）で、ニュートンの逆二乗を <strong>〜50 マイクロメートル</strong>まで検証済み。ズレは今のところ<strong>ゼロ</strong> ── 大きな余剰次元は（あってもそれより小さい）と分かっている。</p>
+  </div>
+
+  <p>計算屋の言い方に直すと ── <strong>\(D\) は「宇宙のアドレス空間に余分なビットがあるか」を測るプローブ</strong>。余剰次元＝隠れたアドレス線で、近づいて（＝高分解能で）覗くと初めて開く。第10回で力ごとに \(D\) が走ったのは質量・閉じ込めのせいでしたが、ここでの走りは<em>空間そのものの隠し次元</em>のせい。同じものさしが、別の隠れ事を暴く。</p>
+
+  <div class="fig">
+    <div class="cap">図2：もし大きさ \(R\) の余剰次元が1つあれば（\(n=1\)）、測られる \(D\) は長距離で 2、\(r<R\) で 3 に跳ねる。スライダーで \(R\) を動かすと段差の位置が変わる。灰の縦線＝実験の到達分解能（〜50µm）。<strong>段差がこの線より右（＝大きい \(R\)）に来れば実験でズレが見えるはず ── 見えていない＝その大きさの余剰次元は否定済み</strong>。左に隠れているぶんだけ、まだ探索中。</div>
+    <canvas id="cv2" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>余剰次元の大きさ \(R\)（マイクロメートル・対数）<span class="val" id="vR">50 µm</span>
+        <input type="range" id="sR" min="-1" max="3" step="0.02" value="1.7">
+      </label>
+    </div>
+    <div class="readout" id="rd2">スライダーで R を動かすと、D の段差の位置が動きます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>測られる \(D(r)\)</span>
+      <span><i class="swatch" style="background:#9aa;"></i>実験の到達（〜50µm）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>芯 ── 読み値だが、一目盛りだけが load-bearing</h2>
+
+  <div class="keybox">
+    <div class="lbl">この回の芯</div>
+    <p style="margin:6px 0 0;">\(D\) は読み値（第1回）。でも力に関しては、<strong>\(D=2\) だけが束縛＝状態の保持＝情報の蓄積を許す</strong>（エーレンフェスト＋ベルトラン）。原子・惑星系・記憶・生命は、この一目盛りに乗っている。そして \(D\) は測定量だから、<strong>逆二乗の精密測定は「\(D\) は厳密に 2 か」という実験</strong>になり、ズレは隠れた次元の署名になる ── 〜50µm までズレなし。読み値の中の、たった一つ load-bearing な目盛り、それがいま実験で叩かれている。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">これは「空間は<em>必然的に</em>3次元だ」の証明ではありません。エーレンフェスト自身が「3次元であることが基本法則にどう現れるか」という<strong>整合性の観察</strong>として書いたもので、他の次元の宇宙を禁じる定理ではない（人間原理的な色を含む）。\(D=2\) が load-bearing なのは<em>我々の型の構造</em>にとって、です。</p>
+    <p style="margin-bottom:0;">そして新しい物理は一つもありません。エーレンフェスト(1917)の次元論、ベルトランの定理(1873)、\(d\ge4\) での量子的「中心への落下」、余剰次元での \(1/r^{2+n}\)（ADD 模型）、Eöt-Wash のねじれ天秤による逆二乗検証（〜数十µm）は、いずれも確立した物理／数学。\(D=-d\ln F/d\ln r\) は次元の<strong>定義式</strong>で、それを軌道安定性と精密測定に当てて<em>読んだ</em>だけ。第1回「\(D\) は読み値」と矛盾しません ── <em>読み値であること</em>と<em>その特定の読みだけが束縛を許すこと</em>は、両立する。残る穴（「なぜ 3 次元か」の必然性、余剰次元の有無）は開けたまま置く ── 「解けた」とは言わない、が全体の掟。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>「\(D\) は読み値」と「\(D=2\) は特別」は矛盾する？
+        <details><summary>答えを見る</summary><div class="ans">しない。次元は測り方が返す読み値（第1回）で、原理的にどんな値も取れる。だが力に関しては、その読みが \(2\) のときだけ安定な束縛（谷のある有効ポテンシャル）ができる。「値は自由に読める」ことと「特定の読みだけが構造を許す」ことは両立する。</div></details>
+      </li>
+      <li>空間が4次元（\(d=4\)）だと原子はどうなる？
+        <details><summary>答えを見る</summary><div class="ans">力が \(F\sim1/r^{3}\)（\(D=3\)）になり、有効ポテンシャルの谷が消える。古典では安定な軌道がなく、量子では基底状態を持たず「中心への落下」を起こす。原子が成立しない＝我々の型の物質・化学・記憶が存在できない。</div></details>
+      </li>
+      <li>逆二乗を \(50\,\mu\text{m}\) まで測る実験は、何を探している？
+        <details><summary>答えを見る</summary><div class="ans">短距離での \(D\) の 2 からのズレ。もし大きさ \(R\) の余剰次元があれば \(r<R\) で \(D\to2+n\) に跳ねる。ズレがゼロ＝その大きさより大きな余剰次元は存在しない、という排除。\(D\) が「隠れたアドレス線があるか」の直接プローブになっている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>読み値の中の、一本の刃</h2>
+    <p>第1回で「次元は読み値」と言い、第8・10回で \(D\) を複素へ・走らせた。この回はその逆 ── <strong>読み値の中に、たった一つ load-bearing な目盛りがある</strong>。力の指数 \(D=2\)（＝空間 \(d=3\)）だけが、有効ポテンシャルに谷を作り（エーレンフェスト）、軌道を閉じさせ（ベルトラン）、原子と惑星系と記憶を成立させる。境目は \(D=3\)、我々はその手前の刃の上。</p>
+    <p>そして \(D\) は測定量だから、逆二乗の精密測定は「\(D\) は厳密に 2 か」という実験になり、\(2\) からのズレは<strong>隠れた次元の署名</strong>になる ── 〜50µm までズレなし。同じものさし \(F=1/(Cr)^D\) が、次元の定義であり、存在の刃であり、隠し次元の探知器でもある。ただし「なぜ 3 次元か」の必然は誰も導けていない ── そこは正直に、開けたまま。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-10-yotsu-no-chikara.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8ecec;font-weight:600;letter-spacing:.03em;">← 第10回：四つの力の次元</a>
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8ecec;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-12-bane.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8ecec;font-weight:600;letter-spacing:.03em;">第12回：バネ網ひとつで →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ延長第11回です。エーレンフェスト(1917)の次元論（\(d\) 次元で \(F\propto1/r^{d-1}\)、安定な束縛は \(d=3\) のみ）、中心力の円軌道安定条件（\(F\propto1/r^p\) で \(p<3\)）、ベルトランの定理(1873)（閉じた束縛軌道を生むのは逆二乗とフック力のみ）、\(d\ge4\) クーロン問題の「中心への落下」（基底状態の非存在）、大きな余剰次元（ADD 模型、\(r<R\) で \(F\propto1/r^{2+n}\)）、Eöt-Wash ねじれ天秤による逆二乗則の検証（〜数十µm、ズレ未検出）は、いずれも確立した物理／数学です。\(D=-d\ln F/d\ln r\) は次元の定義関係であり新しい力の法則ではありません。図1の \(V_{\text{eff}}\) は \(L=1,\,k=1\) の模式、図2の段差位置・実験到達（〜50µm）は模式化しています。空間が3次元であることの必然性、余剰次元の有無は現行の未解決問題。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。図1は有効ポテンシャルの谷が D=3 で消える様子、図2は余剰次元のサイズ R を動かすと D の段差が実験の到達線を出入りする様子。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var ratio=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*ratio); c.height=Math.round(cssH*ratio);
+    var ctx=c.getContext('2d'); ctx.setTransform(ratio,0,0,ratio,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  /* ---- 図1：有効ポテンシャル ---- */
+  var cv1=document.getElementById('cv1'), sp=document.getElementById('sp'), vp=document.getElementById('vp'), rd1=document.getElementById('rd1');
+  var RMIN=0.06, RMAX=4.2, YMIN=-2.4, YMAX=2.4, L2=1, K=1;
+  function Veff(r,p){ return L2/(2*r*r) - K/((p-1)*Math.pow(r,p-1)); }
+  function draw1(){
+    var d=setupHiDPI(cv1), ctx=d.ctx, w=d.w, h=d.h, pad=46, padT=16, padR=16;
+    var p=parseFloat(sp.value); vp.textContent=p.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(r){return pad+((r-RMIN)/(RMAX-RMIN))*(w-pad-padR);}
+    function Y(v){var vc=Math.max(YMIN,Math.min(YMAX,v)); return (h-pad)-((vc-YMIN)/(YMAX-YMIN))*(h-pad-padT);}
+    // grid + zero line
+    ctx.font='11px sans-serif';
+    for(var gv=-2;gv<=2;gv++){var y=Y(gv);
+      ctx.strokeStyle=(gv===0)?'#e3c3c0':'#f0e3e2';ctx.lineWidth=(gv===0)?1.3:1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle=(gv===0)?'#9c2a3a':'#b79a97';ctx.fillText(gv===0?'0':String(gv),6,y+4);}
+    // sample curve + find interior minimum
+    var N=360, xs=[], ys=[], minV=1e9, minI=-1;
+    for(var i=0;i<=N;i++){var r=RMIN+(RMAX-RMIN)*i/N, v=Veff(r,p); xs.push(r); ys.push(v);
+      if(v<minV){minV=v;minI=i;}}
+    // stable if the minimum is interior AND the curve rises again toward small r (barrier at left)
+    var leftV=ys[0];
+    var stable = (minI>3 && minI<N-3 && leftV > minV+0.04);
+    var col = stable? '#2f7d54' : '#a02b8c';
+    // curve
+    ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--acc').trim()||'#9c2a3a';
+    ctx.lineWidth=3;ctx.beginPath();var started=false;
+    for(var j=0;j<=N;j++){var x=X(xs[j]),y=Y(ys[j]);
+      if(ys[j]>=YMAX-0.001||ys[j]<=YMIN+0.001){ if(started){ctx.lineTo(x,y);} else {ctx.moveTo(x,y);started=true;} }
+      else { if(!started){ctx.moveTo(x,y);started=true;} else ctx.lineTo(x,y);} }
+    ctx.stroke();
+    // marker at minimum if stable
+    if(stable){var mx=X(xs[minI]),my=Y(ys[minI]);
+      ctx.fillStyle='#2f7d54';ctx.beginPath();ctx.arc(mx,my,5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle='#2f7d54';ctx.font='bold 12px sans-serif';ctx.fillText('谷＝安定な軌道',mx+8,my+4);}
+    else{ctx.fillStyle='#a02b8c';ctx.font='bold 12px sans-serif';ctx.fillText('谷なし＝落下／散逸',X(0.5),Y(YMIN)-8);}
+    // axes
+    ctx.strokeStyle='#d3adaa';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#6a4148';ctx.font='12px sans-serif';ctx.fillText('距離 r →',w-80,h-pad+22);
+    ctx.save();ctx.translate(14,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('有効ポテンシャル V_eff',0,0);ctx.restore();
+    rd1.innerHTML='力の指数 <b>D='+p.toFixed(2)+'</b>：'+(stable
+      ? '<b style="color:#2f7d54">谷あり＝安定に束縛できる</b>（原子・惑星系が成立）。境目は D=3。'
+      : '<b style="color:#a02b8c">谷なし＝安定な軌道が存在しない</b>（中心へ落ちるか無限へ散る）。D≥3 側は住めない。')
+      + ' 我々の宇宙は <b>D=2</b>。';
+  }
+  sp.addEventListener('input',draw1);
+
+  /* ---- 図2：測られる D と余剰次元 ---- */
+  var cv2=document.getElementById('cv2'), sR=document.getElementById('sR'), vR=document.getElementById('vR'), rd2=document.getElementById('rd2');
+  var Lmin=-1, Lmax=3, n=1, D0=2, reachLog=Math.log(50)/Math.LN10; // 実験到達 ~50µm
+  function draw2(){
+    var d=setupHiDPI(cv2), ctx=d.ctx, w=d.w, h=d.h, pad=46, padT=18, padR=18;
+    var logR=parseFloat(sR.value), R=Math.pow(10,logR);
+    vR.textContent = (R>=1? R.toFixed(R<10?1:0) : R.toFixed(2)) + ' µm';
+    var yLo=1.8, yHi=2.0+n+0.25;
+    ctx.clearRect(0,0,w,h);
+    function X(lg){return pad+((lg-Lmin)/(Lmax-Lmin))*(w-pad-padR);}
+    function Y(D){var Dc=Math.max(yLo,Math.min(yHi,D));return (h-pad)-((Dc-yLo)/(yHi-yLo))*(h-pad-padT);}
+    // horizontal refs D=2 and D=3
+    ctx.font='11px sans-serif';
+    [2,3].forEach(function(g){var y=Y(g);
+      ctx.strokeStyle=(g===2)?'#e3c3c0':'#eddad7';ctx.lineWidth=(g===2)?1.3:1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle=(g===2)?'#9c2a3a':'#b79a97';ctx.fillText('D='+g,6,y+4);});
+    // D(r): 2 for r>>R, 2+n for r<<R ; smooth in log
+    ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--acc').trim()||'#9c2a3a';
+    ctx.lineWidth=3;ctx.beginPath();
+    for(var i=0;i<=300;i++){var lg=Lmin+(Lmax-Lmin)*i/300, r=Math.pow(10,lg);
+      var D=D0 + n/(1+Math.pow(r/R,3));
+      var x=X(lg),y=Y(D); if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // R marker (kink)
+    ctx.setLineDash([3,4]);ctx.lineWidth=1.4;ctx.strokeStyle='#9c2a3a';
+    var xR=X(logR);ctx.beginPath();ctx.moveTo(xR,padT);ctx.lineTo(xR,h-pad);ctx.stroke();
+    ctx.fillStyle='#9c2a3a';ctx.font='bold 11px sans-serif';ctx.fillText('R',xR+3,padT+11);
+    // experimental reach marker
+    ctx.strokeStyle='#99aab0';var xE=X(reachLog);ctx.beginPath();ctx.moveTo(xE,padT);ctx.lineTo(xE,h-pad);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#6f8288';ctx.font='11px sans-serif';ctx.fillText('実験到達 50µm',xE-30,h-pad-6);
+    // shade tested region (r > reach) faint
+    ctx.fillStyle='rgba(120,150,160,0.07)';ctx.fillRect(xE,padT,(w-padR)-xE,(h-pad)-padT);
+    ctx.fillStyle='#7f9298';ctx.font='11px sans-serif';ctx.fillText('← 検証済み（D=2 確認）',xE+8,padT+13);
+    // axes + labels
+    ctx.strokeStyle='#d3adaa';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#6a4148';ctx.font='12px sans-serif';
+    ctx.fillText('短距離（近づく）',pad+2,h-pad+22);ctx.fillText('長距離 →',w-84,h-pad+22);
+    // x ticks
+    for(var t=Lmin;t<=Lmax;t++){var x=X(t);ctx.fillStyle='#b79a97';
+      ctx.fillText(Math.pow(10,t)+'µm',x-12,h-pad+13);}
+    var seen = (logR>reachLog);
+    rd2.innerHTML='余剰次元の大きさ <b>R='+vR.textContent+'</b>（次元数 n=1）：'+(seen
+      ? '<b style="color:#9c2a3a">段差が実験到達より右＝ズレが見えるはず</b>。見えていない以上、<b>この大きさの余剰次元は否定済み</b>。'
+      : '段差が実験到達（50µm）より<b>左に隠れている</b>＝現状の分解能では見えない。<b>まだ隠れられる／探索中</b>。');
+  }
+  sR.addEventListener('input',draw2);
+
+  function drawAll(){draw1();draw2();}
+  window.addEventListener('resize',drawAll);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(drawAll);}
+  setTimeout(drawAll,60); window.addEventListener('load',drawAll);
+})();
+</script>
+</body>
+</html>

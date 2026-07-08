@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手を動かす ── つなぎ方から次元を測る ｜ 宇宙は計算機 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#16241a; --ink-soft:#46584c;
+    --paper:#f0f7f2; --paper-edge:#d5e8db;   /* 緑の紙：成長・創発 */
+    --side:#2f5d45; --side-bg:#e6f1ea;
+    --warn:#8a4b2f;
+    --calc:#1f6b45; --calc-bg:#e4f1ea;
+    --rule:#cfe3d6; --hair:#b3d0bd;
+    --acc:#2f7d54;    /* アクセント＝緑 */
+    --grid:#d8ece0;
+    --data:#2f7d54; --fit:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#1c2c22;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #c3e6cf 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#213328;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c3ddcd;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f8fcf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e4f1ea;color:#1f6b45;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfefc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef8f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#164a32;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfefc,#eaf4ee);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#eef8f1;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#e4f1ea;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#5f6f63;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 4 回 ／ 手を動かす（トイモデル）</span></div>
+  <p class="eyebrow">描写はもう十分。今回は実際に回して、次元が「出てくる」のを見る</p>
+  <h1>つなぎ方から、次元を測る
+    <span class="sub">中心から \(r\) 歩で届く点の数 \(N(r)\) を実際に数える。\(N(r)\sim r^{D}\) の傾き \(D\) が<strong>測った次元</strong>。<br>次元は宣言するものでなく、<em>つなぎ方（規則）から測って出てくる出力</em>だった ── それをブラウザ上で確かめる。</span>
+  </h1>
+  <div class="byline">
+    <span>道具：第1回の \(D=d\ln N/d\ln r\)、第2回の「幾何は創発」</span>
+    <span>実測：中心からの BFS で \(N(r)\) を数える</span>
+  </div>
+
+  <p class="lead">第1〜3回は言葉の話でした。今回は<strong>手を動かします</strong>。単純な「つなぎ方の規則」を選ぶと、コンピュータが中心から幅優先で歩数を数え、<em>空間の次元がその場で測られて出てくる</em>。次元を先に決めて置くのではなく、<strong>連結の仕方から測定値として現れる</strong> ── 第2回で「幾何は出力」と言ったことを、実物で見ます。</p>
+
+  <h2><span class="n">01</span>空間を「作る」のでなく「測る」</h2>
+
+  <p>次元の測り方は第1回の式そのまま。中心の点から<strong>\(r\) 歩以内で届く点の数</strong>を \(N(r)\) とすると、\(d\) 次元的なつなぎなら体積のように \(N(r)\sim r^{d}\) で増える。だから：</p>
+
+  <div class="calc">
+    <span class="tag">測る次元 ── 第1回の式を、グラフの上で</span>
+    $$N(r)\sim r^{D}\quad\Longrightarrow\quad \boxed{\,D=\frac{d\ln N}{d\ln r}\,}$$
+    <p style="margin:10px 0 0;">両対数に \(N(r)\) を打つと、<strong>直線の傾きが測った次元 \(D\)</strong>。第1回の \(F=1/(Cn)^D\) を「量が増える側」で読んだだけ。下の図は、この \(N(r)\) を<em>実際に幅優先探索（BFS）で数えて</em>います ── 数値はズルなしの実測。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：つなぎ方の規則を選ぶ（鎖／格子2D／格子3D／格子4D／木）。コンピュータが中心から BFS で \(N(r)\) を数え、両対数に打って<strong>傾き＝測った次元 \(D\)</strong> を出す。灰の破線は次元 1・2・3・4 の参照傾き</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>つなぎ方の規則<span class="val" id="vr">格子 4D（宇宙の目標）</span>
+        <input type="range" id="sr" min="0" max="4" step="1" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで規則を選ぶと、その場で N(r) を数え直して次元を測ります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--data);"></i>実測した N(r)</span>
+      <span><i class="swatch" style="background:var(--fit);"></i>最小二乗フィット（傾き＝D）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>何が起きたか ── 次元は宣言でなく測定で出た</h2>
+
+  <p>規則を切り替えると、測った \(D\) が変わります：鎖なら \(\approx1\)、格子2D なら \(\approx2\)、3D なら \(\approx3\)、<strong>4D なら \(4\) に迫る</strong>（有限格子ゆえ実測はやや低めに出て、格子を大きくするほど \(4\) へ収束 ── これ自体が<em>離散→連続の縮み</em>）。どこにも「次元は4」とは書いていない ── <em>つなぎ方だけ</em>を与え、\(N(r)\) を数えたら、次元が測定値として出てきた。</p>
+
+  <div class="keybox">
+    <div class="lbl">木（ツリー）だけ、次元が出ない</div>
+    <p style="margin:6px 0 0;">木を選ぶと \(N(r)\) が<strong>指数的に</strong>増え、\(r^D\) というべき則に<em>乗らない</em>（両対数で上に反っていく）。＝有限次元を持たない（"無限次元的"）。<strong>どんな規則でも良い次元が出るわけではない</strong> ── これも大事な実測です。</p>
+  </div>
+
+  <h2><span class="n">03</span>正直に言うと、これは半分ズル</h2>
+
+  <p>気持ちよく4が出ましたが、<strong>つなぎ方（格子）を手で入れています</strong>。格子4D は「次元4」を最初から配線に埋め込んでいて、それを測り返しただけ。<em>本物の創発</em>は、その配線<strong>自体</strong>を、点の情報を持たない<strong>局所的な書き換え規則から"生やす"</strong>必要があります。ここが第2回の③（更新規則＝穴）と直結する所です。</p>
+
+  <div class="aside">
+    <span class="tag">本物のレシピ（第2回の再掲＋この回での具体化）</span>
+    ① 状態をグラフで持つ（配列でなく）／② 可逆な局所書き換えで更新／③ 因果順序（半順序）を課す／④ そして<strong>この回の \(D=d\ln N/d\ln r\) で創発次元を測り、\(\to4\) に流れるか検算する</strong>。実際に <strong>Wolfram モデル・因果集合・CDT</strong> はこれをやっていて、CDT では 4次元の膨張宇宙が<em>数値的に生えて</em>くる ── ただし因果条件は手で入れ、連続極限は今も最前線。「配線を生やす規則」を当てるのが、埋まっていない穴。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">このトイが<strong>示せること</strong>：(1) 次元は連結の<em>測定量</em>で、宣言でなく出力。(2) 幾何の創発は原理的に可能。(3) 4次元的につながっていれば、測ると4が出る。(4) 木のように<em>次元が定まらない</em>規則も普通にある。</p>
+    <p style="margin-bottom:0;">このトイが<strong>示せないこと</strong>：宇宙が4次元で<em>ある</em>こと（つなぎ方を手で入れたから）。局所書き換え規則<em>から</em>4次元＋ローレンツ不変性を導くこと（＝第2回③の穴、埋まっていない）。図の \(N(r)\) は有限サイズの格子の実測なので、\(r\) が大きい端では境界で頭打ちになります（そこはフィットから外しています）。この文書に「解けた」はありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚＋図で解けます）</div>
+    <ol>
+      <li>このデモで、次元は「宣言」されたか「測定」されたか。どうやって出たか。
+        <details><summary>答えを見る</summary><div class="ans">測定。中心から BFS で「r 歩以内に届く点の数」N(r) を実際に数え、両対数プロットの傾き D=d ln N/d ln r として出した。次元を先に置いてはいない。</div></details>
+      </li>
+      <li>木（ツリー）で「次元」が出ないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">N(r) が指数的に増え（毎歩ほぼ倍）、べき則 r^D に乗らないから。両対数で直線にならず上に反る＝有限次元を持たない（無限次元的）。小世界的なつなぎも同様。</div></details>
+      </li>
+      <li>このトイが示せること／示せないことを、それぞれ一つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">示せる：次元は連結から測る出力量で、創発は可能（4Dのつなぎなら4が出る）。示せない：宇宙が4次元であること（つなぎを手で入れたから）と、局所規則からの4次元＋ローレンツの導出（＝穴）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>次元は、つなぎ方から測って出た</h2>
+    <p>手を動かした。つなぎ方の規則を選び、中心から BFS で \(N(r)\) を数え、両対数の傾きとして<strong>次元を測定</strong>した ── 鎖1・格子2D→2・3D→3・4D→4、木は発散（次元なし）。次元は宣言でなく<em>連結の測定量＝出力</em>だと、実物で確かめた。第2回「幾何は創発」の、手触りのある証拠。</p>
+    <p>ただし格子は次元を配線に埋め込んだ<strong>半分ズル</strong>。本物は配線<em>自体</em>を局所書き換え規則から生やし、\(D\to4\) を検算する（Wolfram／因果集合／CDT が実際にやっている）。<strong>その規則を当てる＝第2回③の穴</strong>で、そこは埋めない ── 掟どおり、旗は立てない。</p>
+  </div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-03-hyogen.html">← 第3回：表現の動物園</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第4回です。図はブラウザ上で d 次元格子グラフ（鎖・2D・3D・4D）および二分木を実際に生成し、中心から幅優先探索（BFS）で「距離 r 以内の頂点数 N(r)」を数え、両対数プロットの傾きを最小二乗で測って創発次元 D を出しています（数値はすべてその場の実測、境界飽和域はフィットから除外）。格子ボール体積 \(N(r)\sim r^{d}\) と二分木の指数成長 \(N(r)\sim2^{r}\)、成長次元・スペクトル次元による次元の測定、Wolfram モデル・因果集合・CDT による離散幾何からの次元創発（CDT の 4次元 de Sitter 的宇宙の数値的創発を含む）は、確立した数学／活発な研究プログラムです。局所書き換え規則<em>から</em>の 4次元＋ローレンツ不変性の導出は現行の未解決問題で、本デモの格子は次元を配線に組み込んだ模式（＝創発の機構の例示であって、宇宙の次元の導出ではありません）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで規則を選ぶと、その場で N(r) を数え直し、両対数の傾き＝測った次元が出ます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sr=document.getElementById('sr'), vr=document.getElementById('vr'), rd=document.getElementById('rd');
+  var RULES=[
+    {name:'鎖（1次元的つなぎ）', kind:'grid', d:1, L:401},
+    {name:'格子 2D',           kind:'grid', d:2, L:201},
+    {name:'格子 3D',           kind:'grid', d:3, L:41},
+    {name:'格子 4D（宇宙の目標）', kind:'grid', d:4, L:31},
+    {name:'木（ツリー）',        kind:'tree', depth:12}
+  ];
+  var cache={};
+
+  function buildGrid(d,L){
+    var strides=new Array(d); strides[0]=1;
+    for(var i=1;i<d;i++) strides[i]=strides[i-1]*L;
+    var total=strides[d-1]*L;
+    var half=Math.floor(L/2), center=0;
+    for(i=0;i<d;i++) center+=half*strides[i];
+    var dist=new Int32Array(total); for(i=0;i<total;i++) dist[i]=-1;
+    dist[center]=0; var q=[center], head=0, maxR=0;
+    while(head<q.length){
+      var idx=q[head++], dc=dist[idx];
+      for(i=0;i<d;i++){
+        var c=Math.floor(idx/strides[i])%L;
+        if(c>0){ var n1=idx-strides[i]; if(dist[n1]<0){dist[n1]=dc+1; q.push(n1); if(dc+1>maxR)maxR=dc+1;} }
+        if(c<L-1){ var n2=idx+strides[i]; if(dist[n2]<0){dist[n2]=dc+1; q.push(n2); if(dc+1>maxR)maxR=dc+1;} }
+      }
+    }
+    var layer=new Array(maxR+1); for(i=0;i<=maxR;i++)layer[i]=0;
+    for(i=0;i<total;i++) if(dist[i]>=0) layer[dist[i]]++;
+    return cumFrom(layer,total,maxR);
+  }
+  function buildTree(depth){
+    var total=Math.pow(2,depth+1)-1;
+    var layer=new Array(depth+1);
+    for(var r=0;r<=depth;r++) layer[r]=Math.pow(2,r); // nodes at depth r
+    return cumFrom(layer,total,depth);
+  }
+  function cumFrom(layer,total,maxR){
+    var C=new Array(maxR+1), s=0;
+    for(var r=0;r<=maxR;r++){ s+=layer[r]; C[r]=s; }
+    return {C:C, total:total, maxR:maxR};
+  }
+  function measure(ruleIdx){
+    if(cache[ruleIdx]) return cache[ruleIdx];
+    var R=RULES[ruleIdx], res, pts=[];
+    if(R.kind==='tree'){
+      res=buildTree(R.depth);
+      var trhi=Math.min(R.depth-2,res.maxR);
+      for(var r=2;r<=trhi;r++) pts.push([Math.log(r),Math.log(res.C[r])]);
+      res.pts=pts; res.isTree=true; res.d=null; res.slope=null; res.rule=R;
+      cache[ruleIdx]=res; return res;
+    }
+    res=buildGrid(R.d,R.L);
+    // clean radius window: r < L/2 (ball never touches a face => pure r^d growth),
+    // measured on the LARGE end where the log-log slope has converged toward d.
+    var rhi=Math.min((R.L>>1)-1, res.maxR), rlo=Math.max(4, rhi>>1);
+    if(rhi<=rlo) rlo=Math.max(2, rhi-2);
+    var step=Math.max(1, Math.floor((rhi-rlo)/30));
+    for(var rr=rlo; rr<=rhi; rr+=step) pts.push([Math.log(rr), Math.log(res.C[rr])]);
+    var n=pts.length, sx=0,sy=0,sxx=0,sxy=0;
+    for(var k=0;k<n;k++){ sx+=pts[k][0]; sy+=pts[k][1]; sxx+=pts[k][0]*pts[k][0]; sxy+=pts[k][0]*pts[k][1]; }
+    res.pts=pts; res.slope=(n*sxy-sx*sy)/(n*sxx-sx*sx || 1); res.isTree=false; res.d=R.d; res.rule=R;
+    cache[ruleIdx]=res; return res;
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=54, padT=18, padR=18;
+    var idx=parseInt(sr.value,10), R=RULES[idx]; vr.textContent=R.name;
+    var res=measure(idx);
+    ctx.clearRect(0,0,w,h);
+    // data ranges in ln
+    var xs=res.pts.map(function(p){return p[0];}), ys=res.pts.map(function(p){return p[1];});
+    var xmin=Math.min.apply(null,xs), xmax=Math.max.apply(null,xs);
+    var ymin=0, ymax=Math.max.apply(null,ys)*1.05;
+    if(!(xmax>xmin)){xmax=xmin+1;}
+    function X(x){return pad+(x-xmin)/(xmax-xmin)*(w-pad-padR);}
+    function Y(y){return (h-pad)-(y-ymin)/(ymax-ymin)*(h-pad-padT);}
+    // grid + axis labels
+    ctx.font='11px sans-serif';
+    ctx.strokeStyle='#e0ede5';ctx.lineWidth=1;
+    for(var gx=0;gx<=5;gx++){var xv=xmin+(xmax-xmin)*gx/5;var x=X(xv);
+      ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-pad);ctx.stroke();
+      ctx.fillStyle='#8fae9c';ctx.fillText('r='+Math.round(Math.exp(xv)), x-12, h-pad+16);}
+    // axes
+    ctx.strokeStyle='#b3d0bd';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#4a6a56';ctx.font='12px sans-serif';
+    ctx.fillText('半径 r（歩数, 両対数）→', w-210, h-pad+30);
+    ctx.save();ctx.translate(15,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('N(r)＝届く点の数（両対数）', 0,0);ctx.restore();
+    // reference slopes 1..4 through first data point
+    if(res.pts.length){
+      var x0=res.pts[0][0], y0=res.pts[0][1];
+      var refs=[1,2,3,4];
+      ctx.setLineDash([4,4]);ctx.lineWidth=1.2;ctx.strokeStyle='#c2ddca';
+      for(var ri=0;ri<refs.length;ri++){
+        var m=refs[ri];
+        ctx.beginPath();
+        ctx.moveTo(X(x0),Y(y0));
+        var xe=xmax, ye=y0+m*(xe-x0);
+        ctx.lineTo(X(xe),Y(Math.min(ye,ymax)));
+        ctx.stroke();
+        if(y0+m*(xmax-x0)<=ymax){
+          ctx.fillStyle='#95b8a2';ctx.fillText('傾き'+m, X(xmax)-40, Y(y0+m*(xmax-x0))-3);
+        }
+      }
+      ctx.setLineDash([]);
+    }
+    // fit line (skip meaningful straight fit for tree)
+    var isTree=(R.kind==='tree');
+    if(!isTree && res.pts.length){
+      var xa=res.pts[0][0], xb=res.pts[res.pts.length-1][0];
+      var ya=res.pts[0][1], m=res.slope;
+      ctx.strokeStyle='#b06a12';ctx.lineWidth=2.4;ctx.beginPath();
+      ctx.moveTo(X(xa),Y(ya));ctx.lineTo(X(xb),Y(ya+m*(xb-xa)));ctx.stroke();
+    }
+    // data points
+    ctx.fillStyle='#2f7d54';
+    for(var k=0;k<res.pts.length;k++){
+      ctx.beginPath();ctx.arc(X(res.pts[k][0]),Y(res.pts[k][1]),3.2,0,7);ctx.fill();
+    }
+    // slope annotation
+    ctx.font='bold 15px sans-serif';
+    if(isTree){
+      ctx.fillStyle='#8a4b2f';
+      ctx.fillText('測った D ＝ 発散（指数成長・べき則でない）', X(xmin)+8, Y(ymax)+6);
+    }else{
+      ctx.fillStyle='#1f6b45';
+      ctx.fillText('測った D ＝ '+res.slope.toFixed(2)+'（設計 '+R.d+'）', X(xmin)+8, Y(ymax)+6);
+    }
+    // readout
+    var msg;
+    if(isTree){
+      msg='規則＝木（ツリー）：N(r) が毎歩ほぼ倍＝指数成長で、r^D に乗らない。両対数で上に反る＝有限次元を持たない（次元が定まらない）。「どんな規則でも次元が出る」わけではない。';
+    }else{
+      var conv = res.slope < R.d-0.05 ? ' 有限格子ゆえ設計値より少し低め ── 格子を大きくするほど '+R.d+' に収束（＝離散→連続の縮み）。' : '';
+      msg='規則＝'+R.name+'：BFS で N(r) を実測 → 両対数の傾き＝測った次元 D ≈ '+res.slope.toFixed(2)+'（設計 '+R.d+'）。次元は宣言でなく、つなぎ方から測って出た。'+conv;
+    }
+    rd.textContent=msg;
+  }
+  sr.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

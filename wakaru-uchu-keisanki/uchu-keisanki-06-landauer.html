@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消すことだけがコストを持つ ── Landauer と可逆計算 ｜ 宇宙は計算機 第6回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#141c26; --ink-soft:#465468;
+    --paper:#eef3fa; --paper-edge:#d3e0f0;   /* 青の紙：エネルギー・熱 */
+    --side:#2c4a72; --side-bg:#e6eef7;
+    --warn:#8a4b2f;
+    --calc:#1f5590; --calc-bg:#e6eef7;
+    --rule:#cdddef; --hair:#aecae6;
+    --acc:#2f6fb0;    /* アクセント＝青 */
+    --grid:#dbe7f5;
+    --b1:#c0603a; --b0:#2f6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#1a2430;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bcd6ef 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#1f3149;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6d8ee;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f7fafe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e6eef7;color:#1f5590;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:12px;height:12px;border-radius:50%;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .g{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef4fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c476f;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfdff,#e9f0f8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#eef4fb;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#e6eef7;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#5a6678;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 6 回 ／ Landauer と可逆計算</span></div>
+  <p class="eyebrow">情報と物理が、一つの数で触れる</p>
+  <h1>消すことだけが、コストを持つ
+    <span class="sub">計算そのものは原理的に<strong>タダ</strong>にできる。熱を生むのは<em>情報を捨てる（消す）</em>ときだけ。<br>その最小コストは \(kT\ln 2\) ── 第3回の「情報＝物理」が、ここで測れる一つの数になる。</span>
+  </h1>
+  <div class="byline">
+    <span>回収：第3回（情報＝物理の双対）、第2回（宇宙は可逆）</span>
+    <span>フック式：\(E_{\min}=kT\ln 2\)</span>
+  </div>
+
+  <p class="lead">第3回で「情報と物理は一つの不変量を読む向きの違い」と言いました。抽象に聞こえたかもしれません。今回はそれが<strong>具体的な数で触れる</strong>現場です ── <em>1ビットを消すと、最低でも \(kT\ln2\) の熱が出る</em>（Landauer 原理、実験で確認済み）。そして<strong>計算そのものはタダにできる</strong>（可逆計算）。コストは計算ではなく、<em>情報を捨てること</em>に紐づいていた。</p>
+
+  <h2><span class="n">01</span>情報を消すと、熱が出る ── Landauer 原理</h2>
+
+  <div class="calc">
+    <span class="tag">1ビット消去の最小コスト</span>
+    $$E_{\min}=kT\ln 2\;\approx\;2.9\times10^{-21}\,\text{J}\;\approx\;0.018\,\text{eV}\quad(\text{室温})$$
+    <p style="margin:10px 0 0;">なぜ「消去」か ── <em>論理的に不可逆</em>な操作（消去・上書き・AND）は、<strong>異なる状態を一つに merge する</strong>。位相空間（取りうる状態の数）が縮む。第二法則により、その縮みは<strong>環境への熱として払う</strong>しかない。1ビット（2状態→1状態）なら \(k\ln2\) のエントロピー、熱にして \(kT\ln2\)。極小だが<strong>ゼロではない</strong>床です。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：ビット消去の熱。ビットは二重井戸の左（＝1）か右（＝0）。スライダーで消去プロトコルを進めると、<strong>障壁を下げて傾け</strong>、左右どちらの状態も右（＝0）へ集める。<em>状態数 2→1</em> の縮みぶん、右の熱メーターが \(kT\ln2\) まで溜まる</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>消去プロトコルの進み具合<span class="val" id="vp">0%</span>
+        <input type="range" id="sp" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーを進めると、二つの状態が一つに merge し、熱が kT ln2 まで散逸します。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--b1);"></i>ビット＝1（左）</span>
+      <span><i class="swatch" style="background:var(--b0);"></i>ビット＝0（右）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>計算そのものはタダ ── 可逆計算（Bennett）</h2>
+
+  <p>逆に、状態を merge <strong>しない</strong>操作にはこの床がありません。<em>可逆ゲート</em>（NOT・CNOT・Toffoli・Fredkin）は入力を捨てず一対一で写すので、原理的に<strong>ゼロコスト</strong>。途中の "ゴミ" を残しておき、最後に逆算（uncompute）して消さずに畳めば、任意の計算が可逆にできる（Bennett）。</p>
+
+  <div class="keybox">
+    <div class="lbl">コストの在りか</div>
+    <p style="margin:6px 0 0;">エネルギーを食うのは<strong>「計算」ではなく「消去（論理的不可逆）」</strong>。計算は原理的にタダにできる。熱を生むのは<em>情報を捨てる瞬間だけ</em>。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>情報＝物理の、触れる点 ── 第3回の回収</h2>
+
+  <p>ここで第3回が現金化されます。<strong>Maxwell の悪魔</strong>：分子を情報で選り分ければ、一見タダで第二法則を破れる。長年の謎の答え ── <em>悪魔はいつか記憶を消してリセットせねばならず、そのとき \(kT\ln2/\)ビットを払う</em>（Bennett・Landauer）。払いが利得を必ず相殺し、法則は守られる。</p>
+
+  <div class="aside">
+    <span class="tag">第3回が一つの数になる</span>
+    これは <strong>Shannon エントロピー（情報）と熱力学エントロピー（物理）が同一である</strong>ことの、機構つきの証明です。第3回で「情報より／物理より＝読む向き、同じ不変量」と言った、その不変量が ── ここでは <strong>\(kT\ln2\) という測れる一つの数</strong>として顔を出す。悪魔の "情報" と "熱" が、同じ通貨で釣り合う。
+  </div>
+
+  <h2><span class="n">04</span>宇宙にとって ── 第2回の回収と種明かし</h2>
+
+  <p>第2回で「宇宙という計算機は<strong>可逆／ユニタリ</strong>」が合格条件でした。可逆＝消さない＝<em>Landauer コストゼロ</em>。つまり<strong>根源では、宇宙は散逸せず、時間の矢も無い</strong>。では、我々が確かに感じる熱・散逸・時間の向きは、どこから来るのか。</p>
+
+  <div class="keybox">
+    <div class="lbl">種明かし ── 熱とは「追跡をやめた情報」</div>
+    <p style="margin:6px 0 0;">散逸は<strong>粗視化</strong>から生まれる。マクロに扱うとき、我々は微視的な自由度を<em>追わなくなる</em>。その<strong>捨てた（追跡をやめた）情報が熱</strong>。エントロピー増大＝情報が<em>アクセス可能（マクロ）→不可能（ミクロ）へ流れる</em>こと。根源は可逆でも、追跡を諦めた分だけ、我々の帳簿では熱が増える。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">Landauer 原理（\(E_{\min}=kT\ln2\)）は<strong>実験で確認済み</strong>（Bérut ら 2012、Jun ら 2014）で確立した物理。可逆計算（Bennett）・Maxwell の悪魔の解決も標準です。ただし \(kT\ln2\) は<em>下限</em>で、現在の計算機はその \(10^{4}\text{–}10^{6}\) 倍以上を散逸します（実用上の限界ではなく、原理的な床）。最深の基礎付け（導出の一般性）にはなお議論もあります。</p>
+    <p style="margin-bottom:0;">「宇宙は消さない＝根源では時間の矢が無い」は正しい枠組みですが、<strong>なぜ宇宙が低エントロピーで始まったか（過去仮説）は別の未解決問題</strong>（姉妹シリーズの arrow of time 回）。Landauer は「情報 ⟷ 熱」のリンクを与えますが、「なぜ最初が低エントロピーか」は与えません。この文書に「解けた」はありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚＋図で解けます）</div>
+    <ol>
+      <li>なぜ「消去」だけがコストを持ち、「計算」はタダにできるのか。
+        <details><summary>答えを見る</summary><div class="ans">消去は論理的に不可逆で、異なる状態を一つに merge する＝位相空間が縮む＝第二法則で熱 kT ln2 を払う。可逆ゲート（NOT/CNOT/Toffoli）は状態を merge せず一対一なので床がない。だからゴミを残して uncompute すれば計算は原理的にゼロコスト。</div></details>
+      </li>
+      <li>Maxwell の悪魔はどう解決されるか。第3回との関係は。
+        <details><summary>答えを見る</summary><div class="ans">悪魔が選り分けで得た利得は、記憶を消して初期化するとき kT ln2/ビットを払うことで必ず相殺され、第二法則が守られる。これは Shannon エントロピー（情報）＝熱力学エントロピー（物理）の証明＝第3回「情報と物理は同じ不変量」が kT ln2 という一つの数になった姿。</div></details>
+      </li>
+      <li>ユニタリ（可逆）な宇宙で、散逸や時間の矢はどこから来るか。
+        <details><summary>答えを見る</summary><div class="ans">根源は可逆で散逸ゼロ。散逸は粗視化＝微視自由度を追わなくなることから生まれ、捨てた情報が熱になる。エントロピー増大＝情報がマクロからミクロへ流れること。ただし「なぜ低エントロピーで始まったか（過去仮説）」は別の未解決問題。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第6回まとめ</span>熱を生むのは、捨てるときだけ</h2>
+    <p>1ビット消去は最低 \(kT\ln2\) の熱を出す（Landauer、実験確認済み）── 論理的に不可逆な操作が状態を merge し位相空間を縮めるから。逆に可逆計算（Bennett）は原理的にタダ。コストは<strong>「計算」でなく「消去」に紐づく</strong>。Maxwell の悪魔もここで解決し、<strong>第3回「情報＝物理」が \(kT\ln2\) という測れる一つの数</strong>になった。</p>
+    <p>第2回の可逆宇宙は根源で散逸せず時間の矢も無い。我々が見る熱・時間の向きは<strong>粗視化＝追跡をやめた情報</strong>から生まれる。エントロピー増大＝情報のマクロ→ミクロの流れ。ただし低エントロピーな初期条件の理由は別の穴 ── そこには旗を立てない。</p>
+  </div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-05-kiyaku.html">← 第5回：走らせるしかない（計算不可約性）</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第6回です。Landauer 原理（1ビット消去の最小散逸 \(E_{\min}=kT\ln2\)、室温で約 \(2.9\times10^{-21}\) J ≈ 0.018 eV）とその実験的検証（Bérut ら 2012、Jun ら 2014）、論理的不可逆性と位相空間収縮、可逆計算（Bennett、Toffoli／Fredkin ゲート、uncompute）、Maxwell の悪魔の情報論的解決（Szilard／Bennett／Landauer）、Shannon エントロピーと熱力学エントロピーの同一性、粗視化による有効的エントロピー増大は、いずれも確立した物理／情報理論です。\(kT\ln2\) は下限で、現行の計算機はこれを桁違いに上回って散逸します。「宇宙がユニタリで根源的に時間の矢を持たない」ことの枠組みは標準ですが、低エントロピー初期条件（過去仮説）と時間の矢の起源は現行の未解決問題です。図は二重井戸ポテンシャルによる消去プロトコルの模式で、熱メーターは \(kT\ln2\) への到達を図示したものです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで消去プロトコルを進めると、二状態が一つに merge し熱が kT ln2 まで溜まります。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sp=document.getElementById('sp'), vp=document.getElementById('vp'), rd=document.getElementById('rd');
+  var LN2=Math.log(2);
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function V(x,phi){ return (1-phi)*Math.pow(x*x-1,2) + phi*1.5*Math.pow(x-1,2); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var phi=parseInt(sp.value,10)/100; vp.textContent=Math.round(phi*100)+'%';
+    ctx.clearRect(0,0,w,h);
+    // layout: left potential panel, right heat meter
+    var mL=54, mR=w-150, top=24, bot=h-40;
+    // sample V
+    var N=160, xs=[], vsr=[], xmin=-1.35, xmax=1.35, vmin=1e9, vmax=-1e9;
+    for(var i=0;i<=N;i++){ var x=xmin+(xmax-xmin)*i/N; var v=V(x,phi); xs.push(x); vsr.push(v); if(v<vmin)vmin=v; if(v>vmax)vmax=v; }
+    var Vspan=(vmax-vmin)||1;
+    function X(x){return mL+(x-xmin)/(xmax-xmin)*(mR-mL);}
+    function Y(v){return bot-(v-vmin)/Vspan*(bot-top);}
+    // axis baseline
+    ctx.strokeStyle='#aecae6';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mL,bot);ctx.lineTo(mR,bot);ctx.stroke();
+    // x labels 1 / 0
+    ctx.fillStyle='#7a4a30';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('1', X(-1), bot+18);
+    ctx.fillStyle='#2f6fb0';ctx.fillText('0', X(1), bot+18);
+    ctx.fillStyle='#5a6678';ctx.fillText('ビットの状態（左=1 / 右=0）', (mL+mR)/2, top-8);
+    ctx.textAlign='left';
+    // potential curve
+    ctx.strokeStyle='#2c4a72';ctx.lineWidth=2.6;ctx.beginPath();
+    for(i=0;i<=N;i++){ var px=X(xs[i]),py=Y(vsr[i]); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py);}
+    ctx.stroke();
+    // find local minima
+    var minima=[];
+    for(i=1;i<N;i++){ if(vsr[i]<=vsr[i-1] && vsr[i]<vsr[i+1]) minima.push(i); }
+    if(minima.length===0){ var mi=0; for(i=1;i<=N;i++) if(vsr[i]<vsr[mi]) mi=i; minima=[mi]; }
+    var iLeft=minima[0], iRight=minima[minima.length-1];
+    function ball(ix,col){ var bx=X(xs[ix]),by=Y(vsr[ix]); ctx.fillStyle=col;ctx.beginPath();ctx.arc(bx,by-8,8,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke(); }
+    // bit=1 ball (left minimum), bit=0 ball (right minimum)
+    ball(iLeft,'#c0603a');
+    ball(iRight,'#2f6fb0');
+    // state count label
+    var nstates=(iLeft===iRight)?1:2;
+    ctx.fillStyle=nstates===2?'#2c4a72':'#1f5590';ctx.font='bold 13px sans-serif';
+    ctx.fillText('状態数 : '+nstates+(nstates===1?'（merge 完了）':''), mL, top+6);
+    // ---- heat meter (right) ----
+    var hx=mR+52, hw=34, hTop=top+6, hBot=bot;
+    ctx.fillStyle='#5a6678';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('散逸した熱', hx+hw/2, hTop-8);
+    ctx.strokeStyle='#aecae6';ctx.lineWidth=1;ctx.strokeRect(hx,hTop,hw,hBot-hTop);
+    // full = kT ln2 at phi=1
+    var frac=phi; // illustrative: heat grows with protocol progress to kT ln2
+    var fillH=(hBot-hTop)*frac;
+    var g=ctx.createLinearGradient(0,hBot,0,hTop); g.addColorStop(0,'#c0603a'); g.addColorStop(1,'#e0a060');
+    ctx.fillStyle=g; ctx.fillRect(hx,hBot-fillH,hw,fillH);
+    // kT ln2 marker line at top
+    ctx.strokeStyle='#8a4b2f';ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(hx-6,hTop);ctx.lineTo(hx+hw+6,hTop);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a4b2f';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('kT ln2', hx+hw+8, hTop+4);
+    ctx.textAlign='center';
+    ctx.fillStyle='#7a4a30';ctx.font='bold 12px sans-serif';
+    ctx.fillText((frac*LN2).toFixed(2)+' kT', hx+hw/2, hBot+16);
+    ctx.textAlign='left';
+    // readout
+    var joules=(frac*LN2*4.14e-21);
+    var msg;
+    if(nstates===2) msg='進み '+Math.round(phi*100)+'%：まだ二つの状態（1と0）が別々。障壁がある間はビットが保たれ、熱もまだ少ない。散逸 ≈ '+(frac*LN2).toFixed(2)+' kT。';
+    else msg='進み '+Math.round(phi*100)+'%：二状態が一つに merge＝ビットを消した。状態数 2→1 の縮みぶん、熱 ≈ '+(frac*LN2).toFixed(2)+' kT（≈ '+joules.toExponential(1)+' J）が環境へ。これが Landauer の床 kT ln2。';
+    rd.textContent=msg;
+  }
+  sp.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

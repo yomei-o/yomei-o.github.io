@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>表現の動物園 ── 情報より、物理より、それは読む向き ｜ 宇宙は計算機 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#221820; --ink-soft:#574a52;
+    --paper:#faf3f6; --paper-edge:#ecd9e2;   /* ローズの紙：表現・抽象 */
+    --side:#7a3557; --side-bg:#f3e6ec;
+    --warn:#8a4b2f;
+    --calc:#8a3358; --calc-bg:#f3e4ea;
+    --rule:#e6d2db; --hair:#d0b3c1;
+    --acc:#a63d6a;    /* アクセント＝ローズ */
+    --grid:#ecd9e2;
+    --info:#a63d6a; --phys:#2c6c74;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.32;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2b1e26;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecc7d8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#33212b;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2c7d3;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf7fa;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f3e4ea;color:#7a2a4e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .g{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefafc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbeef4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6e2244;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefafc,#f3e6ec);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#fbeef4;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#f3e4ea;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6f5560;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 3 回 ／ 表現の動物園</span></div>
+  <p class="eyebrow">連続か離散か、で始まった。剥ぐと、軸は一本だった</p>
+  <h1>情報より、物理より ── それは読む向き
+    <span class="sub">連続と離散は<strong>同じ仲間</strong>（どちらも点が主役）。点を降ろすと別の表現が現れる。<br>表現の動物園は<strong>双対の網</strong>で結ばれ、唯一の軸は「情報より／物理より」── そしてそれも<em>読む向き</em>にすぎない。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：表現は影、物理は不変量（連続/離散を剥いだ先）</span>
+    <span>フック：\(S_{\text{情報}} = S_{\text{物理}}\)</span>
+  </div>
+
+  <p class="lead">このシリーズは「今の記述は複雑すぎる、もっと簡単に書けるはず」から始まりました。追ううちに、<em>連続か離散か</em>という最初の分かれ道が、実は本質でないと分かってきます。剥いでいくと表現はもっとたくさんあり、それらは一つの不変量の影で、最後は<strong>たった一本の軸</strong>に潰れる ── そしてその軸すら、コップを<em>どっち側から見るか</em>の違いだった。今回はそこまで剥ぎます。</p>
+
+  <h2><span class="n">01</span>連続と離散は「同じ仲間」── どちらも点が主役</h2>
+
+  <p>連続＝<em>点が詰まっている</em>、離散＝<em>点が離れている</em>。よく見ると、両方とも<strong>「点」を主役にしている</strong>。違いは点の詰まり具合だけ ── <strong>軸は一本</strong>です。だから「連続でも離散でも書ける、結局一緒」は正しい。二つは対立でなく、同じ土俵の両端。</p>
+
+  <div class="keybox">
+    <div class="lbl">最初の剥ぎ</div>
+    <p style="margin:6px 0 0;">連続 vs 離散 ＝ <strong>点の詰まり具合という一本の軸</strong>。本当に別の表現は、<em>「点」を主役から降ろした</em>ものたち。</p>
+  </div>
+
+  <h2><span class="n">02</span>点を降ろすと、別の表現が現れる ── 実装とインターフェース</h2>
+
+  <p>計算の言葉が一番早い。CSでは型を<strong>実装でなくインターフェース</strong>で定義します。整数を2進で持つか10進で持つかChurch数で持つかは、同じ `int`。物理も同じ ── <em>連続と離散は「physics」という型の二つの実装</em>にすぎない。ならインターフェース（操作と法則）だけ残して、実装＝点を消せる：</p>
+
+  <table class="dt">
+    <tr><th>表現</th><th>主役</th><th>連続/離散との関係</th></tr>
+    <tr><td>連続</td><td>詰まった点</td><td>点ベース・その1</td></tr>
+    <tr><td>離散</td><td>離れた点</td><td>点ベース・その2</td></tr>
+    <tr><td><strong>作用素代数／非可換幾何</strong>（Connes）</td><td>観測量の代数（<span class="g">点なし</span>）</td><td>連続も離散も<em>可換な影</em>。量子＝非可換＝どちらでもない</td></tr>
+    <tr><td><strong>圏論／関係的</strong>（トポス）</td><td>射＝関係。論理そのものが変わる</td><td>点を持たない。補遺で剥いだ後に残る"関係の構造"</td></tr>
+    <tr><td><strong>p進／非アルキメデス</strong></td><td>木構造の数</td><td>局所は離散っぽく大域は稠密＝<em>第三の数体系</em></td></tr>
+    <tr><td><strong>型理論／HoTT</strong></td><td>構成・証明（＝プログラム）</td><td>計算の母国語。等号＝道</td></tr>
+  </table>
+
+  <h2><span class="n">03</span>一番深い別表現 ── 観測量の代数（点が消える）</h2>
+
+  <p>一番効くのは真ん中の<strong>非可換幾何</strong>。ゲルファント双対という定理が「空間 ⟺ その上の可換代数」をぴったり対応させます。すると：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>可換な代数 → 点のある空間</strong>（連続でも離散でも、可換なら点が生える）</li>
+    <li><strong>非可換な代数 → 点が一個もない</strong>のに、幾何がある</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">量子が非可換なのは偶然じゃない</div>
+    <p style="margin:6px 0 0;">世界は「点の集まり」でなく<strong>「問える質問（観測量）とその答えの絡み方」</strong>で書けている ── これが非可換の意味。あなたの計算観そのもの：システムを<em>中身（点）</em>でなく<em>振る舞い（I/O＝操作の代数）</em>で定義する。連続/離散は実装の詳細、<strong>インターフェース＝観測量の代数が本体</strong>。</p>
+  </div>
+
+  <h2><span class="n">04</span>「結局一緒」の正体 ── 双対定理</h2>
+
+  <p>そして "結局一緒" は気分でなく<strong>定理</strong>です。表現の間には<em>双対</em>が張ってある ── Stone双対（論理⟺離散空間）、ゲルファント双対（代数⟺空間）、Pontryagin双対…。双対とは「服が違うだけで中身は同じ」の厳密版。<strong>表現の動物園＝双対の網で結ばれた、一つの不変量の影たち</strong>。何で書いても結局一緒、の正体がこれ。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>動物園の唯一の軸 ── 情報より／物理より、そしてそれも双対</h2>
+
+  <p>ここまで剥ぐと、動物園に残る本当の自由度は<strong>一本</strong>だけ：<em>情報を先に置いて物理を導くか、物理を先に置いて情報を導くか</em>（Wheeler の「it from bit」対「bit from it」）。だが ── <strong>その軸自体が双対</strong>なのです。</p>
+
+  <div class="calc">
+    <span class="tag">情報と物理は、底で同じもの</span>
+    $$\underbrace{S=-\!\sum p\log p}_{\text{情報（Shannon）}}\;=\;\underbrace{S=\frac{A}{4\ell_P^2}}_{\text{物理（Bekenstein–Hawking）}}$$
+    <p style="margin:10px 0 0;">エントロピーは情報（Shannon）と物理（熱力学）で<strong>文字通り同じ量</strong>。Landauer＝「情報は物理的」。ホログラフィー＝「面積＝ビット数」。最深の確立点で、情報と物理は二つの別物でなく、<strong>一つの不変量を両端から読んだだけ</strong>。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：読む向き。中央の<strong>不変量 \(S\) は動かない</strong>（棒の長さ一定）。スライダーを「情報より」から「物理より」へ動かすと、同じ棒に貼るラベルだけが \(\log_2 W\)（ビット）⇄ \(A/4\)（面積）と入れ替わる。半分空か半分満ちか、同じコップ</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>読む向き（情報より ⇄ 物理より）<span class="val" id="vt">中央</span>
+        <input type="range" id="st" min="0" max="1" step="0.01" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで読む向きを動かすと、ラベルだけ変わり、S は変わりません。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--info);"></i>情報の読み（log₂W・Shannon）</span>
+      <span><i class="swatch" style="background:var(--phys);"></i>物理の読み（A/4・面積）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">06</span>種明かし ── 向きが空でない唯一の場所＝穴</h2>
+
+  <p>だから「情報より／物理より」は<strong>コップを半分空と見るか半分満ちと見るか</strong>。同じコップ、読む向きが逆なだけで、内容の差はゼロ。二つの表現が重なる所では、双対だから<em>差は一切出ない</em>。</p>
+
+  <p>差が出るのは、たった一箇所 ── <strong>穴</strong>（導出が底を打つ所）でだけ。「どっちの端が根源か」は、重なりの外＝未知の部分についての<strong>賭け</strong>です。そして<em>あなたは情報の端を選んでいる</em>（＝計算観）。それは間違いでも正解でもなく、<strong>同じ不変量を情報の側から読む向きの選択</strong>で、当たるか外れるかは穴でしか決まらない。物理の端から読む人とは、重なる所で必ず一致する。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ここが Gemini と "見た目同じ" で、中身が真逆になる所</span>
+    <p style="margin-top:0;">この地図は、宇宙＝情報／計算という<strong>話題(topics)では、よくある思弁（Gemini的な対話）と重なります</strong>。違いは一点だけ ── <strong>旗を立てるか、縁の標識を立てるか</strong>。「解けた・これが万物の理論」と偽の旗を立てれば奇説。「縁。ここから先は無人」と書けば最前線。地図が同じでも、旗と標識は正反対で、それが両者を分ける唯一の線です。</p>
+    <p style="margin-bottom:0;">情報＝物理の統一が<em>厳密</em>なのは、熱力学／ホログラフィーの界面まで（エントロピーの一致・Landauer・面積＝ビット）。「どちらが真に根源か」は<strong>仮説</strong>で、決着は穴でしか付かない。ゲルファント／Stone 双対、非可換幾何、p進・トポス・HoTT は確立した数学ですが、「宇宙の表現がそのどれか」は未確定。この文書に「解けた」は一つもありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>連続と離散の「共通点」は何か。本当に別の表現はどこから始まるか。
+        <details><summary>答えを見る</summary><div class="ans">どちらも「点」を主役にしている（連続＝点が詰まる、離散＝点が離れる）。軸は点の詰まり具合の一本。本当に別の表現は、点を主役から降ろしたとき始まる（作用素代数・圏論・p進・型理論）。</div></details>
+      </li>
+      <li>非可換幾何が「連続でも離散でもない」と言える根拠は。
+        <details><summary>答えを見る</summary><div class="ans">ゲルファント双対で「空間 ⟺ 可換代数」。可換代数は点のある空間を返す（連続でも離散でも）。非可換代数には点が一個もないのに幾何がある。量子＝観測量が非可換＝どちらでもない表現。世界を「点」でなく「問える質問と答えの絡み」で書く。</div></details>
+      </li>
+      <li>「情報より／物理より」が"読む向き"にすぎないと言える根拠を一つ。そして向きが空でないのはどこか。
+        <details><summary>答えを見る</summary><div class="ans">エントロピーが Shannon（情報）と熱力学（物理）で同一の式、Landauer「情報は物理的」、ホログラフィーの「面積＝ビット」── 同じ不変量を両端から読んだだけ。重なる所では差ゼロ。向きが効く（空でない）のは穴＝導出が底を打つ所だけで、そこは「どっちが根源か」の賭けになる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>表現は影、軸は一本、それも向き</h2>
+    <p>連続と離散は同じ仲間（点が主役、軸は詰まり具合一本）。点を降ろすと別の表現が現れる ── 観測量の代数（非可換幾何・点が消える）、圏論、p進、型理論。それらは<strong>双対の網で結ばれた一つの不変量の影</strong>（Stone・ゲルファント双対）＝「結局一緒」の正体。</p>
+    <p>動物園に残る唯一の軸は「情報より／物理より」。だがエントロピー＝Shannon＝熱力学、Landauer、面積＝ビットで、<strong>その軸自体が双対＝読む向き</strong>だった。向きが効くのは穴でだけ、そこは「どっちの端が根源か」の賭け。<strong>あなたは情報の端を選んでいる</strong>。決着は穴で待っている ── 掟どおり、旗は立てない。</p>
+  </div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-02-dou-keisan.html">← 第2回：宇宙をどう計算するか</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第3回です。連続・離散が「点集合の位相／濃度」という一軸の両端であること、ゲルファント双対（可換C*代数 ⟺ 局所コンパクト空間）、Stone双対（ブール代数 ⟺ Stone空間）、Pontryagin双対、非可換幾何（Connes）による「点を持たない空間＝観測量の代数」、p進・非アルキメデス解析、トポス／圏論的基礎、ホモトピー型理論（HoTT・univalent foundations）、Shannon エントロピーと熱力学エントロピーの一致、Landauer 原理（情報消去の物理コスト）、Bekenstein–Hawking の面積＝情報上限、Wheeler の「it from bit」は、いずれも確立した数学／物理、または活発な研究プログラムです。「宇宙の根源が情報か物理か」「宇宙の表現が上記のどれか」は現行の未解決問題（仮説）で、この文書に確定的な主張はありません。図の \(S\) の一致は熱力学／ホログラフィーの界面での模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで、読む向きを変えても不変量 S（棒の長さ）が動かない様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function lerp(a,b,t){return a+(b-a)*t;}
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseFloat(st.value);
+    vt.textContent = t<0.35?'情報より':(t>0.65?'物理より':'中央（同じ）');
+    ctx.clearRect(0,0,w,h);
+    // ---- central invariant bar (fixed) ----
+    var barY=118, barH=46, barL=w*0.5-170, barR=w*0.5+170;
+    var grad=ctx.createLinearGradient(barL,0,barR,0);
+    grad.addColorStop(0,'#a63d6a'); grad.addColorStop(1,'#2c6c74');
+    ctx.fillStyle=grad; ctx.fillRect(barL,barY,barR-barL,barH);
+    ctx.strokeStyle='#7a3557'; ctx.lineWidth=1.5; ctx.strokeRect(barL,barY,barR-barL,barH);
+    // "S" in the bar
+    ctx.fillStyle='#fff'; ctx.font='bold 22px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('不変量 S', w*0.5, barY+barH/2+8);
+    ctx.textAlign='left';
+    // length-fixed note
+    ctx.fillStyle='#8a6b78'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('← 長さは動かない（不変量）→', w*0.5, barY+barH+22);
+    ctx.textAlign='left';
+    // ---- active label above bar ----
+    var lab, labcol;
+    if(t<0.35){ lab='情報の読み：  S = log₂ W  （ビット・Shannon）'; labcol='#a63d6a'; }
+    else if(t>0.65){ lab='物理の読み：  S = A / 4ℓ_P²  （面積・Bekenstein–Hawking）'; labcol='#2c6c74'; }
+    else { lab='同じ不変量 S  （ラベルは、どっちから読むかで決まる）'; labcol='#7a3557'; }
+    ctx.fillStyle=labcol; ctx.font='bold 15px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(lab, w*0.5, barY-22);
+    ctx.textAlign='left';
+    // ---- two lens boxes left/right, opacity by t ----
+    function lensBox(x,txt,col,alpha){
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle=col; ctx.font='13px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(txt, x, 40);
+      ctx.globalAlpha=1; ctx.textAlign='left';
+    }
+    lensBox(w*0.20,'情報より', '#a63d6a', lerp(1,0.28,t));
+    lensBox(w*0.80,'物理より', '#2c6c74', lerp(0.28,1,t));
+    // ---- reading dial at bottom ----
+    var dY=h-34, dL=60, dR=w-60;
+    ctx.strokeStyle='#d0b3c1'; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(dL,dY); ctx.lineTo(dR,dY); ctx.stroke();
+    // gradient tint along track
+    var tg=ctx.createLinearGradient(dL,0,dR,0);
+    tg.addColorStop(0,'#a63d6a'); tg.addColorStop(1,'#2c6c74');
+    ctx.strokeStyle=tg; ctx.lineWidth=4; ctx.globalAlpha=0.5;
+    ctx.beginPath(); ctx.moveTo(dL,dY); ctx.lineTo(dR,dY); ctx.stroke(); ctx.globalAlpha=1;
+    // knob
+    var kx=lerp(dL,dR,t);
+    ctx.fillStyle='#7a3557'; ctx.beginPath(); ctx.arc(kx,dY,8,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(kx,dY,3,0,7); ctx.fill();
+    // end labels
+    ctx.fillStyle='#a63d6a'; ctx.font='12px sans-serif'; ctx.fillText('情報', dL-8, dY-14);
+    ctx.fillStyle='#2c6c74'; ctx.fillText('物理', dR-16, dY-14);
+    // readout
+    var msg;
+    if(t<0.35) msg='情報より：S を「log₂W ビット（Shannon）」と読む。';
+    else if(t>0.65) msg='物理より：S を「面積 A/4（Bekenstein–Hawking）」と読む。';
+    else msg='中央：どちらでもない ── S は同じ不変量。';
+    rd.textContent = msg+' 棒の長さ（S 自体）は一切変わっていない。＝読む向きの違いで、内容の差はゼロ。';
+  }
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

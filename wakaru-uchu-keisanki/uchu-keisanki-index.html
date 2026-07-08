@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙は計算機 ── 目次</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#152023; --ink-soft:#44585c;
+    --paper:#eef6f6; --paper-edge:#d2e5e6;
+    --side:#2c5c60; --side-bg:#e5f0f0;
+    --warn:#8a4b2f;
+    --rule:#c8dede; --hair:#aacaca;
+    --acc:#0d7d84;
+    --ind:#5b47c0;   /* 第1回の色 */
+    --cyn:#0d7d84;   /* 第2回の色 */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:780px;margin:32px auto;background:var(--paper);
+    padding:60px 66px 80px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.34em;color:var(--acc);margin:0 0 8px;font-weight:700;}
+  h1{font-size:40px;line-height:1.25;margin:0 0 10px;font-weight:600;letter-spacing:.02em;}
+  .tagline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin:14px 0 0;}
+  .intro{font-size:17px;line-height:1.9;margin:26px 0 6px;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #b9e3e3 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  .backbone{margin:26px 0;padding:18px 24px;border:1.5px solid var(--ink);background:#fbfefe;border-radius:2px;
+    font-size:16px;line-height:1.85;}
+  .backbone .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:6px;}
+
+  .cards{margin:34px 0 0;display:flex;flex-direction:column;gap:16px;}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule);border-radius:6px;
+    padding:22px 26px;background:#fbfefe;transition:transform .08s,box-shadow .12s;position:relative;overflow:hidden;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.09);}
+  a.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c);}
+  a.card .no{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.2em;color:var(--c);font-weight:700;margin-bottom:5px;}
+  a.card h2{font-size:21px;margin:0 0 6px;font-weight:600;letter-spacing:.02em;line-height:1.4;}
+  a.card p{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;color:var(--ink-soft);line-height:1.75;}
+  a.card .fig{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--acc);margin-top:9px;font-weight:600;}
+
+  .caveat{margin:34px 0 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;color:var(--warn);}
+  .sisters{margin:28px 0 0;padding:16px 22px;background:var(--side-bg);border-radius:3px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:#22343a;line-height:1.8;}
+  .sisters .lbl{font-size:11px;letter-spacing:.2em;color:var(--side);font-weight:700;margin-bottom:6px;}
+  .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;}
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;} .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    a.card{break-inside:avoid;}
+  }
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:30px;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series">宇宙は計算機</div>
+  <h1>宇宙は計算機</h1>
+  <p class="tagline">物理を経由せず、宇宙を<strong>計算過程</strong>として見る ── 計算理論から宇宙を眺めるシリーズ。<br>「宇宙は literal に計算である」は<em>仮説として明示</em>したうえで、正直に追う。</p>
+
+  <p class="intro">出発点は素朴な直感 ── <em>「今の記述は複雑すぎる。もっと簡単に書けるはずだ」</em>。これを逃げずに追うと、「座標では簡単にならない」「減るのは冗長性を見つけたとき」「次元は世界が持つ数でなく測り方の読み値」へと進み、最後は<strong>「宇宙をどう計算するか」</strong>という一つの設計図に落ちます。</p>
+
+  <div class="backbone">
+    <div class="lbl">背骨の一行</div>
+    簡単にするとは<strong>冗長性を見つける</strong>こと。次元は<strong>読み値</strong>で、\(F=1/(Cn)^D\) はその<strong>ものさし</strong>。宇宙は \(10^{90}\) ビット・\(10^{120}\) 演算の計算過程で、資源は分かっている ── 残る穴は<strong>更新規則</strong>ただ一つ。
+  </div>
+
+  <div class="cards">
+    <a class="card" href="uchu-keisanki-jigen.html" style="--c:var(--ind);">
+      <div class="no">第 1 回</div>
+      <h2>"簡単にする" の正体 ── 次元は読み値</h2>
+      <p>座標では簡単にならない（可逆＝情報不変）。減るのは冗長性を見つけたとき。次元は「持つ数」でなく「読み値」で、\(F=1/(Cn)^D\) は力の式でなく次元のものさし。「一番楽な次元」は世界に一つでなく現象ごと（＝上部臨界次元）。</p>
+      <div class="fig">◆ 図：スライダーで両対数の傾き＝次元 D が動く</div>
+    </a>
+    <a class="card" href="uchu-keisanki-02-dou-keisan.html" style="--c:var(--cyn);">
+      <div class="no">第 2 回</div>
+      <h2>宇宙をどう計算するか ── 資源・アーキテクチャ・プログラム</h2>
+      <p>問いは3層。資源は固い地面（10⁹⁰ビット・10¹²⁰演算、RAM ∝ 時刻²＝c・t）。アーキテクチャは選別済み（格子CAは Bell＋ローレンツで失格、本命は量子回路〜テンソルネット）。残る穴は更新規則で、計算不可約なら「解く」でなく「走らせる」。</p>
+      <div class="fig">◆ 図：宇宙の RAM が時刻²で育つ（1ビット→10¹²²ビット）</div>
+    </a>
+    <a class="card" href="uchu-keisanki-03-hyogen.html" style="--c:#a63d6a;">
+      <div class="no">第 3 回</div>
+      <h2>表現の動物園 ── 情報より、物理より、それは読む向き</h2>
+      <p>連続と離散は同じ仲間（点が主役）。点を降ろすと別の表現が現れる（観測量の代数＝非可換幾何・圏論・p進・型理論）。動物園は双対の網で結ばれた一つの不変量の影。唯一の軸「情報より/物理より」も双対＝読む向き。向きが効くのは穴でだけ＝あなたの賭け。</p>
+      <div class="fig">◆ 図：読む向きを変えても不変量 S（棒の長さ）は動かない</div>
+    </a>
+    <a class="card" href="uchu-keisanki-04-toy.html" style="--c:#2f7d54;">
+      <div class="no">第 4 回</div>
+      <h2>手を動かす ── つなぎ方から次元を測る（トイモデル）</h2>
+      <p>描写はもう十分。ブラウザ上で因果グラフ（鎖/格子2D/3D/4D/木）を実際に生成し、中心から BFS で N(r) を数えて傾き＝次元をその場で実測。次元は宣言でなく連結の測定量＝出力。ただし格子は次元を配線に埋めた半分ズル ── 規則から生やすのが穴。</p>
+      <div class="fig">◆ 図：BFS で N(r) を実測、両対数の傾き＝測った次元（鎖1・2D2・3D3・4D→4・木は発散）</div>
+    </a>
+    <a class="card" href="uchu-keisanki-05-kiyaku.html" style="--c:#b5731a;">
+      <div class="no">第 5 回</div>
+      <h2>走らせるしかない ── 計算不可約性</h2>
+      <p>多くの規則には近道がなく、n歩後を知るには実際に n歩走るしかない（系が自分の最速シミュレータ）。根は万能性と停止問題・Rice の決定不能。宇宙の規則が不可約なら追い越せない。だが「解けない」は敗北でなく、可約な島を探す科学・新しさの源・掟の根拠。</p>
+      <div class="fig">◆ 図：セルオートマトンを実走行、Rule 90=可約 / Rule 30・110=不可約を目で見る</div>
+    </a>
+    <a class="card" href="uchu-keisanki-06-landauer.html" style="--c:#2f6fb0;">
+      <div class="no">第 6 回</div>
+      <h2>消すことだけがコストを持つ ── Landauer と可逆計算</h2>
+      <p>1ビット消去は最低 kT ln2 の熱を出す（実験確認済み）。計算そのものは可逆にすれば原理的にタダ ── コストは「計算」でなく「消去」に紐づく。Maxwell の悪魔もここで解決。第3回「情報＝物理」が kT ln2 という測れる一つの数になる。散逸・時間の矢＝追跡をやめた情報。</p>
+      <div class="fig">◆ 図：二重井戸でビット消去、状態数2→1 の縮みぶん熱が kT ln2 まで溜まる</div>
+    </a>
+    <a class="card" href="uchu-keisanki-07-shirushi.html" style="--c:#9a7d2e;">
+      <div class="no">終 回</div>
+      <h2>旗でなく、縁の標識を ── なぜ Gemini と同じに見えて違うのか</h2>
+      <p>「宇宙＝計算」の話題はありがちな思弁と地図が重なる。違いは一点＝「解けた」の旗を立てるか、「ここが縁」の標識を立てるか。判定チェッカーで同じ話題が旗⇄標識に反転するのを見る。物差しは書き手（AI）自身にも向く。地図は描いた、旗は立てなかった。</p>
+      <div class="fig">◆ 図：主張チェッカー、5条件で針が「奇説の旗」⇄「最前線の標識」に動く</div>
+    </a>
+    <a class="card" href="uchu-keisanki-08-kyosu.html" style="--c:#a02b8c;">
+      <div class="no">第 8 回（延長）</div>
+      <h2>虚数の次元 ── ズームが刻まれるとき</h2>
+      <p>次元 D は読み値だから複素数に開ける。\(D=a+i\beta\) を入れると、実部 a＝減衰（ふつうの大きさの次元）、虚部 β＝対数周期の振動＝お気に入りのズーム倍率 \(\lambda=e^{2\pi/\beta}\) の刻み。連続スケール対称性が離散に壊れた印（カントール集合の複素次元・対数周期前兆）。我々は虚部ゼロの実数側にいる＝閉じる周期がない → 質量は走り続け、幾何平均 \(\sqrt{m_{\text{IR}}M_{\text{Pl}}}\)＝meV に落ちる。</p>
+      <div class="fig">◆ 図：実部＝減衰／虚部＝さざ波、複素平面に梯子状に並ぶ複素次元</div>
+    </a>
+    <a class="card" href="uchu-keisanki-09-bibun.html" style="--c:#b5432a;">
+      <div class="no">第 9 回（延長）</div>
+      <h2>情報の式と物理の式 ── 自由度をとると帳簿が微分になる</h2>
+      <p>情報の式は「数える」（\(S=k\ln W\)・\(S\le A/4\)・\(kT\ln2\)、有限・代数・微分なし）、物理の式は「流れる」（Einstein・Schrödinger、連続・微分）。つなぐ操作は一つ＝<strong>自由度を \(\infty\) にとり厳密にする</strong>。差分→微分、和→積分。文字通り、面積エントロピー＋Unruh＋Clausius を全地平線で厳密に課すと Einstein 方程式が落ちる（Jacobson）。ただし連続極限は臨界点でしか立たず、面積則は仮定 ── どちら岸が土台かは未決。</p>
+      <div class="fig">◆ 図：自由度を増やすと差分が微分に／臨界点でだけ連続極限（ξ→∞）が立つ</div>
+    </a>
+    <a class="card" href="uchu-keisanki-10-yotsu-no-chikara.html" style="--c:#9c6b12;">
+      <div class="no">第 10 回（延長）</div>
+      <h2>四つの力の次元 ── D は「走る」</h2>
+      <p>ものさし \(D=-d\ln F/d\ln r\) を四つの力に当てる。全員が超短距離で \(D=2\) から出発（3+1次元の逆二乗）。違うのは長距離での走り方だけ ── 重力・電磁気は 2 のまま（質量ゼロ仲介子）、弱い力は \(2\to\infty\)（重い W/Z の指数打ち切り＝短射程）、強い力は \(2\to0\)（閉じ込め＝距離で減らない）。「弱・強の次元は？」の答えは一つの整数でなく走る関数。\(C\)（結合）と \(D\)（幾何）は別軸。</p>
+      <div class="fig">◆ 図：距離カーソルで四つの走る D を同時に読む（2一定／2→∞／2→0）</div>
+    </a>
+    <a class="card" href="uchu-keisanki-11-yaiba.html" style="--c:#9c2a3a;">
+      <div class="no">第 11 回（延長）</div>
+      <h2>D=2 は刃の上 ── 存在の checksum と隠れた次元</h2>
+      <p>第1回「D は読み値」の反転。読み値の中に、たった一つ load-bearing な目盛りがある ── 力の \(D=2\)（空間3次元）だけが有効ポテンシャルに谷を作り（エーレンフェスト）、軌道を閉じさせ（ベルトラン）、原子・惑星系・記憶を成立させる。境目は \(D=3\)。しかも \(D\) は測定量：逆二乗の精密測定（〜50µm、Eöt-Wash）は「\(D\) は厳密に 2 か」の実験で、ズレは隠れた次元（\(1/r^{2+n}\)）の署名になる。</p>
+      <div class="fig">◆ 図1：D=3 で有効ポテンシャルの谷が消える／図2：余剰次元 R を動かすと D の段差が実験到達線を出入り</div>
+    </a>
+    <a class="card" href="uchu-keisanki-12-bane.html" style="--c:#3a4e63;">
+      <div class="no">第 12 回（延長・連結）</div>
+      <h2>バネ網ひとつで ── 全部が一枚に落ちる</h2>
+      <p>読者の一言「力＝薄まりながら隣の格子へ伝わるバネの振動、だから計算できる」を軸に、第1〜11回を一枚の対応表に束ねる連結の回。場＝連結振動子、仲介粒子＝さざ波、有限速度＝\(c\)＝光円錐、薄まり＝\(1/r^D\)、質量項＝その場バネ（弱い力）、非線形バネ＝強い力、\(D=2\)＝安定に蓄える刃。局所＋有限速度＝計算機に載る（格子QCD）。ただし載る≠楽に解ける（第5回）、格子は足場か土台か未決（第2・9回）。</p>
+      <div class="fig">◆ 図：生きたバネ網。パルスを弾くとさざ波が隣へ伝わり薄まる／質量項スライダーで短距離化</div>
+    </a>
+    <a class="card" href="uchu-keisanki-13-tama.html" style="--c:#147a66;">
+      <div class="no">第 13 回（延長）</div>
+      <h2>玉なんて無かった ── 物質もさざ波、原子は鐘</h2>
+      <p>「電子やクォークがバネ格子をくるくる動く玉？」を追うと、玉は一つも残らない。物質も種類ごとのバネ網のさざ波。電子は回る玉でなく、陽子のすり鉢で鳴る<strong>定在波</strong>＝原子は鐘、準位は音、スペクトル線は倍音（だから潰れない＝第11回）。陽子の中は閉じ込められた非線形場の<strong>渦巻く海</strong>で重さの99%は場のエネルギー。全部が場だから計算機に載る（第12回）。ただし格子は足場か土台か・質量ギャップは未決。</p>
+      <div class="fig">◆ 図：四角い箱の定在波。p,q を変えると鳴る形（オービタル的モード）と節の線が切り替わる</div>
+    </a>
+    <a class="card" href="uchu-keisanki-14-nanjigen.html" style="--c:#2b6a8f;">
+      <div class="no">第 14 回（延長）</div>
+      <h2>宇宙は何次元か ── 容れ物は3、中身は2、UVも2</h2>
+      <p>「次元は読み値」を宇宙そのものに当てる回。容れ物（空間）は逆二乗で〜3、だが中身のコズミックウェブはフラクタル次元 約2で3ではない（均質化スケールで3に漸近）。量子重力のUVでも2、情報でも2、余剰次元（弦・仮説）なら9〜10。数は一つに集まらない ── 物差しとスケールが決める。第1回「次元は読み値」を宇宙スケールで締める。</p>
+      <div class="fig">◆ 図：スライダーで測る半径を変えると、コズミックウェブの次元 D₂ が 2→3 に走る（均質化帯で3へ）</div>
+    </a>
+  </div>
+
+  <div style="margin:20px 0 0;padding:16px 22px;border:1px dashed var(--rule);border-radius:6px;background:#fbfefe;
+       font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13.5px;color:var(--ink-soft);line-height:1.8;">
+    <span style="font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;">全7回・完結 ＋ 延長7回</span><br>
+    導入なしの一本道：簡単さ → 計算のしかた → 表現 → 手を動かす → 不可約性 → 情報＝物理（Landauer）→ 縁の標識。地図は描いた、旗は立てなかった。<br>
+    延長は終回のあと、会話の問いから生まれた六枚 ── 第8回「\(D\) を虚数にしたら？」（次元を複素数に開き質量の meV まで繋ぐ）、第9回「情報の式と物理の式」（自由度をとると帳簿が微分＝Einstein 方程式になる、Jacobson）、第10回「四つの力の次元」（同じものさしを四つの力に当て、\(D\) が 2→∞・2→0 と走るのを読む）、第11回「\(D=2\) は刃の上」（読み値の中の一目盛りだけが束縛を許す＝存在の checksum、そのズレは隠れた次元）、第12回「バネ網ひとつで」（連結の回＝力は薄まりながら隣へ伝わる振動、全11回が一枚に落ち、局所更新だから計算機に載る）、第13回「玉なんて無かった」（物質もさざ波、電子は回る玉でなく鳴る定在波＝原子は鐘、陽子の中は渦巻く海）、第14回「宇宙は何次元か」（「次元は読み値」を宇宙に当てる ── 容れ物は3、コズミックウェブは約2で3ではない、UVも2、情報も2、余剰次元なら9〜10、数は一つに集まらない）。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">このシリーズの掟</span>
+    「宇宙＝計算」は由緒ある系譜（Wheeler の it from bit・Zuse・Fredkin・Wolfram・'t Hooft・Lloyd）だが、<strong>literal に計算であることは仮説であって定理ではない</strong>。資源の見積りは確立した計算量、アーキテクチャの選別も確立した論法、だが更新規則は未知。<strong>「解けた」とは言わない</strong> ── 穴は正直に開けたまま置く。
+  </div>
+
+  <div class="sisters">
+    <div class="lbl">姉妹シリーズ（物理側から同じ縁へ）</div>
+    「わかる宇宙論」／「わかる質量」── 物理の言葉で書いた版。入口が計算でも物理でも、辿り着く縁（背景独立な有限動力学＝更新規則の穴）は一つ。
+  </div>
+
+  <div class="foot">
+    「宇宙は計算機」目次。物理を経由せず計算理論から宇宙を見る読み物シリーズ。各回はブラウザの「印刷 → PDF に保存」でA4化できます（印刷版ではスライダーと解答は静止・非表示）。
+  </div>
+
+</div>
+</body>
+</html>

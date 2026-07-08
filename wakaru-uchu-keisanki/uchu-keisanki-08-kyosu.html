@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>虚数の次元 ── ズームが刻まれるとき（D を複素数に開く）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241a26; --ink-soft:#57495a;
+    --paper:#faf3fb; --paper-edge:#ebd9ee;   /* 紫紅の紙：複素・振動 */
+    --side:#6a3a70; --side-bg:#f2e7f4;
+    --warn:#9a5327;
+    --calc:#8e2f86; --calc-bg:#f5e6f4;
+    --rule:#e6d1ea; --hair:#cdaad4;
+    --acc:#a02b8c;    /* アクセント＝紫紅 */
+    --grid:#eedbf1;
+    --line:#a02b8c; --ref:#cf9ad0; --osc:#1f8aa0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2a2430;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecc8ec 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#2c2534;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e0c3de;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf7fd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:230px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f3e6f2;color:#7a1f6c;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdf9fd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7edf6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5c1650;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdf9fd,#f2e6f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6d5570;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 8 回（延長）／ 虚数の次元</span></div>
+  <p class="eyebrow">終回のあとに ── 「\(D\) を虚数にしたらどうなるの？」という一つの問いから</p>
+  <h1>虚数の次元 ── ズームが刻まれるとき
+    <span class="sub">第1回で \(D\) は「読み値」だと分かった。ではその読み値を <strong>複素数に開く</strong>と何が起きる？<br>虚部は「大きさ」を測らない。<strong>ズームでどう繰り返すか</strong>を測る ── 直交した別の軸だ。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：虚部＝お気に入りのズーム倍率／実数側だから流れは閉じない</span>
+    <span>フック式：\(D=a+i\beta\)</span>
+  </div>
+
+  <p class="lead">第1回の結論は「次元 \(D\) は世界が持つ数でなく、\(D=-d\ln F/d\ln n\) で読む<strong>計器の目盛り</strong>」でした。目盛りなら ── <em>実数とはかぎらない</em>。この回は \(D\) を素直に複素数へ開きます。答えは驚くほどきれい：<strong>実部は減衰（ふつうの次元）、虚部は振動（ズームの刻み）</strong>。そして最後に、なぜ我々の世界は虚部ゼロの側にいて、そのせいで<em>質量の流れが「閉じない」</em>のか ── 姉妹シリーズ「わかる質量」の最終回まで一本で繋がります。</p>
+
+  <h2><span class="n">01</span>おさらい ── 純実数の \(D\) は「まっすぐな傾き」</h2>
+
+  <p>\(x=Cn\)（解像度で測ったサイズ）と置くと、ものさしの式は指数関数一本になります：</p>
+
+  <div class="calc">
+    <span class="tag">対数で開く</span>
+    $$F=\frac{1}{(Cn)^{D}}=(Cn)^{-D}=e^{-D\,\ln(Cn)}$$
+    <p style="margin:10px 0 0;">\(D\) が実数なら、両対数プロット（\(\ln F\) 対 \(\ln n\)）は<strong>まっすぐな直線</strong>で、傾きが \(-D\)。第1回のスライダーで見たあれです。面なら \(D=2\)、波（線）なら \(D=1\)、立体なら \(3\)。整数は特別な目盛りにすぎず、非整数も走って取れた ── でも全部<em>実数</em>でした。</p>
+  </div>
+
+  <p>ここで一歩踏み込む。\(D\) が「読み値」なら、複素数を入れて計算しても<strong>式は文句を言わない</strong>。やってみましょう。</p>
+
+  <h2><span class="n">02</span>\(D\) を複素数に開く ── 実部は減衰、虚部は回転</h2>
+
+  <p>\(D=a+i\beta\)（実部 \(a\)、虚部 \(\beta\)）を指数に入れる。指数法則で二つに割れます：</p>
+
+  <div class="calc">
+    <span class="tag">種明かし ── 一行で役割が分かれる</span>
+    $$F=(Cn)^{-a}\cdot e^{-i\beta\ln(Cn)}
+      =\underbrace{(Cn)^{-a}}_{\text{減衰}}\cdot\underbrace{\big[\cos(\beta\ln Cn)-i\,\sin(\beta\ln Cn)\big]}_{\text{回転（振動）}}$$
+    <p style="margin:10px 0 0;">オイラーの公式 \(e^{-i\theta}=\cos\theta-i\sin\theta\) を使っただけ。\(\theta=\beta\ln(Cn)\)。</p>
+  </div>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>実部 \(a\)</strong>：いつもの次元。両対数の傾き＝<em>大きさがどう増減するか</em>（面=2、波=1、カントール=0.63…）。</li>
+    <li><strong>虚部 \(\beta\)</strong>：\(\ln(Cn)\) に対する<em>振動の周波数</em>。\(|e^{-i\beta\ln Cn}|=1\) だから、減衰には<strong>一切効かない</strong>。傾きの上に<em>さざ波</em>を乗せるだけ。</li>
+  </ul>
+
+  <p>いちばん純粋な場合 ── \(a=0\) の<strong>純虚数 \(D=i\beta\)</strong> ── を見ると、正体がむき出しになります。\(|F|=1\) が常に成り立つ。<em>増えも減りもしない。</em> \(n\) をスケールさせると \(F\) は単位円をぐるぐる回るだけ ── <strong>純粋な対数周期振動</strong>です。</p>
+
+  <div class="fig">
+    <div class="cap">図1：複素次元 \(D=a+i\beta\)。横軸は \(n\)（対数）。<strong>実部 \(a\)</strong> のスライダーで包絡線 \(\pm(Cn)^{-a}\) の減衰＝ふつうの次元が決まり、<strong>虚部 \(\beta\)</strong> のスライダーで <em>その中に走るさざ波</em>の細かさが決まる。\(\beta=0\) にすると波が消え、第1回のただの直線（べき則）に戻る。</div>
+    <canvas id="cv1" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>実部 a（減衰＝ふつうの次元）<span class="val" id="va">0.6</span>
+        <input type="range" id="sa" min="0" max="3" step="0.05" value="0.6">
+      </label>
+      <label>虚部 β（振動の周波数＝ズームの刻み）<span class="val" id="vb">4.0</span>
+        <input type="range" id="sb" min="0" max="12" step="0.1" value="4">
+      </label>
+    </div>
+    <div class="readout" id="rd1">スライダーを動かすと、包絡線（減衰＝実部）とさざ波（振動＝虚部）が別々に変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--line);"></i>\(\mathrm{Re}\,F=(Cn)^{-a}\cos(\beta\ln Cn)\)</span>
+      <span><i class="swatch" style="background:var(--ref);"></i>包絡線 \(\pm(Cn)^{-a}\)（実部 a）</span>
+      <span><i class="swatch" style="background:var(--osc);"></i>お気に入りズーム λ の刻み</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>意味 ── 虚数次元は「ズームが刻まれた印」</h2>
+
+  <p>一周する条件を出します。位相 \(\beta\ln(Cn)\) が \(2\pi\) 増えるたびに \(F\) は元に戻る。これは \(n\) が<strong>ある決まった倍率</strong>だけ変わったとき：</p>
+
+  <div class="calc">
+    <span class="tag">お気に入りのズーム倍率</span>
+    $$n\to n\cdot\lambda \ \text{で } F \text{ が元に戻る},\qquad \lambda=e^{2\pi/\beta},\qquad \beta=\frac{2\pi}{\ln\lambda}$$
+  </div>
+
+  <p>ここが核心です。純粋なべき則 \(n^{-D}\) は \(n\to\lambda n\) を<strong>どんな \(\lambda\) でも</strong>許す ── <em>連続</em>なスケール対称性を持つ。ところが世界に<strong>特別な拡大率</strong>があると（枝分かれ比、繰り込み1ステップ、入れ子の比）、対称性は \(n\to\lambda^k n\)（整数 \(k\)）だけの<em>離散</em>スケール対称性に落ちる。そのお気に入り倍率がまさに \(D\) の虚部として顔を出す：</p>
+
+  <div class="keybox">
+    <div class="lbl">この回の一行</div>
+    <p style="margin:6px 0 0;"><strong>虚数次元 ＝「連続なズーム」が「刻んだズーム」に壊れた印。</strong> 虚部 \(\beta\) はその刻み幅（お気に入り倍率 \(\lambda\) の対数）そのもの。実部が<em>大きさ</em>を測るのに対し、虚部は<em>ズームでどう繰り返すか</em>を測る ── 直交した別の軸だ。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">第3回とつながる</span>
+    第3回「表現の動物園」で、連続と離散は<em>読む向き</em>の違う一つの不変量だと見ました。虚数次元はその橋の数式版です ── <strong>スケールの離散性（お気に入りのズーム）が、連続に見える次元の虚部として現れる</strong>。離散か連続かは表現、でも「刻みがあるか」は \(\beta\ne0\) か \(\beta=0\) かという<em>読み取れる</em>差になる。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>これは遊びではない ── カントール集合の複素次元</h2>
+
+  <p>虚数次元は数式のいたずらではなく、<strong>本物の数学</strong>です。自己相似なフラクタルは、実は<em>複素数の次元</em>を持ちます。中央3等分カントール集合（3等分して真ん中を捨てる、を無限に繰り返す）を例に取ると、素朴な次元は \(\ln2/\ln3\approx0.63\) ですが、完全な次元の集合は：</p>
+
+  <div class="calc">
+    <span class="tag">カントール集合の複素次元（Lapidus）</span>
+    $$D_k=\underbrace{\frac{\ln 2}{\ln 3}}_{\text{実部＝大きさの次元}}+\;i\,\underbrace{\frac{2\pi k}{\ln 3}}_{\text{虚部＝ズーム比3の刻印}},\qquad k=0,\pm1,\pm2,\dots$$
+    <p style="margin:10px 0 0;">実部は<strong>おなじみのフラクタル次元</strong>。虚部の間隔 \(2\pi/\ln3\) は、この集合が<strong>3倍ズームで自分に戻る</strong>こと（\(\lambda=3\)）の直接の刻印。だから <em>\(\beta=2\pi/\ln\lambda\)</em> の一般式そのままです。</p>
+  </div>
+
+  <p>結果として、カントール集合の「体積」（正しくは Minkowski 内容）を測ると、べき則の上に<strong>周期 \(\ln3\) の対数周期の脈動</strong>が乗る。これは観測できる本物の現象で、名前もついています ── <em>離散スケール不変性（DSI）</em>。地震前の岩石の破壊、金融クラッシュ前の価格、地震の余震系列などで、対数周期の前兆振動として観測・研究されてきました（Sornette ら）。</p>
+
+  <div class="fig">
+    <div class="cap">図2：複素平面に並ぶ次元。横軸＝実部（大きさの次元）、縦軸＝虚部。<strong>分割数 b</strong> と <strong>残す数 k</strong> のスライダーで、自己相似なフラクタルの複素次元が点として並ぶ。実部は \(\ln k/\ln b\) の一点に固定、虚部は間隔 \(2\pi/\ln b\) で梯子状に刻まれる ── その刻みがズーム比 \(b\) の指紋。（\(b=3,\,k=2\) がカントール集合）</div>
+    <canvas id="cv2" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>分割数 b（何等分するか＝ズーム比）<span class="val" id="vB">3</span>
+        <input type="range" id="sB" min="2" max="8" step="1" value="3">
+      </label>
+      <label>残す数 k（そのうち何個残すか）<span class="val" id="vK">2</span>
+        <input type="range" id="sK" min="1" max="7" step="1" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rd2">スライダーで、実部（大きさの次元）と虚部の刻み（ズーム比）が別々に動きます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--line);border-radius:50%;width:9px;height:9px;"></i>複素次元 \(D_k\)</span>
+      <span><i class="swatch" style="background:var(--ref);"></i>実部 \(=\ln k/\ln b\)（大きさの次元）</span>
+      <span><i class="swatch" style="background:var(--osc);"></i>虚部の刻み \(2\pi/\ln b\)</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>ではなぜ我々は「実数側」か ── そして質量が終わらない理由</h2>
+
+  <p>ここで質量の話に着地します。我々が観測している次元は（空間なら3、時空なら4）<strong>純粋な実数、虚部ゼロ</strong>。図1で \(\beta=0\) にした状態です。ということは：</p>
+
+  <div class="keybox">
+    <div class="lbl">実数側にいることの帰結</div>
+    <p style="margin:6px 0 0;"><strong>閉じる周期がない。</strong> スケールを上げても \(F\) は二度と同じ値に戻らない。ただ滑らかに流れ続ける ── これが「質量の流れが永遠に終わらない」の正体。</p>
+  </div>
+
+  <p>これは姉妹シリーズ「わかる質量」第4回そのものです。時空 \(D=4\) は結合が<strong>対数でしか走らない</strong>特別な次元（周辺的＝marginal）。対数の流れは一番遅く、決して自分では止まらない。止まらない流れに<em>積分定数</em>として一個スケールが忍び込む ── これが次元的移行：</p>
+
+  <div class="calc">
+    <span class="tag">終わらない流れから質量が湧く</span>
+    $$\Lambda = E\,e^{-1/(b\,\alpha)}\qquad(\text{対数走行の積分定数が質量スケールを生む})$$
+    <p style="margin:10px 0 0;">虚部＝自前の刻みがあれば流れは \(\lambda\) 倍ごとに閉じて自己完結する。でも実数の世界にはそれがない。だから流れは端まで走り続け、<strong>止め（カットオフ）は外から</strong>与えるしかない ── 上は \(M_{\text{Pl}}\)（プランク）、下は \(\hbar H_0/c^2\)（宇宙の大きさが決める最小質量の床）。</p>
+  </div>
+
+  <h3>払い出し ── 閉じないから「幾何平均」が出る</h3>
+
+  <p>そして最後がきれいに繋がる。流れに<strong>お気に入りのスケールがない</strong>（純実数・対数対称）とき、二つの端 \(m_{\text{IR}}\) と \(M_{\text{Pl}}\) の間で作れる唯一の自然なスケールは ── 対数軸で真ん中、つまり<strong>幾何平均</strong>：</p>
+
+  <div class="keybox">
+    <div class="lbl">最小はつねに最大を指す</div>
+    $$m\sim\sqrt{m_{\text{IR}}\cdot M_{\text{Pl}}}\quad(\approx\mathrm{meV})$$
+    <p style="margin:8px 0 0;">「特別な倍率がない ＝ 対数軸で左右対称 ＝ 中点」だから幾何平均になる。<strong>虚部がゼロで流れが閉じないこと</strong>が、逆に端と端を幾何平均で結ぶ理由になっている。閉じないからこそ、両端が互いを指す。</p>
+  </div>
+
+  <p>言い直すとこうです ── <em>我々は虚部ゼロの \(D\) で観測している。だから質量は閉じた周期ではなく、対数で走り続ける流れに乗り、そのスケールは両端の幾何平均に落ちる。</em> 虚数次元の話が、質量の最終回まで一本で繋がりました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">虚数次元を入れると \(F\) は<strong>複素数</strong>になります。\(F\) が力・個数・確率のような実の観測量なら、そのままでは意味を持てない ── 読めるのは \(\mathrm{Re}\,F\) か \(|F|\)、あるいは \(F\) を「振幅」と読み替えたとき。<em>物理的に観測されるのは、べき則の上に乗る対数周期のさざ波であって、\(D\) の虚部そのものではありません。</em></p>
+    <p style="margin-bottom:0;">離散スケール不変性・複素次元・Lapidus の理論・対数周期の前兆は<strong>いずれも確立した数学／現象論</strong>です。ただし、素粒子の基本法則の走りに対数周期が<em>観測されたわけではない</em>（あればそれは離散スケール対称性＝時空が刻まれている証拠になる）。そして「なぜ空間はちょうど実数の3次元で、虚部を持たないのか」は、この枠組み固有の謎ではなく<em>物理全体の未解決</em>。ここは埋めません ──「解けた」とは言わない、が全体の掟。虚数次元は「面と波の間の何か」<strong>ではなく</strong>、大きさとは直交した別の軸だ、という一点だけは確かです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>純虚数 \(D=i\beta\) のとき、\(|F|\) はどうなる？
+        <details><summary>答えを見る</summary><div class="ans">\(|F|=|(Cn)^{-i\beta}|=|e^{-i\beta\ln Cn}|=1\)。常に1。増えも減りもせず、\(n\) をスケールさせると単位円を回るだけ＝純粋な対数周期振動。減衰（大きさ）は実部だけが担い、虚部は位相＝振動しか動かさない。</div></details>
+      </li>
+      <li>虚部 \(\beta\) と「お気に入りのズーム倍率 \(\lambda\)」の関係は？ カントール集合（3倍ズーム）ではいくつ？
+        <details><summary>答えを見る</summary><div class="ans">\(\lambda=e^{2\pi/\beta}\)、逆に \(\beta=2\pi/\ln\lambda\)。位相が \(2\pi\) 進むと元に戻るから。3倍ズーム（\(\lambda=3\)）なら \(\beta=2\pi/\ln3\approx5.71\)。連続スケール対称性が、倍率3の離散スケール対称性に落ちた印。</div></details>
+      </li>
+      <li>「我々は実数の次元で観測しているから質量の流れが終わらない」──これは何を意味し、何を意味しない？
+        <details><summary>答えを見る</summary><div class="ans">意味する：虚部＝閉じる周期がないので、スケールを横断する結合の走りは自分では止まらず、対数で流れ続ける。だから止め（\(M_{\text{Pl}}\)・\(\hbar H_0/c^2\)）は外から与え、間のスケールは対数中点＝幾何平均 \(\sqrt{m_{\text{IR}}M_{\text{Pl}}}\) に落ちる。意味しない：質量の値が無限、ではない（値は有限・確定）。終わらないのは<em>流れ</em>であって<em>値</em>ではない。また「空間が3次元だから」と直結もしない ── 効くのは時空4次元が対数走行の臨界次元だという別の筋。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>虚部は「ズームの刻み」、実部ゼロでないから流れは閉じない</h2>
+    <p>次元 \(D\) は読み値だから、複素数に開ける。\(D=a+i\beta\) を入れると \(F=(Cn)^{-a}[\cos(\beta\ln Cn)-i\sin(\beta\ln Cn)]\) ── <strong>実部 \(a\) は減衰（ふつうの大きさの次元）、虚部 \(\beta\) は対数周期の振動</strong>。虚部は「面と波の間」ではなく<em>ズームでどう繰り返すか</em>を測る直交軸で、\(\beta=2\pi/\ln\lambda\) ＝お気に入り倍率 \(\lambda\) の刻み。連続スケール対称性が離散に壊れた印であり、カントール集合の複素次元・対数周期前兆（DSI）として実在する。</p>
+    <p>我々は<strong>虚部ゼロの実数側</strong>にいる ── だから閉じる周期がなく、質量は対数で走り続け（次元的移行 \(\Lambda=Ee^{-1/b\alpha}\)）、止めは外から（\(M_{\text{Pl}}\)・\(\hbar H_0/c^2\)）、間のスケールは<strong>対数中点＝幾何平均 \(\sqrt{m_{\text{IR}}M_{\text{Pl}}}\approx\mathrm{meV}\)</strong> に落ちる。閉じないからこそ最小が最大を指す。残る「なぜ実数の3次元か」は物理全体の穴 ── 正直に開けたまま置く。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-07-shirushi.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f7edf6;font-weight:600;letter-spacing:.03em;">← 終回：旗でなく標識を</a>
+    <a href="uchu-keisanki-09-bibun.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f7edf6;font-weight:600;letter-spacing:.03em;">第9回：情報の式と物理の式 →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第8回（延長・会話のまとめ・正直版）です。オイラーの公式 \(e^{-i\theta}=\cos\theta-i\sin\theta\)、複素指数 \((Cn)^{-(a+i\beta)}\) の分解、離散スケール不変性（DSI）と対数周期振動、フラクタルの複素次元（M. Lapidus の複素次元理論、幾何ゼータ関数の極として \(D_k=\ln2/\ln3+i\,2\pi k/\ln3\)）、対数周期前兆の現象論（D. Sornette らによる破壊・地震・金融の研究）、時空4次元での結合の対数走行と次元的移行 \(\Lambda=Ee^{-1/b\alpha}\)、CKN 境界に基づく \(\mathrm{meV}\sim\sqrt{m_{\text{IR}}M_{\text{Pl}}}\) の幾何平均は、いずれも確立した数学／物理、または姉妹シリーズ「わかる質量」で正直に線引きした内容です。\(F=1/(Cn)^D\) は次元の定義関係 \(D=-d\ln F/d\ln n\) の言い換えで、\(D\) を複素数に開くのは数学的に整合しますが、基本法則の走りに対数周期（虚部）が観測されたわけではありません。「空間はなぜ実数の3次元で虚部を持たないか」は現行の未解決問題です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では、図1で実部＝減衰・虚部＝さざ波が別々に動き、図2で複素次元が梯子状に並ぶのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  /* ---------- 図1：複素次元 D=a+iβ、Re F を対数x軸で描く ---------- */
+  var cv1=document.getElementById('cv1'),
+      sa=document.getElementById('sa'), va=document.getElementById('va'),
+      sb=document.getElementById('sb'), vb=document.getElementById('vb'),
+      rd1=document.getElementById('rd1');
+  var UMAX=6; // ln(Cn) 0..6  (Cn ≈ 1..403)
+  function draw1(){
+    var d=setupHiDPI(cv1), ctx=d.ctx, w=d.w, h=d.h, padL=48, padR=16, padT=14, padB=34;
+    var a=parseFloat(sa.value), b=parseFloat(sb.value);
+    va.textContent=a.toFixed(2); vb.textContent=b.toFixed(1);
+    var x0=padL, x1=w-padR, ymid=(padT+(h-padB))/2, yamp=(h-padB-padT)/2*0.94;
+    ctx.clearRect(0,0,w,h);
+    function X(u){return x0+(u/UMAX)*(x1-x0);}
+    function Y(v){return ymid - v*yamp;}   // v in [-1,1]
+    // grid: vertical lines at Cn = 1,2,4,...,256 (ln steps)
+    ctx.font='11px sans-serif';
+    var marks=[1,2,4,8,16,32,64,128,256];
+    for(var i=0;i<marks.length;i++){
+      var u=Math.log(marks[i]); if(u>UMAX+0.01) continue;
+      var x=X(u);
+      ctx.strokeStyle='#f0e2f2';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      ctx.fillStyle='#b48fb8';ctx.fillText(String(marks[i]), x-6, h-padB+16);
+    }
+    // preferred-zoom ticks (osc): u = m*2π/β  (each = one full ripple / λ multiply)
+    if(b>0.001){
+      var per=2*Math.PI/b;
+      ctx.strokeStyle='#8fd0dc';ctx.lineWidth=1.2;ctx.setLineDash([3,4]);
+      for(var m=1;m*per<=UMAX+1e-6;m++){
+        var xx=X(m*per);
+        ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,h-padB);ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+    // zero axis
+    ctx.strokeStyle='#d8c4dc';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0,Y(0));ctx.lineTo(x1,Y(0));ctx.stroke();
+    // envelope ±(Cn)^{-a}
+    ctx.strokeStyle='#cf9ad0';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    var s;
+    ctx.beginPath();for(s=0;s<=240;s++){var u2=UMAX*s/240;var e=Math.exp(-a*u2);ctx.lineTo(X(u2),Y(e));}ctx.stroke();
+    ctx.beginPath();for(s=0;s<=240;s++){var u3=UMAX*s/240;var e2=Math.exp(-a*u3);ctx.lineTo(X(u3),Y(-e2));}ctx.stroke();
+    ctx.setLineDash([]);
+    // main curve Re F = e^{-a u} cos(β u)
+    ctx.strokeStyle='#a02b8c';ctx.lineWidth=2.6;ctx.beginPath();
+    for(s=0;s<=680;s++){var u=UMAX*s/680; var y=Math.exp(-a*u)*Math.cos(b*u); ctx.lineTo(X(u),Y(y));}
+    ctx.stroke();
+    // axes labels
+    ctx.fillStyle='#6d5570';ctx.font='12px sans-serif';
+    ctx.fillText('サイズ n（対数目盛）→', x1-150, h-padB+30);
+    ctx.save();ctx.translate(15,ymid+34);ctx.rotate(-Math.PI/2);ctx.fillText('Re F（実部）', 0,0);ctx.restore();
+    // readout
+    if(b<0.05){
+      rd1.textContent='虚部 β = 0：ただのべき則（減衰する直線を Re で見た形）。閉じる周期がない ── n をどれだけ上げても二度と同じ値には戻らない。実数側の世界。';
+    }else{
+      var lam=Math.exp(2*Math.PI/b);
+      rd1.textContent='実部 a = '+a.toFixed(2)+'（包絡線の減衰＝ふつうの次元）／ 虚部 β = '+b.toFixed(1)
+        +' → お気に入りズーム λ = e^(2π/β) ≈ '+ (lam>=1000? lam.toExponential(2): lam.toFixed(2))
+        +'（n を λ 倍すると同じ位相に戻る＝縦の破線の間隔）。振動は大きさを変えず、位相だけを刻む。';
+    }
+  }
+  sa.addEventListener('input',draw1); sb.addEventListener('input',draw1);
+
+  /* ---------- 図2：複素平面に並ぶ次元 D_k = lnk/lnb + i·(2πk/lnb) ---------- */
+  var cv2=document.getElementById('cv2'),
+      sB=document.getElementById('sB'), vB=document.getElementById('vB'),
+      sK=document.getElementById('sK'), vK=document.getElementById('vK'),
+      rd2=document.getElementById('rd2');
+  function draw2(){
+    var B=parseInt(sB.value,10);
+    var K=parseInt(sK.value,10);
+    if(K>=B){ K=B-1; sK.value=K; }        // 残す数 < 分割数
+    if(K<1){ K=1; sK.value=1; }
+    vB.textContent=B; vK.textContent=K;
+    var d=setupHiDPI(cv2), ctx=d.ctx, w=d.w, h=d.h, padL=54, padR=120, padT=18, padB=36;
+    ctx.clearRect(0,0,w,h);
+    var Dre=Math.log(K)/Math.log(B);      // real part
+    var p=2*Math.PI/Math.log(B);          // imaginary spacing
+    var MMAX=3;                           // draw k=-3..3
+    var reMax=1.35;                       // Re axis 0..1.35
+    var imMax=(MMAX+0.6)*p;               // Im axis symmetric
+    function X(re){return padL+(re/reMax)*(w-padL-padR);}
+    function Y(im){return (padT+(h-padB))/2 - (im/imMax)*((h-padB-padT)/2);}
+    // axes
+    ctx.strokeStyle='#d8c4dc';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(X(0),padT);ctx.lineTo(X(0),h-padB);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(w-padR+30,Y(0));ctx.stroke();
+    // Re axis ticks
+    ctx.font='11px sans-serif';ctx.fillStyle='#b48fb8';
+    for(var t=0;t<=1.2;t+=0.2){ var x=X(t); ctx.strokeStyle='#f0e2f2';ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      ctx.fillStyle='#b48fb8';ctx.fillText(t.toFixed(1), x-8, h-padB+16); }
+    // real-part vertical marker
+    ctx.strokeStyle='#cf9ad0';ctx.lineWidth=1.6;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(X(Dre),padT);ctx.lineTo(X(Dre),h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a4489f';ctx.font='bold 12px sans-serif';
+    ctx.fillText('実部 = ln k / ln b = '+Dre.toFixed(3), X(Dre)+6, padT+14);
+    // spacing bracket (between k=1 and k=2) on the right side
+    ctx.strokeStyle='#1f8aa0';ctx.lineWidth=1.4;
+    var bx=X(Dre)+40;
+    if(bx>w-padR-6) bx=X(Dre)+40;
+    ctx.beginPath();ctx.moveTo(bx,Y(0));ctx.lineTo(bx,Y(p));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-4,Y(0));ctx.lineTo(bx+4,Y(0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-4,Y(p));ctx.lineTo(bx+4,Y(p));ctx.stroke();
+    ctx.fillStyle='#166f82';ctx.font='11px sans-serif';
+    ctx.fillText('刻み 2π/ln b', bx+7, Y(p/2)+4);
+    ctx.fillText('= '+p.toFixed(2), bx+7, Y(p/2)+18);
+    // dots
+    for(var k=-MMAX;k<=MMAX;k++){
+      var im=k*p, x=X(Dre), y=Y(im);
+      ctx.fillStyle = (k===0)? '#7a1f6c' : '#a02b8c';
+      ctx.beginPath();ctx.arc(x,y,(k===0?6:5),0,7);ctx.fill();
+      ctx.fillStyle='#8a5a86';ctx.font='11px sans-serif';
+      ctx.fillText('k='+k, x-40, y+4);
+    }
+    // axis labels
+    ctx.fillStyle='#6d5570';ctx.font='12px sans-serif';
+    ctx.fillText('実部（大きさの次元）→', w-padR-70, h-padB+30);
+    ctx.save();ctx.translate(16,(padT+(h-padB))/2+34);ctx.rotate(-Math.PI/2);ctx.fillText('虚部（ズームの刻み）', 0,0);ctx.restore();
+    // readout
+    var lam=B;
+    var name = (B===3&&K===2)? '＝ 中央3等分カントール集合' : '';
+    rd2.textContent='b='+B+' 等分して k='+K+' 個残す '+name+'。 実部（大きさの次元）= ln'+K+'/ln'+B+' = '+Dre.toFixed(3)
+      +' の一点に固定。虚部は間隔 2π/ln'+B+' = '+p.toFixed(2)+' で梯子状。この刻みがズーム比 '+lam+' の指紋。';
+  }
+  sB.addEventListener('input',draw2); sK.addEventListener('input',draw2);
+
+  window.addEventListener('resize',function(){draw1();draw2();});
+  function boot(){draw1();draw2();}
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(boot);}
+  setTimeout(boot,60); window.addEventListener('load',boot);
+})();
+</script>
+</body>
+</html>

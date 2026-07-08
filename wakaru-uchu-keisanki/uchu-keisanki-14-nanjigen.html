@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙は何次元か ── 容れ物は3、中身は2、UVも2</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#152023; --ink-soft:#41525a;
+    --paper:#eef4f8; --paper-edge:#d2e1ec;   /* 鋼青の紙：スケールと宇宙 */
+    --side:#2c5560; --side-bg:#e6eef2;
+    --warn:#8a4b2f;
+    --calc:#245a7a; --calc-bg:#e6eef4;
+    --rule:#c8d8e4; --hair:#a9c0d0;
+    --acc:#2b6a8f;    /* アクセント＝鋼青 */
+    --grid:#dbe6ee;
+    --d2:#2b6a8f; --ref:#9fb8c8; --homog:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#22303a;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bcdcea 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#213338;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6d9e4;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e6eef4;color:#245a7a;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+  table.dt .no3{color:var(--homog);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfdfe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef5f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c4359;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfdfe,#e9f0f5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} table.dt{font-size:12px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a7580;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 14 回（延長）／ 宇宙は何次元か</span></div>
+  <p class="eyebrow">「宇宙は3次元」は、どの物差しで・どのスケールで測った読み値なのか</p>
+  <h1>宇宙は何次元か
+    <span class="sub">第1回「次元は読み値 \(D=-d\ln F/d\ln n\)」を、宇宙そのものに当てる回。<br>答えは一つではない ── <strong>容れ物（空間）は〜3、中身（コズミックウェブ）は3ではない（フラクタル約2）、量子重力のUVでも2、情報でも2、余剰次元なら9〜10</strong>。物差しとスケールが、数を決める。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：次元は読み値／何を・どのスケールで測るかで数が変わる</span>
+    <span>フック式：\(N(\lt r)\propto r^{D}\)、\(D=\dfrac{d\ln N}{d\ln r}\)</span>
+  </div>
+
+  <p class="lead">「宇宙は何次元？」── 素直に「3次元（＋時間）」と答えたくなります。でも第1回で見たとおり、<strong>次元は世界が持つ数ではなく、こちらの物差しが返す読み値</strong> \(D=-d\ln F/d\ln n\)。だとすれば「宇宙は何次元か」にも<em>単一の答えはない</em> ── 何を、どのスケールで測るかを決めて、初めて数が出る。この回では、いろんな"説"を一つの物差しで並べます。先に結論だけ言うと ── <strong>容れ物としての空間は〜3。だが、その中に実際にできている構造（銀河の網）は、3ではありません。</strong></p>
+
+  <h2><span class="n">01</span>まず物差しを一本 ── 次元は「数える」で測る</h2>
+
+  <p>いちばん平たい次元の測り方：<em>半径 \(r\) の球の中に、中身はいくつ入るか。</em>その増え方の肩が次元です。</p>
+
+  <div class="keybox">
+    <div class="lbl">数える次元（第1回の物差し）</div>
+    $$N(\lt r)\propto r^{D}\quad\Longrightarrow\quad D=\frac{d\ln N}{d\ln r}$$
+    <p style="margin:10px 0 0;">半径2倍で中身が \(2^D\) 倍。線なら \(D=1\)、面なら2、立体なら3。\(D\) は非整数も取れるし、<strong>スケールで走る</strong>（第1回）。「宇宙は何次元」は、この \(D\) を<em>何に・どこで</em>当てるかの問いに分解されます。</p>
+  </div>
+
+  <h2><span class="n">02</span>容れ物は〜3 ── 力の薄まり方が言う</h2>
+
+  <p>まず"空間そのもの"。空間の次元は、<strong>力がどう薄まるか</strong>で測れます（ガウスの法則）。\(d\) 次元空間では、点源から出た力線が半径 \(r\) の球面 \(\propto r^{d-1}\) に薄まる：</p>
+
+  <div class="keybox">
+    <div class="lbl">逆二乗 ⟺ 空間3次元</div>
+    $$F\propto\frac{1}{r^{\,d-1}}\quad\xrightarrow{\ d=3\ }\quad F\propto\frac{1}{r^{2}}$$
+  </div>
+
+  <p>私たちの重力も電気力も逆二乗＝\(d=3\)。これが「宇宙は3次元」の中身で、逆二乗は<strong>ミリ以下（〜50µm）まで精密に検証</strong>されています（第11回）。ただし ── これは<em>容れ物</em>（空間の広がり方）の話。中に何がどう入っているかは、別の物差しが要ります。</p>
+
+  <h2><span class="n">03</span>中身は3ではない ── 銀河は網を作る（コズミックウェブ）</h2>
+
+  <p>その容れ物の中に、実際にできている構造を見ます。銀河は空間を<em>一様に</em>は満たしていません。<strong>フィラメント（糸）と壁、そして巨大なボイド（空洞）</strong>の、スカスカな網 ── コズミックウェブ。これを §01 の物差しで測ると、<strong>3より小さい</strong>。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 銀河の数え方が返す次元</span>
+    <p style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;font-size:13px;color:var(--calc);font-weight:600;margin:6px 0 -6px;">2点相関関数（銀河がどれだけ群れているか）</p>
+    $$\xi(r)=\Big(\frac{r}{r_0}\Big)^{-\gamma},\quad \gamma\approx1.8,\ r_0\approx5\,h^{-1}\text{Mpc}$$
+    <p style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;">半径 r 内の銀河数から測る次元</p>
+    $$D_2=\frac{d\ln N(\lt r)}{d\ln r}\approx 1.2\text{〜}2\quad(\text{小〜中スケール、}\ \lt\text{数十 Mpc})$$
+    <p style="margin-bottom:14px;">銀河が"群れる"ぶん、半径を広げても中身は立体（\(r^3\)）ほど速く増えない ── だから \(D_2<3\)。糸と空洞の網は、次元でいえば<strong>面と線の中間（約2）</strong>なのです。</p>
+  </div>
+
+  <p>ところが、もっと大きく広げていくと \(D_2\) は<strong>3に近づきます</strong>。ある大きさを超えると、宇宙はどこも同じ密度に見える（宇宙原理＝均質）。その境目が<strong>均質化スケール \(R_H\approx70\text{〜}100\,h^{-1}\)Mpc</strong>（"End of Greatness"、WiggleZ で 71–81）。下の図で、この走りを動かしてみましょう。</p>
+
+  <div class="fig">
+    <div class="cap">図：コズミックウェブのフラクタル次元 \(D_2\) は<strong>スケールで走る</strong>。スライダーで測る半径 \(r\) を変えると、<span style="color:var(--d2);font-weight:700;">構造がある小〜中スケールでは \(D_2\approx2\)（3ではない）</span>、<span style="color:var(--homog);font-weight:700;">均質化スケール(帯)を超えると \(D_2\to3\)</span>（構造が均されて消える）</div>
+    <canvas id="cv" width="680" height="350"></canvas>
+    <div class="controls">
+      <label>測る半径 \(r\)（\(h^{-1}\)Mpc、対数）<span class="val" id="vr">1.0</span>
+        <input type="range" id="sr" min="-1" max="3" step="0.02" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--d2);"></i>測った次元 \(D_2(r)\)</span>
+      <span><i class="swatch" style="background:var(--homog);"></i>均質化スケール（\(D_2\to3\)）</span>
+      <span><i class="swatch" style="background:var(--ref);"></i>参照線 \(D=2,3\)</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">フラクタル宇宙論争 ── そして決着</span>
+    「宇宙はどこまでもフラクタル（\(D_2\) は3にならない）」という主張が一時期ありました（Pietronero ら）。だが大規模サーベイ（SDSS・WiggleZ）で、\(R_H\sim70\text{–}100\,h^{-1}\)Mpc で<strong>均質化する（\(D_2\to3\)）</strong>ことが確かめられ、決着しています。つまり<em>構造が"ある"スケール（網が見える所）では3ではなく、3になった時には構造そのものが消えている</em>。中身の次元が3でないのは、この二段構えです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>もっと小さく潜ると ── 時空のUVでも2に走る</h2>
+
+  <p>逆に、うんと<em>小さい</em>スケール（量子重力＝プランク長へ）へ潜ると、こんどは<strong>時空そのものの次元</strong>が走ります。拡散（熱核）で測る<strong>スペクトル次元</strong> \(d_s\) は、大スケールで4、プランク近傍で約2へ ── <em>次元的縮約</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">スペクトル次元の走り（量子重力）</div>
+    $$d_s=-2\frac{d\ln P(\sigma)}{d\ln\sigma}:\quad d_s\xrightarrow{\ \text{大スケール}\ }4,\qquad d_s\xrightarrow{\ \text{Planck}\ }\approx2$$
+    <p style="margin:10px 0 0;">因果的動的単体分割（CDT）で \(d_s=4.02\pm0.10\to1.80\pm0.25\)、漸近的安全性・Hořava 重力でも同じ ── 複数の独立な手法が、そろって「UVで≈2」を返す。走るのは拡散で測る<strong>スペクトル次元</strong>で、体積で測るハウスドルフ次元は約4のまま（この二つは混同されやすい）。第1回の「\(D\) は走る読み値」が、時空の<strong>最深部</strong>でも起きている。</p>
+  </div>
+
+  <h2><span class="n">05</span>情報で測れば2 ── ホログラフィー</h2>
+
+  <p>「何を数えるか」を<em>情報</em>にすると、また別の数が出ます。領域の自由度は、体積ではなく<strong>面積</strong>に比例する（ホログラフィー）：</p>
+
+  <div class="keybox">
+    <div class="lbl">情報の次元＝2（面積則）</div>
+    $$S\le\frac{A}{4\ell_P^{2}},\qquad N_{\text{自由度}}\propto A\propto r^{2}$$
+    <p style="margin:10px 0 0;">立体（\(r^3\)）ぶんの情報は入らない ── 入るのは境界（\(r^2\)）ぶんだけ。だから情報で測る次元は<strong>2</strong>（第1回既出）。't Hooft・Susskind。</p>
+  </div>
+
+  <h2><span class="n">06</span>「3より大きい」が正しくなる唯一の読み ── 余剰次元</h2>
+
+  <p>ここまで出た数は 3・2・2 と、むしろ<em>3以下</em>。では「3より大きい」はどこで正しくなるか ── <strong>基層の時空に、丸まった余剰次元がある</strong>という仮説の中でだけです。</p>
+
+  <table class="dt">
+    <tr><th>説</th><th>時空の次元</th><th>根拠</th></tr>
+    <tr><td>弦理論</td><td><span class="d">10</span>（空間9＋時間1）</td><td>臨界次元（Weyl 異常の相殺）</td></tr>
+    <tr><td>M理論</td><td><span class="d">11</span></td><td>超重力の最大次元</td></tr>
+    <tr><td>ボソン弦</td><td><span class="d">26</span></td><td>臨界次元</td></tr>
+  </table>
+
+  <p>余分な次元は<strong>小さく丸まって（compactified）</strong>いて、日常では見えない。ただし ── 重力だけが余剰次元に漏れると、<strong>短距離で逆二乗がズレる</strong>。これは第11回「隠れた次元は \(1/r^{2+n}\) の署名」そのもの：</p>
+
+  <div class="keybox">
+    <div class="lbl">余剰次元は、逆二乗のズレで探す（第11回）</div>
+    $$V(r)=-\frac{Gm_1m_2}{r}\Big[1+\alpha\,e^{-r/\lambda}\Big],\qquad r\ll\lambda:\ \ V\propto\frac{1}{r^{\,1+n}},\ \ F\propto\frac{1}{r^{\,2+n}}$$
+    <p style="margin:10px 0 0;">大きな余剰次元（ADD）なら \(M_{\rm Pl}^2=M_*^{\,2+n}R^n\)。ねじれ秤（Eöt-Wash）は逆二乗を \(52\,\mu\)m まで検証し、重力強度のズレを \(\lambda>38.6\,\mu\)m で棄却 ── <strong>今のところ兆候なし</strong>。「3より大きい」は、まだ検証されていない仮説です。</p>
+  </div>
+
+  <h2><span class="n">07</span>全説マップ ── 一つに集まらない</h2>
+
+  <p>ぜんぶ並べます。同じ物差し \(D=-d\ln F/d\ln n\) を、何に・どのスケールで当てたかの違いです。</p>
+
+  <table class="dt">
+    <tr><th>説 / 測るもの</th><th>式</th><th>次元 \(D\)</th><th>3か</th></tr>
+    <tr><td>容れ物：空間</td><td>\(F\propto1/r^{d-1}\)（逆二乗）</td><td><span class="d">3</span></td><td>ほぼ3（容れ物）</td></tr>
+    <tr><td>中身：コズミックウェブ</td><td>\(N(\lt r)\propto r^{D_2}\)</td><td><span class="no3">≈1.2〜2</span> →3</td><td class="no3">3ではない（→3で均質化）</td></tr>
+    <tr><td>量子重力UV：スペクトル次元</td><td>\(P(\sigma)\propto\sigma^{-d_s/2}\)</td><td><span class="no3">4→2</span></td><td class="no3">UVで2</td></tr>
+    <tr><td>情報：ホログラフィー</td><td>\(S\le A/4\ell_P^2\)</td><td><span class="no3">2</span></td><td class="no3">2（面積則）</td></tr>
+    <tr><td>臨界現象（現象ごと）</td><td>上部臨界次元 \(d_c\)</td><td><span class="d">4・6・2</span></td><td>現象ごと</td></tr>
+    <tr><td>余剰次元（弦・仮説）</td><td>\(1/r^{2+n}\)、\(M_{\rm Pl}^2{=}M_*^{2+n}R^n\)</td><td><span class="d">9〜10</span></td><td>3より大（仮説）</td></tr>
+    <tr><td>複素次元（第8回）</td><td>\(D=a+i\beta\)</td><td><span class="d">複素</span></td><td>非整数</td></tr>
+  </table>
+
+  <h2><span class="n">08</span>種明かし ── 「3ちょうど」は一つの読み値にすぎない</h2>
+
+  <p>数は 2, 3, 4, 6, 9, 10… と<strong>一つに集まりません</strong>。これは矛盾ではなく、第1回の結論そのもの ── <em>次元は世界が持つ数ではなく、物差しとスケールが返す読み値</em>。だから「宇宙は何次元か」に単一の答えはない。</p>
+
+  <div class="keybox">
+    <div class="lbl">混ぜてはいけない</div>
+    <p style="margin:6px 0 0;"><strong>容れ物の3</strong>（空間の広がり）と、<strong>中身の〜2</strong>（銀河の網）と、<strong>UVの2</strong>（時空の最深部）と、<strong>情報の2</strong>（面積則）と、<strong>余剰の9〜10</strong>（基層の仮説）は、<em>別々の問いへの、別々の答え</em>。同じ「次元」という言葉で呼ぶだけで、測っている対象が違う。</p>
+  </div>
+
+  <p>そして、あなたの問いへの答え ── <strong>「宇宙の構造は3ではない」は正しい</strong>（中身のコズミックウェブはフラクタル約2）。<strong>「3より大きい」は、余剰次元（仮説）の読みでだけ正しい</strong>。二つは別の問いで、どちらも "3ちょうど" ではない、という点で、あなたの直感は当たっています。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">コズミックウェブの均質化（\(D_2\to3\)）は標準宇宙論（ΛCDM・宇宙原理）と整合し、「無限に自己相似なフラクタル宇宙」説は棄却されています。\(D_2\) の具体値は試料・定義（相関次元か箱数えか、スケール範囲）で幅があります（\(\approx1.2\)〜\(2.5\)）。スペクトル次元 \(4\to2\) は複数の量子重力手法が返す<strong>理論内の量</strong>で、我々の宇宙で直接測ったものではありません。余剰次元は現状<strong>兆候ゼロの仮説</strong>。ホログラフィーの厳密版は反ド・ジッター（箱）で確立、我々のド・ジッター宇宙版は未踏（第1回既出）。</p>
+    <p style="margin-bottom:0;">そして最大の穴 ── <strong>「なぜ容れ物の空間はちょうど3次元か」</strong>は、この枠組みではなく物理全体の未解決（第1回・第11回）。この回がしたのは「一つの数はない、物差しとスケールで決まる」を宇宙スケールで示したことで、「3の理由を解いた」ではありません ── 掟どおり、旗は立てません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この回の内容で解けます）</div>
+    <ol>
+      <li>「宇宙は3次元」と「コズミックウェブは約2次元」は矛盾するか。
+        <details><summary>答えを見る</summary><div class="ans">矛盾しない。前者は<strong>容れ物</strong>（空間の広がり、逆二乗 ⟺ \(d=3\)）、後者は<strong>中身</strong>（物質分布のフラクタル次元）。別の物差し。銀河は3次元空間を一様に満たさず、糸と空洞の網を作るので、"分布"の次元は3より小さくなる。</div></details>
+      </li>
+      <li>コズミックウェブの \(D_2\) が大スケールで3に近づくのはなぜで、それは何を意味するか。
+        <details><summary>答えを見る</summary><div class="ans">均質化（宇宙原理）。\(R_H\sim70\text{–}100\,h^{-1}\)Mpc を超えると平均密度が一定に見え、構造が均されて \(D_2\to3\)。つまり「3になったスケールでは、もう"構造"は消えている」。網が見えるのは3未満のスケールだけ。</div></details>
+      </li>
+      <li>「宇宙は3より大きい次元」が正しくなるのはどの説か。中身の次元とどう違うか。
+        <details><summary>答えを見る</summary><div class="ans">基層の時空に丸まった<strong>余剰次元</strong>がある説（弦10・M理論11、仮説）。逆二乗のズレ \(1/r^{2+n}\) で探すが、現状兆候なし。これは<em>容れ物の基層</em>の話で、<em>中身（コズミックウェブ）</em>のフラクタル次元（約2、3より小）とは別の問い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>宇宙は何次元か ── 物差しとスケールが決める</h2>
+    <p>「宇宙は何次元か」に単一の答えはない（第1回「次元は読み値」）。<strong>容れ物の空間は〜3</strong>（逆二乗）。だが<strong>中身のコズミックウェブは3ではない</strong> ── フラクタル次元 \(D_2\approx2\) で、均質化スケール(\(\sim100\,h^{-1}\)Mpc)を超えて初めて3に漸近する。さらに<strong>量子重力のUVでは2</strong>（スペクトル次元 4→2）、<strong>情報では2</strong>（面積則）、<strong>余剰次元なら9〜10</strong>（仮説、\(1/r^{2+n}\)で探索中）。</p>
+    <p>数は一つに集まらない（2,3,4,6,9,10…）── それが結論。同じ「次元」でも測る対象が違うから混ぜてはいけない。「宇宙の構造は3ではない」は中身のフラクタルとして正しく、「3より大きい」は余剰次元（仮説）としてのみ正しい。残る「なぜ空間はちょうど3か」は、開けたまま置く ── 旗は立てない。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef5f8;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-13-tama.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eef5f8;font-weight:600;letter-spacing:.03em;">← 第13回：玉なんて無かった</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第14回（延長）です。次元の測り方 \(D=d\ln N/d\ln r\)、ガウスの法則（\(d\) 次元で \(F\propto1/r^{d-1}\)、逆二乗 ⟺ 3次元空間）と逆二乗の精密検証（ねじれ秤 Eöt-Wash、52µm まで、Lee et al. 2020）、銀河2点相関関数（\(\xi(r)=(r/r_0)^{-\gamma}\)、\(\gamma\approx1.8\)、\(r_0\approx5\,h^{-1}\)Mpc）とコズミックウェブのフラクタル/相関次元（小〜中スケールで \(D_2\approx1.2\)–\(2\)）、均質化スケール（\(\sim70\)–\(100\,h^{-1}\)Mpc、実測は 71–81、Scrimgeour ら 2012・Hogg ら 2005）とフラクタル宇宙論争（Pietronero）の決着、量子重力のスペクトル次元（拡散で測る量）の走り（\(4.02\to1.80\)、CDT の Ambjørn–Jurkiewicz–Loll 2005、漸近的安全性、Hořava 重力。体積で測るハウスドルフ次元は約4のまま）、ホログラフィック境界 \(S\le A/4\)（'t Hooft・Susskind・Bekenstein）、上部臨界次元（イジング/φ⁴＝4・浸透＝6・共形＝2）、弦理論の臨界次元（10、M理論11、ボソン26）と大きな余剰次元（ADD、\(1/r^{2+n}\)）は、いずれも確立した物理／数学、または明示された仮説です。\(D_2\) の値は試料・定義・スケール範囲で幅があります。スペクトル次元は理論内の量で直接観測ではなく、余剰次元は現状兆候のない仮説、ホログラフィーの厳密版はAdSで確立・dS版は未踏、「空間はなぜ3次元か」は未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで測る半径を変えると、コズミックウェブの次元 \(D_2\) が2から3へ走る様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sr=document.getElementById('sr'), vr=document.getElementById('vr'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var U0=-1, U1=3, DMAX=3.3;   // u=log10(r Mpc/h), D2 0..3.3
+  var H0log=Math.log(70)/Math.LN10, H1log=Math.log(100)/Math.LN10; // 均質化帯 70-100
+  function D2(u){ return 3 - 1.8/(1+Math.exp((u-0.3)*2.6)); }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=48, padB=40, padT=16, padR=14;
+    var u=parseFloat(sr.value);
+    var r=Math.pow(10,u); vr.textContent = (r<1? r.toFixed(2) : (r<100? r.toFixed(1) : Math.round(r)));
+    function X(uu){return padL+(uu-U0)/(U1-U0)*(w-padL-padR);}
+    function Y(D){return (h-padB)-(D/DMAX)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 均質化帯
+    ctx.fillStyle='rgba(176,106,18,0.10)';
+    ctx.fillRect(X(H0log),padT,X(H1log)-X(H0log),(h-padB)-padT);
+    ctx.fillStyle='#b06a12';ctx.font='10px sans-serif';
+    ctx.fillText('均質化帯', X(H0log)+2, padT+12);
+    // グリッド縦（0.1,1,10,100,1000 Mpc）
+    ctx.font='11px sans-serif';
+    for(var iu=-1; iu<=3; iu++){
+      var x=X(iu);
+      ctx.strokeStyle='#e7eef3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-padB);ctx.stroke();
+      var lab=(iu<0?'0.1':(iu===0?'1':(iu===1?'10':(iu===2?'100':'1000'))));
+      ctx.fillStyle='#8aa0ae';ctx.fillText(lab, x-8, h-padB+15);
+    }
+    // 参照線 D=2,3
+    ctx.setLineDash([4,4]);ctx.lineWidth=1.3;
+    [2,3].forEach(function(Dr){
+      ctx.strokeStyle='#9fb8c8';ctx.beginPath();ctx.moveTo(X(U0),Y(Dr));ctx.lineTo(X(U1),Y(Dr));ctx.stroke();
+      ctx.fillStyle='#7d94a4';ctx.fillText('D='+Dr, X(U0)+4, Y(Dr)-4);
+    });
+    ctx.setLineDash([]);
+    // 軸
+    ctx.strokeStyle='#a9c0d0';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(padL,padT);ctx.lineTo(padL,h-padB);ctx.lineTo(w-padR,h-padB);ctx.stroke();
+    ctx.fillStyle='#5a6b76';ctx.font='12px sans-serif';
+    ctx.fillText('測る半径 r（h⁻¹Mpc, 対数）→', w-220, h-padB+30);
+    ctx.save();ctx.translate(14,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('測った次元 D₂', 0,0);ctx.restore();
+    // D2(u) 曲線
+    ctx.strokeStyle='#2b6a8f';ctx.lineWidth=3;ctx.beginPath();var f=true;
+    for(var uu=U0; uu<=U1+1e-9; uu+=0.02){
+      var x=X(uu), y=Y(D2(uu)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // カーソル
+    var mx=X(u), md=D2(u);
+    ctx.strokeStyle='#9aa8b2';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(mx,padT);ctx.lineTo(mx,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2b6a8f';ctx.beginPath();ctx.arc(mx,Y(md),6,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    // readout
+    var homog = (u>=H0log);
+    if(homog){
+      rd.style.background='#f4ecdd';rd.style.color='#8a5a1e';
+      rd.innerHTML='r ≈ '+(r<100?r.toFixed(1):Math.round(r))+' h⁻¹Mpc → D₂ ≈ '+md.toFixed(2)+'。<b>均質化領域：D₂→3。ここでは構造が均されて消えている</b>（宇宙原理）。';
+    } else {
+      rd.style.background='#e6eef4';rd.style.color='#245a7a';
+      rd.innerHTML='r ≈ '+(r<1?r.toFixed(2):r.toFixed(1))+' h⁻¹Mpc → D₂ ≈ '+md.toFixed(2)+'。<b>構造がある領域：D₂ は3より小さい</b>（フィラメントとボイドの網＝コズミックウェブ）。';
+    }
+  }
+  sr.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

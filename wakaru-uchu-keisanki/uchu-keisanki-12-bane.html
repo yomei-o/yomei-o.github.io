@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バネ網ひとつで ── 力は薄まりながら隣へ伝わる振動、だから計算機に載る</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1b222a; --ink-soft:#4c5764;
+    --paper:#eef1f5; --paper-edge:#d7dee6;   /* 石板の紙：連結・メタ */
+    --side:#3a4e63; --side-bg:#e4e9ef;
+    --warn:#8a5a2a;
+    --calc:#3a4e63; --calc-bg:#e6eaf0;
+    --rule:#cdd6e0; --hair:#adb9c7;
+    --acc:#3a4e63;    /* アクセント＝石板青 */
+    --spring:#b06a3a; /* バネ＝銅 */
+    --grid:#dbe2ea;
+    --grav:#4a4670; --em:#0d7d84; --weak:#a02b8c; --strong:#b5432a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#232c36;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #c8d6e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#232e3a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f2ebe0;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3d2f18;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c8d2de;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f7f9fb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  button.btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;color:#fff;background:var(--acc);border:none;border-radius:4px;
+    padding:9px 16px;cursor:pointer;letter-spacing:.04em;}
+  button.btn:hover{background:#2c3d4e;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.7;
+    background:#e6eaf0;color:#2f3f52;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .ep{font-family:sans-serif;font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+  table.dt td b.gr{color:var(--grav);} table.dt td b.em{color:var(--em);}
+  table.dt td b.wk{color:var(--weak);} table.dt td b.st{color:var(--strong);}
+  table.dt td b.sp{color:var(--spring);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#f9fbfc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eaeff4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#26333f;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#f9fbfc,#e7ecf1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#5f6b78;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 12 回（延長・連結）／ バネ網ひとつで</span></div>
+  <p class="eyebrow">「力＝薄まりながら隣へ伝わるバネの振動」── その一言で、全部が一枚に落ちる</p>
+  <h1>バネ網ひとつで
+    <span class="sub">場＝格子に張られた<strong>バネ網</strong>。力はそこを伝わる<strong>さざ波</strong>。局所結合＋有限速度＝そのまま<strong>計算機に載る</strong>。第1〜11回の現象が、この一枚に落ちる。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：場＝連結振動子、力＝伝播する波、局所更新だから計算機に載る</span>
+    <span>フック式：\(\partial_t^2 u=c^2\nabla^2u-m^2u\)</span>
+  </div>
+
+  <p class="lead">前回までを、読者のひとりが一言でまとめてしまいました ── <em>「力って、薄まりながらバネの振動がどんどん隣の格子に伝わっていくことじゃん。だから計算できるのね」</em>。これは比喩ではなく、<strong>場の理論の文字どおりの正体</strong>です。この回は新ネタを足しません。<em>その一言が、シリーズ全部をどう束ねるか</em>を一枚の対応表と、動く<strong>バネ網</strong>で見せる ── 連結の回です。</p>
+
+  <div class="aside">
+    <span class="tag">この回だけ読む人へ（前提の一枚）</span>
+    このシリーズ「宇宙は計算機」は、宇宙を<strong>物理でなく計算の過程</strong>として眺める読み物です。前回までに一本の道具を作りました ── <strong>\(F=1/(Cn)^D\)</strong>。これは新しい力の法則<em>ではなく</em>、「あるもの \(F\) が、距離やサイズ \(n\) を大きくすると<strong>どの割合で減るか</strong>」を測る<strong>ものさし</strong>で、その「減り方の急さ」を表す数が次元 \(D\) です（両対数グラフに描いたときの傾き）。\(D=2\) なら「距離が2倍で1/4」＝おなじみの<strong>逆二乗の法則</strong>（電気の力や重力）。第10回では四つの力ごとに \(D\) が変わること、第11回では \(D\) が<strong>ちょうど 2</strong> のときだけ原子や惑星が安定に存在できることを見ました。<strong>この回は、その「力」の中身を、バネのおもちゃで最後まで開けてみます。</strong> 前の回を読んでいなくても大丈夫なように書きます。
+  </div>
+
+  <h2><span class="n">01</span>場＝重り＋バネの網。あなたの言い直しは教科書そのもの</h2>
+
+  <p>まず「<strong>場</strong>（field）」という言葉。空間のすみずみに値が割り当たっているもの ── 電場・磁場・重力場などの総称です。これを機械のイメージに落とすと：<strong>格子状に並べた無数の<em>おもり</em>を、隣どうし<em>バネ</em>でつないだ網</strong>。物理の言葉ではこれを<em>連結した調和振動子</em>（バネにつながれて行ったり来たり振動するおもりが、たがいに繋がったもの）と呼び、これが場の第一原理レベルの定義です。</p>
+
+  <p>身近な絵で言えば、ぴんと張った<strong>トランポリンの面</strong>や<strong>水面</strong>、あるいは<strong>マットレスのバネ</strong>。どこか一点をつつくと、へこみが<em>隣へ隣へと伝わり、広がりながら弱まって</em>いく。この「つつくと波が伝わる」が、そのまま<strong>力が働く</strong>ということです。そして：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;">
+    <li><strong>力を伝える粒子</strong>（光の粒＝光子、強い力を伝えるグルーオンなど。まとめて「仲介粒子」）＝ 網を伝わる<strong>さざ波</strong>そのもの。粒子と波は、同じバネ網の別の顔です。</li>
+    <li><strong>「隣の格子に伝わる」</strong>＝ おもりは<em>隣とだけ</em>繋がっている（近傍結合）。だから揺れは1歩で隣までしか進めない → <em>伝わる速さに上限がある＝それが光速 \(c\)</em>。「原因より先に結果は伝わらない」という因果律（第4回）は、この「隣までしか」の言い換え。</li>
+    <li><strong>「薄まりながら」</strong>＝ さざ波は広がる輪（波面）に散らばるので、遠いほど1点あたりの揺れが小さくなる。3次元空間なら輪の面積は距離の2乗で増えるので、力は \(1/r^2\) で薄まる ── これが \(D=2\)（第1・10・11回）。</li>
+  </ul>
+
+  <p>これを式に書くと、バネ網の動きはそのまま <strong>\(\partial_t^2 u=c^2\nabla^2 u-m^2u\)</strong> という一本の<strong>波の方程式</strong>になります（物理では「クライン–ゴルドン方程式」と呼ぶもの。\(u\) は各点の揺れの大きさ、左辺は揺れの加速度、右辺の第1項が「隣から引っぱられる力」、第2項の \(m^2u\) が後で出てくる「その場バネ」）。第1回では「\(F=1/(Cn)^D\) は力の式ではなく<em>ものさし</em>」と言いました。ではものさしが測っていた「力」の中身は何だったのか ── その答えが、<em>この一本のバネ網</em>だった、というのがこの回です。</p>
+
+  <h2><span class="n">02</span>一枚の対応表 ── 前回までの現象は、バネのどの部品か</h2>
+
+  <p>シリーズで別々に見てきた現象が、全部このバネ網の<strong>部品</strong>に落ちます。色は各回のもの ── この表が「他の回を束ねる」ことの地図です。</p>
+
+  <table class="dt">
+    <tr><th>これまで見た現象</th><th>バネ網での正体</th><th>回</th></tr>
+    <tr><td>場そのもの</td><td>格子に並ぶ<b class="sp">重り＋近傍バネ</b>（連結振動子）</td><td class="ep">全体</td></tr>
+    <tr><td>仲介粒子</td><td>網を伝わる<b class="sp">さざ波</b>（振動モード）</td><td class="ep">10</td></tr>
+    <tr><td>有限の伝播速度＝\(c\)・光円錐</td><td>1ステップで<b class="sp">隣までしか伝わらない</b>局所結合</td><td class="ep">2・4</td></tr>
+    <tr><td>薄まり \(1/r^{D}\)</td><td>さざ波が波面 \(r^{d-1}\) に<b class="sp">分散</b></td><td class="ep">1・10・11</td></tr>
+    <tr><td>質量ゼロ → \(D=2\)（<b class="gr">重力</b>・<b class="em">電磁気</b>）</td><td>近傍バネだけ → 素直な逆二乗</td><td class="ep">10・11</td></tr>
+    <tr><td><b class="wk">弱い力</b> \(D\to\infty\)</td><td>各格子を定位置に留める<b class="sp">「その場バネ」＝質量項</b> → 指数で減衰</td><td class="ep">10</td></tr>
+    <tr><td><b class="st">強い力</b> \(D\to0\)</td><td><b class="sp">非線形バネ</b>（撚れて残るフラックスチューブ）</td><td class="ep">10</td></tr>
+    <tr><td>\(D=2\) は刃（安定な束縛）</td><td>バネ網が<b class="sp">安定に振動＝状態を蓄えられる</b>幾何</td><td class="ep">11</td></tr>
+    <tr><td>複素次元・対数周期</td><td>バネ網に<b class="sp">離散スケールの階層</b>（自己相似の刻み）</td><td class="ep">8</td></tr>
+    <tr><td>情報の式 → 微分方程式</td><td>格子間隔 \(\to0\) の<b class="sp">連続極限</b>（差分→微分）</td><td class="ep">9</td></tr>
+  </table>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>だから計算できる ── これがシリーズの背骨だった</h2>
+
+  <p>「だから計算できるのね」は、この一枚の<strong>いちばん深い一言</strong>です。なぜそう言えるか。バネ網は<em>局所</em>（各おもりは隣としか繋がっていない）で<em>有限速度</em>（1歩＝1格子ぶんしか伝わらない）。だとすると、<strong>あるおもりの「次の瞬間の揺れ」は、自分と隣の「今の揺れ」だけで決まる</strong> ── この「今から次を計算する手順」を<strong>更新規則</strong>と呼びます。ということは：</p>
+
+  <div class="keybox">
+    <div class="lbl">連結の芯</div>
+    <p style="margin:6px 0 0;"><strong>局所的なバネ（近傍だけ）＋ 有限速度 ＋ 更新規則 ＝ コンピュータがそのまま1歩ずつ前へ進められる形。</strong> 全体を一度に解く必要がなく、各点を隣の値から少しずつ更新していけばよい ── これはまさに計算機の得意技。しかもこれは思想でなく<strong>実務</strong>でもある：<em>格子QCD</em>（時空を細かい格子に刻んでバネ変数を並べ、スーパーコンピュータで実際に回して強い力を数値計算する、数十年つづく巨大な計算物理の分野）がその実例です。第2回（宇宙をどんな計算機とみなすか）→第4回（伝わり方の地図＝因果グラフ）→第5回（近道がなく走らせるしかない場合）が、この一言で一本に繋がります。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：生きた<strong>バネ網</strong>（2次元）。「パルスを送る」で中心を弾くと、さざ波が<strong>隣へ隣へと有限速度で伝わり、広がりながら薄まる</strong>＝これが力。スライダー「その場バネ（質量項）」を上げると、各格子が定位置に引き戻され、<strong>波が指数で消える＝短距離力（弱い力・第10回）</strong>。ゼロなら遠くまで届く＝長距離力（\(D=2\)）。<span style="color:var(--spring)">赤＝手前へ／青＝奥へのゆれ。</span></div>
+    <canvas id="cv" width="680" height="382"></canvas>
+    <div class="controls">
+      <label>その場バネ（質量項 \(m^2\)）<span class="val" id="vm">0.000</span>
+        <input type="range" id="sm" min="0" max="0.06" step="0.001" value="0">
+      </label>
+      <button class="btn" id="btn" type="button">パルスを送る</button>
+    </div>
+    <div class="readout" id="rd">「パルスを送る」で中心を弾いてください。質量項を上げると波の届く距離が縮みます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#3a4e63;"></i>重り（格子点）</span>
+      <span><i class="swatch" style="background:#b0603a;"></i>手前へのゆれ（＋）</span>
+      <span><i class="swatch" style="background:#34618c;"></i>奥へのゆれ（−）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">04</span>正直な線 ── 「計算機に載る」と「楽に解ける」は別</h2>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ①　載る ≠ 解ける</span>
+    <p style="margin-top:0;">バネが<strong>線形</strong>（伸ばした量ちょうどに比例して戻ろうとする＝素直なバネ）なら、揺れをきれいな正弦波の重ね合わせに分解して<strong>一発で答えが書けます</strong>。でもそれは、波どうしがすり抜けるだけで<em>ぶつからない</em>世界＝力が働き合わない「自由場」＝<strong>ラクすぎて面白いことが何も起きない</strong>世界。本物の力（たとえば強い力の閉じ込め）は<strong>非線形なバネ</strong>（揺れが大きいと戻り方がねじれる＝波どうしが影響し合う）で、きれいには分解できず、<em>実際に最初から最後まで計算機を回してみるしかない</em>。この「近道がない」性質を第5回で<strong>計算不可約性</strong>と呼びました。だから正しくは「局所更新だから<strong>計算機に載せられる</strong>」であって、「だから<strong>楽に解ける</strong>」ではない ── <em>手順に書けること</em>と<em>近道があること</em>は別物です。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ②　格子は足場か、土台か</span>
+    <p style="margin:0;">「隣の格子に伝わる」は最高の計算イメージですが、落とし穴があります。碁盤の目のような格子を素直に置くと、<strong>縦横の向きや静止した特別な視点</strong>がこっそり生まれてしまう。ところが相対性理論の芯は「<strong>どんな速さで動く人から見ても物理法則は同じ</strong>」（ローレンツ不変性）で、格子はこれを壊します（＝<em>特別な基準系ができる</em>。第2回で単純な格子モデルが失格した理由）。しかも、格子の目をどんどん細かくして<strong>なめらかな空間に戻す操作</strong>（連続極限）がうまく成り立つのは、特別な状況（臨界点）でだけ（第9回）。だから格子は、計算のために一時的に敷いた<strong>足場（scaffold）</strong>にすぎないのか、それとも時空の<strong>本当の土台</strong>なのか ── まだ誰も決着をつけていません。これがシリーズを通しての「<strong>一つの穴</strong>」。バネ網は<em>イメージとしては本物、世界の基層かどうかは賭け</em>。ここは埋めません ── 「解けた」とは言わない、が全体の掟です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>弱い力が短距離なのは、バネ網のどの部品のせい？
+        <details><summary>答えを見る</summary><div class="ans">おもりを隣と繋ぐ近傍バネに加えて、<strong>各おもりを自分の定位置に引き戻す「その場バネ」</strong>があるせい。式では \(m^2u\) の項で、この \(m\) が「力を伝える粒子の重さ（質量）」に対応します。これがあると、揺れの伝わり方（波長と振動数の関係＝分散関係 \(\omega^2=c^2k^2+m^2\)）が変わり、波は遠くへ行く前に<strong>急速に消えて</strong>しまう ── だから届く距離が短い（＝短距離力）。図で質量スライダーを上げると波がすぐ消えるのがこれで、第10回で弱い力の \(D\) が無限へ走ったことの正体です。</div></details>
+      </li>
+      <li>「局所＋有限速度」がなぜ「計算機に載る」を意味する？
+        <details><summary>答えを見る</summary><div class="ans">各格子の次の値が、自分と隣の今の値だけで決まる（局所更新規則）から。全体を一度に解かず、格子ごと・1ステップずつ前へ進められる＝まさに計算のステップ。格子QCDが実際にやっていること（第2・4・5回）。</div></details>
+      </li>
+      <li>「計算機に載る」と「楽に解ける」はなぜ違う？
+        <details><summary>答えを見る</summary><div class="ans">線形（自由場）なら基準モードで一発だが相互作用がなく退屈。本物の力は非線形バネ＝相互作用で、近道がなく実際に回すしかない（計算不可約性・第5回）。載る＝ステップに書ける、解ける＝近道がある、は別のこと。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>全部、一本のバネ網だった</h2>
+    <p>力とは、格子のバネ網を<strong>薄まりながら隣へ伝わる振動</strong>。仲介粒子＝さざ波、有限速度＝\(c\)＝光円錐、薄まり＝\(1/r^D\)、質量項＝その場バネ（弱い力の短距離）、非線形バネ＝強い力の閉じ込め、安定な振動＝\(D=2\) の刃、離散スケール＝複素次元、格子間隔→0＝情報の式が微分になる連続極限。第1〜11回が、この一枚に落ちる。</p>
+    <p>そして<strong>局所＋有限速度＋更新規則だから、そのまま計算機に載る</strong> ── これがシリーズの背骨。ただし<em>載る≠楽に解ける</em>（非線形は回すしかない・第5回）、そして<em>格子が足場か土台かは未決</em>（ローレンツ・連続極限・第2・9回）。バネ網は描像として本物、基層としては賭け ── 地図は描いた、旗は立てなかった。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-11-yaiba.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaeff4;font-weight:600;letter-spacing:.03em;">← 第11回：D=2 は刃の上</a>
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaeff4;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-13-tama.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#eaeff4;font-weight:600;letter-spacing:.03em;">第13回：玉なんて無かった →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ延長第12回（連結の回）です。場を連結した調和振動子（格子上のバネ網）として見る描像、仲介場のさざ波としての量子（フォノン／光子）、波動方程式と質量項付きクライン–ゴルドン方程式 \(\partial_t^2u=c^2\nabla^2u-m^2u\)（分散関係 \(\omega^2=c^2k^2+m^2\) → 湯川型減衰）、格子ゲージ理論・格子QCD（時空格子上でのゲージ場の数値計算）、線形＝基準モードで可解／非線形＝相互作用は不可約、格子正則化がローレンツ不変性を陽に破ること、連続極限が繰り込み群固定点（臨界点）でのみ成立することは、いずれも確立した物理／数学です。新しい主張は含みません。図は模式的な2次元スカラー波動シミュレーションで、色は変位の符号を表します。時空が literal に格子か（基層の離散性）は現行の未解決問題。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダー・ボタン・解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では「パルスを送る」でバネ網を弾き、質量項スライダーで波の届く距離が縮むのが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sm=document.getElementById('sm'), vm=document.getElementById('vm'),
+      rd=document.getElementById('rd'), btn=document.getElementById('btn');
+  var GW=170, GH=95;                       // 格子解像度
+  var cur=new Float32Array(GW*GH), prev=new Float32Array(GW*GH), next=new Float32Array(GW*GH);
+  var c2=0.22;                             // (c·dt/dx)^2、2次元で安定（<0.5）
+  var edge=new Float32Array(GW*GH);        // 端の吸収スポンジ係数
+  (function(){ var margin=12;
+    for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+      var dl=Math.min(x,GW-1-x,y,GH-1-y), f=1;
+      if(dl<margin){ var t=dl/margin; f=0.90+0.10*t*t; }
+      edge[y*GW+x]=f;
+    }
+  })();
+  var off=document.createElement('canvas'); off.width=GW; off.height=GH;
+  var octx=off.getContext('2d'); var img=octx.createImageData(GW,GH);
+  var PR={r:238,g:241,b:245}, WM={r:176,g:96,b:58}, CL={r:52,g:97,b:140}; // 紙・暖・寒
+
+  function pulse(){
+    var cx=(GW/2)|0, cy=(GH/2)|0;
+    for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+      var dx=x-cx,dy=y-cy,r2=dx*dx+dy*dy, a=1.7*Math.exp(-r2/7.0);
+      cur[y*GW+x]+=a; prev[y*GW+x]+=a;   // 初速ゼロ＝対称に外向き
+    }
+  }
+  function step(){
+    var m2=parseFloat(sm.value);
+    for(var y=1;y<GH-1;y++){
+      var row=y*GW;
+      for(var x=1;x<GW-1;x++){
+        var i=row+x;
+        var lap=cur[i-1]+cur[i+1]+cur[i-GW]+cur[i+GW]-4*cur[i];
+        var v=2*cur[i]-prev[i]+c2*lap - c2*m2*cur[i];
+        next[i]=v*edge[i];
+      }
+    }
+    var tmp=prev; prev=cur; cur=next; next=tmp;
+  }
+  function render(){
+    var data=img.data;
+    for(var i=0;i<GW*GH;i++){
+      var v=cur[i]*0.85; if(v>1)v=1; if(v<-1)v=-1;
+      var r,g,b;
+      if(v>=0){ r=PR.r+(WM.r-PR.r)*v; g=PR.g+(WM.g-PR.g)*v; b=PR.b+(WM.b-PR.b)*v; }
+      else { var t=-v; r=PR.r+(CL.r-PR.r)*t; g=PR.g+(CL.g-PR.g)*t; b=PR.b+(CL.b-PR.b)*t; }
+      var k=i*4; data[k]=r; data[k+1]=g; data[k+2]=b; data[k+3]=255;
+    }
+    octx.putImageData(img,0,0);
+  }
+  var ratio=1, cssW=680, cssH=382, ctx=cv.getContext('2d');
+  function setup(){
+    ratio=window.devicePixelRatio||1; cssW=cv.clientWidth||680; cssH=cssW*(382/680);
+    cv.width=Math.round(cssW*ratio); cv.height=Math.round(cssH*ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+  }
+  function blit(){
+    ctx.imageSmoothingEnabled=true;
+    ctx.clearRect(0,0,cssW,cssH);
+    ctx.drawImage(off,0,0,cssW,cssH);
+  }
+  // 波の届く半径を測って読み値に
+  function reachInfo(){
+    var cx=(GW/2)|0, cy=(GH/2)|0, maxR=0, thr=0.05;
+    for(var y=0;y<GH;y+=2)for(var x=0;x<GW;x+=2){
+      if(Math.abs(cur[y*GW+x])>thr){ var dx=x-cx,dy=y-cy,r=Math.sqrt(dx*dx+dy*dy); if(r>maxR)maxR=r; }
+    }
+    return maxR;
+  }
+  var frames=0;
+  function tick(){
+    step(); step();
+    render(); blit();
+    frames++;
+    if(frames%12===0){
+      var m2=parseFloat(sm.value); vm.textContent=m2.toFixed(3);
+      var reach=reachInfo();
+      if(m2<0.001){
+        rd.innerHTML='<b>質量項 0</b>：近傍バネだけ＝<b style="color:#0d7d84">質量ゼロの仲介子</b>。さざ波は薄まりつつも遠くまで届く ＝ <b>長距離力（D=2、重力・電磁気）</b>。';
+      } else {
+        rd.innerHTML='<b>質量項 '+m2.toFixed(3)+'</b>：各格子に「その場バネ」＝<b style="color:#a02b8c">質量</b>。波は指数で消え、届く距離が縮む ＝ <b>短距離力（弱い力、D→∞・第10回）</b>。';
+      }
+    }
+    // 波が減衰しきったら自動で再パルス（ループ）
+    if(frames%260===0){ pulse(); }
+    raf=window.requestAnimationFrame(tick);
+  }
+  var raf=null;
+  function start(){ if(!raf){ raf=window.requestAnimationFrame(tick); } }
+
+  btn.addEventListener('click', pulse);
+  window.addEventListener('resize', function(){ setup(); blit(); });
+
+  function boot(){ setup(); pulse(); render(); blit();
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){ for(var s=0;s<40;s++){step();} render(); blit(); } else { start(); }
+  }
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){ MathJax.startup.promise.then(boot); }
+  setTimeout(boot,60); window.addEventListener('load', function(){ setup(); blit(); });
+})();
+</script>
+</body>
+</html>

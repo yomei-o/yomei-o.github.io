@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>走らせるしかない ── 計算不可約性 ｜ 宇宙は計算機 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#221c12; --ink-soft:#57503f;
+    --paper:#faf6ee; --paper-edge:#ecdfca;   /* 琥珀の紙：複雑・不可約 */
+    --side:#6f5320; --side-bg:#f3ebda;
+    --warn:#8a3f2f;
+    --calc:#8a5a12; --calc-bg:#f3ebda;
+    --rule:#e6d8bd; --hair:#d3c19a;
+    --acc:#b5731a;    /* アクセント＝琥珀 */
+    --grid:#ecdfca;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2a2416;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd6a6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#33290f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6e7df;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2018;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddca9f;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf3;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    border:1px solid var(--rule);background:#f3ebda;color:var(--side);border-radius:3px;padding:6px 10px;cursor:pointer;font-weight:600;}
+  .btns button:hover{background:#ecdfca;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#f3ebda;color:#7a5210;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .g{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefcf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf3e4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6f4a10;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefcf7,#f3ebda);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#fbf3e4;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#f3ebda;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6f5f45;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 5 回 ／ 計算不可約性</span></div>
+  <p class="eyebrow">「解く」が原理的に無理でも、それは敗北ではない</p>
+  <h1>走らせるしかない
+    <span class="sub">多くの規則には<strong>近道がない</strong>。\(n\) 歩後を知る唯一の方法は、実際に \(n\) 歩走ること。<br>それは知識の穴でなく<em>系についての定理</em>で、なぜ新しさ・複雑さが生まれるかの理由でもある。</span>
+  </h1>
+  <div class="byline">
+    <span>道具：第2回の「更新規則＝穴」、Kolmogorov の圧縮床</span>
+    <span>核：計算不可約性（Wolfram）</span>
+  </div>
+
+  <p class="lead">第2回で、宇宙の更新規則が「計算不可約」なら、宇宙を計算するとは<em>賢い式を見つけることでなく、走らせること</em>だと触れました。今回はそれを正面から。<strong>近道のある問題とない問題</strong>を、セルオートマトンを実際に走らせて目で見て、「解けない」が敗北でない理由まで行きます。</p>
+
+  <h2><span class="n">01</span>近道のある問題／ない問題</h2>
+
+  <p>惑星の位置は、\(1000\) 年後を<strong>公式で先回り</strong>できる ── \(1000\) ステップ刻む必要はない。これが<em>計算可約</em>。教科書の物理がだいたい可約なのは偶然でなく、<strong>「解ける」問題を選んで教科書に載せている</strong>から。可約な系は、実は<em>特別で幸運な一角</em>です。</p>
+
+  <p>いっぽう多くの系は、\(n\) 歩後を知るのに<strong>実際に \(n\) 歩走るしかない</strong>。式でジャンプできない。これが<em>計算不可約</em>。系が<strong>自分自身の最速シミュレータ</strong>で、それより速い予言器は存在しない。</p>
+
+  <div class="fig">
+    <div class="cap">図：素朴なセルオートマトン（1次元・2状態）を実際に走らせた時空図。上が初期、下へ時間が進む。スライダーで規則番号 \(0\text{–}255\) を変える。<strong>可約</strong>な規則（入れ子・縞）は公式で先回りでき、<strong>不可約</strong >な規則（乱雑・複雑）は走らないと分からない</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>規則番号（0–255）<span class="val" id="vr">30</span>
+        <input type="range" id="sr" min="0" max="255" step="1" value="30">
+      </label>
+      <div class="btns">
+        <button data-r="90">90 可約</button>
+        <button data-r="250">250 可約</button>
+        <button data-r="30">30 不可約</button>
+        <button data-r="110">110 万能</button>
+      </div>
+    </div>
+    <div class="readout" id="rd">スライダーかボタンで規則を変えると、その場で走らせて時空図を描きます。</div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">見どころ</span>
+    <strong>Rule 90</strong>＝シェルピンスキー三角。各セルは「パスカル三角 mod 2」で、<em>走らせずに公式で</em>任意の位置を出せる＝可約。<strong>Rule 30</strong>＝乱雑で、実際に乱数生成に使われた。近道が見つかっていない＝不可約。<strong>Rule 110</strong>＝複雑で、<em>チューリング万能</em>（何でも計算できる）＝原理的に不可約。同じ「単純な局所規則」から、可約と不可約が両方出る。
+  </div>
+
+  <h2><span class="n">02</span>なぜ近道がないのか ── 万能性と決定不能</h2>
+
+  <p>「近道がない」はただの経験則ではなく、根に定理があります。ある系が<strong>万能計算</strong>できると（Rule 110 のように）、その中に<em>任意の計算を埋め込める</em>。すると「この初期状態は最終的にどうなるか」を一般に答えることは、<strong>停止問題</strong>（Turing）を解くことになり ── <em>不可能</em>。</p>
+
+  <div class="keybox">
+    <div class="lbl">近道が無いことの根</div>
+    <p style="margin:6px 0 0;"><strong>万能計算 ⟹ 停止問題・Rice の定理 ⟹ 長期挙動の一般予測は決定不能</strong>。だから「走らせる前に答えを出す関数」は原理的に作れない。第2回の Kolmogorov の圧縮床の、<em>動的な顔</em>：軌道が圧縮不能なら、\(K(\text{軌道})\approx\) その長さ＝要約できない。</p>
+  </div>
+
+  <h2><span class="n">03</span>宇宙にとって何を意味するか</h2>
+
+  <p>第2回③の穴に、光を当て直します。<strong>宇宙の更新規則が不可約なら</strong> ── そして万能なら十中八九そうなら ── 「宇宙を計算する」は<em>魔法の閉じた式を見つけること</em>ではありません。<strong>宇宙は自分を走らせていて、それを追い越す近道はない</strong>。リアルタイム以下で未来を知る方法は、原理的に存在しない。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>種明かし ── なぜ「解けない」が敗北でないか</h2>
+
+  <p>ここが今回の芯。不可約性は絶望に聞こえて、逆です：</p>
+
+  <table class="dt">
+    <tr><th>不可約性の帰結</th><th>なぜ前向きか</th></tr>
+    <tr><td><strong>科学は止まらない</strong></td><td>全体が不可約でも、<span class="g">可約なポケット</span>は至る所にある（対称性・保存則・有効理論・統計則）。科学＝不可約な海の中の<em>可約な島を見つける営み</em>。</td></tr>
+    <tr><td><strong>決定論 ≠ 予測可能</strong></td><td>規則が完全に決まっていても、走らせるまで結果が分からない。不可約だからこそ<em>本物の新しさ・複雑さ</em>が生まれる。</td></tr>
+    <tr><td><strong>知識の穴でなく定理</strong></td><td>「近道が無い」は我々の無知でなく、<em>系についての構造的事実</em>。埋めるべき欠落ではなく、確かめられた性質。</td></tr>
+    <tr><td><strong>掟の深い理由</strong></td><td>不可約な系に「閉じた解を得た」と主張されたら、まず疑うべき ── それが本シリーズの<em>「解けたを疑う」</em>の根拠。</td></tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">計算不可約性は Wolfram の枠組みで、経験的に遍在し直感的ですが、<strong>「宇宙が計算不可約である」ことは、その更新規則が万能だという仮説に依存</strong>し、未証明です。可約／不可約は二値でなく<em>スペクトル</em>で、不可約な系にも可約な側面がある（だから物理はよく予測できてきた ── 対称性や粗視化という可約な島を捉えているから。矛盾しません）。</p>
+    <p style="margin-bottom:0;">停止問題・Rice の定理・Rule 110 の万能性（Cook）は<strong>厳密な数学</strong>ですが、それを物理予測に literal に適用するには「宇宙＝万能計算機」という仮説が要ります。図は素朴な 1 次元セルオートマトンの実走行で、可約／不可約の<em>例示</em>であって、宇宙がどれかの証明ではありません。この文書に「解けた」はありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚＋図で解けます）</div>
+    <ol>
+      <li>計算可約と不可約の違いを一言で。
+        <details><summary>答えを見る</summary><div class="ans">可約＝公式などで先回りできる（n歩後を n歩未満で知れる）。不可約＝近道がなく実際に n歩走るしかない（系が自分自身の最速シミュレータ）。惑星軌道は可約、Rule 30 は不可約。</div></details>
+      </li>
+      <li>なぜ一般に「近道がない」と言えるのか。
+        <details><summary>答えを見る</summary><div class="ans">万能計算できる系は任意の計算を埋め込めるので、長期挙動の一般予測は停止問題／Rice の定理により決定不能になるから。Rule 110 は万能の実例。だから「走らせる前に答える関数」は原理的に作れない。</div></details>
+      </li>
+      <li>「宇宙が不可約」でも科学が敗北でない理由を一つ。
+        <details><summary>答えを見る</summary><div class="ans">科学は不可約な全体の中の「可約なポケット」（対称性・保存則・有効理論・統計則）を見つける営みだから。加えて決定論≠予測可能で、不可約だからこそ本物の新しさが生まれる。近道の不在は無知でなく系についての定理。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>追い越せない、でも敗北ではない</h2>
+    <p>近道のある問題（可約）は幸運な一角で、多くは<strong>不可約</strong> ── \(n\) 歩後を知るには \(n\) 歩走るしかない。根は万能性と決定不能（停止問題・Rice）で、Kolmogorov の圧縮床の動的な顔。図で Rule 90（可約・公式あり）と Rule 30／110（不可約・走るしかない）を実際に見た。宇宙の規則が不可約なら、<strong>宇宙を追い越す近道は原理的に無い</strong>。</p>
+    <p>だが「解けない」は敗北でなく前進：科学＝不可約の海の可約な島を探す営み、決定論≠予測可能、そして不可約だからこそ新しさが出る。何より ── 不可約な系に「閉じた解」を主張したら疑え、という<strong>本シリーズの掟そのものの根拠</strong>がここにあった。旗は立てない。</p>
+  </div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-04-toy.html">← 第4回：手を動かす（トイモデル）</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第5回です。図はブラウザ上で初等セルオートマトン（1次元・2状態・3近傍・256規則、Wolfram 分類）を単一セルの初期条件から周期境界で実際に時間発展させ、時空図として描いています（すべてその場の実走行）。Rule 90／150 の加法性（パスカル三角 mod 2 による閉じた式＝可約）、Rule 30 の擬似乱数性（Mathematica の乱数に採用）、Rule 110 のチューリング完全性（Cook）、計算不可約性（Wolfram）、停止問題・Rice の定理（Turing／Rice）、Kolmogorov 複雑性による非圧縮性は、いずれも確立した計算理論です。「宇宙の更新規則が計算不可約／万能である」ことは仮説であり、可約と不可約は連続的スペクトルで、物理の予測可能性は系の可約な側面（対称性・粗視化・統計）に由来します（不可約性と矛盾しません）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダー／ボタンで規則を変えると、その場で走らせて時空図が出ます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sr=document.getElementById('sr'), vr=document.getElementById('vr'), rd=document.getElementById('rd');
+  var NOTES={
+    0:'クラス1：全部消える（完全に可約）',255:'クラス1：全部埋まる（完全に可約）',
+    90:'クラス2：入れ子（シェルピンスキー）＝パスカル三角 mod2 の公式あり＝可約',
+    60:'クラス2：加法的（片側シェルピンスキー）＝公式あり＝可約',
+    150:'クラス2：加法的（XOR）＝公式あり＝可約',
+    250:'クラス2：単純な縞＝可約',254:'クラス2：単純な充填＝可約',
+    30:'クラス3：乱雑＝乱数生成に使われた＝近道なし＝不可約',
+    45:'クラス3：乱雑＝不可約',105:'クラス3：乱雑＝不可約',
+    110:'クラス4：複雑＝チューリング万能＝原理的に不可約',
+    54:'クラス4：複雑＝不可約',137:'クラス4：複雑＝不可約',124:'クラス4：複雑＝不可約'
+  };
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=8;
+    var rule=parseInt(sr.value,10); vr.textContent=rule;
+    ctx.clearRect(0,0,w,h);
+    var cs=3; // cell pixel size
+    var W=Math.floor((w-2*pad)/cs), H=Math.floor((h-2*pad)/cs);
+    if(W<10||H<10){return;}
+    var cur=new Uint8Array(W); cur[W>>1]=1;
+    var x0=pad+((w-2*pad)-W*cs)/2, y0=pad;
+    ctx.fillStyle='#f7f3ea'; ctx.fillRect(x0,y0,W*cs,H*cs);
+    ctx.fillStyle='#2a2416';
+    for(var t=0;t<H;t++){
+      for(var i=0;i<W;i++){ if(cur[i]) ctx.fillRect(x0+i*cs, y0+t*cs, cs, cs); }
+      var nxt=new Uint8Array(W);
+      for(i=0;i<W;i++){
+        var l=cur[(i-1+W)%W], c=cur[i], rr=cur[(i+1)%W];
+        var idx=(l<<2)|(c<<1)|rr;
+        nxt[i]=(rule>>idx)&1;
+      }
+      cur=nxt;
+    }
+    // note
+    var note=NOTES[rule] || 'この規則は「走らせて見て判断」するしかない ── それ自体が不可約性の実演です。';
+    rd.textContent='規則 '+rule+'：'+note;
+  }
+  sr.addEventListener('input',draw);
+  var btns=document.querySelectorAll('.btns button');
+  for(var b=0;b<btns.length;b++){ btns[b].addEventListener('click',function(){ sr.value=this.getAttribute('data-r'); draw(); }); }
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

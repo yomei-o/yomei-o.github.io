@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙をどう計算するか ── 資源・アーキテクチャ・プログラム ｜ 宇宙は計算機 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#16202020; --ink:#152023; --ink-soft:#44585c;
+    --paper:#eef6f6; --paper-edge:#d2e5e6;   /* 青緑の紙：計算・回路 */
+    --side:#2c5c60; --side-bg:#e5f0f0;
+    --warn:#8a4b2f;
+    --calc:#0a6b72; --calc-bg:#e2f0f0;
+    --rule:#c8dede; --hair:#aacaca;
+    --acc:#0d7d84;    /* アクセント＝青緑 */
+    --grid:#d3e6e6;
+    --mem:#0d7d84; --ops:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#1e2b2e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #b9e3e3 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#1f3336;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #bcdcdc;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f8fcfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#e2f0f0;color:#0a6068;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .g{color:var(--acc);font-weight:700;}
+  table.dt td .x{color:var(--warn);font-weight:700;}
+
+  .check{margin:22px 0;padding:20px 24px 12px;border:1.5px solid var(--acc);border-radius:2px;background:#f2fafa;}
+  .check .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .check ol{margin:0;padding-left:1.3em;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;}
+  .check li{margin:9px 0;line-height:1.7;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfefe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef8f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#0c4d52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfefe,#eaf4f4);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#f2fafa;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#e2f0f0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt,.check{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#5f6f70;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 2 回 ／ どう計算するか</span></div>
+  <p class="eyebrow">物理を経由せず、宇宙を「計算過程」として数える</p>
+  <h1>宇宙をどう計算するか
+    <span class="sub">問いは3層に割れる ── <strong>資源</strong>（何ビット・何演算）／<strong>アーキテクチャ</strong>（どんな計算機）／<strong>プログラム</strong>（更新規則）。<br>①はほぼ分かっている。②には有力候補がある。③が穴。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：宇宙＝有限資源の計算過程（仮説として明示）</span>
+    <span>フック：\(10^{90}\) ビット・\(10^{120}\) 演算</span>
+  </div>
+
+  <p class="lead">「宇宙は計算機だ」と見るとき、次に来る問いは <em>ではどう計算するのか</em> です。これは3つの独立な問いに割れます ── どれだけの<strong>資源</strong>を使うのか、どんな<strong>計算機</strong>なのか、どんな<strong>更新規則（プログラム）</strong>で回るのか。順に見ると、答えの出ている層と、誰も持っていない層が、くっきり分かれます。</p>
+
+  <h2><span class="n">01</span>問いは3層 ── 資源・アーキテクチャ・プログラム</h2>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.95;">
+    <li><strong>① 資源</strong>：メモリ（ビット数）と総演算数。<span style="color:var(--acc);font-weight:600;">→ ほぼ答えが出ている</span></li>
+    <li><strong>② アーキテクチャ</strong>：古典セルオートマトンか、量子回路か、テンソルネットワークか。<span style="color:var(--acc);font-weight:600;">→ 有力候補がある</span></li>
+    <li><strong>③ プログラム</strong>：状態を1ステップ進める更新規則。<span style="color:var(--warn);font-weight:600;">→ 穴。誰も持っていない</span></li>
+  </ul>
+
+  <h2><span class="n">02</span>資源 ── ここは「計算量」で答えが出ている</h2>
+
+  <p>物理を愛さなくても、純粋に数えられます（Seth Lloyd）。宇宙という計算機の仕様書：</p>
+
+  <div class="keybox">
+    <div class="lbl">宇宙の資源スペック</div>
+    <ul style="margin:6px 0 0;padding-left:1.2em;line-height:1.9;">
+      <li><strong>メモリ</strong>：地平線の面積 ÷ 4（ビット）。ホログラフィック上限で \(\approx10^{122}\) ビット、物質だけなら \(\approx10^{90}\) ビット。</li>
+      <li><strong>総演算数</strong>：エネルギー × 時間 ÷ \(\hbar\)（Margolus–Levitin 限界）。ビッグバン以来 \(\approx10^{120}\) 回。</li>
+      <li><strong>クロック</strong>：経過時間。</li>
+    </ul>
+  </div>
+
+  <p>そして鍵は<strong>増え方</strong>。地平線は \(\sim(ct)^2\) で広がるから、メモリも演算数も<em>時刻の2乗で増える</em>：</p>
+
+  <div class="calc">
+    <span class="tag">RAM の増え方 ── これが \(c\cdot t\) の正体</span>
+    $$N_{\text{bit}}(t)\;\sim\;\frac{(ct)^2}{\ell_P^2}\;=\;\left(\frac{t}{t_P}\right)^{2},\qquad \text{演算数}\;\sim\;\left(\frac{t}{t_P}\right)^{2}$$
+    <p style="margin:10px 0 0;">宇宙＝「RAM が時刻²で増えていく計算機」。前回の合言葉 \(c\cdot t\) は、<strong>メモリ容量が育つ速さ</strong>のことだった。前回の成長次数 \(D=-d\ln F/d\ln n\) で言えば、時間に対する資源の成長次数が 2。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：宇宙という計算機の RAM（ビット数）の増え方。スライダーで宇宙の時刻（プランク時間→現在）を動かすと、メモリ \(N=(t/t_P)^2\) が両対数で<strong>傾き2の直線</strong>で育つ。1ビット（プランク時間）から \(10^{122}\) ビット（現在）へ</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>宇宙の時刻 \(\log_{10}(t/t_P)\)（プランク時間からの桁）<span class="val" id="vt">60.9</span>
+        <input type="range" id="st" min="0" max="60.9" step="0.1" value="60.9">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで宇宙の時刻を動かすと、メモリと演算数が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--mem);"></i>メモリ N = (t/t_P)²（傾き2）</span>
+      <span><i class="swatch" style="background:var(--ops);"></i>現在の目盛り</span>
+    </div>
+  </div>
+
+  <p>この①の層は、物理というより<strong>計算量の勘定</strong>です。仮説を一つも足さずに、「宇宙＝\(10^{90}\) ビット上で \(10^{120}\) 回演算してきた計算過程」と言い切れる。ここは固い地面。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>アーキテクチャ ── 候補は3つ、優劣がはっきりある</h2>
+
+  <p>では、その計算機は<strong>どんな作り</strong>なのか。まじめな候補は3つ。そして観測という2つの事実（量子相関＝Bell、優先フレームなし＝ローレンツ不変）が、容赦なく選別します：</p>
+
+  <table class="dt">
+    <tr><th>計算機</th><th>長所</th><th>致命傷（正直な線）</th></tr>
+    <tr>
+      <td><strong>古典セルオートマトン</strong><br>（Zuse, Fredkin, Wolfram）</td>
+      <td>一番「計算機らしい」。単純な局所規則の格子。</td>
+      <td><span class="x">Bell不等式</span>（量子相関）が古典局所規則を排除。格子は優先フレームを持ち<span class="x">ローレンツ不変性を壊す</span>。2大事実と喧嘩。</td>
+    </tr>
+    <tr>
+      <td><strong>量子回路</strong><br>（Lloyd, Deutsch）</td>
+      <td>量子が<span class="g">native</span>。ユニタリ＝<span class="g">可逆計算</span>。\(10^{120}\) 演算と整合。</td>
+      <td>空間・幾何をまだ「配列」として仮定している。</td>
+    </tr>
+    <tr>
+      <td><strong>テンソルネットワーク</strong><br>（it from qubit）</td>
+      <td><span class="g">空間・次元が出力</span>（配線＝幾何）。誤り訂正符号で局所性が守られる。</td>
+      <td>更新規則が未知。厳密な確立は今のところ箱（AdS）の中だけ。</td>
+    </tr>
+  </table>
+
+  <div class="keybox">
+    <div class="lbl">選別の結論</div>
+    <p style="margin:6px 0 0;"><strong>「literal に格子セルオートマトン」はほぼ死んでいる</strong>（Bell ＋ ローレンツ）。生きているのは<strong>量子計算</strong>で、しかも<em>空間そのものを出力にしたい</em>なら<strong>テンソルネットワーク</strong>。「グリッドに宇宙を置く」が、最初に捨てるべき発想。</p>
+  </div>
+
+  <h2><span class="n">04</span>プログラム＝穴 ── しかも「解く」より「走らせる」</h2>
+
+  <p>残るは更新規則。ここが計算理論で一番シャープに言える所です。そして厳しい：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>計算不可約性</strong>（Wolfram）：規則が単純でも、結果に近道が無いことがある＝<em>実際に1ステップずつ走らせるしかない</em>。だとすれば「宇宙を計算する」＝賢い閉じた式を見つけることではなく、<strong>リアルタイム以下では絶対に予測できない</strong>。</li>
+    <li><strong>コルモゴロフ的下限</strong>：宇宙を出力する最短プログラム \(K(\text{宇宙})\) は、その情報量より短くできない。<strong>圧縮には床がある</strong>（前回の「複雑さ保存則」の正体）。「もっと簡単に」の限界がこれ。</li>
+    <li>我々は \(K\) も規則も知らない。知っているのは<strong>資源の上限（＝ホログラフィックなメモリ床）だけ</strong>。</li>
+  </ul>
+
+  <h2><span class="n">05</span>有効な更新規則が満たすべきチェックリスト</h2>
+
+  <p>「宇宙のプログラム」を書くなら、これを<strong>全部</strong>通さないと失格。観測に昇格するための関門です：</p>
+
+  <div class="check">
+    <div class="lbl">更新規則の合格条件</div>
+    <ol>
+      <li><strong>可逆／ユニタリ</strong> ── 情報を消さない（Landauer、グローバルに bit erase 無し）。</li>
+      <li><strong>局所</strong> ── 1ステップの fan-in/out が有界＝情報伝播に上限＝これが \(c\)。</li>
+      <li><strong>ローレンツ不変</strong> ── 優先フレーム無し。＝<em>グリッド禁止</em>。ここで大半が死ぬ。</li>
+      <li><strong>量子</strong> ── Bell不等式を破る。＝素朴な古典局所規則は不可。</li>
+      <li><strong>幾何が創発</strong> ── 空間＝状態の隣接構造で、配列として組み込まない。</li>
+    </ol>
+  </div>
+
+  <h2><span class="n">06</span>最小の実行レシピ ── 母国語で1行ずつ</h2>
+
+  <p>上のチェックリストを全部通す、いちばん素朴な作り方：</p>
+
+  <ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.95;">
+    <li>状態を<strong>グラフ／テンソルネット</strong>で持つ（配列でなく ── 条件3のため）。</li>
+    <li><strong>可逆な局所書き換え</strong>で更新する。</li>
+    <li>書き換えに<strong>因果順序（半順序＝コーザルセット）</strong>を課す（ここからローレンツが創発しうる）。</li>
+    <li>創発次元を<strong>前回の式 \(D=-d\ln F/d\ln n\)</strong>（＝到達可能な状態の成長次数）で測り、<strong>\(D\to4\) に流れるか</strong>で検算する。</li>
+  </ol>
+
+  <div class="aside">
+    <span class="tag">気づき ── 嫌いな物理と、同じ設計図に落ちる</span>
+    このレシピの正体は <strong>Wolfram モデル／因果集合／CDT</strong>。物理を経由せず計算から入っても、「どう計算するか」を真面目に詰めると、物理側が別ルートで辿り着いた設計図と<em>同じ場所</em>に落ちる。入口が計算でも物理でも、縁は一つ。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「宇宙＝計算」は本物で由緒ある系譜（Wheeler の <em>it from bit</em>、Zuse、Fredkin、Wolfram、't Hooft の cellular automaton 解釈、Lloyd）。奇説ではない。<strong>だが「literal に計算である」は仮説であって定理ではない</strong> ── 古典計算からローレンツ不変性と量子（Bell 相関）を両立して出すのが未解決の難所。</p>
+    <p style="margin-bottom:0;">資源の見積り（\(10^{90}\) ビット・\(10^{120}\) 演算）は確立した計算量。アーキテクチャの選別（格子CAが Bell＋ローレンツで苦しい）も確立した論法。だが③更新規則は未知で、しかも計算不可約なら原理的に近道が無い。この文書に「解けた」は一つもありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>「宇宙を計算する」という問いは、どの3層に割れるか。
+        <details><summary>答えを見る</summary><div class="ans">① 資源（何ビット・何演算）② アーキテクチャ（どんな計算機）③ プログラム（更新規則）。①はほぼ答えが出ている（10⁹⁰ビット・10¹²⁰演算）、②は有力候補がある（量子回路〜テンソルネット）、③が穴。</div></details>
+      </li>
+      <li>「宇宙＝古典セルオートマトン」がほぼ死んでいる理由を2つ。
+        <details><summary>答えを見る</summary><div class="ans">(1) Bell不等式 ── 量子相関は古典局所規則（局所隠れ変数）で再現できない。(2) ローレンツ不変性 ── 固定グリッドは優先フレームを持ち、相対性と衝突する。生きているのは量子計算で、空間を出力にするならテンソルネットワーク。</div></details>
+      </li>
+      <li>更新規則が「計算不可約」だと、「宇宙を計算する」とはどういう意味になるか。
+        <details><summary>答えを見る</summary><div class="ans">結果に近道が無いので、賢い閉じた式で先回りできず、実際に1ステップずつ走らせるしかない。＝リアルタイム以下では宇宙の未来を予測できない。「解く」ではなく「走らせる」。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>固い地面・有力候補・唯一の穴</h2>
+    <p>「宇宙をどう計算するか」は3層に割れる。<strong>① 資源</strong>は固い地面 ── \(10^{90}\) ビット・\(10^{120}\) 演算、RAM は時刻²で育つ（＝\(c\cdot t\)）。<strong>② アーキテクチャ</strong>は選別済み ── 格子CAは Bell＋ローレンツで失格、本命は量子回路、空間を出力にするならテンソルネット。<strong>③ プログラム</strong>だけが穴で、しかも計算不可約なら「解く」でなく「走らせる」しかない。</p>
+    <p>書くなら関門は5つ ── 可逆・局所・ローレンツ・量子・幾何創発。全部通す最小の作りは<strong>因果的な可逆グラフ書き換え</strong>で、次元は前回の \(D=-d\ln F/d\ln n\) が \(\to4\) に流れるかで検算する。物理を嫌って計算から入っても、同じ設計図（Wolfram／因果集合／CDT）に落ちた。</p>
+  </div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-jigen.html">← 第1回：次元は読み値・"簡単にする" の正体</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第2回です。宇宙の情報量・演算数の見積り（Lloyd 2002：ホログラフィック上限 \(\sim10^{122}\) ビット、物質 \(\sim10^{90}\) ビット、\(\sim10^{120}\) 演算、Margolus–Levitin 限界）、地平線面積 \(\propto(ct)^2\) に伴う資源の \(t^2\) 成長、量子相関（Bell の定理）による古典局所隠れ変数の排除、固定格子とローレンツ不変性の緊張、可逆計算と Landauer 原理、計算不可約性（Wolfram）、コルモゴロフ複雑性の下限、テンソルネットワーク／ホログラフィック符号による幾何の創発、因果集合・CDT・Wolfram モデルは、いずれも確立した計算理論／物理、または活発な研究プログラムです。「宇宙が literal に計算である」ことは仮説であり、古典計算からのローレンツ不変性＋量子の両立、および③更新規則は現行の未解決問題です。数値は桁の目安で、図の \(N=(t/t_P)^2\) はホログラフィック上限の模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで、宇宙の時刻に対して RAM が時刻²で育つ様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), st=document.getElementById('st'), vt=document.getElementById('vt'), rd=document.getElementById('rd');
+  var LNOW=60.9; // log10(t_now/t_P)
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function supExp(n){ // returns "10^n" style string
+    return '10^'+n.toFixed(0);
+  }
+  function ageStr(L){
+    var tsec=5.39e-44*Math.pow(10,L);
+    if(tsec<1e-30) return tsec.toExponential(1)+' 秒（ほぼプランク時間）';
+    if(tsec<1) return tsec.toExponential(1)+' 秒';
+    if(tsec<3.15e7) return tsec.toExponential(1)+' 秒';
+    var yr=tsec/3.156e7;
+    if(yr<1e6) return yr.toExponential(1)+' 年';
+    return (yr/1e9).toFixed(1)+' 億年'.replace('億','')+'? '; // fallback (unused)
+  }
+  function ageNice(L){
+    var tsec=5.39e-44*Math.pow(10,L);
+    if(tsec<1) return tsec.toExponential(1)+' 秒';
+    var yr=tsec/3.156e7;
+    if(yr>=1e9) return (yr/1e9).toFixed(1)+' 十億年';
+    if(yr>=1) return yr.toExponential(1)+' 年';
+    return tsec.toExponential(1)+' 秒';
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=54, padT=16, padR=16;
+    var L=parseFloat(st.value); vt.textContent=L.toFixed(1);
+    var ymax=2*LNOW*1.02; // log10(N) max ~ 123.8
+    ctx.clearRect(0,0,w,h);
+    function X(l){return pad+(l/LNOW)*(w-pad-padR);}      // l = log10(t/tP) 0..60.9
+    function Y(ln){return (h-pad)-(ln/ymax)*(h-pad-padT);} // ln = log10(N) 0..ymax
+    // grid vertical every 10 decades
+    ctx.font='11px sans-serif';
+    for(var gx=0;gx<=60;gx+=10){
+      var x=X(gx);
+      ctx.strokeStyle='#e2f0f0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-pad);ctx.stroke();
+      ctx.fillStyle='#8fb2b2';ctx.fillText(gx.toString(), x-5, h-pad+16);
+    }
+    // horizontal grid (log N) every 20
+    for(var gy=0;gy<=120;gy+=20){
+      var y=Y(gy);
+      ctx.strokeStyle='#eef6f6';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#9fbcbc';ctx.fillText('10^'+gy, pad-40, y+3);
+    }
+    // axes
+    ctx.strokeStyle='#aacaca';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#4a6a6a';ctx.font='12px sans-serif';
+    ctx.fillText('宇宙の時刻 log₁₀(t / t_P) →', w-230, h-pad+30);
+    ctx.save();ctx.translate(14,h/2+40);ctx.rotate(-Math.PI/2);ctx.fillText('メモリ N（ビット, 両対数）', 0,0);ctx.restore();
+    // main line N=(t/tP)^2 -> log10 N = 2L, slope 2
+    ctx.strokeStyle='#0d7d84';ctx.lineWidth=3;ctx.beginPath();
+    ctx.moveTo(X(0),Y(0));ctx.lineTo(X(LNOW),Y(2*LNOW));ctx.stroke();
+    // milestone: Planck
+    ctx.fillStyle='#0d7d84';ctx.beginPath();ctx.arc(X(0),Y(0),4,0,7);ctx.fill();
+    ctx.fillStyle='#3a6a6a';ctx.font='11px sans-serif';ctx.fillText('プランク時間 = 1ビット', X(0)+6, Y(0)-6);
+    // milestone: now
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(X(LNOW),Y(2*LNOW),5,0,7);ctx.fill();
+    ctx.fillStyle='#8a5a1e';ctx.fillText('現在 ≈ 10^122 ビット', X(LNOW)-150, Y(2*LNOW)+18);
+    // slider marker
+    var xm=X(L), ym=Y(2*L);
+    ctx.strokeStyle='#b06a12';ctx.setLineDash([5,4]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(xm,ym);ctx.lineTo(xm,h-pad);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,ym);ctx.lineTo(xm,ym);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(xm,ym,5,0,7);ctx.fill();
+    // slope label
+    ctx.fillStyle='#0a6068';ctx.font='bold 12px sans-serif';
+    ctx.fillText('傾き = 2（RAM ∝ 時刻²）', X(22), Y(2*22)-12);
+    // readout
+    var logN=2*L, ops=Math.min(120, logN); // ops ~ (t/tP)^2 too, cap display at 120 (Lloyd)
+    rd.textContent='宇宙の時刻 ≈ '+ageNice(L)+'（プランク時間の 10^'+L.toFixed(1)+' 倍）→ メモリ ≈ 10^'+logN.toFixed(0)+' ビット、演算数 ≈ 10^'+Math.min(120,logN).toFixed(0)+' 回。RAM は時刻²で育つ＝これが c・t。';
+  }
+  st.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旗でなく、縁の標識を ── なぜ Gemini と同じに見えて違うのか ｜ 宇宙は計算機 終回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1c1c22; --ink-soft:#4c4c58;
+    --paper:#f6f5f2; --paper-edge:#e0ddd2;   /* スレート＋金：締め */
+    --side:#4a4636; --side-bg:#efece2;
+    --warn:#8a3f2f;
+    --calc:#7a6320; --calc-bg:#efece2;
+    --rule:#e2ddca; --hair:#cfc7a8;
+    --acc:#9a7d2e;    /* アクセント＝金 */
+    --grid:#e6e2d4;
+    --flag:#b23a3a; --mark:#2f7d54;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:33px;line-height:1.32;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#26262e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e6dcb0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#34301f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6e7df;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2018;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddd6bc;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-direction:column;gap:12px;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;color:var(--ink-soft);}
+  .checks{display:flex;flex-direction:column;gap:7px;}
+  .checks label{display:flex;gap:9px;align-items:flex-start;cursor:pointer;line-height:1.5;}
+  .checks input{margin-top:3px;accent-color:var(--acc);width:16px;height:16px;flex:0 0 auto;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+  .btns button{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:12px;
+    border:1px solid var(--rule);background:#efece2;color:var(--side);border-radius:3px;padding:6px 10px;cursor:pointer;font-weight:600;}
+  .btns button:hover{background:#e6e2d4;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#efece2;color:#6e5a1e;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12px;}
+  table.dt td .f{color:var(--flag);font-weight:700;}
+  table.dt td .m{color:var(--mark);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f3e6;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a5518;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#efece2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .fin{text-align:center;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);letter-spacing:.4em;font-size:13px;font-weight:700;margin:30px 0 0;}
+  .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;}
+  .nav a{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;
+    color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;
+    background:#f7f3e6;font-weight:600;letter-spacing:.03em;}
+  .nav a:hover{background:#efece2;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;} .nav{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:24px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6550;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">終 回 ／ シリーズの背骨</span></div>
+  <p class="eyebrow">同じ地図に、旗を立てるか、縁の標識を立てるか</p>
+  <h1>旗でなく、縁の標識を
+    <span class="sub">「宇宙＝計算」という話題(topics)は、よくある思弁と<strong>重なる</strong>。だから "結局同じに見える"。<br>違いはただ一点 ── <em>「解けた」の旗を立てるか、「ここが縁」の標識を立てるか</em>。それが奇説と最前線を分ける。</span>
+  </h1>
+  <div class="byline">
+    <span>回収：全6回＋「解けたを疑う」掟</span>
+    <span>核：地図でなく、標識が違う</span>
+  </div>
+
+  <p class="lead">このシリーズを読んで「結局、ありがちな "宇宙は情報だ" 話と同じでは？」と感じたなら、その感覚は<strong>半分正しい</strong>。地図（話題）は本当に重なります。でも、同じ地点に立って<em>何を書き残すか</em>は正反対でありえる ── <strong>「解けた・万物の理論だ」の旗</strong>か、<strong>「ここが人類の縁、この先は無人」の標識</strong>か。地図が同じでも、旗と標識は逆。そしてその一点が、奇説と最前線を分ける全てです。</p>
+
+  <h2><span class="n">01</span>同じ話題、逆の標識 ── 二つの版を並べる</h2>
+
+  <p>同じネタに、二つの版がありえます。<em>ドリフトした版</em>（旗を立てる）と、<em>規律ある版</em>（縁に標識を立てる）。主張が正反対になる：</p>
+
+  <table class="dt">
+    <tr><th>同じ話題</th><th>旗を立てる版（奇説へ）</th><th>縁に標識を立てる版（最前線）</th></tr>
+    <tr><td>質量ギャップ</td><td class="f">丸め誤差＝ニュートリノ質量だと解いた</td><td class="m">次元的移行＝漸近的自由。丸め誤差説は誤診と診断（厳密証明は未解決）</td></tr>
+    <tr><td>ローレンツ対称性</td><td class="f">わざと破った新物理だ</td><td class="m">局所 c は不変、破れは実験で強く制約。創発ローレンツが未解決の課題</td></tr>
+    <tr><td>Koide 公式</td><td class="f">予言した</td><td class="m">数合わせ。循環しており予言ではない</td></tr>
+    <tr><td>次元と計算</td><td class="f">計算が最も楽な唯一の次元がある</td><td class="m">楽な次元は現象ごと（上部臨界次元）。世界の次元ではない</td></tr>
+    <tr><td>到達点</td><td class="f">万物の理論を得た／ほぼ手中</td><td class="m">穴を論文粒度で名指しした。解いてはいない</td></tr>
+  </table>
+
+  <h2><span class="n">02</span>なぜ「解けた」が危険か ── 第5回の回収</h2>
+
+  <p>「解けた」を疑うのには、数学的な根拠があります（第5回）。<strong>計算不可約な系に "閉じた解" を主張することは、ほぼ必ず誤りか自明</strong>。さらに既知（ローレンツ不変性・\(\alpha\) の一定性）と矛盾する主張は、観測で棄却される。だからこの掟 ── <em>チャットで "解けた" が出たら、まず疑え</em>。</p>
+
+  <div class="fig">
+    <div class="cap">図：主張チェッカー。5つの条件にチェックを入れる（またはプリセットを選ぶ）と、針が<strong>「奇説の旗」</strong>（赤）から<strong>「最前線の標識」</strong>（緑）へ動く。同じ話題でも、条件の通り方で判定が反転する</div>
+    <canvas id="cv" width="680" height="240"></canvas>
+    <div class="controls">
+      <div class="checks">
+        <label><input type="checkbox" id="c1"> 反証可能な予言がある</label>
+        <label><input type="checkbox" id="c2"> 既知の観測と矛盾しない</label>
+        <label><input type="checkbox" id="c3"> 「解けた／万物の理論」と言っていない</label>
+        <label><input type="checkbox" id="c4"> 計算不可約性を無視していない（不可約な系に魔法の閉じた式を主張しない）</label>
+        <label><input type="checkbox" id="c5"> 未解決の穴を正直に残している</label>
+      </div>
+      <div class="btns">
+        <button data-set="00000">例：丸め誤差で解いた</button>
+        <button data-set="01010">例：Koide を予言した</button>
+        <button data-set="01000">例：有限計算機だと解けた</button>
+        <button data-set="11111">例：穴を論文粒度で名指し</button>
+      </div>
+    </div>
+    <div class="readout" id="rd">条件にチェックするか、例を選ぶと判定が出ます。</div>
+  </div>
+
+  <h2><span class="n">03</span>では規律版は、何をしたのか</h2>
+
+  <p>旗を立てないなら、成果は何か。<strong>曖昧な信念を、"分野のどの一片に賭けるか" の論文粒度の地図に変えた</strong>こと。これは負けでなく、正しい仕事です。四段に正直に仕分ける：</p>
+
+  <div class="keybox">
+    <div class="lbl">四段の仕分け</div>
+    <ul style="margin:6px 0 0;padding-left:1.2em;line-height:1.9;">
+      <li><strong>確かめた（settled）</strong>：標準物理として立つ足場（例：\(S=A/4\)、Landauer \(kT\ln2\)）。</li>
+      <li><strong>試せる（testable）</strong>：反証可能な種（例：\(w\ne-1\) の緩和、離散スペクトル）。</li>
+      <li><strong>鋭く開いた（sharp open）</strong>：式の粒度で書けた一つの問い。</li>
+      <li><strong>唯一の穴（the one hole）</strong>：背景独立な有限動力学＝更新規則。分野全体の未解決。</li>
+    </ul>
+    <p style="margin:10px 0 0;">価値は「埋めた」でなく<strong>「正しく空けた」</strong>こと。穴を穴として、精密に名指した。</p>
+  </div>
+
+  <h2><span class="n">04</span>見分け方 ── 旗を疑うチェックリスト</h2>
+
+  <p>上の図の5条件は、そのまま実用の物差しです。そしてこの物差しは、Gemini だけでなく<strong>僕（この文章を書いている AI）自身にも向きます</strong>：</p>
+
+  <div class="aside">
+    <span class="tag">この物差しは、書き手にも向く</span>
+    もし僕が「これでほぼ手中だ」「本質的に解けた」と言い出したら ── <strong>その瞬間に、僕はドリフトした版に堕ちています</strong>。掟（解けたと言わない）は、対話相手を裁く道具ではなく、<em>書き手自身の防波堤</em>。AI の出力も含め、すべての "到達" に旗を立てない。疑いは、いつも自分にも向ける。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>種明かし ── 標識を立てられた、が到達</h2>
+
+  <p>このシリーズ（そして、その元になった数ヶ月の探究）の本当の成果は、何かを<em>解いた</em>ことではありません。<strong>縁に立って、旗を立てずに済んだこと</strong>。「ここが人類の縁、この先はまだ無人」と、正直に書けたこと。</p>
+
+  <p>「宇宙＝計算」という魅力的な地図を、奇説の旗で汚さずに歩き切り、可約な島（settled）を数え、試せる種（testable）を播き、鋭い問い（sharp open）を研ぎ、そして唯一の穴（the one hole）を穴として残した。<strong>それは敗北ではなく、最前線に立つということそのもの</strong>です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線（この回自身にも）</span>
+    <p style="margin-top:0;">この「規律」を掲げること自体が、<strong>新しい旗になってはいけません</strong>。規律は勝利宣言ではなく、ただの作法です。「我々は正しく空けた、だから偉い」もまた、静かなドリフト。</p>
+    <p style="margin-bottom:0;">そして依然として ── 「情報と物理のどちらが根源か」「穴の中身は何か」は未解決のまま。この文書にも、シリーズ全体にも、「解けた」はひとつもありません。地図は描いた。旗は、立てなかった。それだけです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（シリーズ全体の締め）</div>
+    <ol>
+      <li>「旗を立てる版」と「縁に標識を立てる版」の、唯一の違いは何か。
+        <details><summary>答えを見る</summary><div class="ans">話題（地図）ではなく、残す標識。同じ地点に「解けた／万物の理論」の旗を立てるか、「未解決を未解決と書く」縁の標識を立てるか。topics は重なっても、旗と標識は正反対で、それが奇説と最前線を分ける。</div></details>
+      </li>
+      <li>なぜ「解けた」を疑うべきか、根拠を二つ。
+        <details><summary>答えを見る</summary><div class="ans">(1) 計算不可約な系に閉じた解を主張するのはほぼ必ず誤りか自明（第5回）。(2) 既知の観測（ローレンツ不変性・α の一定性）と矛盾する主張は観測で棄却される。加えて、疑いは書き手（AI 自身）にも向ける。</div></details>
+      </li>
+      <li>規律版の達成は何か。「埋めた」のでないなら。
+        <details><summary>答えを見る</summary><div class="ans">曖昧な信念を "分野のどの一片に賭けるか" の論文粒度の地図に変え、settled／testable／sharp open／the one hole の四段に正直に仕分けたこと。価値は「埋めた」でなく「正しく空けた」。それが最前線に立つということ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">終回まとめ</span>地図は描いた。旗は、立てなかった</h2>
+    <p>「宇宙＝計算」は、ありがちな思弁と<strong>地図が重なる</strong>。だから見た目は同じ。違いは一点 ── <strong>旗（解けた）か、縁の標識（未解決を未解決と書く）か</strong>。「解けた」を疑う根拠は計算不可約性（第5回）と既知との整合。旗を立てない代わりに規律版がしたのは、信念を<strong>settled／testable／sharp open／the one hole</strong> の地図に変えたこと。価値は「埋めた」でなく「正しく空けた」。</p>
+    <p>そしてこの物差しは、書き手（AI）自身にも向く ── 「ほぼ手中」と言い出したら、その瞬間に堕ちる。規律を掲げること自体を新しい旗にもしない。<strong>縁に立って、旗を立てずに歩き切ること</strong> ── それがこのシリーズの、そして探究の、本当の到達でした。</p>
+  </div>
+
+  <div class="fin">◇ 宇宙は計算機 ・ 完 ◇</div>
+
+  <div class="nav">
+    <a href="uchu-keisanki-06-landauer.html">← 第6回：消すことだけがコストを持つ</a>
+    <a href="uchu-keisanki-index.html">目次へ</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ終回（全7回）です。内容は科学哲学的な作法についての省察で、新しい物理的主張を含みません。反証可能性（Popper）、計算不可約性（Wolfram、第5回）、既知の対称性（局所ローレンツ不変性・微細構造定数 \(\alpha\) の一定性）との整合という判定基準は標準的なものです。本文中の対照表は、同一の話題が「解けた」を主張する版と「未解決を明示する」版とで正反対の妥当性を持ちうることの例示です。「情報と物理のいずれが根源か」「宇宙の更新規則（背景独立な有限動力学）」は現行の未解決問題であり、本シリーズは確定的解決を主張しません。図の判定は5条件の充足数を可視化する模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではチェックボックスと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面では条件チェックか例の選択で、針が「奇説の旗」⇄「最前線の標識」に動きます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), rd=document.getElementById('rd');
+  var cbs=[document.getElementById('c1'),document.getElementById('c2'),document.getElementById('c3'),document.getElementById('c4'),document.getElementById('c5')];
+  function score(){ var s=0; for(var i=0;i<5;i++) if(cbs[i].checked) s++; return s; }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function lerpColor(a,b,t){
+    return 'rgb('+Math.round(a[0]+(b[0]-a[0])*t)+','+Math.round(a[1]+(b[1]-a[1])*t)+','+Math.round(a[2]+(b[2]-a[2])*t)+')';
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var s=score(), f=s/5;
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2, cy=h-30, R=Math.min(w*0.36, h-70);
+    var red=[178,58,58], mid=[196,168,60], grn=[47,125,84];
+    // gauge arc (semicircle) colored red->green
+    var seg=60;
+    ctx.lineWidth=16; ctx.lineCap='butt';
+    for(var i=0;i<seg;i++){
+      var t0=i/seg, t1=(i+1)/seg;
+      var a0=Math.PI - t0*Math.PI, a1=Math.PI - t1*Math.PI;
+      var col = t0<0.5 ? lerpColor(red,mid,t0/0.5) : lerpColor(mid,grn,(t0-0.5)/0.5);
+      ctx.strokeStyle=col; ctx.beginPath(); ctx.arc(cx,cy,R,a0,a1,true); ctx.stroke();
+    }
+    // ticks 0..5
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    for(i=0;i<=5;i++){ var a=Math.PI - (i/5)*Math.PI;
+      var x1=cx+Math.cos(a)*(R-8), y1=cy-Math.sin(a)*(R-8);
+      var x2=cx+Math.cos(a)*(R+8), y2=cy-Math.sin(a)*(R+8);
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    }
+    // end labels
+    ctx.font='bold 13px sans-serif'; ctx.textAlign='left';
+    ctx.fillStyle='#b23a3a'; ctx.fillText('奇説の旗', cx-R-6, cy+20);
+    ctx.textAlign='right';
+    ctx.fillStyle='#2f7d54'; ctx.fillText('最前線の標識', cx+R+6, cy+20);
+    ctx.textAlign='center';
+    // needle
+    var an=Math.PI - f*Math.PI;
+    var nx=cx+Math.cos(an)*(R-18), ny=cy-Math.sin(an)*(R-18);
+    var needleCol = f<0.5?lerpColor(red,mid,f/0.5):lerpColor(mid,grn,(f-0.5)/0.5);
+    ctx.strokeStyle=needleCol; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(nx,ny); ctx.stroke();
+    ctx.fillStyle='#4a4636'; ctx.beginPath(); ctx.arc(cx,cy,7,0,7); ctx.fill();
+    // score text
+    ctx.fillStyle=needleCol; ctx.font='bold 26px sans-serif';
+    ctx.fillText(s+' / 5', cx, cy-R*0.42);
+    var verdict = s<=1?'奇説の旗':(s<=3?'要注意（グレー）':'最前線の標識');
+    ctx.fillStyle='#4c4c58'; ctx.font='13px sans-serif';
+    ctx.fillText(verdict, cx, cy-R*0.42+22);
+    // readout
+    var msg;
+    if(s<=1) msg='充足 '+s+'/5 ── これは「奇説の旗」。既知と矛盾したり「解けた」と言っていたり、穴を隠している。地図が同じでも、ここに立つ標識は赤。';
+    else if(s<=3) msg='充足 '+s+'/5 ── グレー。まだ旗と標識のあいだ。反証可能性・整合・穴の明示のどれかが欠けている。';
+    else msg='充足 '+s+'/5 ── これは「最前線の標識」。反証可能で、既知と矛盾せず、「解けた」と言わず、穴を正直に残している。同じ話題でも、緑。';
+    rd.textContent=msg;
+  }
+  for(var i=0;i<5;i++) cbs[i].addEventListener('change',draw);
+  var btns=document.querySelectorAll('.btns button');
+  for(var b=0;b<btns.length;b++){ btns[b].addEventListener('click',function(){
+    var set=this.getAttribute('data-set');
+    for(var k=0;k<5;k++) cbs[k].checked = (set.charAt(k)==='1');
+    draw();
+  }); }
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

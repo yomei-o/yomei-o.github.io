@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>"簡単にする" の正体 ── 次元は読み値、"一番楽な次元" は現象ごとにある</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1b1a24; --ink-soft:#4b4a5c;
+    --paper:#f6f5fc; --paper-edge:#e0ddef;   /* 藍紫の紙：次元・抽象 */
+    --side:#4a4670; --side-bg:#eeecf5;
+    --warn:#8a3f5a;
+    --calc:#4b3fa0; --calc-bg:#ece9f7;
+    --rule:#d6d1ea; --hair:#bdb7d8;
+    --acc:#5b47c0;    /* アクセント＝藍紫 */
+    --grid:#ded9ef;
+    --line:#5b47c0; --ref:#a98fd6;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#26242f;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d9ccf2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#282539;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6e9ef;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f1f2c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cfc7ee;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:#ece9f7;color:#3d2f8f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4f1fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2c2170;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#efecf8);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6a6580;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 1 回 ／ "簡単にする" とは</span></div>
+  <p class="eyebrow">「もっと簡単に書けないの？」を、最後まで正直に追うと</p>
+  <h1>"簡単にする" の正体
+    <span class="sub">次元は「モノが持つ数」ではなく「読み値」。だから \(F=1/(Cn)^D\) は力の式ではなく<strong>次元のものさし</strong>。<br>そして「計算が一番楽になる次元」は、世界に一つではなく ── <strong>現象ごと</strong>に存在する。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：座標では簡単にならない／減るのは冗長性／次元は読み値</span>
+    <span>フック式：\(D=-\dfrac{d\ln F}{d\ln n}\)</span>
+  </div>
+
+  <p class="lead">「今の物理は複雑すぎる、もっと簡単に書ける座標系があるはずだ」── この直感を、逃げずに最後まで追うと、きれいな結論に着きます。<em>座標をいじっても簡単にはならない。減るのは、二重に数えていたと気づいたときだけ。</em> そして「次元」は世界が持つ数ではなく、こちらの<strong>測り方の目盛り</strong>だった。だから「一番楽な次元」も、世界に一つではなく現象ごとにある ── 最後はそこに落ち着きます。</p>
+
+  <h2><span class="n">01</span>名前を変えても、簡単にはならない</h2>
+
+  <p>座標系の取り替え（\(t\) を使うか \(c\cdot t\) を使うか、直交座標か極座標か）は、<strong>ただの貼り替え＝可逆な一対一対応</strong>です。可逆ということは、情報を1ビットも捨てていない。だから座標をどう選んでも、<em>本当の中身は1ミリも減りません</em>。</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li>消えるのは<strong>偽の複雑さ</strong>（座標のせいで見かけ上ゴチャつく分）だけ。</li>
+    <li>不変量（曲率や無次元の比 \(\alpha\) など）に入った<strong>本物の複雑さ</strong>は、座標では絶対に消せない。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">最初の結論</div>
+    <p style="margin:6px 0 0;">「もっと簡単な<strong>座標系</strong>」を探すのは筋が悪い。座標は<em>正直さの道具</em>であって、<em>簡単化のエンジン</em>ではない。</p>
+  </div>
+
+  <h2><span class="n">02</span>本当に減るのは「二重に数えてた」と気づいたとき</h2>
+
+  <p>では何が本当に簡単にするのか。答えは<strong>冗長性の発見</strong> ── 「変数はたくさんあったけど、本当の自由度はもっと少なかった」という多対一の気づきです。物理はこれを段階的に見つけてきました：</p>
+
+  <ul style="margin:10px 0 0;padding-left:1.2em;line-height:1.9;">
+    <li><strong>ゲージ対称性</strong>：場の変数の大半は物理でない（重力の計量10成分のうち、物理は2つ）。</li>
+    <li><strong>ホログラフィー</strong>：領域の中身の情報は「体積」ではなく「面積」ぶんしかない。\(S\le A/4\)。次元が一つ落ちる。</li>
+    <li><strong>もつれ（it from qubit）</strong>：空間や幾何そのものが、量子ビットの絡み方の言い換えかもしれない。</li>
+  </ul>
+
+  <div class="aside">
+    <span class="tag">言い換え</span>
+    「もっと簡単な座標系」ではなく「もっと大きな冗長性」を探すのが、同じ狙いの効く版。座標は、隠れた対称性（＝捨ててよい冗長性）を<em>目に見えるようにして指差す</em>ときだけ役に立つ。仕事をするのは座標ではなく、指された対称性のほう。
+  </div>
+
+  <h2><span class="n">03</span>次元は「持つ数」じゃなく「読み値」──だから \(F=1/(Cn)^D\) はものさし</h2>
+
+  <p>ここで「では何次元が一番シンプルか」と問いたくなる。でも掘ると、<strong>次元そのものが、世界が持つ数ではなく、こちらの測り方が返す読み値</strong>だと分かります。実際、有効次元（拡散の広がりで測る次元）は<em>スケールによって連続的に変わり、平気で非整数になる</em>。短距離では \(\approx2\)、大距離で \(\approx4\) ── 走るのです。</p>
+
+  <p>この「測る」を一番素朴に言うと：</p>
+
+  <div class="keybox">
+    <div class="lbl">次元の測り方（いちばん平たい形）</div>
+    <p style="margin:6px 0 8px;">領域を2倍に広げる。中身は何倍になる？<br>
+    2倍 → 線（1次元） ／ 4倍 → 面（2次元） ／ 8倍 → 立体（3次元）。<br>
+    この「何倍」の肩の数字が次元 \(D\)。</p>
+  </div>
+
+  <p>これを式にしたものが、まさに \((Cn)^D\) の形です。サイズ \(n\) を大きくすると量が \(n^D\) で増える／密度や力なら逆に \(1/(Cn)^D\) で減る。対数で開けば：</p>
+
+  <div class="calc">
+    <span class="tag">種明かし ── その式は「力」ではなく「ものさし」</span>
+    $$F=\frac{1}{(Cn)^{D}}\quad\Longrightarrow\quad \boxed{\,D=-\frac{d\ln F}{d\ln n}\,}$$
+    <p style="margin:10px 0 0;">つまり \(F=1/(Cn)^D\) は新しい<strong>力の法則ではなく</strong>、スケールする量 \(F\) から次元 \(D\) を<strong>読み取る計器</strong>。\(C\) は針が1を指す基準スケール（＝解像度の単位）。\(D\) が走るぶん、この傾きは一定でない ── それが「どこまでも余りがある」の正体。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：次元のものさし。スライダーで \(D\) を動かすと、両対数グラフの直線の<strong>傾きが \(D\) そのもの</strong>になる。整数（1=線・2=面・3=立体）は特別な目盛りにすぎず、\(D\) は非整数も取れる。「サイズ2倍 → 中身 \(2^D\) 倍」</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>次元 D（非整数もOK）<span class="val" id="vd">2.0</span>
+        <input type="range" id="sd" min="0.5" max="6" step="0.05" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーで D を動かすと、傾き＝次元が変わります。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--line);"></i>量 ＝ サイズ<sup>D</sup>（傾き＝D）</span>
+      <span><i class="swatch" style="background:var(--ref);"></i>整数次元の参照線（1・2・3）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>「計算が一番楽な次元」── 世界に一つではない。現象ごとにある</h2>
+
+  <p>「では、計算が一番楽になる次元が一つあるのでは？」 これは<strong>半分あって、半分ちがう</strong>。決定的な反例：</p>
+
+  <div class="keybox">
+    <div class="lbl">全体で一つ、はダメ</div>
+    <p style="margin:6px 0 0;">もし「計算の楽さ」で次元が決まるなら、宇宙は<strong>2次元</strong>になるはず（2次元は無限の対称性で<em>厳密に解ける</em>、いちばん手に負える次元）。でも我々は<strong>3+1次元</strong>にいる。だから「楽さ」は世界の次元を選ぶ原理ではありえない。</p>
+  </div>
+
+  <p>ところが ── <strong>「現象ごと」に絞ると、これは本物です</strong>。しかもちゃんと名前がある：<em>上部臨界次元</em>。ある現象について、この次元より上では一番素朴な近似（平均場理論）が<strong>厳密に正しく</strong>なり、計算がタダ同然になる。そして現象ごとに値が違う：</p>
+
+  <table class="dt">
+    <tr><th>現象 / 種類</th><th>一番楽になる次元</th><th>なぜ楽か</th></tr>
+    <tr><td>磁石・相転移（イジング／φ⁴）</td><td><span class="d">4</span></td><td>これより上で平均場理論が厳密（上部臨界次元）</td></tr>
+    <tr><td>ゲージ理論（電磁気・強い力）</td><td><span class="d">4</span></td><td>結合が無次元になり、理論が一番自然</td></tr>
+    <tr><td>浸透（パーコレーション）</td><td><span class="d">6</span></td><td>これより上で平均場が厳密（上部臨界次元）</td></tr>
+    <tr><td>スケール不変・臨界（共形場）</td><td><span class="d">2</span></td><td>無限次元の対称性が出て厳密に解ける</td></tr>
+    <tr><td>球の最密充填</td><td><span class="d">8・24</span></td><td>数学的に特別にきれい（最適性が証明済み）</td></tr>
+  </table>
+
+  <p>だから「現象ごとに、計算が一番楽になる次元がある」＝<strong>正しい</strong>。「あくまで現象ごと」という但し書きが、正しい方の半分を正確に切り出しています。</p>
+
+  <h2><span class="n">05</span>種明かし ── それは「式が楽になる」話であって「世界の次元」ではない</h2>
+
+  <p>ただし混ぜてはいけない一線があります。これらの楽な次元は<strong>全部バラバラ</strong>（2, 4, 6, 8, 24…）で一つに集まらないし、そして何より ── <em>「計算が楽」は式（＝こちらの記述）の話であって、世界がその次元でできている話ではない</em>。イジング模型は「4次元で楽だから4次元に住んでいる」わけではありません。4次元は「我々の近似がたまたま厳密になる」場所にすぎない。第3節でやったのと同じ ── <strong>次元は計器の目盛りで、中身そのものではない</strong>。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">この文書に「新しい物理を導いた」ものは一つもありません。ゲージ・ホログラフィー（\(S=A/4\)、AdS/CFT）・もつれ由来の幾何（Ryu–Takayanagi）・走るスペクトル次元（CDT等で UV\(\to2\)・IR\(\to4\)）・上部臨界次元（磁石4・浸透6）は、いずれも確立した物理／数学です。\(F=1/(Cn)^D\) は次元の<strong>定義式</strong>であって新法則ではなく、指数が力・伝播・数え上げのどれかで \(D,\,D{-}1,\,D{-}2\) と割れます。</p>
+    <p style="margin-bottom:0;">そして残る<strong>穴</strong>＝「なぜ空間はちょうど3次元か」「読み値の下にある本当の"モノ"は何か」は、この枠組み固有の謎ではなく<em>物理全体の未解決</em>。ホログラフィー・もつれの厳密版は今のところ箱（AdS）の中でしか確立しておらず、我々の宇宙（dS）版は未踏です。ここは埋めません ── 「解けた」とは言わない、が全体の掟。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>座標系を上手に選べば、物理は本当に簡単になる？
+        <details><summary>答えを見る</summary><div class="ans">ならない。座標変換は可逆な一対一対応で、情報を捨てないから本当の複雑さは減らない。消えるのは座標由来の「偽の複雑さ」だけ。本物の簡単化は、冗長性（ゲージ・ホログラフィー・もつれ）を見つけたときに起きる。</div></details>
+      </li>
+      <li>\(F=1/(Cn)^D\) の \(D\) は何を測っている？
+        <details><summary>答えを見る</summary><div class="ans">次元。\(D=-d\ln F/d\ln n\) で、サイズ \(n\) を増やすと量がどの割合で増える／減るかの「肩の数字」＝次元を読む計器。新しい力の法則ではなく、ものさし。しかも \(D\) はスケールで走るので一定ではない。</div></details>
+      </li>
+      <li>「計算が一番楽になる唯一の次元」は存在する？
+        <details><summary>答えを見る</summary><div class="ans">世界全体では存在しない（あれば厳密に解ける2次元になるはずだが、我々は3+1次元にいる）。ただし現象ごとには実在し、上部臨界次元と呼ぶ（磁石・ゲージは4、浸透は6、共形は2…）。ただしそれは「式が楽になる」話で、「世界がその次元でできている」話ではない。混ぜないこと。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>簡単にするとは、冗長性を見つけること</h2>
+    <p>座標を変えても物理は簡単にならない（可逆＝情報不変）。本当に減るのは<strong>冗長性</strong>を見つけたとき ── ゲージ・ホログラフィー・もつれ。掘ると<strong>次元は「モノが持つ数」ではなく「測り方の読み値」</strong>で、スケールで走り、非整数も取る。だから \(F=1/(Cn)^D\) は力の式ではなく <strong>\(D=-d\ln F/d\ln n\) という次元のものさし</strong>だった。</p>
+    <p>そして「計算が一番楽な次元」は世界に一つではない（あれば2次元になる）が、<strong>現象ごとには実在する＝上部臨界次元</strong>（磁石4・浸透6・共形2…）。ただしそれは<em>式が楽になる</em>話で、<em>世界がその次元でできている</em>話ではない。残る「なぜ3次元か・本当のモノは何か」は、この枠組みでなく物理全体の穴 ── ここは正直に、開けたまま置く。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f4f1fc;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-02-dou-keisan.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f4f1fc;font-weight:600;letter-spacing:.03em;">第2回：宇宙をどう計算するか →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ第1回（会話のまとめ・正直版）です。座標変換の可逆性（微分同相＝情報不変）、ゲージ冗長性（電磁場の2偏光・重力の2自由度）、ホログラフィック境界 \(S\le A/4\)・AdS/CFT・Ryu–Takayanagi のもつれ＝幾何、スペクトル次元の走り（CDT・漸近的安全性で UV\(\to\!2\)、IR\(\to\!4\)）、上部臨界次元（イジング/φ⁴＝4、パーコレーション＝6、2次元共形場の可解性、8・24次元の最密充填の最適性）は、いずれも確立した物理／数学です。\(F=1/(Cn)^D\) は次元の定義関係 \(D=-d\ln F/d\ln n\) の言い換えであり、新しい力の法則ではありません（指数は対象が力・伝播関数・状態数のどれかで \(D{-}1\)・\(D{-}2\)・\(D\) に変わります）。ホログラフィー／もつれ由来の幾何の厳密版は反ド・ジッター時空で確立しており、我々のド・ジッター宇宙での実現、および「空間はなぜ3次元か」「基層の微視的自由度は何か」は現行の未解決問題です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで、両対数グラフの傾き＝次元 D が動く様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sd=document.getElementById('sd'), vd=document.getElementById('vd'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var LMAX=5; // log2(size): size 1..32
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52, padT=16, padR=16;
+    var D=parseFloat(sd.value); vd.textContent=D.toFixed(2);
+    var YMAX=6*LMAX/ (LMAX); // we scale y in log2 units; cap
+    var yTop=6*1.0; // max log2(amount) shown = 6*? set to D up to 6 -> 6*5=30 too big; scale dynamically
+    // choose y range: amount = size^D, log2 amount = D*log2 size, max = D*LMAX
+    var ymax = Math.max(6, D*LMAX*1.02);
+    ctx.clearRect(0,0,w,h);
+    function X(ls){return pad+(ls/LMAX)*(w-pad-padR);}          // ls = log2 size 0..5
+    function Y(la){return (h-pad)-(la/ymax)*(h-pad-padT);}       // la = log2 amount 0..ymax
+    // grid vertical (size 1,2,4,8,16,32)
+    ctx.font='11px sans-serif';
+    for(var i=0;i<=LMAX;i++){
+      var x=X(i);
+      ctx.strokeStyle='#ece7f8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,h-pad);ctx.stroke();
+      ctx.fillStyle='#9990c0';ctx.fillText(String(Math.pow(2,i)), x-6, h-pad+16);
+    }
+    // reference lines D=1,2,3
+    var refs=[1,2,3];
+    ctx.setLineDash([4,4]);ctx.lineWidth=1.4;
+    for(var k=0;k<refs.length;k++){
+      var Dr=refs[k]; if(Dr*LMAX>ymax+0.01) continue;
+      ctx.strokeStyle='#c9b8ea';ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(LMAX),Y(Dr*LMAX));ctx.stroke();
+      ctx.fillStyle='#a98fd6';
+      var lbl=Dr===1?'D=1 (線)':(Dr===2?'D=2 (面)':'D=3 (立体)');
+      ctx.fillText(lbl, X(LMAX)-72, Y(Dr*LMAX)-4);
+    }
+    ctx.setLineDash([]);
+    // axes
+    ctx.strokeStyle='#bdb7d8';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#5f5980';ctx.font='12px sans-serif';
+    ctx.fillText('サイズ n（両対数）→', w-160, h-pad+30);
+    ctx.save();ctx.translate(15,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('中身の量（両対数）', 0,0);ctx.restore();
+    // main line: log2 amount = D * log2 size
+    ctx.strokeStyle='#5b47c0';ctx.lineWidth=3;ctx.beginPath();
+    ctx.moveTo(X(0),Y(0));ctx.lineTo(X(LMAX),Y(D*LMAX));ctx.stroke();
+    // slope marker dot at size=2 (log2=1)
+    ctx.fillStyle='#5b47c0';ctx.beginPath();ctx.arc(X(1),Y(D),5,0,7);ctx.fill();
+    // slope annotation
+    ctx.fillStyle='#4b3fa0';ctx.font='bold 13px sans-serif';
+    var mx=X(3.1), my=Y(D*3.1)-10; if(my<padT+12)my=padT+12;
+    ctx.fillText('傾き = D = '+D.toFixed(2), mx-30, my);
+    // readout
+    var factor=Math.pow(2,D);
+    rd.textContent='次元 D = '+D.toFixed(2)+' → サイズを2倍にすると中身は '+factor.toFixed(2)+' 倍（＝ 2^D 倍）。直線の傾きがそのまま次元。整数でなくてもよい。';
+  }
+  sd.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

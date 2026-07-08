@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四つの力の次元 ── D は「走る」。弱い力は 2→∞、強い力は 2→0</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d10; --ink-soft:#5a4e37;
+    --paper:#faf6ec; --paper-edge:#eae1cc;   /* 琥珀の紙：力・伝播 */
+    --side:#6a5320; --side-bg:#f2ecdb;
+    --warn:#8a4322;
+    --calc:#8a6413; --calc-bg:#f4edd8;
+    --rule:#e2d8bf; --hair:#cbbd97;
+    --acc:#9c6b12;    /* アクセント＝琥珀金 */
+    --grid:#ece2c9;
+    /* 四つの力の色 */
+    --grav:#4a4670; --em:#0d7d84; --weak:#a02b8c; --strong:#b5432a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#2c2413;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdca6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#33290f;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f5e7dd;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2417;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e0d3ab;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.7;
+    background:#f4edd8;color:#5c4310;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  table.dt{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  table.dt th,table.dt td{border:1px solid var(--rule);padding:9px 12px;text-align:left;line-height:1.6;}
+  table.dt th{background:var(--side-bg);color:var(--side);font-weight:700;letter-spacing:.04em;font-size:12.5px;}
+  table.dt td .d{color:var(--acc);font-weight:700;}
+  table.dt td .g{color:var(--grav);font-weight:700;} table.dt td .e{color:var(--em);font-weight:700;}
+  table.dt td .w{color:var(--weak);font-weight:700;} table.dt td .s{color:var(--strong);font-weight:700;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f8f2e2;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a370c;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefdf8,#f3ecda);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.fig,table.dt{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#7a6c4a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>宇宙は計算機</span><span class="ep">第 10 回（延長）／ 四つの力の次元</span></div>
+  <p class="eyebrow">「弱い力と強い力の次元はいくつ？ この式から出せる？」を、逃げずに追うと</p>
+  <h1>四つの力の次元
+    <span class="sub">\(D=-\dfrac{d\ln F}{d\ln n}\) を四つの力に当てる。重力・電磁気は <strong>D=2 で一定</strong>。だが弱い力は <strong>2→∞</strong>、強い力は <strong>2→0</strong> ── \(D\) は<strong>一つの数ではなく「走る」</strong>。</span>
+  </h1>
+  <div class="byline">
+    <span>芯：みんな短距離で D=2 から出発する／違うのは長距離での走り方だけ</span>
+    <span>フック式：\(D(r)=-\dfrac{d\ln F}{d\ln r}\)</span>
+  </div>
+
+  <p class="lead">前回まで \(F=1/(Cn)^D\) は力の法則ではなく<strong>次元のものさし</strong>だと見ました。ではその計器を、自然界の四つの力に当てたら何が読める？ 電磁気は \(D=2\)（\(C\!\approx\!137\)）── 逆二乗の法則です。<em>では弱い力・強い力の \(D\) は？</em> 結論を先に言うと ── <strong>一つの数字では出ません</strong>。でもそれは失敗ではなく、前回の「\(D\) は走る」の一番きれいな実例になります。計算屋の言葉に直せば、力とは<em>「仲介粒子というメッセージが、距離という配線をどれだけ減衰せずに届くか」</em>。減衰のしかたが四つで違う、それだけです。</p>
+
+  <h2><span class="n">01</span>まず計器の確認 ── \(D\) は「距離で割った減り方の傾き」</h2>
+
+  <p>ものさしの定義はこうでした：サイズ（ここでは距離 \(r\)）を増やすと量 \(F\) がどの割合で減るか、その両対数の傾きが次元 \(D\)。</p>
+
+  <div class="calc">
+    <span class="tag">計器（前回の再掲）</span>
+    $$F=\frac{1}{(Cr)^{D}}\quad\Longrightarrow\quad \boxed{\,D=-\frac{d\ln F}{d\ln r}\,}$$
+    <p style="margin:10px 0 0;">ここで大事なのは、この式は <strong>\(F\) がきれいなべき法則のときだけ \(D\) を一つの数として返す</strong>ということ。もし \(F\) がべきでなければ、\(D\) は距離ごとに違う値になる ── つまり<strong>走る</strong>。四つの力の違いは、まさにここに出ます。\(C\) は「針が1を指す基準」＝結合の強さ（電磁気なら \(1/\alpha\!\approx\!137\)）。</p>
+  </div>
+
+  <h2><span class="n">02</span>質量ゼロの仲介子 ── だから重力・電磁気は \(D=2\) で「一定」</h2>
+
+  <p>電磁気の仲介子（光子）と重力の仲介子（重力子）は<strong>質量ゼロ</strong>。質量ゼロのメッセージはどこまでも届き、3次元空間に素直に薄まる ── 球面 \(4\pi r^2\) に広がるので \(F\propto 1/r^2\)。これは<em>本物のべき法則</em>だから、計器は迷いなく：</p>
+
+  <div class="keybox">
+    <div class="lbl">重力・電磁気</div>
+    <p style="margin:6px 0 0;">\(F=1/r^2\) → \(D=-d\ln F/d\ln r = \mathbf{2}\)。距離をどれだけ変えても傾きは 2 のまま ── <strong>走らない</strong>。これが「素直な逆二乗」で、あなたの言う \(C\!=\!137,\ D\!=\!2\)（電磁気）はこれ。重力も同じ \(D=2\)、違うのは \(C\) だけ（後述の表で \(\sim\!10^{39}\)）。</p>
+  </div>
+
+  <p>ここが基準線です。<strong>「質量ゼロの仲介子 ＝ 定数の \(D=2\)」</strong>。残り二つの力は、この基準からどう<em>ずれて走るか</em>で決まります。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>弱い力 ── 仲介子が重い。\(D\) は \(2\to\infty\) へ走る</h2>
+
+  <p>弱い力の仲介子（W・Z 粒子）は<strong>重い</strong>（陽子の約90倍）。重いメッセージは遠くまで飛べず、射程 \(\lambda=\hbar/(Mc)\approx10^{-18}\,\text{m}\) で<em>指数的に</em>消えます（湯川ポテンシャル）。力の形は \(F\sim e^{-r/\lambda}/r^2\)。これはべき法則<strong>ではない</strong>。それでも計器 \(D=-d\ln F/d\ln r\) を当てると：</p>
+
+  <div class="calc">
+    <span class="tag">計算 ── 湯川型に計器を当てる</span>
+    $$F=\frac{e^{-r/\lambda}}{r^{2}}\;\Longrightarrow\;
+      D(r)=-\frac{d\ln F}{d\ln r}=2+\frac{r}{\lambda}$$
+    <p style="margin:10px 0 0;">
+    \(\ln F = -\,r/\lambda - 2\ln r\)。これを \(\ln r\) で微分すると \(d\ln F/d\ln r = -\,r/\lambda - 2\)。符号を返して \(D=2+r/\lambda\)。
+    </p>
+    <ul style="margin:8px 0 2px;padding-left:1.2em;line-height:1.85;">
+      <li>射程の内側 \(r\ll\lambda\)：\(D\to\mathbf{2}\) ── <strong>電磁気とそっくり</strong>（これが本物の電弱統一）。</li>
+      <li>射程の外 \(r\gg\lambda\)：\(D\to\boldsymbol{\infty}\) ── 指数で殺され、傾きが<strong>いくらでも急</strong>になる。</li>
+    </ul>
+  </div>
+
+  <div class="aside">
+    <span class="tag">「弱い力が弱い」の正体</span>
+    弱い力は<em>結合が弱いから弱いのではありません</em>（結合 \(C\!\approx\!30\) で、じつは電磁気の \(137\) より<strong>強い</strong>）。弱く見えるのは、\(D\) が距離とともに \(\infty\) へ走って force を打ち切るから ── <strong>「短射程」＝「\(D\) が発散する」</strong>の言い換え。第8回で \(D\) を虚数へ開いたのと同じで、次元は端まで開くと整数の外へ出ます。
+  </div>
+
+  <h2><span class="n">04</span>強い力 ── 距離で減らない。\(D\) は \(2\to0\) へ走る</h2>
+
+  <p>強い力はもっと極端です。クォーク間の力は、遠ざけても<strong>減らない</strong>（閉じ込め）。ポテンシャルは \(V(r)=-a/r+\sigma r\)（コーネル型）── 近くではクーロン的な \(-a/r\)、遠くでは直線的に上がる \(\sigma r\)。力にすると \(F=a/r^2+\sigma\)。計器を当てると：</p>
+
+  <div class="calc">
+    <span class="tag">計算 ── 閉じ込め型に計器を当てる</span>
+    $$F=\frac{a}{r^{2}}+\sigma\;\Longrightarrow\;
+      D(r)=-\frac{d\ln F}{d\ln r}=\frac{2a}{a+\sigma r^{2}}=\frac{2}{1+(r/r_0)^{2}}$$
+    <p style="margin:10px 0 0;">（\(r_0=\sqrt{a/\sigma}\) が切り替えスケール、\(\sim\!0.2\,\text{fm}\)。）</p>
+    <ul style="margin:8px 0 2px;padding-left:1.2em;line-height:1.85;">
+      <li>短距離 \(r\ll r_0\)：\(D\to\mathbf{2}\) ── <strong>漸近的自由</strong>。クォークがほぼ自由でクーロン的、また逆二乗。</li>
+      <li>長距離 \(r\gg r_0\)：\(F\to\sigma\)（一定）→ \(D\to\mathbf{0}\) ── <strong>閉じ込め</strong>。距離を倍にしても力が減らない＝両対数で<em>傾きゼロの水平線</em>。</li>
+    </ul>
+  </div>
+
+  <p>\(D=0\) は、前回のものさしで言えば「サイズを変えても中身が変わらない」次元ゼロの読み。力の管（フラックスチューブ）が撚れて残り、引き伸ばすほどエネルギーが溜まって最後は千切れて新しいクォーク対を生む ── だから単独のクォークは取り出せない。強い力の \(C\approx1\)（\(\alpha_s\!\sim\!1\)）が、文字どおり「強い」の由来です。</p>
+
+  <div class="fig">
+    <div class="cap">図：四つの力の<strong>走る次元 \(D(r)\)</strong>。横軸は距離（両対数・模式）、縦軸は計器の読み \(D=-d\ln F/d\ln r\)。スライダーで距離カーソルを動かすと、各力の \(D\) が読み取れる。<strong>全員が左端（超短距離）で \(D=2\) から出発</strong>し、重力・電磁気は水平、弱い力は上へ発散、強い力は下へゼロへ ── 分かれるのは長距離だけ。<span style="color:var(--warn)">※横位置は模式（実際の射程比は桁違い）。形（2一定／2→∞／2→0）が本物。</span></div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>距離カーソル（超短距離 ←→ 長距離）<span class="val" id="vr">中間</span>
+        <input type="range" id="sr" min="0" max="1" step="0.005" value="0.5">
+      </label>
+    </div>
+    <div class="readout" id="rd">スライダーを動かすと、その距離での四つの力の次元 D が読めます。</div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--grav);"></i>重力（D=2 一定）</span>
+      <span><i class="swatch" style="background:var(--em);"></i>電磁気（D=2 一定）</span>
+      <span><i class="swatch" style="background:var(--weak);"></i>弱い力（2→∞）</span>
+      <span><i class="swatch" style="background:var(--strong);"></i>強い力（2→0）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>四つを一枚に ── 芯は「みんな短距離で D=2」</h2>
+
+  <table class="dt">
+    <tr><th>力</th><th>D（短距離 → 長距離）</th><th>C ≈ 1/結合</th><th>減衰の理由（計算屋の語彙）</th></tr>
+    <tr><td>重力</td><td><span class="g">2</span>（一定）</td><td>~10³⁹</td><td>仲介子が質量ゼロ → 素直なべき法則</td></tr>
+    <tr><td>電磁気</td><td><span class="e">2</span>（一定）</td><td><strong>137</strong></td><td>仲介子が質量ゼロ → 素直なべき法則</td></tr>
+    <tr><td>弱い力</td><td><span class="w">2 → ∞</span></td><td>~30</td><td>仲介子(W/Z)が重い → 指数で打ち切り</td></tr>
+    <tr><td>強い力</td><td><span class="s">2 → 0</span></td><td>~1</td><td>閉じ込め → 距離で減らない</td></tr>
+  </table>
+
+  <div class="keybox">
+    <div class="lbl">この回の芯</div>
+    <p style="margin:6px 0 0;"><strong>四つの力は全員、超短距離では \(D=2\) から出発する。</strong> 3+1次元で点源が撒く場は、必ず逆二乗（\(1/r^2\)）から始まるから。違いは<em>長距離で何が起きるか</em>だけ ── 仲介子の質量（弱）か、自己相互作用による閉じ込め（強）か。だから「弱い力・強い力の次元はいくつ？」の正しい答えは、<strong>「一つの数ではなく、2 から ∞ へ／2 から 0 へ走る関数」</strong>。式から出せます ── ただし走る \(D(r)\) として。</p>
+  </div>
+
+  <h2><span class="n">06</span>種明かし ── 計器は正直だが、\(C\) の役に継ぎ目がある</h2>
+
+  <p>ここで混ぜてはいけない一線。弱・強では \(D\) が<strong>整数の一つの数に収まらない</strong>。それは計器の欠陥ではなく、対象がべき法則でない事実を正直に映しているだけ ── むしろ前回の「\(D\) は走る」思想と完全に整合します。ただし正直に言うべき継ぎ目がもう一つ：</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── \(C\) の二役</span>
+    <p style="margin-top:0;">前回 \(C\) は「針が1を指す<strong>基準スケール</strong>（解像度の単位）」でした。一方この回で \(C\!=\!137\) は「\(1/\alpha\)＝<strong>結合の強さ</strong>」として使っています。<em>スケール</em>と<em>結合</em>は本来べつもの。式 \(F=1/(Cr)^D\) の \(C\) は前係数（結合を吸う位置）で、\(D\) は肩（幾何＝距離の減り方）── この<strong>「\(C\)＝結合／\(D\)＝幾何」の分業</strong>を明示すれば混乱しません。混ぜたまま「一つの式で全部出た」と言うと旗を立てることになる。</p>
+    <p style="margin-bottom:0;">そしてこの回に<strong>新しい物理は一つもありません</strong>。逆二乗（質量ゼロ場）・湯川ポテンシャル（massive mediator の指数打ち切り）・漸近的自由と閉じ込め（コーネル型 \(-a/r+\sigma r\)、\(\alpha_s\) の走り）は、いずれも確立した物理。\(D=-d\ln F/d\ln r\) は次元の<strong>定義式</strong>で、それを既知の力の形に当てて<em>読んだ</em>だけ。残る穴 ──「なぜ仲介子の質量がその値か」「\(\sigma\) はどこから来るか（質量ギャップ問題）」── は物理全体の未解決で、ここは埋めません。「解けた」とは言わない、が全体の掟。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（この一枚で解けます）</div>
+    <ol>
+      <li>「弱い力の次元は 2？ それとも別の数？」に一言で答えると？
+        <details><summary>答えを見る</summary><div class="ans">「一つの数ではない」。射程の内側では \(D\to2\)（電磁気とそっくり）だが、射程の外では \(D=2+r/\lambda\to\infty\) と走る。だから固定した整数では答えられない ── 走る関数として答えるのが正しい。</div></details>
+      </li>
+      <li>強い力で \(D=0\) が意味することは？
+        <details><summary>答えを見る</summary><div class="ans">距離を変えても力が減らない（\(F\to\sigma\)＝一定）。両対数で傾きゼロ＝水平線。次元ゼロの読みは「サイズを変えても中身が変わらない」に対応し、閉じ込め（フラックスチューブ）そのもの。だからクォークは単独で取り出せない。</div></details>
+      </li>
+      <li>四つの力に共通する一点は？
+        <details><summary>答えを見る</summary><div class="ans">全員、超短距離では \(D=2\) から出発する（3+1次元の点源は逆二乗から始まる）。違いは長距離での走り方だけ ── 重力・電磁気は 2 のまま、弱は ∞ へ、強は 0 へ。\(C\)（結合）は別軸で、137／30／1／10³⁹ と力ごとに違う。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>次元は力ごとに「走り方」が違う</h2>
+    <p>計器 \(D=-d\ln F/d\ln r\) を四つの力に当てると、<strong>全員が超短距離で \(D=2\)</strong> から始まる。重力・電磁気は仲介子が質量ゼロで逆二乗のまま \(D=2\) 一定。弱い力は重い仲介子で \(D=2+r/\lambda\to\infty\)（だから短射程＝「弱い」）。強い力は閉じ込めで \(D=2/(1+(r/r_0)^2)\to0\)（だから距離で減らない＝「強い」）。</p>
+    <p>だから「弱い力・強い力の次元は？」への正直な答えは、<em>一つの整数ではなく、走る関数</em>。式からは出せる ── ただし前回の「\(D\) は走る」の実例として。\(C\)（結合）と \(D\)（幾何）は別軸だと明示すること、そして「なぜその質量・その \(\sigma\) か」は物理全体の穴として開けたまま置くこと ── この二つを守れば、旗ではなく標識のまま進めます。</p>
+  </div>
+
+  <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 0;">
+    <a href="uchu-keisanki-09-bibun.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8f2e2;font-weight:600;letter-spacing:.03em;">← 第9回：情報の式と物理の式</a>
+    <a href="uchu-keisanki-index.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8f2e2;font-weight:600;letter-spacing:.03em;">目次へ</a>
+    <a href="uchu-keisanki-11-yaiba.html" style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--acc);text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:3px;background:#f8f2e2;font-weight:600;letter-spacing:.03em;">第11回：D=2 は刃の上 →</a>
+  </div>
+
+  <div class="foot">
+    この文書は「宇宙は計算機」シリーズ延長第10回です。逆二乗則（質量ゼロ場の \(1/r^2\)）、湯川ポテンシャル（質量 \(M\) の仲介子による指数打ち切り \(e^{-r/\lambda}\)、\(\lambda=\hbar/Mc\)）、コーネル・ポテンシャル \(V=-a/r+\sigma r\) と QCD の漸近的自由・閉じ込め・結合定数 \(\alpha_s\) の走り、電弱の結合 \(\alpha_w\)、微細構造定数 \(\alpha\!\approx\!1/137\)、重力の無次元結合 \(\alpha_G\!\sim\!10^{-39}\) は、いずれも確立した物理です。\(D=-d\ln F/d\ln r\) は次元の定義関係であり新しい力の法則ではありません（既知の力の形に当てて読んだ結果）。図の横軸位置は模式で、実際の射程比（弱 \(\sim\!10^{-18}\text{m}\)、強 \(\sim\!10^{-15}\text{m}\)）は桁違いです。仲介子の質量の値、質量ギャップ（\(\sigma\) の起源）は現行の未解決問題。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：Ctrl+P（Mac は ⌘+P）。画面ではスライダーで距離カーソルを動かすと、四つの力の走る次元 D が同時に読めます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sr=document.getElementById('sr'), vr=document.getElementById('vr'), rd=document.getElementById('rd');
+  // 横軸 t=0..1 → log10距離 L = Lmin..Lmax（模式）
+  var Lmin=-3, Lmax=3;
+  // 切り替えスケール（模式配置）
+  var logLambda=0.4;   // 弱：λ の log10 位置
+  var logR0=-0.4;      // 強：r0 の log10 位置
+  var lambda=Math.pow(10,logLambda), r0=Math.pow(10,logR0);
+  var YMAX=6;          // D 軸の上限（∞ は上でクリップ）
+
+  function L(t){return Lmin+t*(Lmax-Lmin);}       // t→log10距離
+  function rOf(t){return Math.pow(10,L(t));}
+  function Dweak(r){return 2 + r/lambda - r/(r+lambda);}   // 2→∞（内側で正しく2へ）
+  function Dstrong(r){return 2/(1+(r/r0)*(r/r0));}         // 2→0
+  var Dgrav=2, Dem=2;
+
+  function setupHiDPI(c){
+    var ratio=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*ratio); c.height=Math.round(cssH*ratio);
+    var ctx=c.getContext('2d'); ctx.setTransform(ratio,0,0,ratio,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50, padT=18, padR=18;
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t*(w-pad-padR);}
+    function Y(D){var Dc=Math.min(D,YMAX); return (h-pad)-(Dc/YMAX)*(h-pad-padT);}
+    // 横グリッド（D=0..6）
+    ctx.font='11px sans-serif';
+    for(var g=0;g<=YMAX;g++){
+      var y=Y(g);
+      ctx.strokeStyle= (g===2)?'#e4d4a6':'#f0e8d2'; ctx.lineWidth=(g===2)?1.4:1;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle= (g===2)?'#9c6b12':'#b3a678'; ctx.fillText('D='+g, 6, y+4);
+    }
+    // 切り替えスケールの縦目印
+    function tOfL(lv){return (lv-Lmin)/(Lmax-Lmin);}
+    ctx.setLineDash([3,4]); ctx.lineWidth=1;
+    ctx.strokeStyle='#d9b3d0'; var xw=X(tOfL(logLambda));
+    ctx.beginPath();ctx.moveTo(xw,padT);ctx.lineTo(xw,h-pad);ctx.stroke();
+    ctx.strokeStyle='#e0b3a6'; var xs=X(tOfL(logR0));
+    ctx.beginPath();ctx.moveTo(xs,padT);ctx.lineTo(xs,h-pad);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#a02b8c';ctx.font='11px sans-serif';ctx.fillText('弱 λ',xw-10,padT+12);
+    ctx.fillStyle='#b5432a';ctx.fillText('強 r₀',xs-12,padT+12);
+    // 曲線を描く
+    function curve(fn,color,lw){
+      ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();
+      for(var i=0;i<=240;i++){var t=i/240,r=rOf(t),D=fn(r);
+        var x=X(t),y=Y(D); if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+      ctx.stroke();
+    }
+    // 重力と電磁気は D=2 で重なる：太い電磁色の下に重力を少しずらして見せる
+    ctx.strokeStyle='#4a4670';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(X(0),Y(2)+3);ctx.lineTo(X(1),Y(2)+3);ctx.stroke();
+    ctx.strokeStyle='#0d7d84';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(X(0),Y(2)-1);ctx.lineTo(X(1),Y(2)-1);ctx.stroke();
+    curve(Dstrong,'#b5432a',3);
+    curve(Dweak,'#a02b8c',3);
+    // 弱い力が上端に達したら「∞」矢印
+    (function(){for(var i=0;i<=240;i++){var t=i/240,D=Dweak(rOf(t));
+      if(D>=YMAX){var x=X(t),y=Y(YMAX);ctx.fillStyle='#a02b8c';ctx.font='bold 13px sans-serif';ctx.fillText('→ ∞',x+2,y+14);break;}}})();
+    // 軸
+    ctx.strokeStyle='#cbbd97';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,padT);ctx.lineTo(pad,h-pad);ctx.lineTo(w-padR,h-pad);ctx.stroke();
+    ctx.fillStyle='#6a5f3f';ctx.font='12px sans-serif';
+    ctx.fillText('超短距離（ズームイン）', pad+2, h-pad+22);
+    ctx.fillText('長距離 →', w-90, h-pad+22);
+    // カーソル
+    var tc=parseFloat(sr.value), rc=rOf(tc), xc=X(tc);
+    ctx.strokeStyle='#9c6b12';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(xc,padT);ctx.lineTo(xc,h-pad);ctx.stroke();ctx.setLineDash([]);
+    function dot(D,color){var y=Y(D);ctx.fillStyle=color;ctx.beginPath();ctx.arc(xc,y,4.5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+    var dw=Dweak(rc), ds=Dstrong(rc);
+    dot(2,'#0d7d84'); dot(Math.min(dw,YMAX),'#a02b8c'); dot(ds,'#b5432a');
+    // ラベル
+    var zone = tc<tOfL(logR0)-0.05 ? '超短距離' : (tc>tOfL(logLambda)+0.05 ? '長距離' : '中間');
+    vr.textContent=zone;
+    var dwT = dw>=YMAX?'∞へ発散':dw.toFixed(2);
+    rd.innerHTML='この距離での次元の読み： 重力 <b>D=2</b> ／ 電磁気 <b>D=2</b>（水平）／ 弱い力 <b style="color:#a02b8c">D='+dwT+'</b> ／ 強い力 <b style="color:#b5432a">D='+ds.toFixed(2)+'</b>。'+
+      '<br>左端では全員 2 に集まり、右へ動かすほど弱は上（∞）へ・強は下（0）へ分かれます。';
+  }
+  sr.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
