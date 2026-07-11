@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「1/137 が 1/128 になる」は、どっちの動き？ ── わかる宇宙論 番外編⑥</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f6fc; --paper-edge:#dadeef;   /* 番外編⑥：藍の紙（二つの軸） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#333a8a; --calc-bg:#e7e9f6;
+    --rule:#cfd4e8; --hair:#bcc3dd;
+    --acc:#3b46a0;    /* 番外編⑥アクセント＝藍 */
+    --grid:#d5daee;
+    --time:#2f7d5a;   /* 時間の軸＝緑 */
+    --energy:#b06a12; /* エネルギーの軸＝琥珀（第6回と揃える） */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ccd3f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd0ec;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.axes{width:100%;border-collapse:collapse;margin:24px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.axes th,table.axes td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.axes thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.axes th.rowh{background:#eef0f8;color:var(--ink);font-weight:600;width:26%;}
+  table.axes .t{color:var(--time);font-weight:700;} table.axes .e{color:var(--energy);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f8fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2a305e;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2a305e;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.axes{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑥ ／ 「動かす側」に立ってみる（三部作・その2）</span></div>
+  <p class="eyebrow">「α が 1/137 から 1/128 に変わる」── この“変わる”は、⑤の“時間で動く”とは別の軸だ</p>
+  <h1>「1/137 が 1/128 になる」は、<br>どっちの動き？
+    <span class="sub">α が動く、には二つの軸がある ── 宇宙の時間で動くのと、見る細かさ（エネルギー）で動くの。<br>片方にはゲージの自由があり、もう片方には無い。混ぜると事故る。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回前編の「走るα」、番外編⑤</span>
+    <span>時間の軸 と エネルギーの軸</span>
+  </div>
+
+  <p class="lead">「微細構造定数が 1/137 から 1/128 に変化する」── そう語る人は確かにいます。でもそれは、番外編⑤で扱った「時代とともに \(\alpha\) が動く」話とは<em>まったく別の軸</em>の変化です。前者は第6回前編でやった<strong>走り(running)</strong> ── 時間ではなく、ぶつけるエネルギー(見る細かさ)で値が変わる。この二つを混ぜると、「加速器の実験結果」と「宇宙が変わった」を取り違える、という事故が起きます。三部作の二本目は、\(\alpha\) の<strong>二つの動き方</strong>をきっちり分けます。</p>
+
+  <h2><span class="n">01</span>「128」は時間の話じゃない ── エネルギーの話</h2>
+
+  <p>まず何が起きているか。第6回前編の絵を思い出します。電子のまわりには、真空から湧く \(e^+e^-\) ペアの薄い衣がまとわりつき、電気を少し隠している(遮蔽)。<strong>粗く(低エネルギーで)見れば</strong>衣の外なので \(\alpha\approx 1/137\)、<strong>細かく(高エネルギーで)見れば</strong>衣の内側に入り、隠れていない強い電気が見えて \(\alpha\approx 1/128\)。境目の目安は \(Z\) 粒子の重さ(約91 GeV)あたり。</p>
+
+  <div class="keybox">
+    <div class="lbl">「128」の正体</div>
+    <p style="margin:6px 0 0;">同じ電子を、<strong>同じ時代</strong>に、<em>測るエネルギーだけ変えて</em>見ている。<br>ふだんの世界（低エネルギー）→ \(\alpha\approx 1/137\)　／　\(Z\)粒子スケール（~91 GeV）→ \(\alpha\approx 1/128\)。<br>時代が変わったわけでも、遠い宇宙の話でもない ── <strong>加速器で今すぐ再現できる実験室の事実</strong>。</p>
+  </div>
+
+  <p>だから「\(\alpha\) が 128 になる」を聞いて「宇宙が昔と変わったのか!?」と身構えるのは、軸の取り違えです。ここで動いているのは<em>時間 \(t\)</em> ではなく、<em>見る細かさ＝エネルギー \(\mu\)</em>。同じ「\(\alpha\) が動く」でも、走る軸がまったく違います。</p>
+
+  <h2><span class="n">02</span>二つの α の動き方を、並べる</h2>
+
+  <p>⑤で扱った「時間で動く \(\alpha\)」と、いまの「エネルギーで動く \(\alpha\)」。同じ名前の量が、二つの独立な軸で動きうる。表で正面から比べます。</p>
+
+  <table class="axes">
+    <thead><tr><th class="rowh">　</th><th>時間で動く α（番外編⑤）</th><th>エネルギーで動く α（今回・第6回前編）</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">動く軸</th><td>宇宙の<span class="t">時間 t</span></td><td>見る<span class="e">細かさ＝エネルギー μ</span></td></tr>
+      <tr><th class="rowh">値の例</th><td>今と138億年前で α が違う（かも）</td><td>1/137（低E）→ 1/128（~91 GeV）</td></tr>
+      <tr><th class="rowh">物理か</th><td>本物の物理（観測に出る）</td><td>本物の物理（観測に出る）</td></tr>
+      <tr><th class="rowh">どの定数のせいにするか</th><td><span class="t">ゲージ＝自由</span>（e か ε₀ か ħ、選べる）</td><td><span class="e">選べない</span>。物理が「結合(電荷)が走る」と一意に決める</td></tr>
+      <tr><th class="rowh">c・ħ は</th><td>固定するのはゲージ選択</td><td>そもそも走らない（結合ではないから）</td></tr>
+      <tr><th class="rowh">確かめ方</th><td>宇宙論（クエーサー吸収線、Oklo、原子時計）</td><td>加速器（LEP 等）で今すぐ再現</td></tr>
+      <tr><th class="rowh">確かさ</th><td>変動の証拠は<strong>未確定・論争中</strong></td><td><strong>確立した事実</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>下の図で、二つのツマミの効き方の違いを見てください。<strong>エネルギーのツマミ</strong>を回すと \(\alpha\) は大きく走る(1/137→1/128)。いっぽう<strong>時間のツマミ</strong>を回しても、\(\alpha\) はほとんど平ら ── 観測がそれをきつく縛っているからです。</p>
+
+  <div class="fig">
+    <div class="cap">図：同じ「ツマミを回す量」でも、エネルギー軸（琥珀）では α が走り、時間軸（緑）ではほぼ平ら。縦は 1/α（上ほど α が大きい）</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>ツマミを回す量（正規化）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--energy);"></i>エネルギーのツマミ：α は走る</span>
+      <span><i class="swatch" style="background:var(--time);"></i>時間のツマミ：α はほぼ平ら</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>なぜ running には“係を選ぶ自由”がないのか</h2>
+
+  <p>ここが今回いちばん深いところ、そして⑤との対照の芯です。⑤では「\(\alpha\) が動くとき、\(e\) か \(\varepsilon_0\) か \(\hbar\) のどれを動かす係にするかは<em>ゲージ(帳簿)の自由</em>」でした。ところが running には、<strong>その自由がありません</strong>。走るのは「結合定数＝電荷 \(e\)」だと、物理(真空偏極)が一意に決めてしまう。</p>
+
+  <p>理由は、\(c\) と \(\hbar\) が<em>そもそも走らない</em>から。この二つは「結合(力の強さ)」ではなく、エネルギーと振動数、運動量と波長をつなぐ<strong>運動学の変換係数</strong>です。エネルギーを上げても、換算のレートである \(c,\hbar\) が中身を変える理由がない。走る＝エネルギー依存するのは、相互作用の強さを表す<em>結合</em>だけ。だから「\(\alpha\) の running を \(\hbar\) のせいにする」という帳簿の付け替えは、そもそも成立しないのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">二つの「動く」の、決定的な違い</div>
+    <p style="margin:6px 0 0;">時間で動く α：<strong>どの定数のせいにするかは選べる</strong>（ゲージの自由が残る）。<br>エネルギーで動く α：<strong>係は e（結合）に決まっていて選べない</strong>。α(μ) は各エネルギーで確定した一意の観測量。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 第6回前編の「深いのは走り方」</span>
+    第6回前編で「値(1/137)より、走り方のルールのほうが深い」と言いました。走り方(どんな速さで 137→128 と動くか)は、真空にどんな荷電粒子が湧くかで<strong>理論から計算できる</strong>。running が“帳簿の自由なし”なのは、この走り方が理論で一意に決まっているから。時間変化のほうに自由が残るのは、逆に「何が時間で動くのか」を決める理論を、まだ誰も確定できていないからでもあります。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>だから「128」を見ても、宇宙が変わったことにはならない</h2>
+
+  <p>結論です。「\(\alpha\) が 1/128 になる」と言う人たちは、<strong>時間・c・ħ・他の全定数を固定したまま、“見る細かさ”のツマミだけを回している</strong>。番外編⑤のような「どの定数のせいにするか」というゲージの付け替えは、一切していません。動く係が \(e\)(結合)に決まるのも、選択ではなく真空偏極という物理の帰結。だから「128」は<em>教科書どおりの場の量子論(QED)の話</em>であって、「宇宙が昔と変わった」という varying-constants の主張とは、住んでいる棚が違う。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 二つは無関係ではない</span>
+    <p style="margin-top:0;">軸は別ですが、二つが出会う場所はあります。「時間で α が本当に動く」理論を作ると、その動きは走り方のルール(β関数)や真空の中身に跳ね返る。だから varying-α の理論家は、running の枠組みの上で時間変化を論じます。<strong>別の軸だが、同じ舞台(場の量子論)の上に立っている</strong> ── これが正確なところ。</p>
+    <p style="margin-bottom:0;">なお図の「時間軸でほぼ平ら」は模式的な表現です。実際には原子時計が \(|\dot\alpha/\alpha|\lesssim 10^{-17}\)/年 と縛り、変動を主張するクエーサー観測も桁でいえば宇宙年齢スケールで \(10^{-6}\) 程度と、エネルギー軸の7%とは比べものにならない小ささ。だから「ほぼ平ら」と描いています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「α が 1/137 から 1/128 に変化する」で動いているのは、時間か、エネルギーか。
+        <details><summary>答えを見る</summary><div class="ans">エネルギー（見る細かさ）。同じ時代のまま、測るエネルギーを上げると α が育つ＝running。時間変化ではない。</div></details>
+      </li>
+      <li>running では「α の変化を ħ のせいにする」ことができない。なぜか。
+        <details><summary>答えを見る</summary><div class="ans">ħ（と c）は結合ではなく運動学の変換係数で、そもそもエネルギーで走らないから。走るのは相互作用の強さ＝結合(電荷 e)だけ。だから帳簿の付け替えの自由がない。</div></details>
+      </li>
+      <li>時間で動く α と、エネルギーで動く α。確かさの点でどう違うか一言で。
+        <details><summary>答えを見る</summary><div class="ans">エネルギーで動く（running）は加速器で再現できる確立した事実。時間で動くほうは、証拠がまだ未確定・論争中。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>同じ「α が動く」でも、軸が二つある</h2>
+    <p>「1/137 が 1/128 になる」は、時間ではなく<strong>エネルギー(見る細かさ)</strong>で動く running。真空偏極による遮蔽で、細かく見るほど電気が強く見え α が育つ、加速器で確かめ済みの事実です。番外編⑤の「時間で動く α」とは別の軸で、しかも running には“どの定数のせいにするか”というゲージの自由がない ── 走るのは結合(電荷)だと物理が一意に決め、c・ħ はそもそも走らないから。</p>
+    <p>だから「128」を見て「宇宙が変わった」と思うのは軸の取り違え。時間で動く α は未確定・論争中、エネルギーで動く α は確立した事実。<em>同じ名前の量が、二つの独立な軸で動きうる ── どちらの話をしているかを、まず見分ける</em>。これが三部作の二本目でした。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編⑦（三部作の締め）</span>
+    エネルギーのツマミは、いくらでも回せるのか? いいえ ── <strong>両端がある</strong>。下は 1/137 で床に当たり、上は「電磁気が電磁気でなくなる」壁と、「細かさという概念が壊れる」プランクの縁に突き当たる。⑦では、ツマミの両端が<em>いまの物理の枠組みが終わる場所</em>と一致することを見て、今日調べた<strong>読書案内</strong>で三部作を閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑥、物理好きの高校生・大学生向け読み物です。微細構造定数の「走り(running)」は真空偏極による確立した物理で、\(\alpha^{-1}\approx137.0\)（低エネルギー極限）から \(\alpha^{-1}\approx128\)（\(Z\)ボソン質量 ~91 GeV）への変化は加速器実験で測定されています。これはエネルギースケール依存であり、時間変化とは別軸です。時間変化の観測制約は原子時計で \(|\dot\alpha/\alpha|\lesssim 10^{-17}\)/年 程度、遠方クエーサーでの変動主張（Webb らの報告）は宇宙年齢スケールで \(10^{-6}\) オーダーだが独立検証は決着していません。running で走るのは無次元結合であり、\(c,\hbar\) は運動学的変換係数として走りません。図中の時間軸の平坦さは模式的表現です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、エネルギー軸と時間軸の効き方の違いが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var TOP=127.0, BOT=138.0; // 1/α 表示範囲
+  // エネルギー軸：1/α が 137 → 128 へ（log的に）
+  function invEnergy(k){ var frac=Math.log(1+k*4)/Math.log(1+4); return 137.0-(137.0-128.0)*frac; }
+  // 時間軸：ほぼ平ら（見せるためにごくわずかだけ下げる）
+  function invTime(k){ return 137.0-0.25*k; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50;
+    var k=parseInt(sk.value,10)/100; vk.textContent=k.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t*(w-pad-14);}
+    function Y(inv){return 12+(inv-TOP)/(BOT-TOP)*(h-pad-12);}
+    // grid + y labels
+    ctx.strokeStyle='#e7eaf6';ctx.lineWidth=1;ctx.fillStyle='#8a8fae';ctx.font='11px sans-serif';
+    [128,130,132,134,136].forEach(function(v){var y=Y(v);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('1/'+v,8,y+4);});
+    // axes
+    ctx.strokeStyle='#bcc3dd';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('ツマミを回す量 →', w-150, h-pad+18);
+    // energy curve
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var t=0;t<=1.0001;t+=0.005){var x=X(t),y=Y(invEnergy(t));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // time curve
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var t2=0;t2<=1.0001;t2+=0.005){var x=X(t2),y=Y(invTime(t2));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // marker
+    var mx=X(k);
+    ctx.strokeStyle='#9aa5c0';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,8);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    var ie=invEnergy(k), it=invTime(k);
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(mx,Y(ie),5.5,0,7);ctx.fill();
+    ctx.fillStyle='#2f7d5a';ctx.beginPath();ctx.arc(mx,Y(it),5.5,0,7);ctx.fill();
+    // labels
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#8a5a1e';ctx.fillText('エネルギー軸（走る）', X(1)-150, Y(invEnergy(1))+16);
+    ctx.fillStyle='#2f7d5a';ctx.fillText('時間軸（ほぼ平ら）', X(1)-140, Y(invTime(1))-8);
+    rd.textContent='エネルギーのツマミ：α ≈ 1/'+ie.toFixed(1)+'（大きく走る）　／　時間のツマミ：α ≈ 1/'+it.toFixed(1)+'（実際はもっと平ら）── 同じ「回す量」でも効き方がまるで違う。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

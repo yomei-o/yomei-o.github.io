@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>細かさのツマミには、両端がある ── わかる宇宙論 番外編⑦</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#fbf6f9; --paper-edge:#ecdde6;   /* 番外編⑦：梅紫の紙（縁・端の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#6b2f56; --calc-bg:#f3e6ee;
+    --rule:#e0cdd8; --hair:#d0bac7;
+    --acc:#7d3b63;    /* 番外編⑦アクセント＝梅紫 */
+    --grid:#ecd7e2;
+    --floor:#2f7d5a; --run:#b06a12; --edge:#a5311f;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd2e0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e3cdda;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf9fb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefbfd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 壁チェックリスト */
+  .walls{margin:26px 0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+  .walls .row{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;}
+  .walls .row:last-child{border-bottom:none;}
+  .walls .mk{flex-shrink:0;width:74px;font-weight:700;font-size:12px;color:var(--acc);letter-spacing:.02em;}
+  .walls .txt strong{display:block;margin-bottom:2px;} .walls .txt span{color:var(--ink-soft);font-size:13px;}
+
+  /* 読書案内 */
+  .reading{margin:30px 0;border:1.5px solid var(--acc);border-radius:5px;overflow:hidden;background:#fdf9fb;}
+  .reading .head{background:var(--calc-bg);color:var(--calc);padding:12px 20px;font-weight:700;letter-spacing:.06em;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  .reading .item{padding:14px 20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;line-height:1.72;}
+  .reading .item .t{font-weight:700;color:#3a2130;} .reading .item .k{font-size:12px;color:var(--acc);font-weight:700;letter-spacing:.08em;}
+  .reading .item .d{color:var(--ink-soft);font-size:13.5px;margin-top:3px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf5f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#40233a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefbfd,#f2e6ed);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#40233a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.walls,.reading{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑦ ／ 「動かす側」に立ってみる（三部作・その3・締め）</span></div>
+  <p class="eyebrow">エネルギーのツマミは、いくらでも回せるのか ── いや、両端がある。そしてその端が面白い</p>
+  <h1>細かさのツマミには、<br>両端がある
+    <span class="sub">α を育てる「見る細かさ」のツマミ。下は 1/137 で床に当たり、上は枠組みそのものが終わる縁に突き当たる。<br>ツマミの両端は、いまの物理が終わる場所と一致していた。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第5回の「帯域」、第6回、番外編④⑥</span>
+    <span>床は 1/137、天井はプランクの縁</span>
+  </div>
+
+  <p class="lead">番外編⑥で、\(\alpha\) には「エネルギー(見る細かさ)で走る」という動き方があると見ました。では ── <em>そのツマミは、いくらでも回せるのか?</em> 答えは「いいえ、両端がある」。しかも、その両端がただの限界ではなく、<strong>いまの物理の枠組みそのものが終わる場所</strong>と、ぴたりと一致している。第5回で「見える範囲には端がある(帯域)」と言ったこと、番外編④で「プランクスケールで等価が破れる」と言ったこと ── それが全部、この一本のツマミの両端として姿を現します。三部作の締めです。</p>
+
+  <h2><span class="n">01</span>下の端 ── 1/137 で床に当たる</h2>
+
+  <p>まずツマミを目いっぱい<strong>下げる</strong>(粗く見る)方向。エネルギーを下げていくと、\(\alpha\) は \(1/137\) で<em>止まります</em>。それより下がらない。理由は第6回前編の遮蔽の絵のまま ── 電子を包む \(e^+e^-\) の衣の<strong>完全に外側</strong>まで出てしまえば、もう電気を隠す衣は増えようがない。隠され切った、いちばん弱い電気の見え方が \(1/137\) です。</p>
+
+  <div class="keybox">
+    <div class="lbl">床の正体</div>
+    <p style="margin:6px 0 0;">\(1/137\) は「めいっぱい遮蔽され切った、いちばん粗い値」＝ツマミの<strong>下限(床)</strong>。<br>だから第2回で「誰が測っても \(1/137\)」と言えたのは、正確には<em>この床の値</em>のこと。単位で動かないのはもちろん、これ以上<strong>粗くもできない</strong>から、みんな同じ値を見る。</p>
+  </div>
+
+  <h2><span class="n">02</span>上の端 ── 育つけど、三重の壁がある</h2>
+
+  <p>今度は<strong>上げる</strong>(細かく見る)方向。\(1/128\) を超えてまだ育ちます。でも「同じルールでどこまでも」ではありません。上には三段構えの壁がある。</p>
+
+  <div class="walls">
+    <div class="row"><span class="mk">壁①</span><div class="txt"><strong>走り方のルールが、途中で変わる</strong><span>エネルギーを上げると遮蔽に参加する粒子が増える（μ粒子、クォーク、W…）。新しい荷電粒子の“重さの関門”を越えるたび、衣が厚くなって傾き（走り方）が変わる。一本のなめらかな曲線ではなく、階段状。</span></div></div>
+    <div class="row"><span class="mk">壁②<br>~100 GeV</span><div class="txt"><strong>電弱スケール ── α という変数自体が正しくなくなる</strong><span>この辺より上では、電磁気は“おおもとの力”ではなくなる。弱い力 SU(2) と超電荷 U(1) の<strong>混ざりもの</strong>にすぎず、走らせるべきは α ではなくその二つの結合。α で語り続けること自体が無理筋に。→ 第6回後編の大統一へ。</span></div></div>
+    <div class="row"><span class="mk">壁③<br>~10¹⁹ GeV</span><div class="txt"><strong>プランクスケール ── “細かさ”という概念が壊れる</strong><span>量子重力が効き、「時空をなめらかに、いくらでも細かく分解できる」という前提が崩れる。第5回の<strong>「帯域の端」</strong>、番外編④で等価が破れると書いた、まさにあの領域。ツマミを回す“目盛り”そのものが無くなる。</span></div></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">おまけ ── QED だけなら「ランダウ極点」で無限大</span>
+    純粋な電磁気(QED)だけで計算を突っ走らせると、天文学的な超高エネルギーで \(\alpha\to\infty\) になる点＝<strong>ランダウ極点</strong>が現れます。これは「QED は単独では完成した理論ではなく、近似(有効理論)にすぎない」というサイン。ただしその高さははるかにプランクスケールの上で、実際にはその手前で壁②③がとっくに効くので、学問的な注意書きです。
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：見る細かさ（エネルギー、横は対数）に対する 1/α。左端は 1/137 の床、右へ走って 1/128、そして電弱・大統一・プランクの縁へ。スライダーでどの領域かを確かめる</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>見る細かさ（エネルギー、対数目盛・右ほど細かい）<span class="val" id="vk">10⁻³ GeV</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="10">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>ツマミの両端は、枠組みの端だった</h2>
+
+  <p>ここが締めです。ツマミの下の端(\(1/137\))は「これ以上粗く見ても、もう何も隠れていない」限界。上の端は「電磁気が電磁気でなくなる／時空が滑らかでなくなる」限界。<strong>両端とも、\(\alpha\) という量そのものが意味を持てなくなる場所</strong>で止まっています。つまり ──</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心</div>
+    <p style="margin:6px 0 0;">「細かさのツマミ」の<strong>両端は、いまの物理の枠組みが終わる場所と一致している</strong>。<br>値(α)は走るけれど、走らせられる範囲には<em>物理的な縁</em>がある。ツマミが回せる幅そのものが、私たちに見えている宇宙の「帯域」なのだ。</p>
+  </div>
+
+  <p>第6回前編で「深いのは値ではなく<em>走り方のルール</em>だ」と問いを立て直しました。今回はその一段先が見えます ── その走り方のルール自体も、壁①で変わり、壁②で \(\alpha\) という枠組みごと終わり、壁③で「細かさ」という土台が消える。<strong>不変に見えたルールにも、やがて縁がある</strong>。これはまさに第5回の「見える範囲(帯域)には端がある」の、\(\alpha\) 版でした。三部作(⑤単位の自由・⑥二つの軸・⑦ツマミの両端)は、「時間・単位・エネルギーという三つの“動かし方”」を一枚に並べ、そのどれもが<em>縁を持つ</em>ことを見て閉じます。</p>
+
+  <h2><span class="n">04</span>読書案内 ── この話を、もっと深く知りたい人へ</h2>
+
+  <p>「この辺のことを解説している本や人は、あまりいないのでは?」── その感覚は半分正しい。<em>個別のピースには名著がある。でも、running・定数変化・単位の自由・膨張との等価を一本の物語に束ねたものは、ほとんど無い</em>。分野の境目に落ちていて、誰の縄張りでもないからです。ピースごとに、いちばん近いものを挙げておきます。</p>
+
+  <div class="reading">
+    <div class="head">この三部作の“心臓部”そのもの（無料・arXiv）</div>
+    <div class="item"><span class="k">論文</span> <span class="t">M. Duff, L. Okun, G. Veneziano「Trialogue on the number of fundamental constants」(2002)</span><div class="d">基本の次元付き定数は3個か・2個か・0個か、を3人が論争。ダフの「0個（次元付きは全部単位の約束、物理は無次元だけ）」が、まさに番外編⑤の背骨。arXiv: physics/0110060。</div></div>
+  </div>
+
+  <div class="reading">
+    <div class="head">一般書（読み物として）</div>
+    <div class="item"><span class="k">一般書</span> <span class="t">John D. Barrow『The Constants of Nature（宇宙の定数）』(2002)</span><div class="d">α、137、定数は本当に定数か、変化するαのクエーサー観測まで、一冊まるごと。この題材の一般書として最右翼。</div></div>
+    <div class="item"><span class="k">一般書</span> <span class="t">João Magueijo『Faster Than the Speed of Light』(2003)</span><div class="d">光速可変理論(VSL)の提唱者本人による一般書。番外編③の“中の人”の肉声。</div></div>
+    <div class="item"><span class="k">一般書</span> <span class="t">R. Feynman『QED ── 光と物質のふしぎな理論』(1985)</span><div class="d">137を「神の手が書いた魔法の数」と呼んだ名著。真空偏極（遮蔽）＝第6回前編の元ネタが、いちばん平易に。</div></div>
+  </div>
+
+  <div class="reading">
+    <div class="head">本気で裏取りするなら（技術的総説）</div>
+    <div class="item"><span class="k">総説</span> <span class="t">J.-P. Uzan「The fundamental constants and their variation」(Rev. Mod. Phys. 2003) ／「Varying constants, gravitation and cosmology」(Living Reviews 2011)</span><div class="d">定数変化の観測制約と理論の決定版。原子時計・Oklo・クエーサーの数字はここが出典に使える。</div></div>
+    <div class="item"><span class="k">解説</span> <span class="t">走り(running)のアクセシブルな解説</span><div class="d">一般書は 1/137 の手前で止まり、教科書はいきなり繰り込み群に飛ぶ“層の薄い”部分。中間は Matt Strassler のブログ、David Tong の無料QFT講義ノート、Wilczek のエッセイあたりが橋渡し。</div></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ「解説する人が少ない」のか</span>
+    これらは全部<strong>縦割り</strong>です。定数の哲学(ダフ)は running を語らず、running(教科書)は定数変化や膨張と結ばず、定数変化(バロー/ウザン)は「エネルギーで走る α」と「時間で変わる α」を同じ図で対比しない。この番外編がやっているのは、それらを<em>「単位・時間・エネルギーという三つの動かし方」として一枚に並べる</em>こと。難しいからではなく、境目に落ちているから、まとめて書く人が少なかった ── そこが、このシリーズの居場所です。
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>ツマミを下げても α が \(1/137\) より小さく（1/α が大きく）ならないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">電子を包む遮蔽の衣の完全に外側まで出てしまうと、もう電気を隠す衣が増えようがないから。1/137 は「隠され切った、いちばん粗い値」＝床。</div></details>
+      </li>
+      <li>約100 GeV より上で「α で語り続けるのは無理筋」になる理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">電弱スケールより上では電磁気が基本の力でなくなり、SU(2)（弱い力）と U(1)（超電荷）の混ざりものになるから。走らせるべきはその二つの結合で、α は良い変数でなくなる。</div></details>
+      </li>
+      <li>ツマミの上の端（プランクスケール）は、第5回のどの言葉に対応するか。
+        <details><summary>答えを見る</summary><div class="ans">「帯域の端」。見える範囲（帯域）には端があり、そこでは「なめらかに、いくらでも細かく分解できる」という前提＝ツマミの目盛りそのものが壊れる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">図のエネルギー目盛りや壁の位置は、桁感をつかむための模式的な表現です。実際の走りは荷電粒子の種類に依存する対数的なもので、電弱の“混ざり”(ワインバーグ角)や大統一の合流には理論の細部があります。プランクスケールでの時空の離散性・「細かさ」の破れは、実験で確かめられていない<strong>未解決の物理課題</strong>です。</p>
+    <p style="margin-bottom:0;">読書案内の書名・年は代表的なもので、翻訳版のタイトルや版によって表記が異なる場合があります。arXiv 番号(physics/0110060 等)は無料で本文にあたれます。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">三部作まとめ</span>三つの“動かし方”は、どれも縁を持っていた</h2>
+    <p>「細かさのツマミ」には両端がある。下は \(1/137\)(完全遮蔽の床)、上は走り方が変わる壁①・α が変数でなくなる電弱の壁②・細かさの概念が壊れるプランクの壁③。<strong>両端は、いまの物理の枠組みが終わる場所と一致</strong>していた。値は走るが、走らせられる範囲には物理的な縁がある ── 第5回「帯域には端がある」の α 版です。</p>
+    <p>三部作を振り返ると：⑤で「α を動かすなら固定できるのは3つまで、動く1つは帳簿の選択(ゲージ)」、⑥で「α が動くには時間の軸とエネルギーの軸があり、後者にゲージの自由はない」、⑦で「そのエネルギーの軸にも両端があり、枠組みの端と一致する」。<em>単位・時間・エネルギー ── 三つの動かし方はどれも、無次元の α だけを物理として残し、そのどれもが縁を持つ</em>。番外編②「絶対値は帳簿、比だけが物理」が、三つの軸で同じ顔を見せたのでした。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">三部作、ここで閉じます</span>
+    ⑤⑥⑦で「α を動かす側」から見た景色を描き切りました。残る大きな扉は本編の側 ── 第6回後編「三つの力は一点で出会うか(大統一)」、最終回「重力をこの絵に入れられるか」。三部作で見た「ツマミの上の端＝枠組みの端」は、その二つの扉の、ちょうど手前に立っています。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑦、物理好きの高校生・大学生向け読み物です。低エネルギー極限で \(\alpha^{-1}\approx137.036\)（トムソン極限、運動量移行ゼロ）に飽和し、高エネルギーで \(\alpha^{-1}\approx128\)（\(Z\)スケール）まで走ることは確立した物理です。荷電粒子の質量しきい値で走り(β関数)が変わること、電弱スケール(~100 GeV)以上では電磁気が U(1)×SU(2) に埋め込まれ α が基本結合でなくなること、プランクスケール(~10¹⁹ GeV)で量子重力により連続時空の描像が破れうることは、いずれも標準的な理解です（プランクスケールの詳細は未解決）。QED単独のランダウ極点はプランクスケールをはるかに超える高エネルギーにあり実務上は無意味です。参考文献：Duff–Okun–Veneziano (2002, arXiv physics/0110060)、J. Barrow『The Constants of Nature』(2002)、J. Magueijo『Faster Than the Speed of Light』(2003)、R. Feynman『QED』(1985)、J.-P. Uzan (Rev. Mod. Phys. 2003 / Living Reviews 2011)。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、床から壁までツマミを動かせます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 横軸：見る細かさ。s=0..100 を log10(E/GeV) = -4 .. 19 に対応
+  var Lmin=-4, Lmax=19;
+  function Lof(s){ return Lmin + (s/100)*(Lmax-Lmin); }
+  // 1/alpha の模式カーブ：L<-3 で床137、-3..2 で137→128、>2 は電弱以降ゆるやかに（点線域）
+  function invAlpha(L){
+    if(L<=-3) return 137.0;
+    if(L<=2){ var f=(L-(-3))/(2-(-3)); return 137.0-(137.0-128.0)*f; }
+    // 電弱以降：概念的な続き（ゆっくり下降、意味は薄い）
+    return 128.0 - (L-2)*0.35;
+  }
+  var TOP=118, BOT=139;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50;
+    var s=parseInt(sk.value,10); var L=Lof(s);
+    ctx.clearRect(0,0,w,h);
+    function X(LL){return pad+(LL-Lmin)/(Lmax-Lmin)*(w-pad-14);}
+    function Y(inv){return 12+(inv-TOP)/(BOT-TOP)*(h-pad-12);}
+    // shaded Planck zone (L>18)
+    ctx.fillStyle='rgba(165,49,46,0.07)';
+    ctx.fillRect(X(18),8,X(Lmax)-X(18),(h-pad)-8);
+    // grid + y labels
+    ctx.strokeStyle='#f0e2ea';ctx.lineWidth=1;ctx.fillStyle='#a98aa0';ctx.font='11px sans-serif';
+    [120,124,128,132,136].forEach(function(v){var y=Y(v);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('1/'+v,8,y+4);});
+    // vertical markers: electroweak(2), GUT(16), Planck(19)
+    function vline(LL,label,col){
+      var x=X(LL);ctx.strokeStyle=col;ctx.setLineDash([4,3]);ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(x,8);ctx.lineTo(x,h-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=col;ctx.font='10.5px sans-serif';ctx.save();ctx.translate(x+3,h-pad-6);ctx.fillText(label,0,0);ctx.restore();
+    }
+    vline(2,'電弱 ~100GeV','#a5311f');
+    vline(16,'大統一 ~10¹⁶','#7d3b63');
+    vline(19,'プランク ~10¹⁹','#a5311f');
+    // axes
+    ctx.strokeStyle='#d0bac7';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('粗い', pad-2, h-pad+18);
+    ctx.fillText('見る細かさ（エネルギー、対数）→ 細かい', w-260, h-pad+18);
+    // floor segment (solid green) L<=-3
+    ctx.strokeStyle='#2f7d5a';ctx.lineWidth=3;ctx.beginPath();
+    ctx.moveTo(X(Lmin),Y(137));ctx.lineTo(X(-3),Y(137));ctx.stroke();
+    // running segment (solid amber) -3..2
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=3;ctx.beginPath();var f=true;
+    for(var L1=-3;L1<=2.0001;L1+=0.05){var x=X(L1),y=Y(invAlpha(L1));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // beyond electroweak (dashed grey) 2..19
+    ctx.strokeStyle='#9a8090';ctx.setLineDash([5,4]);ctx.lineWidth=2;ctx.beginPath();f=true;
+    for(var L2=2;L2<=19.0001;L2+=0.05){var x=X(L2),y=Y(invAlpha(L2));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.setLineDash([]);
+    // labels on curve
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#2f7d5a';ctx.fillText('床 1/137', X(-3.6), Y(137)-8);
+    ctx.fillStyle='#8a5a1e';ctx.fillText('1/128', X(2)+4, Y(128)-6);
+    ctx.fillStyle='#9a8090';ctx.fillText('α はもう良い変数でない', X(6), Y(invAlpha(6))-8);
+    // marker
+    var inv=invAlpha(L), mx=X(L), my=Y(inv);
+    ctx.strokeStyle='#7d3b63';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,8);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#7d3b63';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // energy readout
+    var eStr;
+    if(L<0) eStr='10^'+L.toFixed(1)+' GeV'; else eStr='10^'+L.toFixed(1)+' GeV';
+    vk.textContent='10^'+L.toFixed(1)+' GeV';
+    var msg;
+    if(L<=-3) msg='床：1/137（完全に遮蔽され切った値。これ以上は粗くできない）';
+    else if(L<=2) msg='走行中：1/α ≈ 1/'+inv.toFixed(1)+'（真空偏極でα が育っている）';
+    else if(L<16) msg='電弱の壁より上：α はもう基本変数でない（U(1)×SU(2) の混ざりもの）';
+    else if(L<18) msg='大統一の近傍：三つの力が一点へ近づく（第6回後編の領域）';
+    else msg='プランクの縁：「細かさ」という概念が壊れる（第5回の帯域の端／番外編④）';
+    rd.textContent='エネルギー ≈ '+eStr+'　── '+msg;
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

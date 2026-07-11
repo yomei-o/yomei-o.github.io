@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>α を動かすなら、何を固定できるか ── わかる宇宙論 番外編⑤</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fc; --paper-edge:#e3ddec;   /* 番外編⑤：すみれの紙（選ぶ自由の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#553f8a; --calc-bg:#ece7f5;
+    --rule:#d7cfe2; --hair:#c6bcd6;
+    --acc:#6d4aa7;    /* 番外編⑤アクセント＝すみれ */
+    --grid:#ddd5ea;
+    --keep:#2f7d5a; --move:#b06a12;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ded0f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3c8e6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.gauge{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.gauge th,table.gauge td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;}
+  table.gauge th{background:var(--calc-bg);color:var(--calc);font-weight:700;letter-spacing:.03em;}
+  table.gauge td .mv{color:var(--move);font-weight:700;}
+  table.gauge td .kp{color:var(--keep);}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#faf7fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a2b52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#efeaf6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3a2b52;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.gauge{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑤ ／ 「動かす側」に立ってみる（三部作・その1）</span></div>
+  <p class="eyebrow">番外編③④は「α を守る」話だった。今回は逆に、α を動かすと決めたとき、ほかに何を固定できるかを数える</p>
+  <h1>α を動かすなら、<br>何を固定できるか
+    <span class="sub">「c=一定」も「c·t=一定」も、固定するものが違うだけで同じ物理だった。<br>ではその一段下 ── α 自身を動かすと決めたら、残りの自由はどれだけ残るのか。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：番外編②の「無次元だけが物理」、割り算</span>
+    <span>4定数のうち固定できるのは3つまで</span>
+  </div>
+
+  <p class="lead">ここまでの番外編は「α は守るべきもの」という側から書いてきました。③ではVSLが α を守り損ねて失敗し、④では α 不変こそが等価条件の芯だと見た。今回は視点をひっくり返します ── <em>もし本当に α を動かすと決めたら、私たちに残された「固定する自由」は、どこまであるのか</em>。答えは意外なほどきっちり数えられて、しかもそれが「c=一定 と c·t=一定 は固定するものが違うだけで同じ」という、このシリーズの合言葉の<strong>一段下での再現</strong>になっています。三部作の一本目です。</p>
+
+  <h2><span class="n">01</span>まず数える ── α を作る4定数は「3人分」しかない</h2>
+
+  <p>微細構造定数を、第2回の形で書きます。</p>
+
+  <div class="keybox">
+    <div class="lbl">α を作る4つの次元付き定数</div>
+    $$\alpha = \frac{e^2}{4\pi\varepsilon_0\,\hbar\,c}\approx\frac{1}{137}$$
+  </div>
+
+  <p>中身は \(c,\ e,\ \varepsilon_0,\ \hbar\) の<strong>4つ</strong>。ところが、この4つを組み合わせて作れる「単位の消えた数」は \(\alpha\) <strong>ただ1つ</strong>しかありません。これは偶然ではなく、深い意味があります ── 長さ・時間・質量・電荷という4種類の単位に対して、この4定数は<em>3種類ぶんの独立な情報しか持っていない</em>。だから残り1本ぶんが「単位の消えた関係」＝ \(\alpha\) として余る。</p>
+
+  <div class="aside">
+    <span class="tag">言いかえ ── なぜ「3人分」なのか</span>
+    もし4定数が本当にバラバラ(4種類ぶん独立)なら、無次元数は作れず \(\alpha\) は存在しません。\(\alpha\) が存在するのは、4定数のあいだに1本の縛り(次元がちょうど打ち消し合う組み合わせ)があるから。<strong>縛りが1本あるということは、自由に決めていいのは4−1＝3つまで</strong>、ということです。
+  </div>
+
+  <p>ここから、固定の鉄則が出ます。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心（固定の鉄則）</div>
+    <p style="margin:6px 0 0;">\(c,e,\varepsilon_0,\hbar\) のうち、便宜（単位・ゲージ）で自由に固定できるのは<strong>最大3つ</strong>。残る1つは必ず \(\alpha\) に引きずられて動く。<br>だから「\(\alpha\) を動かす」と決めた以上、<em>この“動く1つ”は絶対に消せない</em>。</p>
+  </div>
+
+  <h2><span class="n">02</span>c はもう固定した ── だから残りは「2つまで」</h2>
+
+  <p>このシリーズは、はじめから \(c=\text{一定}\) の座標系で語ってきました。つまり固定枠を<strong>1つ、c で使い切っている</strong>。すると鉄則から、追加で固定できるのは \(\{e,\varepsilon_0,\hbar\}\) のうち<strong>2つまで</strong>。3つ目は必ず動き、<em>その“動く1つ”こそが「\(\alpha\) が変化する」の帳簿上の姿</em>です。誰を動かす係にするかで、同じ物理が三通りに書けます。</p>
+
+  <table class="gauge">
+    <tr><th>固定するもの（＝ものさし）</th><th>動く係</th><th>その中身</th></tr>
+    <tr><td><span class="kp">c, ε₀, ħ</span></td><td><span class="mv">e</span>（∝√α）</td><td>「電荷が時代とともに変わる」理論。ベケンシュタイン型の varying-e はこれ。</td></tr>
+    <tr><td><span class="kp">c, e, ħ</span></td><td><span class="mv">ε₀</span>（∝1/α）</td><td>「真空の応答（電気の通しにくさ）が変わる」描像。</td></tr>
+    <tr><td><span class="kp">c, e, ε₀</span></td><td><span class="mv">ħ</span>（∝1/α）</td><td>「量子の刻みが変わる」描像。</td></tr>
+  </table>
+
+  <p>どれを選んでも、原子の色も時計のリズムも ── つまり<strong>観測は完全に同一</strong>。違うのは「どれを動かす係にするか」という帳簿のつけ方だけです。下の図で、\(\alpha\) が少し育つとき、三つの係がそれぞれどう動くか(なのに \(\alpha\) は同じ)を動かして見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：α が育つとき、e は少し増え（∝√α）、ħ と ε₀ は減る（∝1/α）。三つの帳簿は姿が違うのに、組み直すと必ず同じ α になる</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>α をどれだけ動かすか（右ほど育つ）<span class="val" id="vk">+0%</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>α（動かす対象・本物の物理）</span>
+      <span><i class="swatch" style="background:var(--keep);"></i>e = 係にすると ∝√α</span>
+      <span><i class="swatch" style="background:var(--move);"></i>ħ ＝ 係にすると ∝1/α</span>
+      <span><i class="swatch" style="background:#2166a0;"></i>ε₀ ＝ 係にすると ∝1/α</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">正直に言うと ── ε₀ は“数え役”で、本命は e</span>
+    \(\varepsilon_0\)（真空の誘電率）は、実はSI単位系のブックキーピング用の量で、ガウス単位系で書くと \(\alpha=e^2/\hbar c\) となって<strong>式から消えます</strong>。だから“実質的に動かす候補”は \(e\) か \(\hbar\)。歴史的な varying-α 理論(ベケンシュタイン)は、いちばん素直に<strong>電荷 \(e\) を動かす</strong>形をとりました。ε₀ を動かす描像は、e を動かすのと同じことを別の帳簿で言っているだけです。
+  </div>
+
+  <h2><span class="n">03</span>これは「c=一定 と c·t=一定」の、一段下の再現</h2>
+
+  <p>ここで気づいてほしいのは、いま起きたことが番外編③④で見た構図の<em>そっくりな縮小コピー</em>だということです。あのときは「\(c\) を固定するか、\(c\cdot t\) を固定するか ── 固定するものが違うだけで、同じ物理」でした。今回は一段下りて「\(e\) を固定するか、\(\hbar\) を固定するか、\(\varepsilon_0\) を固定するか ── 固定するものが違うだけで、同じ物理」。<strong>“どれを動かす係にするかはゲージ(帳簿の付け替え)、観測に出るのは無次元の \(\alpha\) だけ”</strong>という、同じ一つの原理が、階層を変えて何度も顔を出しているのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── ダフの「基本定数はゼロ個」</span>
+    この数え方を極限まで推し進めた物理学者がいます。マイケル・ダフは「次元付きの定数は本質的には<strong>1つも“基本”ではない</strong>(＝すべて単位の約束)、物理なのは無次元の比だけ」と主張しました(番外編末の読書案内も参照)。今回の「固定できるのは3つまで、動く1つは帳簿の選択」は、まさにその立場の、手を動かせる小さな実例です。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>でも今回は“ゲージ”では済まない ── α が動くのは本物</h2>
+
+  <p>ここが、③④との<strong>決定的な違い</strong>であり、いちばん外してはいけない点です。番外編④の \(c\cdot t=\text{一定}\) では、\(\alpha\) は<em>不変</em>でした。だからあれは完全なゲージ(見方の自由)で、観測差はゼロ ── 「同じ物理」だった。ところが今回は、\(\alpha\) 自身が動く。<strong>\(\alpha\) が動くことは、単位やゲージでは消せない、本物の物理変化</strong>です。観測に痕跡が残る ── 原子時計は「\(\alpha\) は1年あたり \(10^{-17}\) より小さくしか動いていない」と告げ、遠い宇宙のクエーサー吸収線でも \(\dot\alpha/\alpha\) が探され続けている。</p>
+
+  <div class="keybox">
+    <div class="lbl">言葉づかいの訂正</div>
+    <p style="margin:6px 0 0;">「\(\alpha\) が変化する<strong>座標系</strong>を考える」は、正確には ──<br>「<strong>新しい物理を1つ入れて</strong>（＝α を動かすと仮定して）、それを<strong>どの定数のせいにするか</strong>を選ぶ」。<br>座標系＝ゲージの自由が残っているのは“どの定数のせいにするか”だけで、「α が動く」という事実そのものは、どんな座標系でも消えません。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 固定しすぎてはいけない／α だけとは限らない</span>
+    <p style="margin-top:0;">まず、\(\{c,e,\varepsilon_0,\hbar\}\) の<strong>4つ全部は固定できません</strong>。全部止めれば \(\alpha=\text{一定}\) を強制することになり、「α を動かす」という前提と矛盾する。固定できるのは、あくまで3つまで。</p>
+    <p style="margin-bottom:0;">また、\(\alpha\) は無次元数の一つにすぎません。ほかにも陽子・電子の質量比 \(m_p/m_e\)、強い力の結合、重力の \(\alpha_G=Gm^2/\hbar c\) …と、単位の消えた数はいくつもある。今回は「動くのは \(\alpha\) だけ、ほかの比は固定」という仮定を置きましたが、<strong>無次元数を1つ余分に動かすたびに、独立した新しい物理を1つ足す</strong>ことになり、それぞれに別個の観測制約がかかります。ただではもらえません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>\(c\) を固定した上で、\(e\) と \(\hbar\) も固定した。残る \(\varepsilon_0\) は \(\alpha\) とどんな関係で動くか。
+        <details><summary>答えを見る</summary><div class="ans">\(\alpha=e^2/(4\pi\varepsilon_0\hbar c)\) で \(e,\hbar,c\) が固定なら \(\alpha\propto 1/\varepsilon_0\)。つまり \(\varepsilon_0\propto 1/\alpha\)。α が増えれば ε₀ は減る。</div></details>
+      </li>
+      <li>「\(c,e,\varepsilon_0,\hbar\) の4つすべてを固定する」のがなぜダメか、一文で。
+        <details><summary>答えを見る</summary><div class="ans">4つ全部を固定すると \(\alpha\) も自動的に一定に決まってしまい、「α を動かす」という今回の前提と矛盾するから。固定できるのは(縛りが1本ある以上)最大3つ。</div></details>
+      </li>
+      <li>番外編④の \(c\cdot t=\text{一定}\) と、今回の「α を動かす」は、観測に出るか出ないかで何が違うか。
+        <details><summary>答えを見る</summary><div class="ans">④は α が不変なので純粋なゲージ＝観測差ゼロ（同じ物理の言い換え）。今回は α 自身が動くので本物の物理変化＝観測（原子時計・クエーサー）に痕跡が残る。ゲージの自由は「どの定数のせいにするか」にしか残らない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>固定できるのは3つ、動く1つは帳簿の選択</h2>
+    <p>\(\alpha\) を作る4定数 \(c,e,\varepsilon_0,\hbar\) は、次元の上では「3人分」しか独立でない(縛りが1本＝それが α)。だから便宜で固定できるのは最大3つ、残る1つは必ず α に連れて動く。c を固定済みの本シリーズでは、追加で固定できるのは \(\{e,\varepsilon_0,\hbar\}\) のうち2つまで。どれを動かす係にするかはゲージ(帳簿)で、varying-e・varying-ε₀・varying-ħ はすべて同じ物理の言い換え ── これは「c=一定 と c·t=一定」の一段下の再現でした。</p>
+    <p>ただし④と決定的に違うのは、\(\alpha\) 自身が動くこと。それはゲージでは消せない<strong>本物の物理</strong>で、観測に出る。だから「α が動く座標系」ではなく「α を動かす物理を、どの定数のせいにするか選ぶ」が正しい。<em>固定できる自由は3つ、でも α が動く事実は、どの座標系でも消せない</em> ── これが三部作の出発点です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編⑥</span>
+    「1/137 が 1/128 になる」と言う人たちがいます。あれは今回の“時間で動く α”とは<strong>別の軸</strong>の話 ── <em>エネルギー（見る細かさ）で動く α</em>です。⑥では、この二つの「α の動き方」を一枚に並べ、片方にはゲージの自由があり、もう片方には無いことを、はっきりさせます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑤、物理好きの高校生・大学生向け読み物です。\(\alpha=e^2/4\pi\varepsilon_0\hbar c\) を作る4つの次元付き定数が張る独立次元は3で、無次元の組み合わせが \(\alpha\) 一つだけ生じること、したがって単位・ゲージの自由で固定できるのは最大3つであることは、次元解析の帰結です。\(\varepsilon_0\) はSI単位系に固有の量でガウス単位系では現れません。次元付き定数の値は単位規約に依存し、物理的内容は無次元量にあるという立場は Duff・Okun・Veneziano「Trialogue on the number of fundamental constants」(2002) に整理されています。\(\alpha\) の時間変化は原子時計等で \(|\dot\alpha/\alpha|\lesssim 10^{-17}\)/年 程度に制約され、遠方クエーサーでの変動主張は議論が続いています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、同じ α を三つの帳簿で書けることが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var YMIN=0.80, YMAX=1.24, GROW=0.20; // α は最大 +20% まで育つ
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var k=parseInt(sk.value,10)/100; // 0..1
+    var a=1+GROW*k;            // α（相対）
+    var e=Math.sqrt(a);        // e ∝ √α
+    var hb=1/a;                // ħ ∝ 1/α
+    vk.textContent='+'+Math.round((a-1)*100)+'%';
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t*(w-pad-14);}          // t:0..1
+    function Y(v){return (h-pad)-((v-YMIN)/(YMAX-YMIN))*(h-pad-14);}
+    // grid
+    ctx.strokeStyle='#ece5f5';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=10+g*(h-pad-10)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // 1.0 基準線
+    ctx.strokeStyle='#c9bcdd';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(pad,Y(1));ctx.lineTo(w-8,Y(1));ctx.stroke();ctx.setLineDash([]);
+    // axes
+    ctx.strokeStyle='#c6bcd6';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('α を動かす度合い →', w-160, h-pad+18);
+    // curves over t
+    function curve(fn,color,dash,off){
+      ctx.strokeStyle=color;ctx.lineWidth=2.4;if(dash)ctx.setLineDash(dash);ctx.beginPath();var f=true;
+      for(var t=0;t<=1.0001;t+=0.01){var val=fn(1+GROW*t);var x=X(t),y=Y(val)+(off||0);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    curve(function(aa){return aa;}, '#6d4aa7', null, 0);        // α
+    curve(function(aa){return Math.sqrt(aa);}, '#2f7d5a', null, 0); // e
+    curve(function(aa){return 1/aa;}, '#b06a12', null, 0);     // ħ
+    curve(function(aa){return 1/aa;}, '#2166a0', [5,4], -3);   // ε₀（ħ と重なるので点線を少しずらす）
+    // markers
+    var mx=X(k);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,8);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    function dot(v,color,off){ctx.fillStyle=color;ctx.beginPath();ctx.arc(mx,Y(v)+(off||0),5,0,7);ctx.fill();}
+    dot(a,'#6d4aa7',0); dot(e,'#2f7d5a',0); dot(hb,'#b06a12',0); dot(1/a,'#2166a0',-3);
+    // labels
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#6d4aa7';ctx.fillText('α', X(1)-16, Y(1+GROW)-6);
+    ctx.fillStyle='#2f7d5a';ctx.fillText('e', X(1)-16, Y(Math.sqrt(1+GROW))-4);
+    ctx.fillStyle='#b06a12';ctx.fillText('ħ, ε₀', X(1)-40, Y(1/(1+GROW))+14);
+    // readout
+    rd.textContent='α = +'+Math.round((a-1)*100)+'%　のとき　e ≈ +'+Math.round((e-1)*100)+'%（∝√α）、 ħ・ε₀ ≈ '+Math.round((hb-1)*100)+'%（∝1/α）。 姿は三者三様でも、組み直すと必ず同じ α。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

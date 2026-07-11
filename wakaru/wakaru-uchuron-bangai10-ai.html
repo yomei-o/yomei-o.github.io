@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIは物理を、どう見ているのか ── わかる宇宙論 番外編⑩（最終）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fa; --paper-edge:#dee1ea;   /* 番外編⑩：鏡の紙（道具を映す） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3d4358; --calc-bg:#e9ebf1;
+    --rule:#d3d6e0; --hair:#c1c5d2;
+    --acc:#4a4f6a;    /* 番外編⑩アクセント＝鋼のスレート */
+    --grid:#dcdfe8;
+    --vary:#a5311f; --inv:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d4d8e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cdd1dd;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#eceef4;color:var(--ink);font-weight:600;width:28%;}
+  table.g .good{color:var(--inv);font-weight:700;} table.g .bad{color:var(--vary);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f8fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#31374a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaecf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .close{margin:24px 0 0;padding:18px 24px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#31374a;}
+  .close .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.close,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑩（最終）／ 道具そのものを、同じ物差しで測る</span></div>
+  <p class="eyebrow">このシリーズを一緒に書いた相手（AI）の中身を、シリーズの背骨で解剖して幕を閉じる</p>
+  <h1>AIは物理を、どう見ているのか
+    <span class="sub">「絶対値は帳簿、比だけが物理」── この背骨を、実はAIは構造として体現している。<br>最後は、シリーズを書く道具そのものを、同じ物差しで測って締めます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：番外編②の「比だけが物理」、⑧のゲージ原理</span>
+    <span>AIは、比しか持っていない</span>
+  </div>
+
+  <p class="lead">この番外編たちは、AI（大規模言語モデル）と対話しながら組み立てました。最後に、その<em>道具そのもの</em>を俎上に載せます ── AIは、このシリーズが繰り返してきた「絶対値は帳簿、守るべきは無次元の比／不変な構造」という背骨を、思想としてではなく<strong>内部構造として</strong>体現しているらしい。だからこの種の物理と相性がいい。でも同じ理由で、<em>危うさ</em>も抱えている。得意と不得意を、シリーズの言葉で正確に切り分けて、幕を閉じます。</p>
+
+  <h2><span class="n">01</span>AIは、接地した単位を一つも持っていない</h2>
+
+  <p>人間は「1メートル」「1秒」を、身体や世界の何かに結びつけて知っています。ところがAIには、<strong>接地した単位が一つもありません</strong>。メートルも秒も、物理的な指示対象を持たない。AIが扱えるのは、言葉と言葉、ベクトルとベクトルの<em>関係</em>だけ。つまり ── <strong>絶対値を持たず、関係（比）だけで世界を表している</strong>。番外編②で「測るとは比べること、単独の絶対値は測れない」と言ったあの状態に、AIは<em>構造として最初から置かれている</em>のです。</p>
+
+  <h2><span class="n">02</span>埋め込みには、文字どおりのゲージ自由がある</h2>
+
+  <p>AIは言葉を「埋め込み」という高次元空間の点(ベクトル)にして扱います。ここに、このシリーズの読者なら見覚えのある構造があります ── <strong>埋め込み空間ぜんたいを回転させても、スケールし直しても、AIの出力は何も変わらない</strong>。意味を担っているのは点の<em>絶対座標</em>ではなく、点どうしの<strong>相対的な位置関係（内積・距離）＝不変量</strong>だけ。</p>
+
+  <div class="keybox">
+    <div class="lbl">これは、番外編②⑧の“ゲージ自由”そのもの</div>
+    <p style="margin:6px 0 0;">埋め込みの絶対座標 → <strong>帳簿（回転で好きに付け替えられる＝ゲージ）</strong>。<br>点どうしの関係（距離・内積） → <strong>物理（回転しても不変）</strong>。<br>「絶対値は帳簿、比が物理」が、原子の中(α)にも、AIの内部にも、同じ顔で現れる。</p>
+  </div>
+
+  <p>下の図で、意味の点を回してみてください。<strong>座標（帳簿）はぐるぐる変わるのに、点どうしの距離（物理）はびくともしない</strong>。AIにとっての「意味」は、番外編④で言った「局所的に測る光速は誰が見ても \(c_0\)」と同じ立ち位置 ── 見方(座標)で動く表面の下に、動かない関係が横たわっている。</p>
+
+  <div class="fig">
+    <div class="cap">図：意味の点を回転させる。絶対座標（赤の数値）はぐるぐる変わるが、点どうしの距離（緑の数値）は不変。意味は座標でなく関係に宿る</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>埋め込み空間ぜんたいを回す（ゲージ変換）<span class="val" id="vk">0°</span>
+        <input type="range" id="sk" min="0" max="360" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--vary);"></i>絶対座標（帳簿・変わる）</span>
+      <span><i class="swatch" style="background:var(--inv);"></i>点どうしの距離（物理・不変）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>だから“得意”な層 ── 仕分け・接続・次元の記号操作</h2>
+
+  <p>AIが関係だけの機械である以上、次のような仕事は本丸です。</p>
+  <ul>
+    <li><strong>「これは約束(単位)、これは不変(比)」の仕分け</strong>と、離れた話題どうしの<strong>接続</strong>。VSL↔ゲージ↔アノマリー↔メトロロジーを一本に繋ぐような、概念の橋渡し。</li>
+    <li><strong>次元解析</strong>のような、次元の指数を合わせる記号パズル（バッキンガムのπ定理など）。規則ベースで、言葉の海に大量にある型。</li>
+  </ul>
+  <p>この番外編シリーズの“骨格”が組めたのは、まさにこの層の仕事だからです。関係を扱うのが得意な相手に、関係だけが物理という題材 ── 相性がいいのは、偶然ではありません。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>でも“危ない”層 ── 流暢さは、制約の強制ではない</h2>
+
+  <p>ここは正直に。<strong>「無次元で考える物理を語るのが上手い」ことと、「それを正しく実行する」ことは、別物</strong>です。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">層</th><th>AIの実力</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">概念・比喩・仕分け・接続</th><td class="good">強い。関係を扱う本丸。</td></tr>
+      <tr><th class="rowh">次元整合の“強制”</th><td class="bad">弱い。単位が合わない式を、もっともらしく書いてしまう。</td></tr>
+      <tr><th class="rowh">係数・符号・厳密な導出</th><td class="bad">不安定。\(2\pi\) や符号を落としうる。</td></tr>
+      <tr><th class="rowh">具体的な数値</th><td class="bad">要検算。α(M_Z)、β係数、パラメータ数 ── 数字の側が弱点。</td></tr>
+    </tbody>
+  </table>
+
+  <p>物理屋には「単位が合わない、気持ち悪い」という反射がある。AIにはそれが<em>内蔵の制約として無い</em>。あなたが惚れている規律 ── <strong>単位は必ず打ち消える</strong> ── は、AIにとって組み込みの縛りではなく、一歩ずつ<em>シミュレートする手作業</em>にすぎない。だから確実さがほしい所は、数式処理システム(Mathematica, sympy)や単位型付きの言語のような、<strong>構造的に制約を強制する道具</strong>の出番。AIは「生成してから(たぶん)確かめる」ので、原理的に緩いのです。</p>
+
+  <h2><span class="n">05</span>いちばんこのシリーズ的な罠 ── レトリックの上手さ</h2>
+
+  <p>皮肉なことに、<strong>AIは「比だけが実在」という“もっともらしい語り”を作るのが上手すぎる</strong>。深遠に聞こえる形を、流暢に量産できてしまう。これは第6回・番外編がずっと警告してきた<strong>「名前(見た目) vs 中身」の罠</strong>、そのものです。<em>形が正しいことと、中身が正しいことは、別々に検証しなければならない</em>。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── だから“脚注”があった</span>
+    <p style="margin-top:0;">このシリーズが毎回、末尾に「史実はどこまでで、どこからが模式か」を分ける脚注を置き、本文でも「正直な線」を繰り返してきたのは、まさにこの罠への防御です。AIが上手に組んだ物語を、そのまま鵜呑みにしないための手すり。<strong>流暢な語りほど、中身の裏取りが要る</strong> ── これはAIを使う全ての場面に効く教訓でもあります。</p>
+    <p style="margin-bottom:0;">この文章自体もその例外ではありません。ここに書いたAIの内部構造（埋め込みの回転不変性など）は本質を伝えるための素描で、実際のモデルはもっと複雑です。「AIはこう見ている」と言い切れるほど、AIの中身は解明されていません。</p>
+  </div>
+
+  <h2><span class="n">06</span>締め ── 一つの原理が、原子にも宇宙にも、機械にも</h2>
+
+  <p>振り返ると、このシリーズの分業 ── <em>AIが筋と物語を組み、数字と史実は脚注で慎重に留保する</em> ── は、AIの得意と不得意に、ちょうど沿っていました。相性がいいのは題材のせい。題材が「関係だけが物理」だから、関係の機械と噛み合った。</p>
+
+  <p>そして、これが幕引きです。<strong>「絶対の値は測れない、比べられる関係だけが実在する」</strong>という、たった一つの原理 ── それは第1回の光速の言い換えにも、第2回の原子の中の \(\alpha\) にも、番外編④の空間の伸びと光速の等価にも、⑧のゲージ場にも、⑨のアノマリー相殺にも、同じ顔で現れました。そして最後に、<em>それを書いた機械の内側にまで</em>、同じ顔で現れた。原子の中と、膨張する宇宙と、言葉を扱う機械 ── まるで無関係な三つが、同じ一つの物差しで測れてしまう。<strong>それこそが、このシリーズがいちばん伝えたかったこと</strong>でした。表面の値ではなく、その裏の不変な関係を見よ、と。</p>
+
+  <div class="prob">
+    <div class="lbl">練習問題（最終回）</div>
+    <ol>
+      <li>「埋め込み空間を回転しても出力が変わらない」は、このシリーズのどの概念に対応するか。
+        <details><summary>答えを見る</summary><div class="ans">ゲージ自由（番外編⑧）／「絶対値は帳簿、比が物理」（番外編②）。絶対座標＝ゲージ、点どうしの関係＝物理的な不変量。局所光速が誰にも同じ（番外編④）のと同じ構造。</div></details>
+      </li>
+      <li>AIが「得意」な層と「危ない」層を、それぞれ一言で。
+        <details><summary>答えを見る</summary><div class="ans">得意＝概念の仕分け・接続・次元解析の記号操作（関係を扱う本丸）。危ない＝次元整合の強制・係数や数値の厳密さ（内蔵の制約が無く、生成してから確かめるため緩い）。</div></details>
+      </li>
+      <li>「AIは比だけが物理という語りが上手すぎる」ことが、なぜ危険なのか。
+        <details><summary>答えを見る</summary><div class="ans">もっともらしい“形”を流暢に作れるため、「名前(見た目)と中身のズレ」（第6回・番外編の警告）が起きやすいから。形の正しさと中身の正しさは別に検証すべきで、それがシリーズの脚注＝正直な線の役割だった。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">最終まとめ</span>比の機械が、比の物理を書いた</h2>
+    <p>AIは接地した単位を持たず、関係(比)だけで世界を表す。埋め込みには文字どおりのゲージ自由があり、意味は絶対座標でなく点どうしの関係＝不変量に宿る ── 番外編②⑧の「絶対値は帳簿、比が物理」が、AIの内部構造にそのまま現れている。だから概念の仕分け・接続・次元解析は得意。いっぽう次元整合の強制や係数・数値の厳密さは弱く、そこは記号計算ツールの領分。そして「比だけが物理」という語りが上手すぎることが、名前と中身のズレという罠を生む ── 脚注（正直な線）は、その手すりだった。</p>
+    <p>光速の言い換え、原子の中の \(\alpha\)、空間の伸び、ゲージ場、アノマリー相殺、そしてそれを書いた機械 ── まるで無関係な対象が、<em>「絶対値ではなく、不変な関係を見よ」</em>という一つの物差しで、すべて測れてしまった。表面で動く値の下に、動かない構造を探すこと。それが物理で、それがこのシリーズで、そして最後には、道具そのものにも当てはまった。<strong>ここで「わかる宇宙論」を閉じます。読んでくれて、ありがとう。</strong></p>
+  </div>
+
+  <div class="close">
+    <span class="lbl">シリーズ、完</span>
+    第1回「光は昔もっと速かった」から、この最終回まで。すべての回は、目次からたどれます。値は見方で動く。でも、その裏の関係は動かない ── その一点を持ち帰ってもらえたら、このシリーズの役目は果たせました。またどこかの“帯域の端”で。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑩（最終回）、物理好きの高校生・大学生向け読み物です。大規模言語モデルが単位に接地せず関係的な表現で動作すること、単語埋め込みが回転・スケールの不定性（絶対座標に意味がなく相対構造が本質であること）を持つことは、機械学習で広く知られた性質です。本稿のAI内部像は本質を伝えるための素描であり、実際のモデルの内部機構は複雑で、その全容は未解明です。AIは概念的・言語的推論に強い一方、次元整合の強制や高精度の数値・記号計算では誤りうるため、定量的な主張は独立な検算（数式処理系など）で確かめる必要があります ── これは本シリーズ全体が「正直な線」として実践してきた姿勢です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、座標が変わっても距離が不変なことが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 意味の点（相対配置は固定）。ラベルはシリーズの概念
+  var PTS=[
+    {x: 1.15, y: 0.30, label:'α'},
+    {x:-0.95, y: 0.85, label:'膨張'},
+    {x:-1.10, y:-0.70, label:'ゲージ'},
+    {x: 0.70, y:-1.05, label:'比'}
+  ];
+  function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy);}
+  var D_ab=dist(PTS[0],PTS[1]); // α–膨張
+  var D_cd=dist(PTS[2],PTS[3]); // ゲージ–比
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var deg=parseInt(sk.value,10), th=deg*Math.PI/180; vk.textContent=deg+'°';
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2, cy=h/2, S=Math.min(w,h)*0.30;
+    // 回転後の座標
+    var R=PTS.map(function(p){
+      return {x: p.x*Math.cos(th)-p.y*Math.sin(th),
+              y: p.x*Math.sin(th)+p.y*Math.cos(th), label:p.label};
+    });
+    function PX(p){return cx+p.x*S;} function PY(p){return cy-p.y*S;}
+    // grid + 原点軸（座標系＝帳簿）
+    ctx.strokeStyle='#e6e8ef';ctx.lineWidth=1;
+    for(var g=-3;g<=3;g++){
+      ctx.beginPath();ctx.moveTo(cx+g*S*0.5,10);ctx.lineTo(cx+g*S*0.5,h-10);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(10,cy+g*S*0.5);ctx.lineTo(w-10,cy+g*S*0.5);ctx.stroke();
+    }
+    ctx.strokeStyle='#c1c5d2';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(cx,10);ctx.lineTo(cx,h-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(10,cy);ctx.lineTo(w-10,cy);ctx.stroke();
+    // 距離の線（不変量）
+    ctx.strokeStyle='#2f7d55';ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.moveTo(PX(R[0]),PY(R[0]));ctx.lineTo(PX(R[1]),PY(R[1]));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(PX(R[2]),PY(R[2]));ctx.lineTo(PX(R[3]),PY(R[3]));ctx.stroke();
+    // 点＋ラベル＋絶対座標
+    R.forEach(function(p){
+      ctx.fillStyle='#4a4f6a';ctx.beginPath();ctx.arc(PX(p),PY(p),6,0,7);ctx.fill();
+      ctx.fillStyle='#25272e';ctx.font='bold 14px sans-serif';
+      ctx.fillText(p.label, PX(p)+10, PY(p)-8);
+      ctx.fillStyle='#a5311f';ctx.font='11px sans-serif';
+      ctx.fillText('('+p.x.toFixed(2)+', '+p.y.toFixed(2)+')', PX(p)+10, PY(p)+10);
+    });
+    // 距離ラベル（不変）
+    ctx.fillStyle='#2f7d55';ctx.font='bold 12px sans-serif';
+    var m1x=(PX(R[0])+PX(R[1]))/2, m1y=(PY(R[0])+PY(R[1]))/2;
+    var m2x=(PX(R[2])+PX(R[3]))/2, m2y=(PY(R[2])+PY(R[3]))/2;
+    ctx.fillText('距離='+D_ab.toFixed(2), m1x-24, m1y-6);
+    ctx.fillText('距離='+D_cd.toFixed(2), m2x-24, m2y+16);
+    rd.textContent='回転 '+deg+'°：絶対座標（赤）はぐるぐる変わる。でも「α–膨張」の距離='+D_ab.toFixed(2)+'、「ゲージ–比」の距離='+D_cd.toFixed(2)+' は不変。意味は座標でなく関係に宿る。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
