@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>固定していい定数の地図 ── わかる宇宙論 番外編⑨</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f0; --paper-edge:#e9e0cf;   /* 番外編⑨：古地図の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a5410; --calc-bg:#f3ecdc;
+    --rule:#ddd2ba; --hair:#ccc0a6;
+    --acc:#9a6a12;    /* 番外編⑨アクセント＝古金 */
+    --grid:#e2d7c0;
+    --c1:#6b6f60;   /* 第一列：約束（グレー） */
+    --c2:#a5311f;   /* 第二列：測るしかない（赤） */
+    --c3:#2f7d55;   /* 第三列：原理が固定（緑） */
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:780px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddceac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  /* 三列の地図 */
+  .atlas{display:flex;gap:14px;margin:28px 0;flex-wrap:wrap;}
+  .col{flex:1;min-width:210px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);background:#fffdf8;}
+  .col .top{padding:12px 16px;color:#fff;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .col .top .k{font-size:10.5px;letter-spacing:.16em;font-weight:700;opacity:.9;}
+  .col .top .h{font-size:15px;font-weight:700;margin-top:2px;letter-spacing:.02em;line-height:1.35;}
+  .col1 .top{background:var(--c1);} .col2 .top{background:var(--c2);} .col3 .top{background:var(--c3);}
+  .col .body{padding:12px 16px 14px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;line-height:1.6;color:var(--ink);}
+  .col .body ul{margin:0;padding-left:1.1em;} .col .body li{margin:6px 0;}
+  .col .tagline{font-size:12px;color:var(--ink-soft);margin-top:10px;padding-top:8px;border-top:1px dashed var(--rule);}
+  .flow{text-align:center;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--acc);font-weight:700;margin:6px 0 26px;letter-spacing:.04em;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#f0e8d6;color:var(--ink);font-weight:600;width:30%;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7ee;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f4ecdc);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.atlas,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:780px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑨ ／ 定数シリーズを、一枚の地図に閉じる</span></div>
+  <p class="eyebrow">固定していい定数、してはいけない定数 ── そして「原理が厳密値に固定してくれる」定数</p>
+  <h1>固定していい定数の地図
+    <span class="sub">次元付きは全部“約束”。無次元の大半は“手で測るしかない26個”。<br>そのうち、ごく一部だけが ── 原理によって厳密値に固定される。それが「固定していい」無次元量。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：番外編②⑤⑧、第6回・第8回</span>
+    <span>三列：約束／測る26個／原理が固定</span>
+  </div>
+
+  <p class="lead">番外編⑤で「\(\alpha\) を作る4定数のうち固定できるのは3つまで」と数えました。今回はその発想を、物理全体の定数へ広げます。ここで“固定”に<strong>二種類</strong>あることに気づくと、景色が反転する ── 単位を人間が宣言で固定するのは<em>恣意的な約束</em>で意味がない。いっぽう無次元量を<strong>原理が厳密値に釘づけする</strong>のは、<em>説明そのもの</em>。だから「固定していい無次元量」とは、人間が決め打ちすべき量ではなく、<strong>原理が勝手に固定してくれる量</strong>のこと。定数シリーズを、三列の地図で閉じます。</p>
+
+  <h2><span class="n">01</span>地図を広げる ── 三つの列</h2>
+
+  <div class="atlas">
+    <div class="col col1">
+      <div class="top"><div class="k">第一列</div><div class="h">次元付き定数<br>＝人間の“約束”</div></div>
+      <div class="body">
+        <ul><li>\(c\)（長さと時間ののり）</li><li>\(\hbar\)（エネルギーと振動数ののり）</li><li>\(k_B\)（温度＝エネルギー、の換算）</li><li>\(e,\ \varepsilon_0\)、各質量の絶対値、\(G\)</li></ul>
+        <div class="tagline">宣言で固定してよい。物理を担っていない。2019年のSIが7個を決め打ちしたのが証拠。</div>
+      </div>
+    </div>
+    <div class="col col2">
+      <div class="top"><div class="k">第二列</div><div class="h">自由な無次元<br>＝手で測るしかない（~26個）</div></div>
+      <div class="body">
+        <ul><li>\(\alpha\)、\(\alpha_s\)、\(\sin^2\theta_W\)</li><li>質量比・湯川結合 \(y_f=\sqrt2\,m_f/v\)</li><li>CKM・PMNS の混合角と位相</li><li>\(\theta_{QCD}\)、宇宙論の \(\Omega\) 比</li></ul>
+        <div class="tagline">宣言では決められない＝物理。だがまだ導けず、測るしかない。“個数”がそのまま未解決の目盛り。</div>
+      </div>
+    </div>
+    <div class="col col3">
+      <div class="top"><div class="k">第三列</div><div class="h">原理が固定する無次元<br>＝“固定していい”量</div></div>
+      <div class="body">
+        <ul><li>アノマリー相殺 \(\sum Y=0\)</li><li>トポロジー（整数 \(\nu\)、\(eg=2\pi n\)）</li><li>くりこみ群の固定点 \(g^*\)</li><li>予言（\(g-2\) は \(\alpha\) から計算）</li></ul>
+        <div class="tagline">理論が厳密値に釘づけ。ここでの“固定”は約束ではなく説明。</div>
+      </div>
+    </div>
+  </div>
+  <div class="flow">物理の全プログラム ＝ 第二列（測る）を、第三列（原理が固定）へ、一つずつ移し替えること →</div>
+
+  <h2><span class="n">02</span>第一列 ── 次元付きは全部“約束”</h2>
+
+  <p>これまでの回の帰結です。\(c\) が特別だったのではなく、<strong>単位を持つ定数は、ひとつ残らず帳簿の約束</strong>。証拠は<em>2019年のSI改定</em> ── 人類は \(c,h,e,k_B,N_A\) など7個を「この値で確定」と一斉に決め打ちしました（番外編②の光速固定の、全定数版）。値を宣言で決められた、ということは、それらが物理ではなく単位規約だという何よりの証拠です。\(k_B\) は特にきれい ── <em>温度は基本量ではなく、1自由度あたりのエネルギー</em>。第9回で \(\tau=\hbar/k_BT\) と温度が時間の周期に化けたのは、温度が独立な量でないからでした。</p>
+
+  <h2><span class="n">03</span>第三列 ── 原理が厳密値に固定する無次元（本命）</h2>
+
+  <p>第一列（約束）と第二列（測る26個）は前回までで見ました。今回の主役は第三列。<strong>人間の決め打ちでも、手さぐりの測定でもなく、原理が「この値でなければならない」と厳密に釘づけする無次元量</strong>です。四つ挙げます。</p>
+
+  <h3>① 量子の無矛盾性が固定する ── アノマリー相殺</h3>
+  <p>標準模型では、一世代ぶんの電荷（超電荷）の総和が<strong>厳密に \(\sum Y=0,\ \sum Y^3=0\)</strong> でなければならない。ずれた瞬間、量子効果がゲージ対称性を壊し、理論が死ぬ（繰り込み不能・非ユニタリ）。この“0への固定”が、<em>クォークの電荷がなぜ⅓刻みか、なぜ陽子と電子の電荷がぴったり打ち消すか（実測で \(10^{-21}\) 精度）、なぜ色が3つ要るか</em>を、まとめて縛っている。第8回のゲージ原理の、量子版の牙です。</p>
+
+  <div class="keybox">
+    <div class="lbl">アノマリー相殺の効き目</div>
+    <p style="margin:6px 0 0;">\(\displaystyle\sum_{\text{一世代}} Y = 0,\qquad \sum_{\text{一世代}} Y^3 = 0\)　でなければ、量子論として存在できない。<br>→ 電荷の量子化・陽子と電子の電荷の一致・3色 が、測定ではなく<strong>無矛盾性から固定される</strong>。</p>
+  </div>
+
+  <h3>② トポロジーが固定する ── 整数しか取れない</h3>
+  <p>巻き数・チャーン数・量子ホール伝導度 \(\sigma=\nu e^2/h\)（\(\nu\) は厳密な整数）、ディラックの電荷量子化 \(eg=2\pi n\)。トポロジーは整数しか吐けないので、これらの無次元量は<strong>汚しても壊れない剛性</strong>を持つ。面白いのは、<em>メトロロジーが逆にこれを利用している</em>こと ── 量子ホール抵抗が単位標準に使えるのは、無次元部分が整数に固定されて揺るがないから。第一列（恣意的に固定した単位）が、第三列（原理が固定した整数 \(\nu\)）に寄りかかる、という入れ子です。</p>
+
+  <h3>③ くりこみ群の「固定点」── 文字どおり fixed</h3>
+  <p>無次元結合は走る（第6回）が、特別な値で<strong>走りが止まる＝固定点</strong>。QCDの紫外固定点 \(g^*=0\)（漸近的自由）、臨界現象のウィルソン=フィッシャー点、重力の夢「漸近安全性」。固定点まわりの<em>臨界指数</em>は、物質の詳細によらない普遍的な無次元数です。第6回の「値より走り方が深い」の、さらに先 ── <strong>走り方の中でも“止まる点”がいちばん深い</strong>。</p>
+
+  <h3>④ 予言＝計算で固定される</h3>
+  <p>電子の異常磁気能率 \(a_e=(g-2)/2\) は、\(\alpha\) さえ与えれば QED が<strong>12桁</strong>計算して実験と一致する。これは入力（測る）ではなく出力（固定される）。<em>良い理論とは、無次元数を「測る列」から「計算で固定される列」へどれだけ移せるか</em>で測られます。</p>
+
+  <div class="aside">
+    <span class="tag">二種類の“固定”の対比</span>
+    第一列の固定（単位の約束）は<strong>恣意的</strong>で、いくらでも別の値に決め直せる。第三列の固定（\(\sum Y=0\)、整数 \(\nu\)、固定点）は<strong>必然</strong>で、別の値にはできない。同じ「固定」という言葉でも、<em>約束の固定と、必然の固定は正反対</em>。前者は物理でないから固定してよく、後者は原理が固定するから“固定していい無次元量”になる。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>“固定されていてほしいのに、まだ”という列（正直な線）</h2>
+
+  <p>第三列には、<em>入りたがっているのにまだ入れていない</em>候補もあります。原理で固定したいのに、その原理が見つかっていない無次元量たち ── ここがいまの最前線です。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">固定したい無次元量</th><th>状況</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">\(\theta_{QCD}\)（強いCP）</th><td>なぜかほぼ厳密に0（中性子EDMから \(<10^{-10}\)）。0に固定する機構（ペッチェイ=クイン／アクシオン）を探索中。</td></tr>
+      <tr><th class="rowh">\(\rho=M_W^2/(M_Z^2\cos^2\theta_W)\)</th><td>カストーディアル対称性が \(=1\) に固定。ずれれば新物理の兆候。</td></tr>
+      <tr><th class="rowh">宇宙定数 \(\Lambda\)</th><td>0近くに固定されていてほしいのに、原理が見つからない（番外編⑦のエネルギー原点の話）。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「無次元量を固定する」のに、良い固定と無意味な固定がある。両者の違いを一言で。
+        <details><summary>答えを見る</summary><div class="ans">無意味な固定＝人間が単位を宣言で決めること（第一列、恣意的）。良い固定＝原理（対称性・トポロジー・固定点）が厳密値に釘づけすること（第三列、必然＝説明）。</div></details>
+      </li>
+      <li>アノマリー相殺 \(\sum Y=0\) が“固定”している観測事実を一つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">陽子と電子の電荷がぴったり打ち消すこと（実測で \(10^{-21}\) 精度）、クォーク電荷が⅓刻みであること、色が3つであること ── いずれも測定でなく無矛盾性から固定される。</div></details>
+      </li>
+      <li>標準模型の自由パラメータが「~26個」あることは、なぜ“恥部”と呼べるのか。
+        <details><summary>答えを見る</summary><div class="ans">それらは第二列＝手で測るしかない無次元量で、まだ原理から導けていないから。個数の多さが、そのまま「まだ分かっていない量」の目盛りになっている。減らすことが物理の目標。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">標準模型の自由パラメータの“個数”は数え方で変わります（ニュートリノ質量・混合を含めるか等で 19〜26 程度）。アノマリー相殺が電荷量子化を「固定」するのは、あくまで<strong>与えられた粒子の割り当て（表現内容）のもとで</strong>の話で、なぜその割り当てなのか自体は第二列の問い。トポロジーによる固定や固定点も、それぞれ適用条件があります。</p>
+    <p style="margin-bottom:0;">この三列の地図は、定数を整理する<em>見取り図</em>であって、厳密な分類学ではありません。境界にある量（例：\(\theta_{QCD}\) は第二列にも第三列候補にも顔を出す）もあります。目的は「固定の意味を二種類に分ける」一点にあります。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>反転 ── 固定していい無次元は「原理が固定する」もの</h2>
+    <p>次元付きは全部“約束”で、固定してよい（物理でない）。無次元の大半は“手で測るしかない”~26個で、まだ分かっていない。そのうち<strong>原理（アノマリー相殺・トポロジー・くりこみ群の固定点・計算による予言）が厳密値に釘づけしてくれる</strong>ものだけが、「固定していい・固定されるべき無次元量」。なぜなら、そこでの“固定”は約束ではなく<em>説明</em>だから。</p>
+    <p>だから物理の全プログラムは、<strong>自由な無次元（第二列・測る）を、原理が固定する無次元（第三列）へ移し替えること</strong>。前回「26個を減らす」と今回「原理で固定する」は、同じことの表と裏でした。番外編②「絶対値は帳簿、比だけが物理」から始まった定数シリーズは、この一枚の地図 ── <em>約束の固定と、必然の固定を分ける</em> ── に行き着きます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">定数シリーズ、ここで一区切り</span>
+    ②固定の歴史 → ③④VSLと等価条件 → ⑤⑥⑦「α を動かす三部作」 → ⑧ゲージ原理 → ⑨この地図。残る大きな問いは本編の側 ── 第6回後編「三つの力は一点で出会うか（第二列を減らす夢）」、最終回「重力を入れられるか」。第三列を広げられるかどうかが、その二つの扉の鍵を握っています。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑨、物理好きの高校生・大学生向け読み物です。次元付き定数の値が単位規約であること（2019年SI改定で \(\Delta\nu_{Cs},c,h,e,k_B,N_A,K_{cd}\) の7定数を定義値として固定）、標準模型の自由パラメータが無次元で19〜26個程度（数え方による）あること、ゲージ・重力混合アノマリーの相殺条件 \(\sum Y=\sum Y^3=0\) が電荷量子化と整合し3世代・3色構造を強く制約すること、量子ホール効果や磁気単極子のディラック量子化が無次元量を整数に固定すること、くりこみ群の固定点（漸近的自由の \(g^*=0\) 等）と臨界指数の普遍性、電子 \(g-2\) がQEDにより高精度で予言されることは、いずれも確立した物理です。\(\theta_{QCD}\) の微小性（強いCP問題）と宇宙定数問題は未解決です。パラメータ数や分類は見取り図であり、境界例があります。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を選んでください。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）→ 送信先を「PDF に保存」に。「答えを見る」で解答が開きます。</p>
+</body>
+</html>

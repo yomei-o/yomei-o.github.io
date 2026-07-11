@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>固定しない、が最強だった ── わかる宇宙論 番外編⑧</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4faf6; --paper-edge:#d8e8de;   /* 番外編⑧：常磐の紙（生む対称性の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1f6b47; --calc-bg:#e5f2ea;
+    --rule:#caded3; --hair:#b7d0c2;
+    --acc:#2f7d55;    /* 番外編⑧アクセント＝常磐緑 */
+    --grid:#d3e7dc;
+    --under:#b06a12; --over:#a5311f; --sweet:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe8d9 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6ddce;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f9fdfb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfffd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:24px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#eaf3ed;color:var(--ink);font-weight:600;width:24%;}
+  table.g .good{color:var(--sweet);font-weight:700;} table.g .bad{color:var(--over);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f5fbf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1f4633;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfffd,#e9f4ee);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f4633;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる宇宙論</span><span class="ep">番外編 ⑧ ／ 固定の話を、場の理論まで持ち上げる</span></div>
+  <p class="eyebrow">第8回「iの曖昧さが力を生む」の上位版 ── なぜ「固定しない」ほうが勝てるのか</p>
+  <h1>固定しない、が最強だった
+    <span class="sub">ヤン=ミルズ理論が成功したのは、「何も固定しない」記述を選んだから。<br>でも正確には ── 固定はする、対称性を壊さない固定を選ぶ。番外編③の逆から見た同じ教訓。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第8回のゲージ、番外編③④⑤</span>
+    <span>記述の自由 ↔ 力学の硬さ</span>
+  </div>
+
+  <p class="lead">これまでの番外編は「単位・時間・エネルギー ── 何を固定するかは選択で、物理は無次元だけ」と積んできました。今回はこの発想を、20世紀物理の最大の武器<strong>ゲージ原理</strong>まで持ち上げます。ヤン=ミルズ理論がうまくいったのは、乱暴に言えば<em>「何も固定しない座標系を選んだから」</em>。この直感は7割正しく、残り3割を直すとさらに深くなる。第8回「局所化した瞬間、力が生まれる」を、今度は<strong>「なぜ固定しないほうが勝てるのか」</strong>の側から書き直します。</p>
+
+  <h2><span class="n">01</span>逆説 ── 記述を自由にすると、力学が一意に縛られる</h2>
+
+  <p>ヤン=ミルズの発想は、第8回でやった「位相の曖昧さを各点で自由に選び直していい(局所ゲージ不変)」を、電磁気の \(U(1)\) から非可換群 \(SU(2),SU(3)\) に広げたものです。ここで起きる逆説が、あなたの直感の正体です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心（逆説）</div>
+    <p style="margin:6px 0 0;"><strong>記述の自由を残す（固定しない）ほど、力学のほうは硬く縛られる。</strong><br>各点での自由な選び直しを要求すると、それを取りつくろう場（力）が強制的に生まれ、書ける項がごくわずかに絞られる。ヤン=ミルズのラグランジアンは実質 \(-\tfrac14 F^2\) 一本に決まってしまう。</p>
+  </div>
+
+  <p>自由パラメータがほとんど残らない＝予言力が高い＝式も短い。<em>上（記述）を自由にすると、下（ダイナミクス）が一意になる</em>。これが「固定しないと単純になる」の正体で、見た目の話ではなく、理論の形そのものが対称性に縛られて決まる、という深い事情です。「固定しない」は、実は「最大限に対称性で縛る」と同義でした。</p>
+
+  <h2><span class="n">02</span>でも量子化では「何も固定しない」は不可能</h2>
+
+  <p>ここが正確さの肝。ヤン=ミルズを実際に計算（量子化）しようとすると、<strong>固定しないと積分が発散して、光子・グルーオンの伝播関数すら定義できません</strong>。同じ物理の無限個のコピー（ゲージ軌道）を全部足してしまうから。だから必ず<strong>ゲージ固定</strong>が要る（ファデーエフ=ポポフの処方、1967 ── その代償に“ゴースト”という補助場が湧く）。「何も固定しない」は、原理としては強力でも、操作としては成り立たないのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">言い直し</div>
+    <p style="margin:6px 0 0;">「固定しない」が偉いのではない。<strong>“対称性が見えたまま”の固定を選び、対称性を消す固定はしない</strong>のが偉い。<br>固定を<em>減らす</em>ことではなく、固定で<em>対称性を壊さない</em>ことが勝ち筋。</p>
+  </div>
+
+  <h2><span class="n">03</span>分かれ道 ── 共変ゲージ vs ユニタリゲージ</h2>
+
+  <p>同じ「固定する」でも、二つの道で明暗が分かれます。何を露わにして、何を隠すかのトレードです。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">固定のしかた</th><th>露わになるもの</th><th>隠れるもの／代償</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh"><span class="good">共変ゲージ</span>（ローレンツ型＋ゴースト）</th><td><strong>繰り込み可能性</strong>が露わ。ローレンツ対称性も保つ。</td><td>ゴーストという“見かけの場”が増える。物理の粒子だけ、には見えない。</td></tr>
+      <tr><th class="rowh"><span class="bad">ユニタリゲージ</span>（不要な場を全部消す＝最大限に固定）</th><td>物理的な粒子だけが見えて気持ちいい（ユニタリ性が露わ）。</td><td>式が高エネルギーで暴れ、<strong>繰り込み不能に“見えて”しまう</strong>。</td></tr>
+    </tbody>
+  </table>
+
+  <p>ヤン=ミルズが「使える理論」になった決め手は、’t Hooft と Veltman（1971）が<strong>共変ゲージ</strong>を使い、対称性を露わに保ったまま<em>繰り込み可能であることを証明</em>したことでした。ユニタリゲージ（最大限に固定）だけを見ていたら、理論は「高エネルギーで壊れるダメな理論」に見えたまま埋もれていたかもしれない。<em>いちばん大事な性質が露わになる固定を選び、余計に固定しすぎない</em> ── これが勝ち筋の中身です。</p>
+
+  <div class="fig">
+    <div class="cap">図：固定の度合いと「式の複雑さ・脆さ」。固定が足りないと量子化できず、固定しすぎると対称性を壊して式が暴れる。谷（共変ゲージ域）がいちばん素直</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>どれだけ固定するか（左＝何も固定しない／右＝全部固定）<span class="val" id="vk">0.45</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="45">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>「固定が多い＝複雑」は単調じゃない ── 本当の失敗モード</h2>
+
+  <p>ここで直感を一段修正します。反例があるのです ── ローレンツゲージ（電磁波が波動方程式になる）、クーロンゲージ（静電気が一発）、調和ゲージ（重力波が素直な波動方程式に）。<strong>賢い固定は、特定の問題をむしろ劇的に単純化する</strong>。だから「固定が多い＝複雑」は一般には成り立たない。</p>
+
+  <p>本当の失敗モードは「固定の量」ではなく、<strong>固定してはいけない“不変の芯”を、固定で壊すこと</strong>。そしてこれ、番外編③のVSLと<em>完全に同じ構図</em>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ罪、二つの現場</div>
+    <p style="margin:6px 0 0;">VSL（番外編③）：\(c,e,\hbar\) をバラバラに固定 → 守るべき不変量 \(\alpha\) をうっかり動かした → 詰み。<br>ユニタリゲージ的失敗：対称性を固定で消した → 繰り込み可能性が見えなくなった。<br>どちらも「固定しすぎた」のではなく、<strong>固定してはいけない芯（α／対称性）を、固定で壊した</strong>。</p>
+  </div>
+
+  <p>逆に、成功例（共変ゲージ／④の α 不変ゲージ）は、<em>芯（対称性・α）を聖域にして、残りの冗長な向きだけを自由に相対化した</em>。番外編④で「等価を保つ鍵は \(c\) の動かし方ではなく \(\alpha\) を守れるか」と言ったことが、そっくりそのまま「勝つゲージ固定の条件」になっているのです。</p>
+
+  <h2><span class="n">05</span>だから、シリーズの背骨＝ゲージ原理だった</h2>
+
+  <p>あなたがずっと言ってきた<strong>「絶対値は帳簿、守るべきは不変の比／構造」</strong>は、物理学の言葉では<strong>ゲージ原理そのもの</strong>です。番外編②〜⑦が「単位・時間・エネルギーの動かし方」で見せたことを、ヤン=ミルズは「場そのものの各点での選び直し」でやっている。<em>同じ一つの原理が、metrology の階層と、場の理論の階層で、同じ顔をしている</em>。第8回で「iの曖昧さが力を生む」と言ったあの力は、まさに「固定しない自由」が生んだ子どもでした。</p>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「局所ゲージ不変を要求すると理論が単純になる」を、パラメータの言葉で言い直せ。
+        <details><summary>答えを見る</summary><div class="ans">対称性が書ける項を強く絞り、自由パラメータをほとんど残さないから。パラメータが少ない＝式が短く予言力が高い。記述の自由が、力学の一意性を生む。</div></details>
+      </li>
+      <li>ヤン=ミルズの量子化で「何も固定しない」が文字どおりには不可能なのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">同じ物理の無限個のコピー（ゲージ軌道）を全部足すことになり、経路積分が発散して伝播関数が定義できないから。ゲージ固定（ファデーエフ=ポポフ）が必要。</div></details>
+      </li>
+      <li>VSLの失敗と、ユニタリゲージの見かけの破綻に共通する“罪”を一言で。
+        <details><summary>答えを見る</summary><div class="ans">固定してはいけない不変の芯（VSLは α、ユニタリゲージは対称性）を、固定で壊したこと。固定の量ではなく、対象を取り違えたのが罪。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「ヤン=ミルズは固定しないから勝った」は、直感としては正しいが、厳密には「対称性を露わに保つ固定を選んだから勝った」。共変ゲージのゴーストや、繰り込み・ユニタリ性の同時成立は、本来かなり技術的な話で、ここでは筋だけを描いています。図の“谷”の位置や高さは、固定のトレードを示す模式で、定量的な曲線ではありません。</p>
+    <p style="margin-bottom:0;">また、ゲージ対称性は厳密には「対称性」というより<strong>記述の冗長性</strong>だ、という言い方もあります（物理的自由度を数えるときは冗長分を割り引く）。この見方でも結論は同じ ── 冗長性を消し去る固定は、隠れた構造まで消してしまう。</p>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>固定しないと単純、の正確な中身</h2>
+    <p>ヤン=ミルズが強いのは、局所ゲージ不変（＝各点で自由に選び直せる、固定しない）を要求すると、力（ゲージ場）が強制的に生まれ、理論の形がほぼ一意に決まるから。記述の自由が、力学の硬さ（少パラメータ・短い式・高い予言力）を生む。ただし量子化には固定が要り、勝ち筋は<strong>“対称性を露わにする固定を選び、不変の芯だけは絶対に固定で壊さない”</strong>こと。</p>
+    <p>「固定が多い＝複雑」は単調ではない。賢い固定は問題を単純化する。本当の失敗は、固定してはいけない芯（α／対称性）を固定で壊すこと ── VSLの罪と、ユニタリゲージの見かけの破綻は、同じ罪だった。<em>芯を聖域にして、冗長な向きだけ相対化する</em>。番外編②以来の背骨は、物理の言葉ではゲージ原理そのものでした。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編⑨</span>
+    「固定していい定数と、してはいけない定数の地図」。次元付きは全部“約束”、無次元の大半は“手で測るしかない26個”、そしてごく一部は<strong>原理（アノマリー相殺・トポロジー・くりこみ群の固定点）が厳密値に固定してくれる</strong>。三列の地図を広げて、この定数シリーズを一枚に閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる宇宙論」シリーズ番外編⑧、物理好きの高校生・大学生向け読み物です。非可換ゲージ理論（Yang–Mills, 1954）で局所ゲージ不変性がゲージ場と相互作用の形をほぼ一意に決めること、経路積分の量子化にゲージ固定（Faddeev–Popov, 1967）と共変ゲージでのゴーストが必要なこと、’t Hooft–Veltman（1971）が繰り込み可能性を示したこと、共変ゲージでは繰り込み可能性が、ユニタリゲージではユニタリ性が露わになるトレードがあることは、いずれも確立した内容です。ゲージ対称性を「記述の冗長性」と捉える立場も標準的です。図はトレードの模式で定量曲線ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、固定のしすぎ・足りなさの谷が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 複雑さ・脆さ（0..1、高いほど悪い）。谷は k≈0.45（共変ゲージ域）
+  function cost(k){ var v=0.12+3.4*(k-0.45)*(k-0.45); if(k<0.18) v+=0.9*(0.18-k)/0.18; return Math.min(1,v); }
+  var Z1=0.18, Z2=0.72; // 三領域の境
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46;
+    var k=parseInt(sk.value,10)/100; vk.textContent=k.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(t){return pad+t*(w-pad-14);}
+    function Y(v){return 12+(1-v)*(h-pad-12);}   // v:0..1、上ほど複雑
+    // 帯：sweet zone
+    ctx.fillStyle='rgba(47,125,85,0.08)';ctx.fillRect(X(Z1),8,X(Z2)-X(Z1),(h-pad)-8);
+    ctx.fillStyle='rgba(176,106,18,0.07)';ctx.fillRect(pad,8,X(Z1)-pad,(h-pad)-8);
+    ctx.fillStyle='rgba(165,49,46,0.07)';ctx.fillRect(X(Z2),8,X(1)-X(Z2),(h-pad)-8);
+    // grid
+    ctx.strokeStyle='#e2efe8';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=10+g*(h-pad-10)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#b7d0c2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,8);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('固定の度合い →', w-140, h-pad+18);
+    ctx.save();ctx.translate(16,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('式の複雑さ・脆さ →',0,0);ctx.restore();
+    // curve
+    ctx.strokeStyle='#1f6b47';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var t=0;t<=1.0001;t+=0.005){var x=X(t),y=Y(cost(t));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // zone labels
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#8a5a1e';ctx.fillText('固定不足', X(0.02), h-pad-8);
+    ctx.fillStyle='#1f6b47';ctx.fillText('共変ゲージ域（谷）', X(0.30), Y(cost(0.45))-14);
+    ctx.fillStyle='#a5311f';ctx.fillText('固定しすぎ', X(0.80), h-pad-8);
+    // marker
+    var mx=X(k), my=Y(cost(k));
+    ctx.strokeStyle='#2f7d55';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,8);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d55';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    var msg;
+    if(k<Z1){ rd.style.background='#f4ecdf';rd.style.color='#8a5a1e';
+      msg='固定が足りない：ゲージ軌道を数え過ぎて経路積分が発散 ── そもそも量子化できない。'; }
+    else if(k<=Z2){ rd.style.background='#e5f2ea';rd.style.color='#1f6b47';
+      msg='共変ゲージ域：対称性が露わ・式が最短・繰り込み可能性が見える。’t Hooft の勝ち筋。'; }
+    else { rd.style.background='#f6e9e6';rd.style.color='#a5311f';
+      msg='固定しすぎ（ユニタリゲージ的）：対称性を消したので式が暴れ、繰り込み不能に“見えて”しまう。'; }
+    rd.textContent=msg;
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
