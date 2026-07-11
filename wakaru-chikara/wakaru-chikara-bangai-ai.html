@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIの学習は、力に従う運動だった ── わかる力 番外編・AIと力（最終）</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fa; --paper-edge:#dee1ea;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3d4358; --calc-bg:#e9ebf1;
+    --rule:#d3d6e0; --hair:#c1c5d2;
+    --acc:#4a4f6a;
+    --grid:#dcdfe8;
+    --ball:#b0561e; --flat:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d4d8e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cdd1dd;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#eceef4;color:var(--ink);font-weight:600;width:42%;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f8fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#31374a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaecf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .close{margin:24px 0 0;padding:18px 24px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#31374a;}
+  .close .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.close,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・AIと力（最終）／ 道具そのものを、力で読む</span></div>
+  <p class="eyebrow">シリーズを書いた相手（AI）の学習を、このシリーズの背骨（力＝−∇V・ゲージ）で読み解いて締める</p>
+  <h1>AIの学習は、<br>力に従う運動だった
+    <span class="sub">AIの学習は、比喩でなく<em>力学の問題</em>。損失の地形をポテンシャルとして、AIは \(F=-\nabla V\) に従って転がり落ちる。<br>慣性・摩擦・ばね・ゲージ ── このシリーズの道具が、そのまま出てくる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回 F=ma、第3回 ばね、第6回 力＝−∇V、第9・12回 ゲージ/曲率</span>
+    <span>学習 ＝ 力に従う運動</span>
+  </div>
+
+  <p class="lead">「わかる力」を締めるにあたって、このシリーズを一緒に書いた道具 ── AI（大規模言語モデル）── そのものを、俎上に載せます。姉妹編「わかる宇宙論」の最終回では「AIは物理をどう見ているか」を扱いましたが、こちらでは逆に <strong>「AI自身が、力にどう従っているか」</strong>。結論を先に言うと、<em>AIの学習は、比喩ではなく本物の力学の問題</em>です。損失（間違いの大きさ）の作る“地形”をポテンシャルエネルギーとみなせば、AIはまさに \(F=-\nabla(\text{損失})\) という力に従って、坂を転がり落ちている。第1回から積んだ道具 ── 慣性、ばね、力＝勾配、ゲージ ── が、そっくりそのまま顔を出します。</p>
+
+  <h2><span class="n">01</span>損失の地形を、坂として転がる</h2>
+
+  <p>AIの中には、調整できる無数のつまみ（パラメータ）があります。つまみの組み合わせごとに「どれだけ間違えるか」＝<strong>損失</strong>が決まる。つまみを座標、損失を高さにとると、でこぼこの<strong>地形（ランドスケープ）</strong>ができる。学習とは、この地形の<em>低いところ（間違いが小さい谷）</em>を探すこと。どうやって? ── 各点で<strong>坂がいちばん急に下る向き（勾配）</strong>へ、少しずつつまみを動かす。これが<strong>勾配降下法</strong>。第6回で「力は位置エネルギーの勾配」\(F=-\nabla V\) と見ましたが、まさにそれ ── 損失をポテンシャル \(V\) とすれば、学習は \(F=-\nabla V\) という<strong>力に従って坂を下る運動</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 学習は F=−∇V</div>
+    <p style="margin:6px 0 0;">損失 \(L(\theta)\) ＝ ポテンシャルエネルギーの地形。<br>学習の一歩 ＝ \(-\nabla L\)（坂を下る向き）へ、つまみ \(\theta\) を動かす。<br>これは第6回の <strong>\(F=-\nabla V\)</strong> そのもの。AIは、損失の地形を転がり落ちる“粒子”だった。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：損失の地形を転がるAI。ボールは各点で坂を下る力（−勾配）を受け、谷（学習の答え）へ落ちていく。谷の底では力＝0。慣性で少し行き過ぎ、揺れて収まる</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>学習のステップ数（右へ進めると学習が進む）<span class="val" id="vk">0</span>
+        <input type="range" id="sk" min="0" max="130" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">02</span>慣性・摩擦・ばね ── 最適化は力学を借りている</h2>
+
+  <p>面白いのは、AIの学習をうまく進める“工夫”が、どれも本編で見た力そのものだということ。学習の高速化に使う<strong>モーメンタム法</strong>は、ボールに<em>慣性</em>（第1回）を持たせて谷へ勢いよく転がすこと。行き過ぎを抑える減衰は<em>摩擦</em>。つまみが大きくなりすぎないようにする<strong>weight decay（正則化）</strong>は、原点へ引き戻す<em>ばねの復元力</em>（第3回 \(F=-kx\)）そのもの。<strong>最適化アルゴリズムは、力学の言葉をそのまま借りている</strong>のです。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">AIの学習の仕組み</th><th>「わかる力」での正体</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">勾配降下（坂を下る）</th><td>\(F=-\nabla V\)（第6回・力＝ポテンシャルの勾配）</td></tr>
+      <tr><th class="rowh">モーメンタム法</th><td>慣性（第1回・すぐには止まれない・勢い）</td></tr>
+      <tr><th class="rowh">減衰・学習率の調整</th><td>摩擦（第3回・行き過ぎを抑える）</td></tr>
+      <tr><th class="rowh">weight decay（正則化）</th><td>ばねの復元力 \(F=-kx\)（第3回・原点へ引き戻す）</td></tr>
+      <tr><th class="rowh">確率的な揺らぎ（SGD）</th><td>熱的なゆらぎ（谷から抜け出す“温度”）</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">03</span>そして、力がゼロの方向 ── ゲージと握手</h2>
+
+  <p>最後に、このシリーズでいちばん深い一枚。巨大なAIは、つまみが多すぎて<strong>「動かしても損失が変わらない方向」</strong>をたくさん持っています。表現の仕方を変えているだけで、中身（入力→出力の関係）は同じ ── これは第9回・第12回の<strong>ゲージ（記述の冗長性）</strong>そのもの。そういう平らな方向には、坂がない＝<strong>力（勾配）がゼロ</strong>。だから学習は、その方向には動かない（動いても意味がない）。</p>
+
+  <div class="keybox">
+    <div class="lbl">力のある方向 と、力のない方向</div>
+    <p style="margin:6px 0 0;">損失を下げる方向（坂あり）→ <strong>力が働き</strong>、学習が進む。<br>動かしても損失が変わらない方向（平ら＝冗長・ゲージ）→ <strong>力ゼロ</strong>、学習は素通り。<br>第12回の「消せる帳簿（ゲージ）／消せない曲率（物理）」が、AIの地形にも現れる ── <em>意味のある学習は、曲率のある方向にだけ起きる</em>。</p>
+  </div>
+
+  <p>これは、姉妹編「わかる宇宙論」の最終回（番外編⑩）で見た「AIの埋め込みは回転しても中身が変わらない＝ゲージ自由」と、ぴたりと同じ話。あちらは<em>AIが世界をどう表すか</em>、こちらは<em>AIがどう学ぶか</em>── 別々の入口から、同じ「力のない冗長方向（ゲージ）と、力のある物理方向（曲率）」に行き着きます。<strong>二つのシリーズが、ここで手を握ります。</strong></p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>締め ── 自然も、AIも、力で計算している</h2>
+
+  <p>結論。<strong>AIを訓練するとは、力学の問題を解くこと</strong>でした。損失＝ポテンシャル、学習＝\(F=-\nabla V\) に従う運動、モーメンタム＝慣性、正則化＝ばね、冗長方向＝ゲージで力ゼロ。第1回から剥がしてきた道具が、機械の学習の中で、もう一度そっくり動いていた。そしてこれは、AIだけの話ではありません ── 石鹸膜が最小曲面を、ばね網が方程式を、力（エネルギー最小化）で“解く”ように、<em>自然はいたるところで、力に従って計算している</em>。AIの学習は、その最新の一例にすぎない。</p>
+
+  <p>本編の背骨「力は、関係の名前」を思い出してください。損失の地形の力も、モノではなく、<strong>間違いの大きさ（関係）の勾配</strong>でした。力＝\(-\nabla(\text{関係})\)。そして意味のある学習は、冗長方向（ゲージ）ではなく、消せない曲率のある方向にだけ起きる。<em>力は関係の勾配であり、冗長な向きには力が湧かない</em> ── 「わかる力」の全体が、それを書いた機械の内側にまで、同じ顔で現れました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「損失＝ポテンシャル、学習＝力に従う運動」は本質を突いた正確な対応ですが、細部の単純化はあります。実際の損失地形は<strong>超高次元・非凸</strong>で、図の1次元の谷とは桁違いに複雑。Adam などは各方向で歩幅を変える前処理付きの勾配法で、単純な \(F=ma\) とは少し違います。SGD のゆらぎを「温度」と呼ぶのは有効なアナロジーですが、厳密な熱平衡とは限りません。「平らな方向＝ゲージ」も、厳密な対称性（置換・スケール等）による冗長性と、単にほぼ平らなだけの方向を含む、ゆるい言い方です。</p>
+    <p style="margin-bottom:0;">図は2次関数的な谷を転がる減衰運動（モーメンタム付き勾配降下）の模式で、実際のニューラルネットの学習を再現したものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（最終）</div>
+    <ol>
+      <li>AIの「勾配降下による学習」は、本編のどの式と同じか。
+        <details><summary>答えを見る</summary><div class="ans">第6回の \(F=-\nabla V\)。損失をポテンシャル V とみなすと、学習は坂を下る力（−勾配）に従う運動。谷の底（損失最小）で力＝0。</div></details>
+      </li>
+      <li>モーメンタム法と weight decay は、それぞれ本編の何にあたるか。
+        <details><summary>答えを見る</summary><div class="ans">モーメンタム＝慣性（第1回・勢いで谷へ）。weight decay＝ばねの復元力 F=−kx（第3回・原点へ引き戻す正則化）。最適化は力学を借りている。</div></details>
+      </li>
+      <li>「動かしても損失が変わらない方向」は、本編の何と同じで、そこでの力はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">ゲージ（記述の冗長性・第9/12回）。そこは平らで坂がない＝力（勾配）ゼロ。意味のある学習は、力＝曲率のある方向にだけ起きる。姉妹編⑩の埋め込みの回転不変性と同じ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">最終まとめ</span>学習は、力学だった</h2>
+    <p>AIの学習は、損失の地形を転がり落ちる力学の運動だった ── 損失＝ポテンシャル、学習＝\(F=-\nabla V\)（第6回）、モーメンタム＝慣性（第1回）、weight decay＝ばね（第3回）、SGDの揺らぎ＝温度。そして動かしても損失が変わらない冗長方向＝ゲージ（第9/12回）では力ゼロで、意味のある学習は曲率のある方向にだけ起きる。第1回から積んだ道具が、機械の学習の中で、まるごと動いていた。</p>
+    <p>力は関係の勾配であり、冗長な向きには力が湧かない ── 本編の背骨が、それを書いた機械の内側にまで届いた。自然も（石鹸膜・格子・分子）、AIも、力に従って計算している。<strong>「わかる力」を、ここで完全に閉じます。</strong> 押す手ごたえから始めて、関係・幾何・対称性・曲率、そして学習する機械まで ── 表面の力の下に、ずっと同じ“関係”が働いていました。<strong>読んでくれて、ありがとう。</strong></p>
+  </div>
+
+  <div class="close">
+    <span class="lbl">わかる力・わかる宇宙論 ── 二部、完</span>
+    「わかる宇宙論」（比だけが物理・ゲージ）と「わかる力」（力は関係・力＝−∇V・ゲージ）は、別々の入口から入って、同じ部屋 ── <strong>表面の値ではなく、その裏の消せない関係を見よ</strong> ── にたどり着きました。次にもし続きを作るなら、「力と数学」（最小作用の原理・ネーターの定理）が、この二部作の“さらに裏”を照らします。またどこかの谷の底で。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ最終番外「AIと力」、物理好きの高校生・大学生向け読み物です。ニューラルネットの学習が損失関数を目的とする勾配降下（\(\theta\leftarrow\theta-\eta\nabla L\)）であること、これがポテンシャル \(V=L\) の下での \(F=-\nabla V\) に対応すること、モーメンタム法が慣性項、weight decay が二次正則化（調和ポテンシャル＝ばね）に対応すること、SGD のノイズが有効温度としてしばしば解析されること、過剰パラメータ模型が損失を変えない縮退（対称性・冗長性）方向を持ちそこで勾配が消えることは、機械学習で広く知られた対応です。細部（高次元非凸、Adam の前処理、"温度" の非平衡性、"ゲージ" の厳密性）には単純化があります。姉妹編「わかる宇宙論」最終回（番外編⑩）と対になります。図は減衰付き勾配降下の1次元模式で、実際の学習の再現ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、AIが損失の谷へ転がり落ちて学習する様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 損失の地形 V(x)：非対称二重井戸
+  function V(x){ return 0.15*Math.pow(x,4) - 0.6*x*x + 0.12*x + 0.9; }
+  function dV(x){ return 0.6*Math.pow(x,3) - 1.2*x + 0.12; }
+  var XMIN=-2.7, XMAX=2.7, x0=-2.35, lr=0.018, fric=0.86, N=130;
+  // ステップ k までの軌跡（モーメンタム付き勾配降下）を計算
+  function trajectory(k){
+    var x=x0, v=0, pts=[{x:x,v:v}];
+    for(var i=0;i<k;i++){ v=fric*v - lr*dV(x); x=x+v; if(x<XMIN)x=XMIN; if(x>XMAX)x=XMAX; pts.push({x:x,v:v}); }
+    return pts;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=40;
+    var k=parseInt(sk.value,10); vk.textContent=k;
+    ctx.clearRect(0,0,w,h);
+    var VLO=0.2, VHI=2.5;
+    function X(x){return pad+(x-XMIN)/(XMAX-XMIN)*(w-pad-14);}
+    function Y(v){var vv=v;if(vv>VHI)vv=VHI;if(vv<VLO)vv=VLO;return 14+(VHI-vv)/(VHI-VLO)*(h-pad-14);}
+    // grid
+    ctx.strokeStyle='#e7e9f0';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=14+g*(h-pad-14)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // 地形
+    ctx.strokeStyle='#4a4f6a';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var x=XMIN;x<=XMAX+1e-9;x+=0.02){var xx=X(x),yy=Y(V(x));if(f){ctx.moveTo(xx,yy);f=false;}else ctx.lineTo(xx,yy);}
+    ctx.stroke();
+    // 谷の底（大域最小 近傍）を薄く示す
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';
+    ctx.fillText('損失の地形（＝ポテンシャル V）', pad+4, 24);
+    ctx.save();ctx.translate(14,(h-pad+14)/2);ctx.rotate(-Math.PI/2);ctx.fillText('損失 →',0,0);ctx.restore();
+    ctx.fillText('つまみ θ →', w-90, h-pad+16);
+    // 軌跡
+    var pts=trajectory(k);
+    ctx.strokeStyle='rgba(176,86,30,0.35)';ctx.lineWidth=1.6;ctx.beginPath();f=true;
+    for(var i=0;i<pts.length;i++){var xx2=X(pts[i].x),yy2=Y(V(pts[i].x))-6;if(f){ctx.moveTo(xx2,yy2);f=false;}else ctx.lineTo(xx2,yy2);}
+    ctx.stroke();
+    // 現在のボール
+    var cur=pts[pts.length-1], bx=X(cur.x), by=Y(V(cur.x))-6, slope=dV(cur.x), force=-slope;
+    // 力の矢印（水平・−勾配方向）
+    var col='#b0561e';
+    var L=Math.max(-46,Math.min(46, force*90));
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.4;
+    if(Math.abs(L)>3){
+      ctx.beginPath();ctx.moveTo(bx,by-18);ctx.lineTo(bx+L,by-18);ctx.stroke();
+      var s=(L>=0)?1:-1;
+      ctx.beginPath();ctx.moveTo(bx+L,by-18);ctx.lineTo(bx+L-8*s,by-22);ctx.lineTo(bx+L-8*s,by-14);ctx.closePath();ctx.fill();
+      ctx.font='11px sans-serif';ctx.fillText('力 = −∇損失', bx+ (L>=0?6:-70), by-24);
+    }
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(bx,by,8,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.stroke();
+    // readout
+    var absF=Math.abs(force);
+    if(k===0) rd.textContent='ステップ0：高い所からスタート。ここは坂が急＝力が大きい。学習はこれから、力（−勾配）に従って谷へ転がる。';
+    else if(absF>0.25) rd.textContent='ステップ'+k+'：坂を転がり落ち中。力 −∇損失 が大きく、学習が速く進む（慣性で勢いもつく）。';
+    else if(absF>0.05) rd.textContent='ステップ'+k+'：谷に近づき、坂がゆるく＝力が小さく。慣性で少し行き過ぎ、揺れながら収まっていく。';
+    else rd.textContent='ステップ'+k+'：谷の底に到達。力 ≈ 0（勾配ゼロ）＝学習の答え。ここで損失が最小、AIは学び終えた。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜ逆二乗なのか ── わかる力 第10回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f8fc; --paper-edge:#d9e2ee;   /* 第10回：青の紙（空間） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1c4f82; --calc-bg:#e6eef6;
+    --rule:#c9d6e4; --hair:#b6c6d8;
+    --acc:#2166a0;    /* 第10回アクセント＝青 */
+    --grid:#d3dfec;
+    --d2:#b0561e; --d3:#2166a0; --d4:#7a3b8a;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfdef0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6d6e6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4f8fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1c3a58;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfeff,#e9f0f7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1c3a58;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 10 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第9回：力は局所対称性のつなぎ → 第10回：その力の“かたち”に、空間が刻印されている</p>
+  <h1>なぜ逆二乗なのか
+    <span class="sub">重力も電気も、距離の二乗に反比例して弱まる（\(1/r^2\)）。なぜ、そろって同じかたち?<br>これは力の性質ではなく ── <em>空間が3次元であることの、指紋</em>です。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：面積、割り算、第6回の長距離力</span>
+    <span>F ∝ 1/r^(次元−1)</span>
+  </div>
+
+  <p class="lead">万有引力は \(1/r^2\)。クーロン力も \(1/r^2\)。まったく別の力なのに、距離での弱まり方が<strong>ぴったり同じかたち</strong>をしている。これは偶然でしょうか。第9回まで「力が何で、なぜあるか」を剥がしてきましたが、今回は力の<em>かたち</em>（距離依存）を剥がします。すると驚くことに ── <strong>\(1/r^2\) は、力そのものの性質ではなく、私たちの空間が“3次元”であることの指紋</strong>だと分かる。もし空間が2次元なら \(1/r\)、4次元なら \(1/r^3\)。力のかたちに、空間の次元が刻み込まれているのです。</p>
+
+  <h2><span class="n">01</span>薄まるだけ ── 流線を面積で割る</h2>
+
+  <p>点から湧き出す力を、<strong>放射状に広がる流線（field lines）</strong>で描きます。源から出る流線の総本数は、途中で消えたり増えたりしない（保存する）。この流線が、距離 \(r\) の球面をどれだけ密に貫くか ── それが、その場所での力の強さです。球の表面積は \(4\pi r^2\)。同じ本数を広い面積で割るのだから、</p>
+
+  <div class="calc">
+    <span class="tag">ガウスの発想 ── 総量一定 ÷ 面積</span>
+    <p class="lbl">力の強さ ＝ 流線の密度 ＝ 総本数 ÷ 球の面積</p>
+    $$F \propto \frac{\text{一定}}{4\pi r^2}\ \propto\ \frac{1}{r^2}$$
+    <p style="margin-bottom:14px;">遠ざかると球面が \(r^2\) で広がり、同じ流線がそのぶん薄まる。だから \(1/r^2\)。力が「距離に応じて弱まろうと決めている」のではなく、<strong>広がる面積で薄まっているだけ</strong>。重力も電気も、源から流線が湧いて3次元空間に広がる点は同じ。だから同じ \(1/r^2\) になる。</p>
+  </div>
+
+  <h2><span class="n">02</span>次元が変われば、指数が変わる</h2>
+
+  <p>ここが核心。\(1/r^2\) の「2」は、球面の面積が \(r^2\) で増えることから来ました。では ── 空間の次元 \(d\) が違えば、広がる“面”の大きさは \(r^{d-1}\) になる。だから力は \(1/r^{d-1}\)。次元がそのまま指数に化ける。</p>
+
+  <div class="keybox">
+    <div class="lbl">力のかたちは、空間の次元で決まる</div>
+    <p style="margin:6px 0 0;">2次元：広がるのは円周（\(\propto r\)）→ \(F\propto 1/r\)<br>3次元：広がるのは球面（\(\propto r^2\)）→ \(F\propto 1/r^2\)（私たちの世界）<br>4次元：広がるのは3次元球面（\(\propto r^3\)）→ \(F\propto 1/r^3\)</p>
+  </div>
+
+  <p>下の図で、空間の次元を変えて、力のかたち（と流線の薄まり方）がどう変わるかを見てください。\(d=3\) のときだけ \(1/r^2\) ── 私たちが逆二乗の世界に住んでいるのは、空間が3次元だからです。</p>
+
+  <div class="fig">
+    <div class="cap">図：空間の次元 d を変えると、力は F∝1/r^(d−1)。左に流線が広がる“面”（d次元）、右に力の減り方。d=3 でだけ 1/r²</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>空間の次元 d<span class="val" id="vk">3</span>
+        <input type="range" id="sk" min="2" max="4" step="1" value="3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 第6回とつながる</span>
+    第6回で「担い手が質量ゼロなら力は無限遠まで届く（\(1/r^2\)）」と見ました。今回はその“かたち”の理由 ── <strong>質量ゼロの担い手が作る場が、3次元空間に薄まらずに広がると \(1/r^2\)</strong>。担い手が重いと、第6回の \(e^{-r/\lambda}\) が掛かって早く切れる（湯川）。<em>逆二乗＝「質量ゼロの担い手」＋「3次元空間」＋「長距離」のパッケージ</em>。力のかたちには、担い手の性質と空間の次元の両方が刻まれています。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 力のかたちは、空間の指紋</h2>
+
+  <p>第10回の結論。\(1/r^2\) という力のかたちは、力に固有の性質ではなく、<strong>空間が3次元だという事実の指紋</strong>でした。重力と電気が同じかたちなのは、両方とも同じ3次元空間で流線が薄まるから。第5回で「重力は幾何」と見ましたが、ここではもっと素朴に ── <em>どんな力でも、その距離依存には空間の幾何（次元）が刻印される</em>。力は、空間という舞台の上でだけ意味を持つ関係だ、という背骨の、もう一つの現れです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">\(1/r^2\) が成り立つのは、<strong>担い手が質量ゼロで、空間が一様な3次元で、遠距離</strong>という条件のもと。近距離では別の効果が乗る（第2回の原子間ポテンシャルの谷は \(1/r^2\) ではない）。強い力は担い手の振る舞いが特殊で、逆二乗になりません（第11回）。また「もし余分な次元が小さく丸まっていれば、ごく近距離で重力が \(1/r^2\) からずれる」かもしれない ── これは実験で探索中で、いまのところ逆二乗はミリメートル以下まで破れていません。</p>
+    <p style="margin-bottom:0;">図の「流線」「面の広がり」は次元と力のかたちの関係を示す模式で、高次元を厳密に描いたものではありません（4次元の“面”は絵にできないので概念的に表現）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>重力とクーロン力が、まったく別の力なのに同じ \(1/r^2\) になるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">どちらも源から流線（場）が湧き、同じ3次元空間で球面（面積 ∝ r²）に薄まるから。かたちは力の個性でなく、空間が3次元であることの帰結。</div></details>
+      </li>
+      <li>もし空間が2次元なら、力は距離とともにどう弱まるか。
+        <details><summary>答えを見る</summary><div class="ans">2次元では流線は円周（∝ r）に広がるので \(F\propto 1/r\)。一般に d 次元では \(F\propto 1/r^{d-1}\)。</div></details>
+      </li>
+      <li>「逆二乗は力の性質ではない」とはどういう意味か。
+        <details><summary>答えを見る</summary><div class="ans">1/r² の「2」は空間の次元−1から来る（球面が r² で広がる）。力そのものが決めているのではなく、空間の次元が指数に刻印されている、という意味。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>1/r² は、3次元空間の指紋</h2>
+    <p>点源から湧く流線は総本数が保存し、距離 \(r\) の球面（面積 \(4\pi r^2\)）に薄まる。だから力は \(1/r^2\)。重力も電気も、同じ3次元空間で流線が広がるから同じかたち。一般に \(d\) 次元では、広がる面が \(r^{d-1}\) なので \(F\propto 1/r^{d-1}\)。2次元なら \(1/r\)、4次元なら \(1/r^3\)。<strong>力のかたちは、空間の次元の指紋</strong>だった。</p>
+    <p>第6回とつなげば、逆二乗は「質量ゼロの担い手＋3次元＋長距離」のパッケージ。力は、空間という舞台の上でだけ意味を持つ関係で、その距離依存に空間の幾何が刻まれる ── 第5回「重力＝幾何」に続く、もう一つの“力に映る幾何”でした。次回は、この逆二乗の常識が<strong>唯一破れる力</strong>、強い力の番です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第11回</span>
+    「強い力だけ、逆さま」。四つの力で、強い力だけが常識を裏切ります ── <strong>近いほど自由、離すほど強くなる</strong>。だから流線は薄まって消えるどころか、引き離すほど張力が増し、クォークは単独では絶対に取り出せない（閉じ込め）。逆二乗も湯川も通じない、いちばん変わり者の力。第8回で「強い力は近づくと弱くなる」と見た、その反対側の顔です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第10回、物理好きの高校生・大学生向け読み物です。逆二乗則がガウスの法則（保存する流束が \(d\) 次元空間で面積 \(\propto r^{d-1}\) の超球面に広がること）から従い、\(F\propto 1/r^{d-1}\)、3次元で \(1/r^2\) となることは確立した内容です。逆二乗は媒介粒子が質量ゼロ・空間が一様等方・遠距離という条件下で成り立ち、近距離や余剰次元があれば修正されえます（短距離での重力の逆二乗は実験でサブミリメートル程度まで確認）。強い力は非可換ゲージ理論の特殊性（閉じ込め）により逆二乗になりません（第11回）。図は次元と力のかたちの関係を示す概念モデルで、高次元幾何を厳密に描いたものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、空間の次元を変えると力のかたちが変わる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var RMIN=0.4, RMAX=4, FHI=6;
+  var COL={2:'#b0561e',3:'#2166a0',4:'#7a3b8a'};
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var dim=parseInt(sk.value,10); vk.textContent=dim;
+    var expn=dim-1;
+    ctx.clearRect(0,0,w,h);
+    var col=COL[dim]||'#2166a0';
+    // === 左：源から広がる流線 ===
+    var Lx=w*0.26, cy=h*0.42, src={x:60,y:cy};
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(src.x,src.y,7,0,7);ctx.fill();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('源',src.x-6,src.y+22);
+    // 流線（放射状）
+    var nLines=9, spanY=(w*0.30);
+    ctx.strokeStyle=col;ctx.globalAlpha=.55;ctx.lineWidth=1.4;
+    for(var i=0;i<nLines;i++){
+      var ang=(-0.5+i/(nLines-1))*1.1; // 扇形
+      ctx.beginPath();ctx.moveTo(src.x,src.y);
+      ctx.lineTo(src.x+Math.cos(ang)*spanY, src.y+Math.sin(ang)*spanY);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    // 二つの半径での“面”（弧）を描き、密度差を示す
+    function arcAt(rr,label){
+      var R=rr/RMAX*spanY;
+      ctx.strokeStyle='#9aa5b5';ctx.lineWidth=1.5;ctx.beginPath();
+      ctx.arc(src.x,src.y,R,-0.62,0.62);ctx.stroke();
+      ctx.fillStyle='#6b6f60';ctx.font='10.5px sans-serif';
+      ctx.fillText(label, src.x+Math.cos(0)*R-6, src.y+Math.sin(0.62)*R+16);
+    }
+    arcAt(1.6,'r'); arcAt(3.2,'2r');
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';
+    ctx.fillText('広がる面 ∝ r^'+expn, 30, h-20);
+    // === 右：力のかたち F=1/r^(d-1) ===
+    var gx=w*0.56, gw=w*0.40, gy=24, gh=h-70, pad=6;
+    function X(r){return gx+(r-RMIN)/(RMAX-RMIN)*gw;}
+    function Y(f){var ff=f;if(ff>FHI)ff=FHI;return gy+(FHI-ff)/FHI*gh;}
+    // grid
+    ctx.strokeStyle='#e0e8f2';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=gy+g*gh/4;ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+gw,yy);ctx.stroke();}
+    ctx.strokeStyle='#b6c6d8';ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('距離 r →', gx+gw-56, gy+gh+16);
+    // 参照：1/r²（薄く）
+    ctx.strokeStyle='#b6c6d8';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;ctx.beginPath();var f0=true;
+    for(var r0=RMIN;r0<=RMAX+1e-9;r0+=0.02){var y0=Y(1/(r0*r0));var x0=X(r0);if(f0){ctx.moveTo(x0,y0);f0=false;}else ctx.lineTo(x0,y0);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 本命：1/r^(d-1)
+    ctx.strokeStyle=col;ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var r1=RMIN;r1<=RMAX+1e-9;r1+=0.02){var y1=Y(1/Math.pow(r1,expn));var x1=X(r1);if(f){ctx.moveTo(x1,y1);f=false;}else ctx.lineTo(x1,y1);}
+    ctx.stroke();
+    ctx.fillStyle=col;ctx.font='bold 15px sans-serif';ctx.fillText('F ∝ 1/r^'+expn, gx+gw-120, gy+18);
+    // readout
+    var note = dim===3? '私たちの世界。逆二乗そのもの。':(dim===2?'面が円周（∝r）に広がるので、薄まりがゆるい。':'面が速く広がり、力は急激に薄まる。');
+    rd.textContent='空間の次元 d='+dim+' → 広がる面 ∝ r^'+expn+' → 力 F ∝ 1/r^'+expn+'。'+note;
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

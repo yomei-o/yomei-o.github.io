@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力はどこから来るのか ── わかる力 第9回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fc; --paper-edge:#e3ddec;   /* 第9回：すみれの紙（ゲージ） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#553f8a; --calc-bg:#ece7f5;
+    --rule:#d7cfe2; --hair:#c6bcd6;
+    --acc:#6d4aa7;    /* 第9回アクセント＝すみれ */
+    --grid:#ddd5ea;
+    --naive:#a83a22; --cov:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ded0f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #d3c8e6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfbfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:9px 11px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#efe9f6;color:var(--ink);font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#faf7fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#3a2b52;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#efeaf6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#3a2b52;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 9 回（シリーズの心臓）／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第2〜8回：力が何かを剥がした → 第9回：ではなぜ、力は“存在する”のか</p>
+  <h1>力はどこから来るのか
+    <span class="sub">ここまで「力が何か」を剥がしてきた。最後に残るのは、いちばん深い問い ── なぜ力は存在するのか。<br>答え：各点で自由に選べる曖昧さ（局所対称性）を認めた瞬間、それを取りつくろうために力が生まれる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の見かけの力、位相の考え方、比較＝引き算</span>
+    <span>力＝局所的な自由の“代償”（つなぎ）</span>
+  </div>
+
+  <p class="lead">第2〜8回で、力が「何か」を剥がしてきました ── 押すは電磁気、慣性力は座標、重力は幾何、本物の力は場のやりとり、強さは走る。でも、いちばん深い問いが最後に残っています。<strong>そもそも、なぜ力は“存在する”のか?</strong> 電磁気力が、重力が、無ではなくあるのはなぜか。答えは、このシリーズ全体の結論であり、姉妹編「わかる宇宙論」ともいちばん深く握手する一点 ── <em>各点で自由に選べる曖昧さ（局所対称性）を認めると、それを取りつくろうために、力が必然的に湧いて出る</em>。力は、置いてあるモノではなく、<strong>「固定しない自由」が要求する、つなぎ</strong>だったのです。</p>
+
+  <h2><span class="n">01</span>量子には、見えない“向き”がある</h2>
+
+  <p>量子力学では、粒子は「位相」という<em>時計の針の向き</em>のような自由度を持ちます。大事なのは ── <strong>この針の絶対的な向きは、観測にかからない</strong>ということ。全部の針を同じだけ回しても、物理は何も変わらない。位相の原点は、私たちが勝手に決めていい<strong>約束（ゲージ）</strong>です。第1回からの背骨「絶対値は帳簿、比が物理」が、ここでも顔を出します。針の絶対の向きは帳簿、意味があるのは<em>針どうしの差</em>だけ。</p>
+
+  <div class="keybox">
+    <div class="lbl">大域的な自由 ── ここまでは、ただの約束</div>
+    <p style="margin:6px 0 0;">全空間の位相を<strong>いっせいに同じだけ</strong>回す（大域的ゲージ変換）── 物理は不変。<br>これは「原点をどこに置くか」の約束にすぎず、何も新しいことは起きない。問題は、次の一歩から。</p>
+  </div>
+
+  <h2><span class="n">02</span>「各点で勝手に回していい」と要求すると ── 比較が壊れる</h2>
+
+  <p>ここで大胆な要求をします。<strong>位相を、場所ごとに、てんでばらばらに選び直していい</strong>ことにする（局所ゲージ変換）。原点の約束を、各点で独立に決める自由。もっともらしい要求です ── どうせ絶対の向きは見えないのだから、どこで原点を選ぼうと勝手のはず。ところが、これをやると<em>困ったことが起きる</em>。</p>
+
+  <p>物理は「隣の点との差」で決まります（位相の差＝比）。でも各点で原点をばらばらに選ぶと、<strong>「隣との素の差」が、選び方しだいでいくらでも変わってしまう</strong>。差が約束に汚染されて、物理を語れなくなる。比較そのものが壊れるのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── つなぎ（接続）が要る</div>
+    <p style="margin:6px 0 0;">局所的な自由を保ったまま「隣との差」を意味あるものに保つには、<strong>各点の原点のズレを補正する“つなぎ”</strong>を、空間に用意するしかない。この、つなぎ＝<strong>ゲージ場 \(A\)</strong> です。<br>比較（微分）を \(\partial \to D=\partial - iA\) と書き換える。\(A\) が原点のばらつきを吸収し、\(D\) による差だけが約束によらず不変になる。</p>
+  </div>
+
+  <p>この \(A\) こそが ── <strong>電磁ポテンシャル</strong>。そのさざ波が光子で、生む力が電磁気力です。つまり「各点で位相を自由に選ばせろ」と要求した瞬間、それを成り立たせるために<em>電磁気力が、無から要求されて生まれた</em>。力は、局所的な自由の<strong>代償（つじつま合わせ）</strong>だったのです。下の図で、局所的に位相を回しても物理（つなぎ込みの差）が不変に保たれ、そのために \(A\) が働く様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：各点の位相（時計の針）を局所的に回す（ゲージ変換）。素の差（赤）は選び方で暴れる＝物理でない。つなぎ A を入れた差（緑）は不変＝物理。A こそが「力の場」</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>局所的に位相を選び直す量（ゲージ変換）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--naive);"></i>素の差 ∂θ（暴れる＝帳簿）</span>
+      <span><i class="swatch" style="background:var(--cov);"></i>つなぎ込みの差 Dθ=∂θ−A（不変＝物理）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>どの対称性かで、どの力か ── 四つ全部そう</h2>
+
+  <p>驚くのはここから。電磁気は「位相を1つ回す自由（\(U(1)\) 対称性）」から生まれました。もっと大きな“回し方の自由”を局所的に要求すると、もっと複雑な力が同じ理屈で生まれます。四つの力は、<strong>「どの局所対称性を認めるか」の違い</strong>にすぎない。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">認める局所対称性</th><th>湧いて出る力（つなぎ）</th><th>担い手</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">\(U(1)\)（位相1つ）</th><td>電磁気力</td><td>光子</td></tr>
+      <tr><th class="rowh">\(SU(2)\)</th><td>弱い力</td><td>W・Z</td></tr>
+      <tr><th class="rowh">\(SU(3)\)（色3つ）</th><td>強い力</td><td>グルーオン</td></tr>
+      <tr><th class="rowh">各点の座標・時計の自由</th><td>重力（時空の曲がり）</td><td>重力子（仮説）</td></tr>
+    </tbody>
+  </table>
+
+  <p>重力も仲間です。第4回・第5回でやった「各点で座標を選び直す自由（慣性力が消える・等価原理）」── これも一種の局所対称性で、そのつなぎが<strong>時空の曲率</strong>＝重力でした。だから慣性力（第4回）も重力（第5回）も電磁気（第9回）も、同じ「局所的な自由が要求するつなぎ」という一つの型に収まる。<em>四つの力は、四つの局所対称性の、四つのつなぎ</em>だったのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がしの終着 ── 力は「固定しない自由」の代償</h2>
+
+  <p>これが、このシリーズの終着点です。力は、物体が握るモノでも（第1回）、場という背景でも（第6回）なく ── <strong>「各点で約束を自由に選び直していい」という局所的な自由を認めたとき、つじつまを合わせるために必然的に現れる、つなぎ</strong>だった。自由を認めなければ力は要らない。認めた瞬間、力が生まれる。姉妹編「わかる宇宙論」番外編⑧の合言葉 ── <em>固定しないと、力が生まれる</em> ── が、力の起源そのものだったのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">背骨の最終形</div>
+    <p style="margin:6px 0 0;">力は名詞（モノ）ではなく、<strong>局所的な自由と、物理の不変性を両立させる“関係”＝つなぎ</strong>。<br>「絶対の向きは見えない（比だけが物理）」を各点で徹底すると、それを守るために力が湧く。第1回「力は関係の名前」は、ここで「<em>自由が要求する、必然の関係</em>」にまで到達した。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 美しいが、詩にしすぎない</span>
+    <p style="margin-top:0;">「自由を認めたら力が生まれる」は、ゲージ原理の核心を突いた言い方ですが、要約です。厳密には、局所対称性は物理的自由度というより<strong>記述の冗長性</strong>で、\(A\) はその冗長性の下で比較を可能にする<em>接続</em>。ゲージ原理は強力ですが、「<strong>なぜその対称性（U(1)・SU(2)・SU(3)）なのか</strong>」自体は説明せず、そこは実験から与えられます（姉妹編・番外編⑨の“第二列”の問い）。</p>
+    <p style="margin-bottom:0;">重力を「ゲージ理論の一種」と見る立場は有力ですが、電磁気などとは技術的に事情が異なり、<strong>量子重力は未完成</strong>です（最終回の話）。図は位相と接続の関係を1次元で単純化した概念モデルで、実際の場の理論そのものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>大域的ゲージ変換（全部いっせいに回す）と局所的ゲージ変換（各点ばらばら）で、決定的に違うことは何か。
+        <details><summary>答えを見る</summary><div class="ans">大域的はただの原点の約束で何も起きない。局所的にすると「隣との素の差」が選び方で暴れ、比較が壊れる。それを直すために、つなぎ（ゲージ場 A＝力の場）が必然的に要る。</div></details>
+      </li>
+      <li>\(\partial \to D=\partial-iA\) の \(A\) は、物理的に何か。
+        <details><summary>答えを見る</summary><div class="ans">ゲージ場（電磁気なら電磁ポテンシャル）。各点の原点のばらつきを吸収し、局所的自由の下でも差を不変に保つ“つなぎ（接続）”。そのさざ波が光子、生む力が電磁気力。</div></details>
+      </li>
+      <li>四つの力の違いは、根本的には何の違いか。
+        <details><summary>答えを見る</summary><div class="ans">認める局所対称性の違い（U(1)→電磁、SU(2)→弱、SU(3)→強、各点の座標の自由→重力）。同じ「局所的自由が要求するつなぎ」という一つの型の、対称性違い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>力は、自由が呼び出す“つなぎ”だった</h2>
+    <p>量子の位相の絶対の向きは見えない（＝約束・ゲージ）。それを<strong>各点で自由に選び直していい</strong>（局所対称性）と要求すると、隣との素の差が約束で暴れて比較が壊れる。これを直すには、各点のズレを吸収する<strong>つなぎ＝ゲージ場 \(A\)</strong> を空間に用意するしかない。\(\partial\to D=\partial-iA\)。この \(A\) こそ電磁ポテンシャルで、そのさざ波が光子、生む力が電磁気力。力は、局所的な自由を認めた代償として<em>必然的に湧いて出た</em>。</p>
+    <p>どの局所対称性を認めるかで、四つの力が同じ理屈で生まれる（U(1)・SU(2)・SU(3)、そして各点の座標の自由＝重力）。第4回の慣性力も第5回の重力も、この一つの型の仲間だった。<strong>力は名詞ではなく、「固定しない自由」と「物理の不変性」を両立させる、必然の関係（つなぎ）</strong> ── 剥がしの旅は、ここに到達しました。次回からは、こうして生まれた力の“かたち”（なぜ逆二乗か、強い力だけなぜ逆さまか）を見ます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第10回</span>
+    「なぜ逆二乗なのか」。重力も電気も \(1/r^2\) で弱まる。これは力の性質ではなく、<strong>空間が3次元であることの指紋</strong>です。光や場が広がる“面積”が \(r^2\) で増えるから、同じ量が薄まって \(1/r^2\)。もし空間が2次元なら \(1/r\)、4次元なら \(1/r^3\)。力のかたちに、空間の次元が刻印されている、という回です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第9回、物理好きの高校生・大学生向け読み物です。局所ゲージ対称性から相互作用（ゲージ場・力）が要請されるゲージ原理、共変微分 \(D=\partial-iA\)、U(1)/SU(2)/SU(3) が電磁・弱・強の各力に対応すること、重力を局所対称性（一般座標変換・局所ローレンツ）に基づく理論と見る見方は、確立した内容です。ゲージ対称性は物理的自由度ではなく記述の冗長性であり、ゲージ場は接続として理解されます。ゲージ原理は対称性の種類そのものを説明せず（実験入力）、重力の量子論（量子重力）は未完成です。図は位相場と接続の関係を1次元で単純化した概念モデルで、場の量子論の厳密な記述ではありません。姉妹編「わかる宇宙論」第8回・番外編⑧と同じ主題です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、局所的に位相を回しても「つなぎ込みの差」が不変に保たれる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var N=8;                       // 点の数
+  var g0=0.45;                   // 物理的な隣接位相差（不変であるべき本物）
+  // gauge関数 χ_i（局所的な選び直しの形）。amp で強さ
+  function chi(i,amp){ return amp*Math.sin(i/(N-1)*Math.PI*1.3); }
+  var i0=3;                      // 差を表示する代表リンク（i0 と i0+1 の間）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var amp=parseInt(sk.value,10)/100*2.2; vk.textContent=amp.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // 位相 θ_i = 物理(=i*g0) + ゲージ(χ)
+    function theta(i){ return i*g0 + chi(i,amp); }
+    // A_i = A0 + (χ_{i+1}-χ_i)、A0=0（初期は物理差のみ D=∂-A=g0）
+    function A(i){ return (chi(i+1,amp)-chi(i,amp)); }
+    // 時計の列
+    var y0=70, x0=60, dx=(w-120)/(N-1), R=20;
+    for(var i=0;i<N;i++){
+      var cx=x0+i*dx, th=theta(i);
+      ctx.strokeStyle='#c6bcd6';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(cx,y0,R,0,7);ctx.stroke();
+      ctx.strokeStyle='#6d4aa7';ctx.lineWidth=2.6;ctx.beginPath();ctx.moveTo(cx,y0);
+      ctx.lineTo(cx+Math.cos(-th)*R, y0+Math.sin(-th)*R);ctx.stroke();
+      ctx.fillStyle='#6d4aa7';ctx.beginPath();ctx.arc(cx,y0,2.6,0,7);ctx.fill();
+      // 代表リンクを強調
+      if(i===i0||i===i0+1){ ctx.strokeStyle='#8a6db8';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.beginPath();ctx.arc(cx,y0,R+4,0,7);ctx.stroke();ctx.setLineDash([]); }
+    }
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('各点の位相（時計の針）── 局所的に回している', w/2, y0+R+22);ctx.textAlign='left';
+    // 代表リンクの二つの差をバーで
+    var naive = theta(i0+1)-theta(i0);       // 素の差（暴れる）
+    var cov   = (theta(i0+1)-theta(i0)) - A(i0); // つなぎ込み（=g0、不変）
+    var by=y0+R+58, bx=90, bw=w-180, mid=bx+bw/2;
+    ctx.strokeStyle='#d7cfe2';ctx.lineWidth=1;
+    // ゼロ基準
+    ctx.beginPath();ctx.moveTo(mid,by-6);ctx.lineTo(mid,by+92);ctx.stroke();
+    function bar(y,val,col,label){
+      var scale=70; var len=val*scale;
+      ctx.fillStyle=col;ctx.fillRect(mid, y, len, 22);
+      ctx.strokeStyle='rgba(0,0,0,.15)';ctx.strokeRect(mid, y, len, 22);
+      ctx.fillStyle='#25272e';ctx.font='12px sans-serif';
+      ctx.fillText(label+' = '+val.toFixed(2), bx, y+16);
+    }
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('代表リンク（点'+(i0+1)+'と点'+(i0+2)+'の差）', bx, by-10);
+    bar(by+6, naive, '#a83a22', '素の差 ∂θ');
+    bar(by+40, cov, '#2f7d55', 'つなぎ込み Dθ=∂θ−A');
+    // readout
+    rd.textContent='ゲージ量 '+amp.toFixed(2)+'：素の差（赤）は選び方で暴れる＝帳簿で物理でない。つなぎ A を引いた差（緑）は '+cov.toFixed(2)+' で不変＝物理。この A＝力の場（電磁ポテンシャル）が、局所的な自由を成り立たせるために必要。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

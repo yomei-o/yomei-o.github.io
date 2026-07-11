@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>解けない力 ── わかる力 番外編・力と計算②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f1; --paper-edge:#e9e1cd;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#6f5410; --calc-bg:#f2ebda;
+    --rule:#ddd3ba; --hair:#cdc1a2;
+    --acc:#8a6a1e;
+    --grid:#e3d8bf;
+    --pA:#2166a0; --pB:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdfb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddceac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf5;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7ec;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3810;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f3ecda);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3810;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と計算 ②（三部作その2）</span></div>
+  <p class="eyebrow">計算①：力で解ける → 計算②：力の法則は単純なのに、解けない</p>
+  <h1>解けない力 ── <br>三体問題とカオス
+    <span class="sub">万有引力の法則は、たった一行。二体なら楕円軌道と解ける。<br>でも三体になると、閉じた式では<em>解けない</em>。わずかな初期の差が爆発し、遠い未来は誰にも予測できない。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第7回の万有引力、計算①、割り算</span>
+    <span>単純な法則 → 計算不能な複雑さ</span>
+  </div>
+
+  <p class="lead">計算①では「自然は力で問題を解く」と見ました。今回はその<em>裏返し</em> ── <strong>力の法則がどんなに単純でも、解こうとすると解けないことがある</strong>。万有引力の法則は \(F=Gm_1m_2/r^2\)、たった一行。二つの天体なら、ケプラーの楕円軌道としてきれいに解けます。ところが<strong>三つ</strong>になると、もう閉じた式（公式）では書けない。しかも「三体問題」はただ難しいだけでなく、<em>初期条件のごくわずかな差が、時間とともに爆発的に開く</em>（カオス）。だから遠い未来は、原理的に予測できず、<strong>一歩ずつ計算するしかない</strong>。単純な力から、計算不能な複雑さが生まれるのです。</p>
+
+  <h2><span class="n">01</span>二体は解ける、三体は解けない</h2>
+
+  <p>二体問題 ── 太陽と惑星だけ ── は、ニュートンが解きました。答えは楕円（ケプラーの法則）。式一本で、100万年後の位置も計算できる。ところが<strong>三体</strong>（太陽・地球・月、あるいは三つの星）になると、状況が一変します。19世紀末、ポアンカレが示したのは ── <em>三体問題には、二体のような一般公式（初等関数で書ける解）が存在しない</em>。力の法則は同じ一行なのに、三つ集まっただけで、閉じた答えが消えてしまう。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 法則の単純さ ≠ 解の単純さ</div>
+    <p style="margin:6px 0 0;">力の法則：\(F=Gm_1m_2/r^2\)（一行、完全に決定論的）。<br>二体：解ける（楕円・公式あり）。<strong>三体：一般には閉じた式で解けない</strong>（ポアンカレ）。<br>法則がどれだけ単純でも、その帰結（運動）は、途方もなく複雑になりうる。</p>
+  </div>
+
+  <h2><span class="n">02</span>カオス ── わずかな差が、爆発する</h2>
+
+  <p>「解けない」の本当の恐ろしさは<strong>カオス</strong>です。カオスとは、<em>初期条件のごくわずかな違いが、時間とともに指数関数的に開いていく</em>こと（バタフライ効果）。最初はそっくりだった二つの運動が、しばらくすると<strong>まったく別物</strong>になる。決定論的（法則は完全に決まっている）のに、初期条件を無限の精度で知ることは不可能なので、<em>遠い未来は原理的に予測できない</em>。下の図は、ほとんど同じ初期角度で放した二つの振り子（二重振り子＝重力による、身近なカオス）。最初は重なって動くのに、やがて完全に散らばります。</p>
+
+  <div class="fig">
+    <div class="cap">図：初期角度がほんの 0.001 だけ違う二つの二重振り子（重力で動く）。最初はぴたり重なるが、時間がたつと全く別の動きに ── カオス（初期条件への鋭敏性）</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>時間 t（右へ進めると振り子が進む）<span class="val" id="vk">0.0</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--pA);"></i>振り子A</span>
+      <span><i class="swatch" style="background:var(--pB);"></i>振り子B（初期角 +0.001）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>だから、計算に頼る</h2>
+
+  <p>公式がなく、しかもカオスなら、どうするか。答えは ── <strong>一歩ずつ数値計算する</strong>。力から加速度を出し（\(F=ma\)、第1回）、少し時間を進め、また力を計算し…をコンピュータで膨大に繰り返す。惑星探査機の軌道、天気予報、銀河の衝突 ── どれもこの数値計算です。ただしカオスがある以上、<em>予測できる期間には限界（リアプノフ時間）がある</em>。天気が数日先までしか当たらないのは、まさにこれ。計算①「力で解ける」と対をなす、<strong>計算②「力は単純でも、計算しないと分からず、しかも予測に地平線がある」</strong>。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 決定論なのに、予測不能</span>
+    ここが哲学的にも面白いところ。三体もカオスも、法則は<strong>完全に決定論的</strong>（未来は現在から一意に決まる）。にもかかわらず<em>予測は不能</em>。矛盾ではありません ── 「未来が原理上決まっている」ことと、「私たちがそれを計算・予言できる」ことは別。初期条件を<strong>無限の精度</strong>で知り、無限に速く計算できれば予測できますが、現実には不可能。<strong>決定論的カオス</strong>という、20世紀物理のもう一つの謙虚な発見です。姉妹編「わかる宇宙論」の「単純な法則から複雑な宇宙」とも響き合います。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 単純な力の、計算不能な帰結</h2>
+
+  <p>力と計算②の結論。<strong>力の法則の単純さと、その帰結の複雑さは、まったく別のこと</strong>。一行の万有引力から、三体の解けなさと、カオスの予測不能性が生まれる。だから私たちは、力を知っていてもなお、未来を知るには<em>計算するしかなく、しかもその計算にも予測の地平線がある</em>。計算①（力で解ける）と計算②（力でも解けない・予測に限界）── 力と計算は、両方の顔を持っていました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「三体問題は解けない」は正確には「<strong>一般解を初等関数（や有限の公式）で書けない</strong>」の意味です。特別な初期条件での厳密解（ラグランジュ点・8の字軌道など）は存在し、サンドマンは1912年に<em>収束する級数解</em>を与えました（ただし収束が絶望的に遅く実用不能）。カオスは乱数ではなく<strong>決定論的</strong>で、初期条件が同じなら結果も必ず同じ ── 違うのは「わずかな差が急拡大する」点です。予測可能な期間（リアプノフ時間）は系によります。</p>
+    <p style="margin-bottom:0;">図は二重振り子（重力による代表的カオス系）を数値積分した模式で、三体問題そのものではありません（身近で見やすいカオスの例として用いています）。数値誤差のため、長時間では表示も真の解からずれます ── それ自体がカオスの難しさの現れです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>力の法則は一行なのに、三体問題が「解けない」とはどういう意味か。
+        <details><summary>答えを見る</summary><div class="ans">二体のような一般解を初等関数（有限の公式）で書けない、という意味（ポアンカレ）。特別解や収束級数はあるが実用的な閉じた式はない。法則の単純さと解の単純さは別。</div></details>
+      </li>
+      <li>カオス（初期条件への鋭敏性）とは何か。なぜ予測不能を生むか。
+        <details><summary>答えを見る</summary><div class="ans">初期条件のごくわずかな差が時間とともに指数的に開くこと（バタフライ効果）。初期条件を無限精度で知れない以上、遠い未来は原理的に予測できない。ただし法則は決定論的。</div></details>
+      </li>
+      <li>「決定論なのに予測不能」は矛盾か。
+        <details><summary>答えを見る</summary><div class="ans">矛盾ではない。「未来が現在から一意に決まる（決定論）」ことと「人がそれを計算・予言できる」ことは別。無限精度の初期条件と無限の計算力があれば予測できるが、現実には不可能＝決定論的カオス。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>単純な力から、計算不能な複雑さ</h2>
+    <p>万有引力は一行。二体は楕円と解けるが、三体は一般に閉じた式で解けない（ポアンカレ）。さらにカオス ── 初期条件のわずかな差が指数的に開くため、決定論的なのに遠い未来は予測不能。だから力を知っていても、未来を知るには一歩ずつ数値計算するしかなく、その予測にも地平線（リアプノフ時間）がある。天気が数日先までなのも、これ。</p>
+    <p>計算①「自然は力で解く」と、計算②「力でも解けない・予測に限界」。<strong>力の法則の単純さと、帰結の複雑さは別物</strong>だった。次回（計算③）は、力と計算クラスタの締め ── <em>証明できない力を、計算で確かめる</em>。第11回の「閉じ込め」（数学的証明は未解決＝ミレニアム問題）を、時空を格子に刻んでスパコンで計算する「格子QCD」の話。姉妹編「わかる宇宙計算機」とも握手します。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力と計算③（クラスタ締め）</span>
+    「格子の上の力 ── 格子QCD」。第11回の閉じ込め（クォークが取り出せない）は、数学的には未証明（ミレニアム問題）。でも時空を格子に刻み、スーパーコンピュータで強い力を計算すると、閉じ込めがちゃんと再現される。<strong>証明できない力を、計算で確かめる</strong> ── 力と計算の到達点で、クラスタを閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と計算」②、物理好きの高校生・大学生向け読み物です。二体問題がケプラー軌道として可積分・閉形式で解ける一方、三体問題は一般に初等関数で表せる一般解を持たないこと（ポアンカレの非可積分性、Bruns/Poincaré）、Sundman（1912）の収束級数解が実用に耐えないこと、特殊解（ラグランジュ点・8の字解など）は存在すること、決定論的カオス（初期条件鋭敏性・リアプノフ指数・予測地平線）は確立した内容です。図は二重振り子（重力下の代表的カオス系）をRK4で数値積分した模式で、三体問題そのものではなく、長時間では数値誤差の影響を受けます。カオスは決定論的であり乱数とは異なります。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、そっくりな二つの振り子がやがて全く違う動きに散る様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 二重振り子（m1=m2=1, L1=L2=1, g=9.8）RK4
+  var g=9.8;
+  function deriv(s){
+    var t1=s[0],t2=s[1],w1=s[2],w2=s[3];
+    var d=t1-t2, cd=Math.cos(d), sd=Math.sin(d);
+    var den=(3 - Math.cos(2*t1-2*t2)); // 2m1+m2 - m2cos(2t1-2t2), m=1
+    var a1=(-g*3*Math.sin(t1) - g*Math.sin(t1-2*t2) - 2*sd*(w2*w2 + w1*w1*cd))/den;
+    var a2=(2*sd*(w1*w1*2 + g*2*Math.cos(t1) + w2*w2*cd))/den;
+    return [w1,w2,a1,a2];
+  }
+  function step(s,dt){
+    function add(a,b,h){return [a[0]+b[0]*h,a[1]+b[1]*h,a[2]+b[2]*h,a[3]+b[3]*h];}
+    var k1=deriv(s), k2=deriv(add(s,k1,dt/2)), k3=deriv(add(s,k2,dt/2)), k4=deriv(add(s,k3,dt));
+    return [ s[0]+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]),
+             s[1]+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]),
+             s[2]+dt/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]),
+             s[3]+dt/6*(k1[3]+2*k2[3]+2*k3[3]+k4[3]) ];
+  }
+  // 事前計算：2本の軌跡
+  var FRAMES=100, SUB=14, dt=0.012;
+  var A=[], B=[];
+  (function precompute(){
+    var sa=[2.3, 2.3, 0, 0];
+    var sb=[2.3+0.001, 2.3, 0, 0];
+    A.push(sa.slice()); B.push(sb.slice());
+    for(var f=0;f<FRAMES;f++){
+      for(var i=0;i<SUB;i++){ sa=step(sa,dt); sb=step(sb,dt); }
+      A.push(sa.slice()); B.push(sb.slice());
+    }
+  })();
+  function bob(s,ox,oy,L){ // 返り値：関節と先端の座標
+    var x1=ox+Math.sin(s[0])*L, y1=oy+Math.cos(s[0])*L;
+    var x2=x1+Math.sin(s[1])*L, y2=y1+Math.cos(s[1])*L;
+    return {x1:x1,y1:y1,x2:x2,y2:y2};
+  }
+  function drawPend(ctx,s,ox,oy,L,col,alpha){
+    var p=bob(s,ox,oy,L);
+    ctx.globalAlpha=alpha; ctx.strokeStyle=col; ctx.lineWidth=2.4; ctx.fillStyle=col;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(p.x1,p.y1);ctx.lineTo(p.x2,p.y2);ctx.stroke();
+    ctx.beginPath();ctx.arc(p.x1,p.y1,4,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(p.x2,p.y2,6,0,7);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var f=parseInt(sk.value,10); vk.textContent=(f*SUB*dt).toFixed(1);
+    ctx.clearRect(0,0,w,h);
+    var ox=w/2, oy=h*0.36, L=Math.min(w*0.17,h*0.24);
+    // 軸点
+    ctx.fillStyle='#6b6f60';ctx.beginPath();ctx.arc(ox,oy,4,0,7);ctx.fill();
+    // 先端Bの軌跡（薄く）：直近の軌跡
+    ctx.strokeStyle='rgba(168,58,34,0.25)';ctx.lineWidth=1.2;ctx.beginPath();var st=true;
+    for(var i=0;i<=f;i++){var p=bob(B[i],ox,oy,L);if(st){ctx.moveTo(p.x2,p.y2);st=false;}else ctx.lineTo(p.x2,p.y2);}
+    ctx.stroke();
+    ctx.strokeStyle='rgba(33,102,160,0.22)';ctx.lineWidth=1.2;ctx.beginPath();st=true;
+    for(var j=0;j<=f;j++){var q=bob(A[j],ox,oy,L);if(st){ctx.moveTo(q.x2,q.y2);st=false;}else ctx.lineTo(q.x2,q.y2);}
+    ctx.stroke();
+    // 現在の振り子
+    drawPend(ctx,A[f],ox,oy,L,'#2166a0',0.95);
+    drawPend(ctx,B[f],ox,oy,L,'#a83a22',0.95);
+    // 分離距離
+    var pa=bob(A[f],ox,oy,L), pb=bob(B[f],ox,oy,L);
+    var sep=Math.hypot(pa.x2-pb.x2,pa.y2-pb.y2)/L;
+    // readout
+    var tt=(f*SUB*dt).toFixed(1);
+    if(f<18) rd.textContent='t='+tt+'：二つの振り子（初期角の差わずか0.001）は、ぴたり重なって動く。まだ見分けがつかない。';
+    else if(sep<0.6) rd.textContent='t='+tt+'：少しずつズレ始めた（差が育っている）。決定論的だが、差は指数的に拡大中。';
+    else rd.textContent='t='+tt+'：もう完全に別の動き。同じ法則・ほぼ同じ初期条件なのに、未来はまるで違う ── これがカオス（予測不能）。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

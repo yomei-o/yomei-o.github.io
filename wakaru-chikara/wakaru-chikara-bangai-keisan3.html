@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>格子の上の力 ── わかる力 番外編・力と計算③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f1; --paper-edge:#e9e1cd;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#6f5410; --calc-bg:#f2ebda;
+    --rule:#ddd3ba; --hair:#cdc1a2;
+    --acc:#8a6a1e;
+    --grid:#e3d8bf;
+    --conf:#a83a22; --coul:#2166a0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdfb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddceac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf5;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7ec;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3810;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f3ecda);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .close{margin:24px 0 0;padding:18px 24px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3810;}
+  .close .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.close,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と計算 ③（クラスタ締め／全番外の最後）</span></div>
+  <p class="eyebrow">計算①力で解く／②力でも解けない → ③証明できない力を、計算で確かめる</p>
+  <h1>格子の上の力 ── <br>格子QCD
+    <span class="sub">第11回の閉じ込め（クォークが取り出せない）は、数学的には未証明（ミレニアム問題）。<br>でも時空を格子に刻んでスパコンで計算すると、閉じ込めがちゃんと再現される。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第11回 閉じ込め、数学③ ゲージ場、計算①②</span>
+    <span>証明できない力を、計算で確かめる</span>
+  </div>
+
+  <p class="lead">「力と計算」クラスタの締め、そして<strong>わかる力・全番外の最後</strong>です。第11回で、強い力の<em>閉じ込め</em>（クォークは単独で取り出せない）を見ました。そしてその<strong>数学的な証明は、いまも存在しない</strong>── ヤン=ミルズの質量ギャップとして、100万ドルのミレニアム懸賞問題に残っています。では、なぜ物理学者は閉じ込めを信じているのか。答えは<strong>計算</strong>。時空そのものを格子に刻み、スーパーコンピュータで強い力を丸ごと計算すると ── 閉じ込めが、ハドロンの質量が、ちゃんと出てくる。<em>証明はできないが、計算が語る</em>。力と計算の、最後の顔です。</p>
+
+  <h2><span class="n">01</span>強い力は、紙と鉛筆では計算できない</h2>
+
+  <p>電磁気は結合 \(\alpha\approx1/137\) が小さいので、近似（摂動論）で紙と鉛筆でも高精度に計算できました（第6回の \(g-2\) など）。ところが強い力は、低エネルギーで結合 \(\alpha_s\sim1\) と<strong>大きすぎて</strong>、近似が使えない（第8回の走り）。しかも閉じ込め（第11回）は、まさにこの“強く効く”領域の現象。<em>近似も効かず、証明もない</em> ── 強い力は、手計算では歯が立たないのです。</p>
+
+  <h2><span class="n">02</span>時空を格子に刻む ── 格子QCD</h2>
+
+  <p>そこで発想を変えます。連続の時空を、<strong>細かい格子（グリッド）</strong>に置き換える。クォークは格子の点に、強い力を伝えるグルーオン場（数学③のゲージ場）は点と点をつなぐ<strong>リンク</strong>に住まわせる。すると、無限次元だった場の理論が<em>有限個の変数</em>になり、コンピュータで扱える。あとは、すべての場の配置についての巨大な足し合わせ（経路積分）を、モンテカルロ法（賢いサイコロ）でスパコンに計算させる ── これが<strong>格子QCD</strong>です。数学③で「力＝格子リンク上のゲージ場の曲率」と見た、あの構造を、そのまま数値に載せる。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 連続を格子に、積分をサイコロに</div>
+    <p style="margin:6px 0 0;">連続の時空 → <strong>格子</strong>（有限の点とリンク）。ゲージ場はリンクに乗る（数学③）。<br>無限の経路積分 → <strong>モンテカルロ</strong>で近似（賢いサイコロを大量に振る）。<br>近似（摂動）が効かない強い力を、<em>第一原理から丸ごと数値計算</em>できる。</p>
+  </div>
+
+  <h2><span class="n">03</span>結果 ── 閉じ込めも、質量も、出てくる</h2>
+
+  <p>格子QCDで、クォークと反クォークを距離 \(r\) 離したときのエネルギー（ポテンシャル）\(V(r)\) を計算すると ── <strong>遠ざけるほど直線的に増え続ける</strong>（\(V(r)\approx -a/r+\sigma r\)、\(\sigma\) は弦の張力）。エネルギーが無限に増えるから、クォークは引き離せない ＝ <strong>閉じ込めが再現された</strong>（第11回の“ちぎれるひも”）。さらに、陽子や中性子の<strong>質量</strong>も、クォークの性質だけを入力して第一原理から計算でき、<em>実測と数%で一致</em>する。下の図で、格子上で計算した \(V(r)\) が、電磁気的な \(-a/r\)（頭打ち）を振り切って直線的に登っていく様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：格子上でクォーク対を離す。計算されたポテンシャル V(r)（赤の点）は直線的に登り続ける＝閉じ込め。もし電磁気型（青 −a/r）なら頭打ちのはず。左は格子とフラックスチューブ</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>クォーク間の距離 r（格子上で離す）<span class="val" id="vk">1.0</span>
+        <input type="range" id="sk" min="0.5" max="6" step="0.05" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--conf);"></i>格子QCD（−a/r＋σr・閉じ込め）</span>
+      <span><i class="swatch" style="background:var(--coul);"></i>電磁気型（−a/r・頭打ち）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 姉妹編「わかる宇宙計算機」と握手</span>
+    格子QCDは、物理を<em>計算機で丸ごと再現する</em>という営みの代表例です。連続の自然を有限の格子に落とし、サイコロ（モンテカルロ）で積分する ── これは第5回（レコードとCD／離散と連続）や姉妹シリーズ「わかる宇宙計算機」の主題そのもの。<strong>自然を計算機に写し取ると、証明できない力の姿まで見えてくる</strong>。力と計算①（自然が力で計算する）②（力でも解けない）③（計算で力を確かめる）── 計算は、力を解く道具であり、解けなさの証人であり、そして証明の代わりでもありました。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 計算が、証明の手前を照らす</h2>
+
+  <p>力と計算③の結論。<strong>数学的に証明できない力（閉じ込め）でも、時空を格子に刻んで計算すれば、その姿を確かめられる</strong>。格子QCDは、閉じ込めを再現し、ハドロン質量を第一原理から出し、実測と一致させた。証明（ミレニアム問題）は未解決のまま ── でも計算は、証明の手前で、力が確かにそう振る舞うことを、圧倒的な精度で語っている。<em>分かる（証明）と、確かめる（計算）は違う。そして計算は、分からないことの縁まで、私たちを連れて行ってくれる</em>。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">格子QCDは強力な<strong>数値的証拠</strong>ですが、<em>数学的証明ではありません</em>。閉じ込め（ヤン=ミルズの質量ギャップの存在）は依然ミレニアム懸賞問題として未解決。また格子計算には固有の難しさがあります ── 時間を虚数にする（ユークリッド化）、格子間隔をゼロに近づける連続極限、有限体積の補正、そして密度を入れると計算が破綻する「符号問題」など。それでも、閉じ込めやハドロン質量の再現は、実験と合う確立した成果です。</p>
+    <p style="margin-bottom:0;">図の \(V(r)=-a/r+\sigma r\)（コーネル・ポテンシャル）と“計算点”は、格子QCDが与える定性的な振る舞いを示す模式で、実際の格子データの数値ではありません。左の格子・フラックスチューブも概念図です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>強い力（閉じ込め）を、なぜ紙と鉛筆（摂動論）で計算できないのか。
+        <details><summary>答えを見る</summary><div class="ans">低エネルギーで結合 α_s が大きすぎて近似（摂動論）が効かないから。閉じ込めはこの強結合領域の現象で、近似も証明もない。だから格子上で丸ごと数値計算する。</div></details>
+      </li>
+      <li>格子QCDで計算した V(r) が閉じ込めを示すとは、どういう形か。
+        <details><summary>答えを見る</summary><div class="ans">距離 r とともに直線的に増え続ける（V≈−a/r+σr、σは弦の張力）。エネルギーが無限に増えるので引き離せない＝閉じ込め。電磁気型 −a/r なら頭打ちになるはず。</div></details>
+      </li>
+      <li>格子QCDの成果は「証明」か。
+        <details><summary>答えを見る</summary><div class="ans">いいえ、強力な数値的証拠であって数学的証明ではない。閉じ込め（質量ギャップ）はミレニアム懸賞問題として未解決。だが実験と一致する確立した成果で、証明の手前を照らしている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>証明できない力を、計算が確かめる</h2>
+    <p>強い力の閉じ込め（第11回）は、結合が大きく近似が効かず、数学的証明もない（ミレニアム問題）。そこで時空を格子に刻み、ゲージ場をリンクに乗せ（数学③）、モンテカルロで巨大な積分をスパコンに計算させる＝格子QCD。結果、クォーク間ポテンシャルは直線的に登り（閉じ込め再現）、ハドロン質量も第一原理から実測と一致。<strong>証明はできないが、計算が力の姿を語る</strong>。</p>
+    <p>力と計算①（自然は力で解く）②（力でも解けない・予測に地平線）③（計算が証明の手前を照らす）── 計算は、力を解く道具であり、解けなさの証人であり、証明の代役でもあった。<em>分かる（証明）と確かめる（計算）は違い、計算は分からないことの縁まで連れて行く</em>。これで「力と計算」を、そして<strong>わかる力の全番外を、閉じます。</strong></p>
+  </div>
+
+  <div class="close">
+    <span class="lbl">わかる力 ── 本編13＋番外13、完</span>
+    F=ma の円環から始まり、力を電磁気・幾何・やりとり・ゲージ・曲率まで剥がし、波・速さ・AI・数学・計算の脇道まで歩き切りました。剥がした先に残ったのは、モノとしての力ではなく ── <strong>関係、幾何、対称性、そして作用を停留させる自然</strong>。姉妹編「わかる宇宙論」と同じ部屋（表面の値でなく、その裏の消せない関係を見よ）に、力の側からも、確かにたどり着きました。<strong>長い旅に付き合ってくれて、ありがとう。</strong> またどこかの、格子の目の上で。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と計算」③（全番外の最終回）、物理好きの高校生・大学生向け読み物です。低エネルギーQCDが強結合で摂動論が使えないこと、格子ゲージ理論（Wilson, 1974）が時空を格子化しゲージ場をリンク変数として非摂動的に定式化すること、ユークリッド化とモンテカルロ法による経路積分の数値評価、クォーク間ポテンシャルの線形上昇（弦張力 σ、コーネル型 \(V=-a/r+\sigma r\)）による閉じ込めの再現、ハドロン質量の第一原理計算が実験と数%で一致することは、確立した内容です。ただしこれは数値的証拠であり、ヤン=ミルズの質量ギャップ（閉じ込めの厳密な証明）はミレニアム懸賞問題として未解決です。格子計算には連続極限・有限体積・符号問題などの課題があります。図はコーネル型ポテンシャルの定性的振る舞いを示す模式で、実データの数値ではありません。姉妹編「わかる宇宙論」「わかる宇宙計算機」と主題を共有します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、格子上のポテンシャルが直線的に登り続ける（閉じ込め）様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var a=0.35, sigma=0.72, RMIN=0.5, RMAX=6, VLO=-1.2, VHI=4.2;
+  function Vfull(r){ return -a/r + sigma*r; }
+  function Vcoul(r){ return -a/r; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var r=parseFloat(sk.value); vk.textContent=r.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // === 左：格子＋フラックスチューブ ===
+    var lx=20, ly=24, cols=6, rows=5, cell=Math.min((w*0.34-20)/(cols-1),(h-90)/(rows-1));
+    ctx.fillStyle='#cdc1a2';
+    for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){
+      ctx.beginPath();ctx.arc(lx+i*cell,ly+j*cell,1.8,0,7);ctx.fill();
+    }
+    // 格子リンク（薄く）
+    ctx.strokeStyle='rgba(205,193,162,0.5)';ctx.lineWidth=1;
+    for(var i2=0;i2<cols;i2++)for(var j2=0;j2<rows;j2++){
+      if(i2<cols-1){ctx.beginPath();ctx.moveTo(lx+i2*cell,ly+j2*cell);ctx.lineTo(lx+(i2+1)*cell,ly+j2*cell);ctx.stroke();}
+      if(j2<rows-1){ctx.beginPath();ctx.moveTo(lx+i2*cell,ly+j2*cell);ctx.lineTo(lx+i2*cell,ly+(j2+1)*cell);ctx.stroke();}
+    }
+    // クォーク対＋フラックスチューブ（中段の行）
+    var midj=2, qy=ly+midj*cell;
+    var span=(r-RMIN)/(RMAX-RMIN); // 0..1
+    var qi0=0, qi1=Math.round(span*(cols-1));
+    var qx0=lx+qi0*cell, qx1=lx+qi1*cell;
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=6;ctx.globalAlpha=.5;
+    ctx.beginPath();ctx.moveTo(qx0,qy);ctx.lineTo(qx1,qy);ctx.stroke();ctx.globalAlpha=1;
+    ctx.fillStyle='#a83a22';ctx.beginPath();ctx.arc(qx0,qy,7,0,7);ctx.fill();
+    ctx.fillStyle='#7a2318';ctx.beginPath();ctx.arc(qx1,qy,7,0,7);ctx.fill();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('格子＋フラックスチューブ', lx, ly+rows*cell+2);
+    // === 右：V(r) グラフ ===
+    var gx=w*0.46, gw=w-gx-20, gy=20, gh=h-70;
+    function X(rr){return gx+(rr-RMIN)/(RMAX-RMIN)*gw;}
+    function Y(v){var vv=v;if(vv>VHI)vv=VHI;if(vv<VLO)vv=VLO;return gy+(VHI-vv)/(VHI-VLO)*gh;}
+    // grid + V=0
+    ctx.strokeStyle='#eee3ce';ctx.lineWidth=1;
+    for(var g2=0;g2<=4;g2++){var yy=gy+g2*gh/4;ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+gw,yy);ctx.stroke();}
+    ctx.strokeStyle='#ddd0b0';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(gx,Y(0));ctx.lineTo(gx+gw,Y(0));ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle='#cdc1a2';ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('距離 r →', gx+gw-52, gy+gh+16);
+    ctx.save();ctx.translate(gx-8,(gy+gy+gh)/2);ctx.rotate(-Math.PI/2);ctx.fillText('ポテンシャル V(r)',0,0);ctx.restore();
+    // Coulomb 参照（青・頭打ち）
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=1.8;ctx.setLineDash([6,4]);ctx.beginPath();var f=true;
+    for(var r1=RMIN;r1<=RMAX+1e-9;r1+=0.03){var y1=Y(Vcoul(r1)+1.0);var x1=X(r1);if(f){ctx.moveTo(x1,y1);f=false;}else ctx.lineTo(x1,y1);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 格子QCD（赤・線＋計算点）
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.6;ctx.beginPath();f=true;
+    for(var r2=RMIN;r2<=RMAX+1e-9;r2+=0.03){var y2=Y(Vfull(r2));var x2=X(r2);if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // 計算点（データ風）
+    ctx.fillStyle='#a83a22';
+    for(var rp=0.8;rp<=RMAX;rp+=0.6){var xp=X(rp),yp=Y(Vfull(rp));ctx.beginPath();ctx.arc(xp,yp,3.4,0,7);ctx.fill();}
+    // ラベル
+    ctx.fillStyle='#a83a22';ctx.font='12px sans-serif';ctx.fillText('直線的に登る＝閉じ込め', X(3.4), Y(Vfull(3.4))-10);
+    ctx.fillStyle='#2166a0';ctx.fillText('電磁気型なら頭打ち', X(2.6), Y(Vcoul(2.6)+1.0)+16);
+    // marker
+    var mx=X(r), my=Y(Vfull(r));
+    ctx.strokeStyle='#8a6a1e';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,gy);ctx.lineTo(mx,gy+gh);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a6a1e';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // readout
+    if(r<1.2) rd.textContent='r='+r.toFixed(2)+'（近い）：電磁気型（−a/r）とまだ似ている。近距離ではクーロン的。';
+    else if(r<3) rd.textContent='r='+r.toFixed(2)+'：格子で計算した V(r) が直線部（+σr）に入り、電磁気型から離れて登り続ける。';
+    else rd.textContent='r='+r.toFixed(2)+'：V(r) は直線的に増加しっぱなし＝いくら離してもエネルギーが増える＝クォークを引き離せない（閉じ込め）。計算がそれを再現した。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

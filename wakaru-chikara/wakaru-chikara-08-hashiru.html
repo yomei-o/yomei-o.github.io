@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力の強さは、見る細かさで変わる ── わかる力 第8回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f2; --paper-edge:#ebe0d2;   /* 第8回：焦茶橙の紙（高エネルギー） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a4a1a; --calc-bg:#f4e9dd;
+    --rule:#dbcdba; --hair:#cbbaa2;
+    --acc:#b0561e;    /* 第8回アクセント＝橙 */
+    --grid:#e2d5c2;
+    --c1:#2166a0; --c2:#7a3b8a; --c3:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0ddc2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddccb2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf7;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6ef;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a2c12;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf9,#f4ebde);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a2c12;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 8 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第7回：四つの力を無次元で並べた → 第8回：その“強さ”は固定値ではなかった</p>
+  <h1>力の強さは、<br>見る細かさで変わる
+    <span class="sub">前回並べた結合定数は、実は動く。近づいて（高エネルギーで）見ると、電磁気は強くなり、強い力は弱くなる。<br>そして三つの力の強さが、はるか高エネルギーで一点に近づく ── 統一の気配。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第7回の結合定数、第2回の真空、対数グラフ</span>
+    <span>結合は“走る” ── 強さは見る細かさの関数</span>
+  </div>
+
+  <p class="lead">第7回で四つの力を結合定数（無次元の強さ）で並べました。\(\alpha\approx1/137\)、\(\alpha_s\sim1\)…。でもこれらの数字には、大きな但し書きがあります ── <strong>固定値ではない</strong>。近づいて（高エネルギーで）見るほど、力の強さは変わっていく。物理では、これを<em>走る結合定数（running coupling）</em>と呼びます。姉妹編「わかる宇宙論」第6回で \(\alpha\) が \(1/137\to1/128\) と育つのを見た、あの現象を、今度は四つの力の側から。そして走らせていくと ── <strong>ばらばらだった三つの力の強さが、はるか高エネルギーで一点に集まりかける</strong>。力が「もともと一つ」だったかもしれない、という気配です。</p>
+
+  <h2><span class="n">01</span>真空が“衣”を着ている ── だから近づくと強さが変わる</h2>
+
+  <p>なぜ強さが見る細かさで変わるのか。鍵は第2回でも顔を出した<strong>真空のゆらぎ</strong>です。電子のまわりには、真空から生まれては消える電子・陽電子のペアが漂い、電子の電気を<em>薄く隠して（遮蔽して）</em>います。遠くから（粗く＝低エネルギーで）見ると衣の外側なので電気は弱く見え、近づいて（細かく＝高エネルギーで）見ると衣の内側に入り、隠されていない<strong>本当の強い電気</strong>が見えてくる。</p>
+
+  <div class="keybox">
+    <div class="lbl">結合が走る仕組み</div>
+    <p style="margin:6px 0 0;">電磁気：真空の衣が電気を隠す → <strong>近づく（高エネルギー）ほど強く見える</strong>（\(\alpha:1/137\to1/128\)…）。<br>強い力：衣のでき方が逆向きに効き → <strong>近づくほど弱くなる</strong>（漸近的自由・第11回）。<br>どちらも「真空という媒質の遮蔽」の帰結。力の“強さ”は、見る細かさの関数だった。</p>
+  </div>
+
+  <h2><span class="n">02</span>走らせると、三つの力が一点へ近づく</h2>
+
+  <p>ここが今回のクライマックス。電磁気は近づくと強く、強い力は近づくと弱くなる。<em>逆向きに走る</em>。ということは、うんと高エネルギーへ目を移すと、ばらばらだった強さが<strong>だんだん近づく</strong>。下の図は、三つの力の「強さの逆数 \(1/\alpha_i\)」（上ほど弱い）を、エネルギー（対数）に対して描いたもの。低エネルギー（左）では三本がばらばら。右へ ── 高エネルギーへ ── 進むと、三本が一点に寄っていきます。</p>
+
+  <div class="fig">
+    <div class="cap">図：三つの力の強さ（逆数 1/α、上ほど弱い）の走り。右＝高エネルギー。低エネルギーではばらばらだが、10¹⁶ GeV あたりで一点に近づく ── 統一の気配</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>見るエネルギー（対数・右ほど高い）<span class="val" id="vk">10² GeV</span>
+        <input type="range" id="sk" min="2" max="18" step="0.1" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--c1);"></i>電磁気系</span>
+      <span><i class="swatch" style="background:var(--c2);"></i>弱い力</span>
+      <span><i class="swatch" style="background:var(--c3);"></i>強い力</span>
+    </div>
+  </div>
+
+  <p>一点に集まるなら、そこでは三つの力が「同じ一つの強さ」＝区別のない<strong>ひとつの力</strong>だったことになる。私たちの三つは、そこから枝分かれした姿にすぎない ── これが<strong>大統一</strong>の発想です。第12回で正面から扱いますが、その入口は「力の強さが走る」という、この一点にありました。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 「強さ」という値も、見方で動く</span>
+    第7回で「強さは無次元でだけ比べられる」と言いました。今回さらに ── その無次元の強さすら、<strong>見る細かさ（エネルギー）で動く</strong>。姉妹編がくり返した「表面の値は動く、深いのはその“走り方（ルール）”」が、力の強さにもそのまま当てはまる。値そのものより、<em>どう走るか</em>が力の個性を決めているのです。第11回の「強い力だけ逆さま」は、この走り方の違いの話です。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 強さは、場所ではなく“縮尺”で決まる</h2>
+
+  <p>第8回の結論。力の「強さ」は、その力が持つ固定の属性ではなく、<strong>どれくらい細かく見るか（エネルギー）で決まる、走る量</strong>でした。真空という媒質の遮蔽がそれを生む。そして逆向きに走る三つが高エネルギーで寄り集まる事実は、<em>四つ（三つ）の力が、もとは一つだったかもしれない</em>という、統一への最も強い状況証拠になっています。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「ぴったり一点」は言い過ぎ</span>
+    <p style="margin-top:0;">標準模型のままだと、三本は<strong>近づくが、完全な一点では交わりません</strong>（わずかに外す）。超対称性という未発見の対称性を加えると、走り方が変わって \(\sim10^{16}\) GeV でぐっと一点に近づく、というのが有名な状況証拠。ただし「超対称なら数学的にちょうど一致」も厳密には正しくなく、大統一・超対称はいずれも<em>有力だが未確立</em>の仮説です（姉妹編・第6回後編と同じ正直な線）。</p>
+    <p style="margin-bottom:0;">図の三本の傾き・交点は概念を示す模式で、実測の値を厳密に再現したものではありません。重力の“走り”は繰り込みの問題があり、この図には含めていません（最終回の話）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>電磁気力が「近づく（高エネルギー）ほど強く見える」のはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">真空のゆらぎ（電子・陽電子ペア）が電荷を遮蔽しており、近づくと衣の内側に入って隠されていない強い電荷が見えるから。α が 1/137→1/128 と育つ。</div></details>
+      </li>
+      <li>三つの力の強さが高エネルギーで一点に近づくことは、何を示唆するか。
+        <details><summary>答えを見る</summary><div class="ans">高エネルギーでは三つが同じ一つの強さ＝区別のない一つの力だった可能性（大統一）。今の三つは、そこから枝分かれした低エネルギーの姿。</div></details>
+      </li>
+      <li>「力の強さ」は固定の属性か。第8回の結論を一言で。
+        <details><summary>答えを見る</summary><div class="ans">固定ではない。見る細かさ（エネルギー）で走る量で、真空の遮蔽がそれを生む。深いのは値そのものより「走り方のルール」。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>強さは走り、逆向きの三本が寄り集まる</h2>
+    <p>第7回で並べた結合定数は固定値ではなく、真空の遮蔽のせいで<strong>見る細かさ（エネルギー）で走る</strong>。電磁気は近づくと強く、強い力は近づくと弱くなる（漸近的自由）。逆向きに走るので、高エネルギーへ目を移すと三つの強さが近づき、\(\sim10^{16}\) GeV あたりで一点に集まりかける ── 力がもとは一つだったかもしれない、という統一の気配。</p>
+    <p>姉妹編の「値は動く、深いのは走り方」が、力の強さでもそのまま効いた。ただし「ぴったり一点」は言い過ぎで、大統一・超対称は有力だが未確立。── ここまでで、力の強さ・射程・担い手・走り方まで剥がした。次回はいよいよ核心へ：<strong>そもそも力は、どこから来るのか</strong>。対称性を局所化すると力が生まれる、というゲージ原理です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第9回（シリーズの心臓）</span>
+    「力はどこから来るのか」。ここまで力の性質を剥がしてきましたが、最後に残る問いは「なぜ力は<strong>存在する</strong>のか」。答えは驚くほど深い ── <em>各点で自由に選べる曖昧さ（局所対称性）を認めた瞬間、それを取りつくろうために力が生まれる</em>。姉妹編・番外編⑧のゲージ原理を、力の起源として本編化します。剥がしの終着点です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第8回、物理好きの高校生・大学生向け読み物です。結合定数のエネルギー依存（走る結合定数、繰り込み群）と真空偏極による遮蔽、電磁結合が高エネルギーで増加し（\(\alpha:1/137\to\)約\(1/128\) at \(M_Z\)）強い結合が減少する（漸近的自由）こと、三つのゲージ結合が高エネルギーで接近し大統一を示唆すること（標準模型では完全一致せず、MSSM等で \(\sim10^{16}\) GeV 付近に改善）は、確立した内容および有力仮説です。「完全に一点で交わる／標準模型は完全否定」という通俗表現は厳密には正しくありません。図は概念的模式で実測の傾き・切片を厳密に再現したものではなく、重力は繰り込みの問題のため含めていません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーでエネルギーを上げると、三本の力が寄り集まる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // L=log10(E/GeV) 2..18。三本の 1/α_i（模式）。交点(16,40)へ収束
+  function inv1(L){ return 60 + (40-60)*(L-2)/(16-2); } // 電磁気系（減少）
+  function inv2(L){ return 30 + (40-30)*(L-2)/(16-2); } // 弱い（増加ゆるやか）
+  function inv3(L){ return 9  + (40-9)*(L-2)/(16-2); }  // 強い（増加＝弱くなる）
+  var LMIN=2, LMAX=18, YHI=66, YLO=0;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=50;
+    var L=parseFloat(sk.value); vk.textContent='10^'+L.toFixed(0)+' GeV';
+    ctx.clearRect(0,0,w,h);
+    function X(l){return pad+(l-LMIN)/(LMAX-LMIN)*(w-pad-14);}
+    function Y(v){return 12+(YHI-v)/(YHI-YLO)*(h-pad-12);}
+    // grid
+    ctx.strokeStyle='#eee2d2';ctx.lineWidth=1;ctx.fillStyle='#a98a5a';ctx.font='10.5px sans-serif';
+    for(var v=0;v<=60;v+=15){var yy=Y(v);ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();ctx.fillText(''+v,8,yy+4);}
+    // 収束点
+    ctx.strokeStyle='#b0561e';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(X(16),12);ctx.lineTo(X(16),h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b0561e';ctx.font='11px sans-serif';ctx.fillText('大統一 ~10¹⁶', X(16)-70, 24);
+    // axes
+    ctx.strokeStyle='#cbbaa2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,12);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('エネルギー（10^ GeV）→ 高い＝細かい', w-260, h-pad+18);
+    ctx.save();ctx.translate(14,(h-pad+12)/2);ctx.rotate(-Math.PI/2);ctx.fillText('1/α（上ほど力が弱い）',0,0);ctx.restore();
+    function line(fn,col){ ctx.strokeStyle=col;ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+      for(var l=LMIN;l<=LMAX+1e-9;l+=0.1){var x=X(l),y=Y(fn(l));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);} ctx.stroke(); }
+    line(inv1,'#2166a0'); line(inv2,'#7a3b8a'); line(inv3,'#a83a22');
+    // labels
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#2166a0';ctx.fillText('電磁気系', X(2)+4, Y(inv1(2))-6);
+    ctx.fillStyle='#7a3b8a';ctx.fillText('弱い力', X(2)+4, Y(inv2(2))-6);
+    ctx.fillStyle='#a83a22';ctx.fillText('強い力', X(2)+4, Y(inv3(2))+14);
+    // marker
+    var mx=X(L);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,12);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    [[inv1,'#2166a0'],[inv2,'#7a3b8a'],[inv3,'#a83a22']].forEach(function(p){ctx.fillStyle=p[1];ctx.beginPath();ctx.arc(mx,Y(p[0](L)),4.5,0,7);ctx.fill();});
+    // readout
+    var spread=Math.abs(inv1(L)-inv3(L));
+    if(L<6) rd.textContent='E=10^'+L.toFixed(0)+' GeV（低エネルギー）：三つの強さはばらばら（開き '+spread.toFixed(0)+'）。強い力が強く、電磁気は弱い。';
+    else if(L<14) rd.textContent='E=10^'+L.toFixed(0)+' GeV：三本が寄ってきた（開き '+spread.toFixed(0)+'）。電磁気は強く、強い力は弱くなり、差が縮む。';
+    else rd.textContent='E=10^'+L.toFixed(0)+' GeV（超高エネルギー）：ほぼ一点へ（開き '+spread.toFixed(0)+'）── 三つの力が「もとは一つ」だった気配。大統一。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

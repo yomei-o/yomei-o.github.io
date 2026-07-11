@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ネーターの定理 ── わかる力 番外編・力と数学②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fc; --paper-edge:#dbdfef;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2f3a72; --calc-bg:#e7e9f5;
+    --rule:#cdd2e6; --hair:#bcc2dc;
+    --acc:#3a4a8c;
+    --grid:#d6dbee;
+    --sym:#2f7d55; --broken:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d2d8f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd0e8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#eceef7;color:var(--ink);font-weight:600;width:46%;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f7fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2a3260;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2a3260;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と数学 ②（三部作その2）</span></div>
+  <p class="eyebrow">数学①：作用が主役 → 数学②：その作用の対称性が、保存則を生む</p>
+  <h1>ネーターの定理
+    <span class="sub">エネルギー保存も運動量保存も、天下りの規則ではない。<br><em>作用に対称性があれば、必ず対応する保存量がある</em> ── 20世紀物理で最も美しい定理の一つ。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：数学①の作用、第9回の対称性</span>
+    <span>対称性 → 保存則</span>
+  </div>
+
+  <p class="lead">数学①で「自然は作用 \(S\) を停留させる」と見ました。今回は、その作用が主役だからこそ言える、驚くほど深い定理 ── <strong>エミー・ネーターの定理</strong>。エネルギーは保存する、運動量は保存する ── 学校で“規則”として習うこれらは、実は天下りではありません。<em>作用が、ある変換で変わらない（対称性を持つ）とき、必ずそれに対応する「保存量」が存在する</em>。しかもどの対称性がどの保存量に対応するかまで、きっちり決まっている。第9回で「対称性が力を生む」と見ましたが、その兄弟 ── <strong>「対称性が保存則を生む」</strong>です。</p>
+
+  <h2><span class="n">01</span>三つの対称性、三つの保存則</h2>
+
+  <p>「対称性」とは、<em>ある操作をしても物理（作用）が変わらない</em>こと。ネーターの定理は、連続的な対称性のそれぞれに、保存量を一つずつ対応させます。目玉は次の三つ。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">作用が変わらない操作（対称性）</th><th>保存する量</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">時間をずらしても同じ（時間並進対称）</th><td><strong>エネルギー</strong></td></tr>
+      <tr><th class="rowh">場所をずらしても同じ（空間並進対称）</th><td><strong>運動量</strong></td></tr>
+      <tr><th class="rowh">向きを回しても同じ（回転対称）</th><td><strong>角運動量</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>読み替えると ── <em>「いつ実験しても結果が同じ」だからエネルギーが保存し、「どこで実験しても同じ」だから運動量が保存し、「どの向きでも同じ」だから角運動量が保存する</em>。保存則は、宇宙が持つ<strong>「どこも・いつも・どの向きも同じ」という一様さ（対称性）の影</strong>だったのです。</p>
+
+  <h2><span class="n">02</span>なぜ？ ── 区別のない向きには、力がない</h2>
+
+  <p>直感で掴みましょう。空間並進対称（場所をずらしても同じ）とは、<em>その向きにどこも“区別がない”</em>ということ。区別がなければ、その向きに位置エネルギーの坂がない ── つまり<strong>力がない</strong>（第6回 \(F=-\nabla V\)、坂がなければ力ゼロ）。力がなければ、その向きの運動量は変わらない ＝ <strong>保存</strong>。逆に、対称性を破って坂をつける（場所によって違う）と、力が生まれ、運動量は保存しなくなる。<em>対称性の破れ＝力＝保存の破れ</em>。下の図で確かめてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：地形の対称性を破ると保存が破れる。平ら（並進対称・緑）なら運動量は一定。傾ける（対称性を破る・赤）と力が生じ、運動量が変化する</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>対称性の破れ ε（0＝平ら＝並進対称／右へ傾けるほど破れる）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--sym);"></i>運動量（対称なら一定）</span>
+      <span><i class="swatch" style="background:var(--broken);"></i>運動量（対称性が破れると変化）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>第9回との兄弟関係 ── 同じ対称性から、力と保存則</h2>
+
+  <p>ここでシリーズが一つに束なります。第9回では「<strong>局所</strong>対称性（各点で自由に選び直す）を要求すると、力（ゲージ場）が生まれる」と見ました。今回のネーターは「<strong>（大域）</strong>対称性があると、保存則が生まれる」。同じ<em>対称性</em>という一つの発想から、<strong>力の“存在”（第9回）と、保存則（ネーター）の両方</strong>が出てくる。対称性は、力を生み、保存を生む ── このシリーズの背骨（力＝関係・対称性）が、いちばん深いところで力学の骨組みそのものになっていた、ということです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 膨張宇宙では、エネルギーが保存しない?</span>
+    ネーターは強力な“正直さ”も持っています ── <strong>対称性が破れれば、保存則も破れる</strong>。膨張する宇宙は「時間をずらしても同じ」ではありません（昔と今で宇宙の大きさが違う＝時間並進対称が破れている）。するとネーターの定理から、<em>宇宙全体ではエネルギー保存が素直には成り立たない</em>。実際、遠くの銀河の光は宇宙膨張で赤方偏移し、エネルギーが“減る”ように見える ── 姉妹編「わかる宇宙論」の話が、ここでネーターの言葉で説明できます。保存則は絶対の掟ではなく、対称性しだいだったのです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 保存則は、対称性の影</h2>
+
+  <p>力と数学②の結論。<strong>エネルギー・運動量・角運動量の保存は、天下りの規則ではなく、宇宙の対称性（いつも・どこも・どの向きも同じ）の影</strong>だった。対称性がある向きには区別がなく、力がなく、だからその量が保存する。対称性が破れれば、力が生まれ、保存も破れる。第9回「対称性→力」と合わせて、<em>対称性こそが、力と保存則の共通の親</em>だと見えました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ネーターの定理（1918年）が保存則を与えるのは、作用が持つ<strong>連続的な</strong>対称性に対してです（鏡映のような離散対称性は別扱い）。ここで扱ったのは大域的対称性の「第一定理」で、第9回のような<em>局所</em>対称性は「第二定理」に対応し、保存則というより場の間の拘束（恒等式）を与えます ── 両者は関係するが同じではありません。「区別がない向きに力がない」は直感的な言い換えで、厳密には作用の不変性からラグランジュ方程式を経て導かれます。</p>
+    <p style="margin-bottom:0;">図は「対称（平ら）なら運動量一定／破れ（傾き）で運動量が変化」という要点の模式で、一定の傾き（一様な力）による運動量の直線的変化を示しています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「エネルギーが保存する」のは、どんな対称性の影か。
+        <details><summary>答えを見る</summary><div class="ans">時間並進対称（いつ実験しても物理が同じ）。ネーターの定理で、時間をずらしても作用が変わらないことにエネルギー保存が対応する。</div></details>
+      </li>
+      <li>空間並進対称（場所をずらしても同じ）が運動量保存を生む理由を、力の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">場所に区別がない＝位置エネルギーの坂がない＝力ゼロ（F=−∇V）。力がなければその向きの運動量は変わらない＝保存。対称性を破って坂をつけると力が生じ、保存が破れる。</div></details>
+      </li>
+      <li>膨張宇宙で（全体の）エネルギー保存が素直に成り立たないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">膨張で「時間をずらしても同じ」＝時間並進対称が破れているから。ネーターの定理により、対称性が破れれば対応する保存則（エネルギー保存）も素直には成り立たない。光の赤方偏移がその現れ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>保存則は、対称性の影だった</h2>
+    <p>ネーターの定理：作用がある連続変換で不変（対称）なら、必ず対応する保存量がある。時間並進対称→エネルギー、空間並進対称→運動量、回転対称→角運動量。保存則は天下りの規則ではなく、宇宙の「いつも・どこも・どの向きも同じ」という一様さの影。対称性のある向きには区別がなく力がなく、だからその量が保存する ── 対称性が破れれば力が生まれ、保存も破れる。</p>
+    <p>第9回「局所対称性→力の存在」と、ネーター「対称性→保存則」は兄弟。<strong>対称性こそが、力と保存則の共通の親</strong>だった。数学①の作用を土壌に、対称性が力学の骨組みを生んでいる ── 次回（数学③）は、その力を<em>幾何</em>として見る最終回。ゲージ＝接続、重力＝曲率、群が力を分類する。「力と数学」の締めです。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力と数学③</span>
+    「力は曲率 ── 幾何と群」。第9回の“つなぎ”は数学では<strong>接続</strong>、第12回の“消せない残り”は<strong>曲率</strong>。重力は時空のリーマン曲率、電磁気は別の空間の曲率。そして「どの力か」を決めるのは群 U(1)/SU(2)/SU(3)。力の正体を、微分幾何と群論の言葉で見晴らして、「力と数学」を閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と数学」②、物理好きの高校生・大学生向け読み物です。ネーターの定理（E. Noether, 1918）が、作用の連続的大域対称性のそれぞれに保存量を対応させること（時間並進↔エネルギー、空間並進↔運動量、回転↔角運動量）は確立した内容です。局所（ゲージ）対称性はネーターの第二定理に対応し、保存則ではなく拘束・恒等式を与えます。膨張宇宙では時間並進対称の欠如により大域的エネルギー保存が一般には成り立たず、宇宙論的赤方偏移として現れます（一般相対論では局所的な保存は共変的に成り立ちます）。「区別のない向きに力がない」は直感的言い換えで、厳密には作用の不変性から導かれます。図は一様な力による運動量変化の模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、対称性を破ると運動量の保存が破れる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var eps=parseInt(sk.value,10)/100; vk.textContent=eps.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var symmetric = eps<0.02;
+    var col = symmetric ? '#2f7d55' : '#a83a22';
+    // === 上：地形 V(x) ===
+    var gx=44, gw=w-70, ty=20, th2=96;
+    function VX(x){ return eps*0.9*x; } // 一様な傾き（x:0..1）
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('地形 V（場所ごとの位置エネルギー）', gx, ty-4);
+    ctx.strokeStyle=col;ctx.lineWidth=2.6;ctx.beginPath();
+    for(var i=0;i<=100;i++){var x=i/100; var px=gx+x*gw; var py=ty+th2*0.5 + VX(x)*th2*0.5; ctx.lineTo(px,py);}
+    ctx.stroke();
+    // ボール（地形上）
+    var bx=gx+0.5*gw, by=ty+th2*0.5 + VX(0.5)*th2*0.5;
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(bx,by-6,7,0,7);ctx.fill();
+    // 力の矢印（傾きがあれば）
+    if(!symmetric){
+      ctx.strokeStyle='#a83a22';ctx.fillStyle='#a83a22';ctx.lineWidth=2.2;
+      var L=-30;
+      ctx.beginPath();ctx.moveTo(bx,by-6);ctx.lineTo(bx+L,by-6);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bx+L,by-6);ctx.lineTo(bx+L+8,by-10);ctx.lineTo(bx+L+8,by-2);ctx.closePath();ctx.fill();
+      ctx.font='11px sans-serif';ctx.fillText('力（坂から）', bx+L-4, by-16);
+    } else {
+      ctx.fillStyle='#2f7d55';ctx.font='11px sans-serif';ctx.fillText('平ら＝どこも同じ＝力ゼロ（並進対称）', gx+gw*0.28, ty+th2+14);
+    }
+    // === 下：運動量 p(t) ===
+    var py0=ty+th2+34, pw=gw, ph=h-py0-30, pgx=gx;
+    var p0=0.6;
+    function P(t){ return p0 - eps*0.9*t; } // 力 = -dV/dx = -eps*0.9、p(t)=p0 - |force|*t（右向き力で減）
+    ctx.strokeStyle='#e6e9f4';ctx.lineWidth=1;
+    for(var g2=0;g2<=3;g2++){var yy=py0+g2*ph/3;ctx.beginPath();ctx.moveTo(pgx,yy);ctx.lineTo(pgx+pw,yy);ctx.stroke();}
+    ctx.strokeStyle='#bcc2dc';ctx.beginPath();ctx.moveTo(pgx,py0);ctx.lineTo(pgx,py0+ph);ctx.lineTo(pgx+pw,py0+ph);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('運動量 p', pgx+2, py0-4);ctx.fillText('時間 →', pgx+pw-48, py0+ph+16);
+    function PY(p){var pp=Math.max(-0.2,Math.min(1.0,p));return py0+ph*(1-(pp+0.2)/1.2);}
+    ctx.strokeStyle=col;ctx.lineWidth=2.8;ctx.beginPath();
+    for(var t=0;t<=1.0001;t+=0.02){var x2=pgx+t*pw,y2=PY(P(t));if(t===0)ctx.moveTo(x2,y2);else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // readout
+    if(symmetric) rd.textContent='ε=0：地形は平ら＝並進対称。力ゼロ、運動量 p は時間がたっても一定（保存）。対称性が保存を生んでいる。';
+    else rd.textContent='ε='+eps.toFixed(2)+'：地形を傾けた＝対称性を破った。坂から力が生じ、運動量 p は時間とともに変化＝もう保存しない。対称性が破れれば保存も破れる。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

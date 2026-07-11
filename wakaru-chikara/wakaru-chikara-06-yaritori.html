@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力は“やりとり”だ ── わかる力 第6回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf6; --paper-edge:#d9e8dd;   /* 第6回：緑の紙（やりとり） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1f6b47; --calc-bg:#e5f2ea;
+    --rule:#cadecf; --hair:#b7d0c2;
+    --acc:#2f7d55;    /* 第6回アクセント＝緑 */
+    --grid:#d3e7dc;
+    --yuk:#2f7d55; --cou:#b0561e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe8d9 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafdfb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfffd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.f{width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.f th,table.f td{border:1px solid var(--rule);padding:9px 10px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.f thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f5fbf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1f4633;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfffd,#e9f4ee);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f4633;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.f{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 6 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第2〜5回：日常の力を剥がした → 第6回：残った“本物の力”は、どうやって離れた相手に届くのか</p>
+  <h1>力は“やりとり”だ
+    <span class="sub">離れた二者は、どうやって力を及ぼし合うのか。答えは<em>場と、粒子の交換</em>。<br>そして担い手の重さが、力の届く距離を決める ── 光が無限遠まで届き、弱い力が近距離な理由。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第2回の場、指数関数、\(E=mc^2\) の気持ち</span>
+    <span>到達距離 ~ ℏ / mc</span>
+  </div>
+
+  <p class="lead">第2〜5回で、日常の力（押す・摩擦・重さ）を剥がしてきました。残ったのは、電磁気・強・弱・重力という“本物の力”。でもまだ根本の謎が残っています ── <strong>離れた二つのものは、どうやって力を及ぼし合うのか?</strong> 太陽は、間に何もない空間ごしに、なぜ地球を引けるのか。ニュートン自身、この「遠隔作用」を気味悪がりました。答えは、力を<em>「モノが相手に直接及ぼすもの」から「場を介したやりとり」へ</em>置き換えること。さらに深く掘ると、力は<strong>担い手の粒子をキャッチボールする過程</strong>で、その粒子の重さが力の“射程”を決めます。第1回からの背骨「力は名詞でなく関係」が、ここで<em>過程（やりとり）</em>にまで具体化します。</p>
+
+  <h2><span class="n">01</span>まず「場」── 空間そのものが、伝える</h2>
+
+  <p>遠隔作用の気持ち悪さを解いたのが<strong>場（field）</strong>の考えです。電荷は、まわりの空間に<em>電場</em>という状態を作る。別の電荷は、自分のいる場所の電場を感じて力を受ける。力は「相手に直接」ではなく、<strong>場を仲立ちにして、その場所その場所で受け渡される</strong>（近接作用）。太陽と地球の間の空間には、ちゃんと重力の場が満ちている。空っぽに見えても、場がある。</p>
+
+  <div class="keybox">
+    <div class="lbl">置き換えの四歩目 ── 力は場を介する</div>
+    <p style="margin:6px 0 0;">「A が B を直接引く」（遠隔作用・気味悪い） → 「A が場を作り、B はその場所の場を感じる」（近接作用）。<br>力の担い手は、二者の“間”にある<strong>場</strong>。空間は、力を伝える実在の舞台になった。</p>
+  </div>
+
+  <h2><span class="n">02</span>場を量子で見ると ── 力は「粒子の交換」</h2>
+
+  <p>その場を、量子力学で見るとどうなるか。場は連続的なものではなく、<strong>とびとびの粒（量子）</strong>でやりとりされます。電磁場の粒が<strong>光子</strong>。二つの電荷は、光子を<em>キャッチボール</em>することで力を及ぼし合う ── これが力の、いちばん深い姿です。四つの力は、それぞれ担い手の粒を持ちます。</p>
+
+  <table class="f">
+    <thead><tr><th>力</th><th>担い手（交換される粒子）</th><th>担い手の重さ</th><th>到達距離</th></tr></thead>
+    <tbody>
+      <tr><td>電磁気</td><td>光子</td><td>ゼロ</td><td>無限（1/r²）</td></tr>
+      <tr><td>強い力</td><td>グルーオン</td><td>ゼロ（だが閉じ込め）</td><td>ごく短い（第11回）</td></tr>
+      <tr><td>弱い力</td><td>W・Z 粒子</td><td>非常に重い（陽子の約90倍）</td><td>極端に短い</td></tr>
+      <tr><td>重力</td><td>重力子（未検出・仮説）</td><td>ゼロ</td><td>無限</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">03</span>湯川の慧眼 ── 担い手の重さが、射程を決める</h2>
+
+  <p>表を見ると、法則が見えます。<strong>担い手が軽いほど、力は遠くまで届く</strong>。光子（重さゼロ）の電磁気は無限遠まで、重い W・Z の弱い力はごく近距離まで。これを見抜いたのが湯川秀樹。量子力学の不確定性から、重い粒子は「ほんの一瞬」しか借り出せず、その間に進める距離が射程になる ── 到達距離 \(\lambda\) は担い手の質量 \(m\) に反比例します。</p>
+
+  <div class="keybox">
+    <div class="lbl">湯川の到達距離</div>
+    $$\lambda \sim \frac{\hbar}{m c}$$
+    <p style="margin:8px 0 0;">担い手が<strong>重い</strong>ほど射程 \(\lambda\) は<strong>短く</strong>、<strong>軽い</strong>ほど<strong>長い</strong>。質量ゼロ（光子）なら \(\lambda\to\infty\) ＝無限遠まで届く（クーロン力の \(1/r^2\)）。湯川はこの式を逆に使い、核力の射程から担い手（中間子）の重さを<em>予言</em>してみせた。</p>
+  </div>
+
+  <p>力の強さは、距離とともに \(V(r)\sim -\dfrac{g^2}{r}\,e^{-r/\lambda}\)（湯川ポテンシャル）で落ちます。\(e^{-r/\lambda}\) が「射程で急に効かなくなる」を担い、\(m\to0\) では指数が消えて \(1/r\)（クーロン）に戻る。下の図で、担い手の質量を変えて、力の届く範囲がどう縮むかを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：湯川ポテンシャル。担い手の質量 m を上げると、力の届く距離 λ=ℏ/mc が縮む。m→0 でクーロン（1/r、無限遠）に戻る</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>担い手の質量 m（右ほど重い）<span class="val" id="vk">0.6</span>
+        <input type="range" id="sk" min="0.15" max="3" step="0.01" value="0.6">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--yuk);"></i>湯川（担い手に質量あり）</span>
+      <span><i class="swatch" style="background:var(--cou);"></i>クーロン（m→0・参照）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 力は「モノ」でなく「過程」</h2>
+
+  <p>第6回の結論。力は、物体が握るモノでも、場という静的な背景ですらなく、<strong>担い手の粒子を交換し合う“過程（やりとり）”</strong>でした。第1回で「力は関係の名前」と言ったその関係は、ここで<em>動的なやりとり</em>にまで具体化した。しかも四つの力は、担い手が違うだけで「場の粒を交換する」という<strong>同じ一つの仕組み</strong>で書ける ── 第7回で、その四つを無次元の強さで並べます。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 場が“やりとり”なら、場は波でもある</span>
+    担い手（光子）は<strong>電磁場の波の粒</strong>です。ということは、力を伝える場は、そのまま<em>波</em>としても振る舞う。静かに引き合う力（近接場）と、遠くへ飛ぶ光（放射＝波）は、同じ一つの電磁場の二つの顔。この「力＝場、場＝波」という橋は、番外編クラスタ「波と力」で正面から扱います。第6回は、その入口でもあります。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── キャッチボールの比喩は、半分だけ本当</span>
+    <p style="margin-top:0;">「粒子を投げ合うから力になる」は良い入口ですが、比喩としては不完全です。ボールを投げ合えば反発（斥力）は説明できても、<strong>引力</strong>（電荷どうしが引き合う、重力）はこの絵では素直に出ません。実際に交換されるのは、観測にかからない“仮想粒子”で、これは<em>計算の便法（摂動論の各項）</em>であって、小さな玉が本当に飛んでいるわけではない。厳密には「場の相互作用を、粒子交換の項で書き下している」という理解が正確です。</p>
+    <p style="margin-bottom:0;">重力子は理論上の担い手で、未検出です。強い力の到達距離が短いのは担い手が重いからではなく“閉じ込め”という別の理由（第11回）。図は湯川型 \(V\propto e^{-r/\lambda}/r\) の概念図で、特定の力の定量値ではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>電磁気（光子）と弱い力（W・Z）で、到達距離が桁違いに違うのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">担い手の質量が違うから。到達距離 \(\lambda\sim\hbar/mc\) で、光子は質量ゼロ→無限遠、W・Z は非常に重い→極端に短距離。湯川の関係で射程が決まる。</div></details>
+      </li>
+      <li>湯川ポテンシャル \(V\propto e^{-r/\lambda}/r\) で、\(m\to0\)（\(\lambda\to\infty\)）にすると何になるか。
+        <details><summary>答えを見る</summary><div class="ans">指数因子 \(e^{-r/\lambda}\to1\) となり \(V\propto 1/r\)＝クーロン（重力も同型）。長距離力は、担い手が質量ゼロであることの表れ。</div></details>
+      </li>
+      <li>「力は場を介する」と言うと、ニュートンの何が解消されるか。
+        <details><summary>答えを見る</summary><div class="ans">遠隔作用（間に何もないのに直接力が届く）の気味悪さ。場が二者の間を満たし、その場所その場所で力を受け渡す近接作用に置き換わる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>力は、担い手を交換する過程だった</h2>
+    <p>離れた二者が力を及ぼし合えるのは、間を満たす<strong>場</strong>のおかげ（近接作用）。その場を量子で見ると、力は<strong>担い手の粒子を交換する“やりとり”</strong>だった ── 電磁気は光子、強い力はグルーオン、弱い力は W・Z、重力は重力子（仮説）。そして湯川の \(\lambda\sim\hbar/mc\)：担い手が重いほど射程は短い。光子ゼロ質量→無限遠（クーロン）、W・Z 重い→極短距離（弱い力）。</p>
+    <p>第1回の「力は関係の名前」は、ここで<strong>「担い手を交換する過程」</strong>にまで具体化した。力は、モノでも静的背景でもなく、動的なやりとり。四つの力が「場の粒の交換」という同じ仕組みで書ける ── 次回はその四つを、単位の消えた“強さ”で一枚に並べます。そして担い手が波でもあることは、番外編「波と力」へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第7回</span>
+    「四つの力を、無次元で並べる」。重力・電磁・強・弱を、強さ・到達距離・担い手で一枚の表に。ただし「強さ」を比べるには、単位のない数＝結合定数で測らねばならない。姉妹編「わかる宇宙論」の主役 \(\alpha\)（微細構造定数）が、ここで効いてきます。重力がなぜ「いちばん弱いのに宇宙を支配する」のか、その謎も無次元で見えます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第6回、物理好きの高校生・大学生向け読み物です。近接作用（場）による力の媒介、場の量子化に伴う力の担い手（ゲージボソン：光子・グルーオン・W/Z、仮説上の重力子）、湯川による到達距離と媒介粒子質量の関係 \(\lambda\sim\hbar/mc\) と湯川ポテンシャル \(V\propto e^{-r/\lambda}/r\)、質量ゼロ極限でのクーロン則 \(1/r\) への帰着は、確立した内容です。粒子交換（仮想粒子）は摂動論的記述であり、引力の直感的説明には限界があります。強い力の短距離性は主に閉じ込め（第11回）に由来し、単純な媒介粒子質量では説明されません。重力子は未検出の理論的存在です。図は湯川型ポテンシャルの概念図で、特定の相互作用の定量値ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、担い手が重いほど力の射程が縮む様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var RMIN=0.15, RMAX=5.0, VHI=6.0;
+  function yuk(r,m){ return Math.exp(-r*m)/r; }   // ℏ=c=1, g²=1
+  function cou(r){ return 1/r; }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var m=parseFloat(sk.value); vk.textContent=m.toFixed(2);
+    var lam=1/m;
+    ctx.clearRect(0,0,w,h);
+    function X(r){return pad+(r-RMIN)/(RMAX-RMIN)*(w-pad-14);}
+    function Y(v){var vv=v;if(vv>VHI)vv=VHI;return 12+(VHI-vv)/VHI*(h-pad-12);}
+    // grid
+    ctx.strokeStyle='#e2efe8';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=12+g*(h-pad-12)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // axes
+    ctx.strokeStyle='#b7d0c2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,12);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('距離 r →', w-90, h-pad+18);
+    ctx.save();ctx.translate(14,(h-pad+12)/2);ctx.rotate(-Math.PI/2);ctx.fillText('力の強さ |V(r)|',0,0);ctx.restore();
+    // クーロン参照
+    ctx.strokeStyle='#b0561e';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();var f=true;
+    for(var r1=RMIN;r1<=RMAX+1e-9;r1+=0.02){var y=Y(cou(r1));var x=X(r1);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 湯川
+    ctx.strokeStyle='#2f7d55';ctx.lineWidth=2.8;ctx.beginPath();f=true;
+    for(var r2=RMIN;r2<=RMAX+1e-9;r2+=0.02){var y2=Y(yuk(r2,m));var x2=X(r2);if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // 到達距離 λ の縦線
+    if(lam<=RMAX){
+      var lx=X(lam);
+      ctx.strokeStyle='#1f6b47';ctx.setLineDash([3,3]);ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(lx,12);ctx.lineTo(lx,h-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#1f6b47';ctx.font='12px sans-serif';ctx.fillText('到達距離 λ=1/m', Math.min(lx+6,w-120), 26);
+    }
+    // labels
+    ctx.fillStyle='#b0561e';ctx.font='12px sans-serif';ctx.fillText('クーロン 1/r', X(2.6), Y(cou(2.6))-8);
+    // readout
+    var reach = lam>=RMAX? '事実上、無限遠まで（軽い担い手）' : ('λ ≈ '+lam.toFixed(2)+' で急に効かなくなる');
+    rd.textContent='担い手の質量 m='+m.toFixed(2)+' → 到達距離 λ=ℏ/mc ≈ '+lam.toFixed(2)+'。'+reach+'。m を小さくするとクーロン（無限遠）に近づく。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最小作用の原理 ── わかる力 番外編・力と数学①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fc; --paper-edge:#dbdfef;   /* 力と数学：藍の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2f3a72; --calc-bg:#e7e9f5;
+    --rule:#cdd2e6; --hair:#bcc2dc;
+    --acc:#3a4a8c;    /* 力と数学アクセント＝藍 */
+    --grid:#d6dbee;
+    --true:#3a4a8c; --trial:#b0561e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d2d8f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd0e8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f7fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2a3260;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2a3260;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と数学 ①（三部作その1）</span></div>
+  <p class="eyebrow">力の裏には、もっと静かな原理がある ── 力は主役ではなかった</p>
+  <h1>最小作用の原理
+    <span class="sub">ボールはなぜその道を飛ぶのか。「力に押されて一歩ずつ」が第1回の答え。<br>でも自然には、もう一つの顔がある ── <em>全部の道のうち「作用」を停留させる道を選ぶ</em>。F=ma は、その派生だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回 F=ma、第5回 測地線、積分のイメージ</span>
+    <span>自然は S=∫L dt を停留させる</span>
+  </div>
+
+  <p class="lead">本編で、力は「関係・幾何・ゲージ」まで剥がれました。番外クラスタ「力と数学」では、その<em>さらに裏</em>を照らします。一本目は、物理でいちばん美しい発想の一つ ── <strong>最小作用の原理</strong>。ボールを投げると放物線を描く。第1回では「各瞬間、重力に押されて \(F=ma\) で少しずつ曲がる」と説明しました。でも自然には、まったく違う語り方がある ── <em>出発点と到着点を結ぶ無数の道のうち、「作用」という一つの量を停留させる道だけが実現する</em>。しかもこの語りから \(F=ma\) が導ける。つまり<strong>力は、もっと静かな「停留原理」の派生</strong>だったのです。</p>
+
+  <h2><span class="n">01</span>作用 ── 道ごとに決まる、一つの数</h2>
+
+  <p>ある道（時間ごとの位置の記録）に対して、<strong>作用 \(S\)</strong> という一つの数を割り当てます。作り方は ── 各瞬間の「運動エネルギー \(T\) から位置エネルギー \(V\) を引いたもの」を、道にそって時間で足し合わせる（積分する）。</p>
+
+  <div class="keybox">
+    <div class="lbl">作用の定義</div>
+    $$S=\int_{t_1}^{t_2}\!\!\big(T-V\big)\,dt \qquad (T:\text{運動エネルギー},\ V:\text{位置エネルギー})$$
+    <p style="margin:8px 0 0;">出発点と到着点を決め、その間をどう通るか（道）を変えると、\(S\) の値が変わる。<strong>自然が選ぶのは、\(S\) が停留する（少しずらしても変わらない）道</strong> ── これが最小作用の原理（ハミルトンの原理）。</p>
+  </div>
+
+  <p>「停留」とは、その道をほんの少しずらしても \(S\) が一次では変わらない、ということ（谷の底や峠のように、傾きゼロ）。多くの場合それは \(S\) の<em>最小</em>なので「最小作用」と呼ばれます。下の図で、本物の道（放物線）から少しずらすと、作用 \(S\) が必ず増えることを確かめてください。本物の道が、\(S\) の谷の底にいます。</p>
+
+  <div class="fig">
+    <div class="cap">図：投げたボールの道。本物の道（藍）から試しの道（橙）へずらすと、作用 S は増える（右下のバー）。本物の道は S を最小にする ── だから自然はその道を選ぶ</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>本物の道からのずらし量 α（0＝本物の放物線）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="-100" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--true);"></i>本物の道（S 最小）</span>
+      <span><i class="swatch" style="background:var(--trial);"></i>試しの道（ずらした）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>そこから F=ma が出る ── 力は派生</h2>
+
+  <p>「\(S\) を停留させる道」という条件を数学的に書き下すと（オイラー=ラグランジュ方程式）、出てくるのは ── なんと \(F=ma\)。正確には \(m\ddot{x}=-\dfrac{dV}{dx}\)、つまり第6回の \(F=-\nabla V\) そのもの。<strong>最小作用の原理と、\(F=ma\) は、完全に同じ内容の言い換え</strong>なのです。だからどちらが「より根源的か」は視点の問題ですが、多くの物理学者は<em>作用のほうを主役</em>に置きます。理由は次です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 力は停留原理の顔</div>
+    <p style="margin:6px 0 0;">「各瞬間、力に押されて動く」（\(F=ma\)・局所的・第1回）<br>＝「全体として作用 \(S\) を停留させる道を選ぶ」（最小作用・大域的）。<br>同じ運動の、二つの語り方。<strong>力は、作用という一つの量から導かれる派生量</strong>とも見える。</p>
+  </div>
+
+  <p>作用を主役にする利点は絶大です。座標を変えても形が変わらない（相対論と相性がいい）、光にも場にも同じ枠組みが使える、そして ── 次回の主役<strong>対称性と保存則（ネーターの定理）</strong>が、作用の言葉でこそ最も自然に語れる。第9回で「力の起源はゲージ対称性」と見ましたが、その対称性は<em>作用の対称性</em>のこと。作用は、このシリーズの背骨がいちばん深く根を張る土壌なのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 光も、自由落下も、同じ原理</span>
+    停留原理は力学だけのものではありません。<strong>光</strong>は「最短時間の道」を通る（フェルマーの原理）── これも停留原理。<strong>自由落下</strong>（第5回）は、曲がった時空の中で「固有時が停留する道（測地線）」を通る。投げたボール、光線、自由落下する宇宙船 ── みな「何かを停留させる道」を選んでいる。<em>自然は、いたるところで停留原理に従っている</em>。力は、その一つの現れでした。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 力の裏の、停留原理</h2>
+
+  <p>力と数学①の結論。<strong>力は、自然の最も根っこにある原理ではなかった</strong>。もっと静かで大域的な「自然は作用 \(S\) を停留させる道を選ぶ」という原理があり、\(F=ma\) はそこから導かれる。本編で「力は名詞でなく関係」と剥がしましたが、その関係すら、<em>「作用を停留させる」という一つの変分原理</em>の現れだった。力は主役の座を、作用に譲ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「最小作用」は通称で、正確には<strong>停留作用</strong>（最小とは限らず、極値や鞍点のこともある）です。また作用の原理と \(F=ma\) は<em>等価</em>で、「どちらが根源的か」は解釈の問題（作用のほうが対称性・場・量子論に自然につながる、という実利で好まれます）。摩擦のある力など、単純な作用で書けない力もあります（散逸系）。量子力学では、粒子は一つの道でなく<strong>全ての道</strong>を通り、作用が経路の重みを決める（ファインマンの経路積分）── 古典の「一本の停留する道」は、その特別な場合です。</p>
+    <p style="margin-bottom:0;">図の作用 \(S\) は簡単な放物運動で数値計算した値で、単位や大きさは表示用に規格化しています。ずらし方も一例（両端固定の一山）です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>作用 \(S\) はどう作るか。自然はどの道を選ぶか。
+        <details><summary>答えを見る</summary><div class="ans">各瞬間の (運動エネルギー T − 位置エネルギー V) を、道にそって時間で積分したものが作用 S=∫(T−V)dt。自然は、両端を固定したとき S が停留する（少しずらしても変わらない）道を選ぶ。</div></details>
+      </li>
+      <li>最小作用の原理と \(F=ma\) の関係は。
+        <details><summary>答えを見る</summary><div class="ans">等価。S を停留させる条件（オイラー=ラグランジュ方程式）から \(m\ddot x=-dV/dx\)＝F=ma（第6回のF=−∇V）が導ける。力は作用の停留から導かれる派生量とも見える。</div></details>
+      </li>
+      <li>停留原理に従う例を、力学以外から一つ。
+        <details><summary>答えを見る</summary><div class="ans">光の進み方（フェルマーの原理＝最短時間の道）。または自由落下＝時空の測地線（固有時が停留する道・第5回）。自然はいたるところで停留原理に従う。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>力は、作用の派生だった</h2>
+    <p>投げたボールの道は、「力に押されて一歩ずつ」とも、「作用 \(S=\int(T-V)dt\) を停留させる道を選ぶ」とも語れる。両者は等価で、停留条件から \(F=ma\)（＝F=−∇V）が導ける。だから力は、もっと静かで大域的な<strong>停留原理の派生</strong>とも見える。光（フェルマー）も自由落下（測地線・第5回）も、同じ「何かを停留させる道」を選んでいた。</p>
+    <p>本編で剥がした「力は関係」の、さらに裏に、<strong>「自然は作用を停留させる」</strong>という一枚があった。そしてこの作用こそ、次回のネーターの定理（対称性→保存則）や、第9回のゲージ対称性が、最も自然に語れる土壌。力は主役を作用に譲る ── 「力と数学」は、そこから始まります。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力と数学②</span>
+    「ネーターの定理 ── 対称性が、保存則を生む」。エネルギー保存も運動量保存も、天下り的な規則ではなく、<strong>作用の対称性から必然的に出てくる</strong>。時間をずらしても物理が同じ→エネルギー保存、場所をずらしても同じ→運動量保存。第9回「対称性が力を生む」の兄弟定理 ── 20世紀物理で最も美しい定理の一つを、次に。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と数学」①、物理好きの高校生・大学生向け読み物です。ハミルトンの原理（作用 \(S=\int(T-V)\,dt=\int L\,dt\) の停留）とオイラー=ラグランジュ方程式から \(m\ddot x=-dV/dx\)（ニュートンの運動方程式）が導かれること、これがニュートン力学と等価であること、フェルマーの原理や一般相対論の測地線原理も変分原理であること、量子力学ではファインマンの経路積分が古典の停留経路を特別な場合として含むことは、確立した内容です。「最小」作用は正確には停留（極値・鞍点を含む）作用です。散逸系など単純な作用で表せない場合もあります。図の作用値は放物運動の数値積分を表示用に規格化した概念モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、本物の道から外すと作用が増えることが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 投げ上げ：t∈[0,T], 本物 Y(t)=v0 t - 0.5 g t^2, 両端 y=0
+  var T=2.0, g=9.8, v0=g*T/2; // 端点 y(0)=y(T)=0
+  var A=1.6; // ずらしの振幅係数
+  function Ytrue(t){ return v0*t - 0.5*g*t*t; }
+  function bump(t){ return Math.sin(Math.PI*t/T); }
+  function ypath(t,al){ return Ytrue(t) + al*A*bump(t); }
+  // 作用 S=∫(0.5 ẏ^2 - g y) dt （m=1）
+  function action(al){
+    var Nn=240, dt=T/Nn, S=0;
+    for(var i=0;i<Nn;i++){
+      var t=(i+0.5)*dt;
+      var yd=(ypath(t+1e-4,al)-ypath(t-1e-4,al))/2e-4;
+      var y=ypath(t,al);
+      S += (0.5*yd*yd - g*y)*dt;
+    }
+    return S;
+  }
+  var S0=action(0), Smax=action(1)-S0; // 規格化用
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var al=parseInt(sk.value,10)/100; vk.textContent=al.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // 経路プロット領域（左〜中央）
+    var gx=pad, gw=w*0.66, gy=18, gh=h-pad-18;
+    var ymax=Ytrue(T/2)*1.35, ymin=-A*1.2;
+    function X(t){return gx+(t/T)*gw;}
+    function Y(y){return gy+(ymax-y)/(ymax-ymin)*gh;}
+    // grid
+    ctx.strokeStyle='#e6e9f4';ctx.lineWidth=1;
+    for(var gg=0;gg<=4;gg++){var yy=gy+gg*gh/4;ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+gw,yy);ctx.stroke();}
+    // 地面
+    ctx.strokeStyle='#bcc2dc';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(gx,Y(0));ctx.lineTo(gx+gw,Y(0));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('高さ', gx+2, gy+10);ctx.fillText('時間 →', gx+gw-52, Y(0)+16);
+    // 本物の道
+    ctx.strokeStyle='#3a4a8c';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var t=0;t<=T+1e-9;t+=0.02){var x=X(t),y=Y(Ytrue(t));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 試しの道
+    if(Math.abs(al)>0.005){
+      ctx.strokeStyle='#b0561e';ctx.lineWidth=2.2;ctx.setLineDash([6,4]);ctx.beginPath();f=true;
+      for(var t2=0;t2<=T+1e-9;t2+=0.02){var x2=X(t2),y2=Y(ypath(t2,al));if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    // 端点
+    ctx.fillStyle='#2f3a72';ctx.beginPath();ctx.arc(X(0),Y(0),5,0,7);ctx.fill();ctx.beginPath();ctx.arc(X(T),Y(0),5,0,7);ctx.fill();
+    // 作用バー（右）
+    var barX=gx+gw+34, barY=gy+14, barW=26, barH=gh-40;
+    var S=action(al), rel=(S-S0)/(Smax||1); // 0=最小
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('作用 S', barX-4, barY-6);
+    ctx.strokeStyle='#bcc2dc';ctx.strokeRect(barX,barY,barW,barH);
+    var fillH=Math.max(0,Math.min(1,rel))*barH;
+    ctx.fillStyle = (Math.abs(al)<0.02)?'#2f7d55':'#b0561e';
+    ctx.fillRect(barX+1, barY+barH-fillH-1+1, barW-2, fillH);
+    // 最小マーカー
+    ctx.strokeStyle='#2f7d55';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(barX-4,barY+barH);ctx.lineTo(barX+barW+16,barY+barH);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2f7d55';ctx.font='10px sans-serif';ctx.fillText('最小', barX+barW+2, barY+barH+3);
+    // readout
+    if(Math.abs(al)<0.02) rd.textContent='α=0：本物の道（放物線）。作用 S は最小（谷の底）。自然はこの道を選ぶ。ここで F=ma が満たされている。';
+    else rd.textContent='α='+al.toFixed(2)+'：本物からずらした道。作用 S は '+(rel*100).toFixed(0)+'% 増えた。どちらへずらしても S は増える＝本物の道が停留（最小）点。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

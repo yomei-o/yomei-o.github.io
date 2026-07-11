@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>摩擦・張力・抗力は、電磁気の化粧違い ── わかる力 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f4; --paper-edge:#e6ddd5;   /* 第3回：赤錆の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a3b2e; --calc-bg:#f3e8e3;
+    --rule:#d9cec5; --hair:#c8bcb2;
+    --acc:#9a4230;    /* 第3回アクセント＝赤錆 */
+    --grid:#e0d5cc;
+    --real:#9a4230; --hooke:#2f5a8c;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd9d2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e0d0c8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.n{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.n th,table.n td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.6;vertical-align:top;}
+  table.n thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.n th.rowh{background:#efe2dc;color:var(--ink);font-weight:600;width:26%;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6f4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a271f;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbf9,#f3ebe6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a271f;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.n{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 3 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第2回：押すの正体は電磁気 → 第3回：摩擦も張力も抗力も、同じ一つの力だった</p>
+  <h1>摩擦・張力・抗力は、<br>電磁気の化粧違い
+    <span class="sub">日常には力の名前がたくさんある ── 摩擦力、張力、垂直抗力、弾性力。<br>でも正体はほぼ全部ひとつ。とくに「ばね \(F=kx\)」がどんな物でも成り立つ理由が、きれいに見える。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第2回の「谷」、放物線、\(F=-dV/dr\)</span>
+    <span>名前は状況の名前、正体はひとつ</span>
+  </div>
+
+  <p class="lead">教科書には力の名前がずらりと並びます ── 摩擦力、張力、垂直抗力、弾性力、粘性抵抗…。たくさんあって覚えるのが大変に思える。でも第2回で「押す」を剥がしたら電磁気が出てきたように、<em>これらの名前のちがう力は、じつはほぼ全部、同じ一つの電磁気の顔ちがい</em>です。名前の多さは、状況の多さであって、力の種類の多さではない。姉妹編でくり返した「名前より中身」が、日常の力にそのまま効きます。そして、ばねの法則 \(F=kx\) が<strong>どんな物でも成り立つ</strong>深い理由も、第2回の“谷”から一発で出ます。</p>
+
+  <h2><span class="n">01</span>名前は状況の名前 ── 正体は、第2回の谷</h2>
+
+  <p>第2回で、二つの原子の間には「位置エネルギーの谷」があると見ました。谷より近いと<strong>反発</strong>、谷より遠いと<strong>引力</strong>。日常の力たちは、この一枚の谷を、どの向き・どの配置で使うかの違いにすぎません。</p>
+
+  <table class="n">
+    <thead><tr><th class="rowh">日常の力の名前</th><th>正体（第2回の谷の、どの使い方か）</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">垂直抗力・接触力</th><td>谷より近い側の<strong>反発</strong>。押し込まれた電子雲が押し返す（第2回そのもの）。</td></tr>
+      <tr><th class="rowh">張力（糸・ロープ）</th><td>谷より遠い側の<strong>引力</strong>。糸の中の原子が隣の原子を電磁気で引き留め合う。</td></tr>
+      <tr><th class="rowh">弾性力（ばね）</th><td>谷の底からの<strong>ずれ</strong>。縮めれば反発、伸ばせば引力で、元に戻そうとする。</td></tr>
+      <tr><th class="rowh">摩擦力</th><td>触れ合う面の原子どうしの<strong>電磁気的な引っかかり・粘着</strong>（凹凸と付着）。</td></tr>
+    </tbody>
+  </table>
+
+  <p>どれも「新しい力」ではありません。担い手は全部、電子と原子核のあいだの<strong>電磁気力</strong>。四つの力のうちの一つが、配置を変えて何通りにも見えているだけ。名前が違うと別物に思えるのは、<em>状況が違うだけ</em>だったのです。</p>
+
+  <h2><span class="n">02</span>なぜ「ばね F=kx」は、どんな物でも成り立つのか</h2>
+
+  <p>ばねの法則 \(F=kx\)（伸び \(x\) に比例して戻す力）は、金属ばねでも、ゴムでも、原子の結合でも、弦でも ── 小さな変形なら<strong>ほぼ何にでも</strong>成り立ちます。なぜそんなに万能なのか。答えは第2回の谷にあります。</p>
+
+  <div class="keybox">
+    <div class="lbl">谷の底は、近くで見るとどれも「放物線」</div>
+    <p style="margin:6px 0 0;">安定な間隔（谷の底）\(r_0\) のまわりで位置エネルギーを展開すると、<br>$$V(r_0+x)\approx V_0+\tfrac12\,k\,x^2\qquad(k=V''(r_0))$$<br>一次の項は消える（極小だから傾きゼロ）。残る主役は \(x^2\) の項＝<strong>放物線</strong>。力はその傾きなので \(F=-dV/dx=-kx\)。</p>
+  </div>
+
+  <p>ポイントは、<em>谷の底がどんな形の谷であっても、十分近くで見れば放物線に見える</em>こと。だから「小さな変形で元に戻る力は、ずれに比例する」＝\(F=kx\) が、物質の詳細によらず現れる。ばねの普遍性は、材料の性質ではなく、<strong>「安定なつり合いの近くは、みな放物線」という幾何</strong>から来ていた。下の図で、実際の力（谷から出る力）と、放物線近似の \(F=-kx\) が、小さなずれではぴったり重なり、大きくずらすと離れていく様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：実際の力（赤、第2回の谷から）と、ばね近似 F=−kx（青）。谷の底ちかくでは重なり、大きくずらすと離れる。だから「小さな変形ならばね」</div>
+    <canvas id="cv" width="680" height="310"></canvas>
+    <div class="controls">
+      <label>つり合いからのずれ x（左＝縮める／右＝伸ばす）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="-0.22" max="0.7" step="0.01" value="0"/>
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--real);"></i>実際の力（谷の勾配）</span>
+      <span><i class="swatch" style="background:var(--hooke);"></i>ばね近似 F=−kx</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 名前の多さは、幻</h2>
+
+  <p>第3回の結論。日常にあふれる力の名前 ── 摩擦・張力・抗力・弾性 ── は、<strong>同じ一つの電磁気を、状況ごとに呼び分けているだけ</strong>でした。力の種類が多いのではなく、状況が多い。姉妹編でくり返した「名前(見た目)ではなく中身(定義)を見よ」が、力学の入門でそのまま起きています。</p>
+
+  <div class="keybox">
+    <div class="lbl">置き換えの二歩目</div>
+    <p style="margin:6px 0 0;">「摩擦力・張力・垂直抗力・弾性力」（たくさんの名詞） → 実体は「原子間の電磁気的な相互作用（＝第2回の谷）を、押す/引く/ずらす、どの向きで使うか」。<br>名前は関係の“場面”の名前。中身はひとつの関係。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 摩擦だけは、まだ手強い</span>
+    <p style="margin-top:0;">「摩擦＝面の凹凸の引っかかり」は入口の絵で、実際の摩擦はもっと複雑です。本当に接触している面積（真実接触面積）はごくわずかで、そこでの<strong>凝着（くっつき）</strong>や塑性変形が効き、「なぜ摩擦力がだいたい面圧に比例するのか（アモントンの法則）」の完全な説明は、いまも研究が続くテーマ。ただし<em>担い手が電磁気である</em>という今回の結論は揺るぎません。</p>
+    <p style="margin-bottom:0;">また \(F=kx\) は<strong>小さな変形でだけ</strong>成り立つ近似です（谷の底の放物線近似）。大きく伸ばせば比例からずれ、やがて谷を越えて壊れる（結合が切れる）。図の“離れていく”がそれです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>金属でもゴムでも「小さな変形なら \(F=kx\)」が成り立つのはなぜか。一言で。
+        <details><summary>答えを見る</summary><div class="ans">安定なつり合い（位置エネルギーの谷の底）は、近くで見るとどれも放物線 \(V\approx V_0+\tfrac12kx^2\) になり、その傾きが \(F=-kx\) だから。材料でなく“谷の底は放物線”という幾何が理由。</div></details>
+      </li>
+      <li>糸の張力（引く力）は、第2回の谷のどちら側を使っているか。
+        <details><summary>答えを見る</summary><div class="ans">谷より遠い側（引力側）。糸の中の原子が、隣の原子を電磁気で引き留め合っている。押す側（反発）が垂直抗力。</div></details>
+      </li>
+      <li>「力の名前がたくさんある」のは、力の種類が多いからではない。では何が多いのか。
+        <details><summary>答えを見る</summary><div class="ans">状況（配置・向き）が多い。正体は一つの電磁気で、それを押す/引く/ずらす、面/糸/ばね…と場面ごとに呼び分けているだけ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>ひとつの谷が、たくさんの名前になる</h2>
+    <p>摩擦・張力・垂直抗力・弾性力 ── 日常の力の名前は多いが、正体は第2回の「原子間の電磁気の谷」ひとつ。押す側（反発）が抗力、引く側が張力、底からのずれが弾性、面の引っかかりが摩擦。名前は状況の名前で、力の種類ではない。とくに \(F=kx\) がどんな物でも成り立つのは、<strong>安定なつり合いの近くは、どんな谷も放物線</strong>という幾何のため。</p>
+    <p>剥がして見えたのは、姉妹編と同じ「名前より中身」。力＝関係、その関係は電磁気ひとつ、というのが日常スケールの結論でした。── ここまで「日常の力＝電磁気」を見てきた。次回は毛色が変わって、<strong>「そもそも力じゃない力」</strong>＝遠心力・コリオリ力に踏み込みます。座標を回した瞬間に湧いて出る、幻の力の話です。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第4回</span>
+    「慣性力は、力じゃない力」。カーブで外に振られる遠心力、台風を渦にするコリオリ力 ── これらは押し返す電子雲も、担い手の粒子も持たない。<strong>座標を回したせいで湧いて出る“見かけの力”</strong>で、座標を選び直せば消える。第1回で予告した「\(F=ma\) の足場は座標に依る」の回収。ここから「力を消す」というテーマが始まり、第5回の重力へつながります。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第3回、物理好きの高校生・大学生向け読み物です。摩擦・張力・垂直抗力・弾性力などの巨視的な力がすべて電磁相互作用（＋量子効果）に由来すること、フックの法則 \(F=kx\) が安定平衡点まわりのポテンシャルの二次（調和）近似 \(V\approx V_0+\tfrac12kx^2\) から普遍的に生じることは、確立した内容です。摩擦の巨視的法則（アモントン-クーロンの法則）の微視的起源は真実接触面積・凝着・塑性等が絡み、完全な第一原理的説明は現在も研究課題です。\(F=kx\) は小変形（調和近似が有効な範囲）でのみ成り立ちます。図の力は第2回のレナード-ジョーンズ型ポテンシャルの勾配を用いた概念図で、特定物質の実測ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、小さなずれでは実際の力とばね近似が重なることが見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 第2回と同じ谷。力 F(r) = -dV/dr = 4(12/r^13 - 6/r^7)
+  function Fr(r){ return 4*(12*Math.pow(1/r,13) - 6*Math.pow(1/r,7)); }
+  var r0=Math.pow(2,1/6);           // つり合い（谷の底）
+  var dlt=1e-4, k=(Fr(r0-dlt)-Fr(r0+dlt))/(2*dlt); // k=-F'(r0)
+  var XMIN=-0.22, XMAX=0.7, FLO=-3.2, FHI=6.5;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=48;
+    var x=parseFloat(sk.value); vk.textContent=x.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    function X(xx){return pad+(xx-XMIN)/(XMAX-XMIN)*(w-pad-14);}
+    function Y(f){var ff=f;if(ff>FHI)ff=FHI;if(ff<FLO)ff=FLO;return 12+(FHI-ff)/(FHI-FLO)*(h-pad-12);}
+    // grid
+    ctx.strokeStyle='#efe4dc';ctx.lineWidth=1;
+    for(var g=0;g<=5;g++){var yy=12+g*(h-pad-12)/5;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // F=0 線 と x=0 線
+    ctx.strokeStyle='#d8c9c2';ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(w-8,Y(0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(X(0),12);ctx.lineTo(X(0),h-pad);ctx.stroke();ctx.setLineDash([]);
+    // axes
+    ctx.strokeStyle='#c8bcb2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,12);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('つり合いからのずれ x →', w-200, h-pad+18);
+    ctx.fillText('縮める', pad+2, h-pad+18); ctx.fillText('伸ばす', w-52, h-pad+18);
+    ctx.save();ctx.translate(14,(h-pad+12)/2);ctx.rotate(-Math.PI/2);ctx.fillText('力 F',0,0);ctx.restore();
+    ctx.fillText('つり合い', X(0)-24, 22);
+    // 実際の力（谷の勾配）
+    ctx.strokeStyle='#9a4230';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var xx=XMIN;xx<=XMAX+1e-9;xx+=0.005){var fr=Fr(r0+xx);var yv=Y(fr);var x1=X(xx);if(f){ctx.moveTo(x1,yv);f=false;}else ctx.lineTo(x1,yv);}
+    ctx.stroke();
+    // ばね近似 F=-k x
+    ctx.strokeStyle='#2f5a8c';ctx.lineWidth=2.2;ctx.setLineDash([6,4]);ctx.beginPath();f=true;
+    for(var x2=XMIN;x2<=XMAX+1e-9;x2+=0.01){var fh=-k*x2;var yv2=Y(fh);var xa=X(x2);if(f){ctx.moveTo(xa,yv2);f=false;}else ctx.lineTo(xa,yv2);}
+    ctx.stroke();ctx.setLineDash([]);
+    // markers
+    var mx=X(x), realF=Fr(r0+x), hookeF=-k*x;
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,12);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#9a4230';ctx.beginPath();ctx.arc(mx,Y(realF),5.2,0,7);ctx.fill();
+    ctx.fillStyle='#2f5a8c';ctx.beginPath();ctx.arc(mx,Y(hookeF),5.2,0,7);ctx.fill();
+    // readout
+    var diff=Math.abs(realF-hookeF), rel=Math.abs(hookeF)>0.01?diff/Math.abs(hookeF)*100:0;
+    if(Math.abs(x)<0.12){ rd.textContent='ずれ x='+x.toFixed(2)+'：実際の力とばね近似 F=−kx がほぼ一致（ずれ '+rel.toFixed(0)+'%）。小変形なら“ばね”。'; }
+    else { rd.textContent='ずれ x='+x.toFixed(2)+'：大きくずらすと、実際の力（赤）が放物線近似（青）から外れてくる。ばねは小変形だけの近似。'; }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

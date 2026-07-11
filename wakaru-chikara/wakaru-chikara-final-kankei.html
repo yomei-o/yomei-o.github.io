@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力は、結局あったのか ── わかる力 最終回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fa; --paper-edge:#dee1ea;   /* 最終回：スレートの紙（総括） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3d4358; --calc-bg:#e9ebf1;
+    --rule:#d3d6e0; --hair:#c1c5d2;
+    --acc:#4a4f6a;    /* 最終回アクセント＝スレート */
+    --grid:#dcdfe8;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d4d8e4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cdd1dd;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafbfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f8fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#31374a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaecf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .close{margin:24px 0 0;padding:18px 24px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#31374a;}
+  .close .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.close,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">最終回 ／ 「力」という言葉の、店じまい</span></div>
+  <p class="eyebrow">第1回から12回、剥がし続けた末に ── 力は、結局あったのか</p>
+  <h1>力は、結局あったのか
+    <span class="sub">押す・引く・重い。握れる手ごたえから始めて、一枚ずつ剥がしてきた。<br>最後に残ったのは、モノとしての力ではなく、関係・幾何・対称性、そして消せない曲率だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1〜12回ぜんぶ</span>
+    <span>力は名詞ではなく、関係の名前</span>
+  </div>
+
+  <p class="lead">第1回で \(F=ma\) の円環を突いて「力は関係の名前かもしれない」と旗を立て、そこから12回、力の正体を一枚ずつ剥がしてきました。押すは電磁気、慣性力は座標、重力は幾何、本物の力は場のやりとり、起源はゲージのつなぎ、かたちは空間の次元、そして本体は消せない曲率。剥がし終えて、最後に正面から問います ── <strong>で、力は結局「あった」のか?</strong> 握れるモノとしての力を探す旅は、意外な場所にたどり着きました。今回は、そのたどり着いた場所を確かめ、「力」という言葉を、静かに店じまいします。</p>
+
+  <h2><span class="n">01</span>剥がしの階段を、もう一度降りる</h2>
+
+  <p>下の図は、この12回でめくってきた層です。表面の「手ごたえ」から始めて、一段ずつ降りると、力の“正体”が次々に別の言葉へ置き換わっていく。スライダーで、いちばん深いところまで降りてみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：剥がしの階段。上＝日常の手ごたえ、下へ降りるほど「力」の正体が別の言葉に置き換わる。最深部に残るのは、消せない曲率＝関係の芯</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>どこまで剥がすか（下へ降りる）<span class="val" id="vk">0</span>
+        <input type="range" id="sk" min="0" max="8" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">02</span>答え ── 名詞としての力は、ほとんど消えた</h2>
+
+  <p>剥がし終えた結論。<strong>「モノとして握れる力」は、ほとんど残りませんでした。</strong> 押す力は電子雲の関係、慣性力と重力の大半は座標・幾何の帳尻、本物の力は場を介したやりとり、その根は局所対称性のつなぎ。私たちが「力がある」と感じるとき、実際に<em>そこにあるのは、二者の間の関係・空間の幾何・対称性の構造</em>であって、物体が握っている“力という物質”ではなかった。</p>
+
+  <div class="keybox">
+    <div class="lbl">力の、最後の定義</div>
+    <p style="margin:6px 0 0;"><strong>力とは、名詞（モノ）ではなく、関係の名前である。</strong><br>局所的な自由（ゲージ・座標）を認めたときに現れる“つなぎ”のうち、見方で消せる帳簿の部分と、どうやっても消せない曲率の部分 ── その全体を、私たちは「力」と呼んできた。握れる実体ではなく、<em>関係の呼び名</em>だった。</p>
+  </div>
+
+  <h2><span class="n">03</span>でも「力」という言葉は、捨てなくていい</h2>
+
+  <p>誤解しないでください ── だから力なんて幻だ、と言いたいのではありません。橋を設計するにも、ロケットを飛ばすにも、\(F=ma\) と力の言葉は<strong>正しく、有効に効きます</strong>。深く見れば関係でも、日常や工学のスケールでは「力」という言葉は、この上なく便利で正確な近似。このシリーズがしたのは、言葉を捨てることではなく、<em>その言葉が本当は何を指していたのかを知る</em>ことでした。名前の裏の中身を見る ── 第1回から一貫した姿勢です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 姉妹編と、同じ一点で握手する</span>
+    「わかる力」で剥がした結論 ── <em>絶対のモノではなく、関係・比・幾何・対称性が物理</em> ── は、姉妹編「わかる宇宙論」がずっと言ってきたことと、まったく同じ一点です。あちらは光速と宇宙で、こちらは力で、別々の入口から入って、同じ部屋にたどり着いた。<strong>表面で動く値ではなく、その裏の消せない関係（不変な構造・曲率）を見よ</strong> ── 二つのシリーズが、ここで手を握ります。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>店じまい ── そして、まだ開いている扉</h2>
+
+  <p>第1回の問い「\(F=ma\) は法則か定義か」から始まった旅は、「力は関係の名前」という答えに帰りました。円は閉じた。でも、閉じきらない扉も正直に残っています ── 重力を他の力と同じ土俵にのせる<strong>量子重力</strong>、四つを一つにする<strong>大統一</strong>の決定的証拠、そして強い力の<strong>閉じ込めの証明</strong>（ミレニアム問題）。剥がしの旅は、分かることの果てまで来て、その先に「まだ誰も知らない」を、はっきり指させるようになった。良い問いは、答えの半分であると同時に、次の問いの地図でもあります。</p>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">シリーズまとめ</span>力は、握れなかった。でも、確かにあった</h2>
+    <p>押す手ごたえから始めて剥がすと、力は電磁気になり、座標になり、幾何になり、場のやりとりになり、ゲージのつなぎになり、最後は消せない曲率＝関係の芯に行き着いた。<strong>名詞としての力はほとんど消え、残ったのは二者の間の関係・空間の幾何・対称性の構造</strong>。それでも \(F=ma\) は日常と工学で正確に効く ── 力という言葉は、関係を指す、便利で有効な呼び名だった。</p>
+    <p>第1回「力は関係の名前」に、私たちは正しくたどり着きました。握れるモノは見つからなかったけれど、その代わりに、力の裏でずっと働いていた<em>関係と幾何と対称性</em>という、もっと確かなものが見えた。<strong>表面の値ではなく、その裏の消せない関係を見よ</strong> ── それが物理で、それがこのシリーズでした。<strong>ここで「わかる力」本編を閉じます。読んでくれて、ありがとう。</strong></p>
+  </div>
+
+  <div class="close">
+    <span class="lbl">本編、完 ── このあと番外編へ</span>
+    本編はここまで。でも力の話には、まだ面白い脇道があります ── <strong>「波と力」</strong>（力から波が生まれ、力そのものが波だった）、<strong>「力の速さ」</strong>（力は瞬時に伝わらない・変化は光速で追いかける）、そして<strong>「AIと力」</strong>（AIの学習は、損失の地形を転がる力の運動だった）。番外編で、もう少しだけ深掘りします。またどこかの“消せない曲率”のほとりで。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ最終回、物理好きの高校生・大学生向け読み物です。本シリーズは、巨視的な接触力・摩擦・張力・抗力が電磁相互作用に由来すること、慣性力・重力（局所的）が座標選択で消せること、基本的な力が場の量子論のゲージ場（接続）として記述され、局所ゲージ／座標対称性から要請されること、消せない残りが曲率（場の強さ・時空曲率）であることを、確立した物理に基づいて平易化してきました。量子重力・大統一・強い力の閉じ込めの証明は未解決の課題です。「力は名詞でなく関係」という表現は、力・エネルギー・運動量の枠組みの有効性を否定するものではなく、その物理的中身が関係・幾何・対称性にあることを述べたものです。姉妹編「わかる宇宙論」と主題を共有します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、剥がしの階段を最深部まで降りられます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var LAYERS=[
+    {t:'表面：押す・引く・重い', s:'握れる手ごたえ。ここから旅が始まった。', ep:'第1回'},
+    {t:'日常の力＝電磁気', s:'押す・摩擦・張力・抗力は、電子雲どうしの電磁気の化粧違い。', ep:'第2・3回'},
+    {t:'慣性力＝座標の帳尻', s:'遠心力は座標を回した見かけ。慣性系で消える。', ep:'第4回'},
+    {t:'重力＝時空の幾何', s:'自由落下が真っ直ぐ。重さは床が押す電磁気だった。', ep:'第5回'},
+    {t:'力＝場のやりとり', s:'離れた二者は、担い手（場の粒）を交換して力を及ぼす。', ep:'第6回'},
+    {t:'強さ＝走る量', s:'力の強さは固定でなく、見る細かさで走る。三つは統一へ寄る。', ep:'第7・8回'},
+    {t:'起源＝ゲージのつなぎ', s:'局所的な自由を認めると、つじつま合わせに力が生まれる。', ep:'第9回'},
+    {t:'かたち＝空間と担い手', s:'1/r²は3次元の指紋。強い力だけ逆さま（閉じ込め）。', ep:'第10・11回'},
+    {t:'本体＝消せない曲率', s:'帳簿（座標・ゲージ）は消せる。曲率＝関係の芯は、消せない。', ep:'第12回'}
+  ];
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var k=parseInt(sk.value,10); vk.textContent=k;
+    ctx.clearRect(0,0,w,h);
+    var n=LAYERS.length, pad=14, top=16, bh=(h-top-70)/n;
+    for(var i=0;i<n;i++){
+      var y=top+i*bh, revealed=(i<=k), cur=(i===k);
+      // 深いほど濃いスレート
+      var shade = 250 - i*12;
+      ctx.fillStyle = revealed? ('rgb('+(shade-8)+','+(shade-6)+','+(shade+4)+')') : '#f2f3f7';
+      if(cur) ctx.fillStyle='#4a4f6a';
+      ctx.strokeStyle= cur? '#33374d' : '#d3d6e0';
+      ctx.lineWidth= cur?2:1;
+      ctx.beginPath();ctx.rect(pad, y+3, w-2*pad, bh-6);ctx.fill();ctx.stroke();
+      // テキスト
+      ctx.font='bold 13.5px sans-serif';
+      ctx.fillStyle = cur? '#fff' : (revealed? '#25272e' : '#b6bac6');
+      ctx.fillText(LAYERS[i].t, pad+14, y+bh/2-1);
+      ctx.font='11px sans-serif';
+      ctx.fillStyle = cur? '#dfe1ee' : (revealed? '#6b6f7e' : '#c5c8d2');
+      ctx.fillText(LAYERS[i].ep, w-pad-64, y+bh/2-2);
+      // 剥がしの矢印
+      if(i>0 && revealed){ ctx.fillStyle= cur?'#fff':'#9aa0b2';ctx.font='11px sans-serif';ctx.fillText('↓ 剥がす', pad+14, y+2); }
+    }
+    // 現在層の正体を下部に大きく
+    ctx.fillStyle='#3d4358';ctx.font='12px sans-serif';
+    ctx.fillText('この深さでの「力」の正体：', pad, h-42);
+    ctx.fillStyle='#25272e';ctx.font='bold 14px sans-serif';
+    ctx.fillText(LAYERS[k].s, pad, h-22);
+    rd.textContent='【'+LAYERS[k].ep+'】'+LAYERS[k].t+' ── '+LAYERS[k].s;
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

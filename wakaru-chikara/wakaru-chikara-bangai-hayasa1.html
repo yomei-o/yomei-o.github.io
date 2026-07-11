@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力は瞬時には伝わらない ── わかる力 番外編・力の速さ①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f2; --paper-edge:#ebe0d2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a4a1a; --calc-bg:#f4e9dd;
+    --rule:#dbcdba; --hair:#cbbaa2;
+    --acc:#b0561e;
+    --grid:#e2d5c2;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0ddc2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddccb2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf7;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6ef;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a2c12;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf9,#f4ebde);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a2c12;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力の速さ ①（三部作その1）</span></div>
+  <p class="eyebrow">波と力を終えて → 「そもそも力は、どれくらいの速さで伝わるのか」</p>
+  <h1>力は瞬時には<br>伝わらない
+    <span class="sub">太陽がいま消えても、地球が気づくのは<em>8分後</em>。力（場の変化）は、瞬時ではなく光速で追いかけてくる。<br>ニュートンの「遠隔作用（瞬時）」は、じつは便利な近似だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回の場、波②の放射、光速 c</span>
+    <span>力の変化は c で伝わる</span>
+  </div>
+
+  <p class="lead">波と力の三部作で「力を伝えるのは場、その場は揺らせば波（光）」と見ました。では素朴な疑問 ── <strong>その力（や波）は、どれくらいの速さで伝わるのか?</strong> 「力の速さ」をめぐっては誤解が多く、この番外クラスタ三回で丁寧にほぐします。一本目の結論は明快 ── <em>力は瞬時には伝わらない。力（場の変化）は光速 \(c\) で追いかけてくる</em>。ニュートンが描いた「離れた二者が瞬時に引き合う（遠隔作用）」は、実は光速がとても速いための<strong>近似</strong>だったのです。</p>
+
+  <h2><span class="n">01</span>太陽が消えても、8分間は気づかない</h2>
+
+  <p>思考実験。もし太陽がいまこの瞬間に<strong>忽然と消えた</strong>ら、地球はいつ気づくか。ニュートンの遠隔作用（力は瞬時）なら、<em>その瞬間に</em>地球は引き手を失って飛び出すはず。でも実際は違います。第6回で見たように、力は<strong>場</strong>を介して伝わる。太陽が消えたという“報せ”＝重力場の変化は、空間を光速で伝わってくる。太陽までは光で約8分。だから ── <strong>地球は8分間、何も知らずに、消えた太陽の周りを回り続ける</strong>。光が消えるのと、引力が消えるのが、同時に8分後にやってくる。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 変化は c で追いかける</div>
+    <p style="margin:6px 0 0;">力そのものではなく、力の<strong>変化（報せ・news）</strong>が伝わる速さが \(c\)。<br>源に何か起きても、距離 \(r\) 離れた相手が気づくのは \(r/c\) だけ後。<br>ニュートンの「瞬時」は、\(c\) が桁違いに速いための近似だった。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：太陽が t=0 に消える。変化（報せ）は光速で外へ広がる（オレンジの輪）。輪が地球に届くまで、地球は消えた太陽の重力を感じ続ける</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>太陽が消えてからの時間 t（分）<span class="val" id="vk">0</span>
+        <input type="range" id="sk" min="0" max="16" step="0.1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">02</span>なぜ光速が上限なのか ── 因果律</h2>
+
+  <p>「力は瞬時」がダメな、もっと深い理由があります。相対論では、\(c\) を超えて<strong>情報</strong>を送ると、見る人によって<em>原因と結果の順序が逆転</em>してしまう。結果が原因より先に来る世界は、因果律が壊れる。だから、力であれ何であれ、<strong>情報を運ぶものは \(c\) を超えられない</strong>。力は相手に「源が動いた」という情報を伝える手段なので、その伝達も当然 \(c\) 以下。瞬時の遠隔作用は、因果律と両立しないのです。</p>
+
+  <h2><span class="n">03</span>重力の速さも、光速だった ── 実証済み</h2>
+
+  <p>「重力も光速で伝わる」は長らく理論的な予言でしたが、いまや<strong>観測で確かめられています</strong>。2017年、はるか彼方で中性子星どうしが合体し、<em>重力波</em>と<em>ガンマ線（光）</em>を同時に放ちました（GW170817）。両者は約1億3千万光年を旅して地球に届き、その到着時刻の差はわずか<strong>1.7秒</strong>。これほどの長旅でほぼ同時ということは ── <strong>重力の伝わる速さは、光速に、けた違いの精度で一致</strong>する。第6回・波②で見た「力を担う場の変化＝波」は、重力でも光速で飛ぶ、と実証されたのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 波②と、ここで合流</span>
+    波②で「力を担う場を揺らすと波（光）が飛ぶ」と見ました。その波の速さが \(c\)。だから力の<em>変化</em>が伝わる速さも \(c\) ── 同じことです。静かな力から動く波へ、そして波の速さが力の変化の速さ。重力波の観測は、この絵が重力にも当てはまることの、直接の証拠でした。<strong>力の変化＝場の波＝光速</strong>、が一本に通ります。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 「瞬時の力」は近似だった</h2>
+
+  <p>力の速さ①の結論。<strong>力は瞬時には伝わらない。力の変化は、場を通じて光速 \(c\) で伝わる。</strong> ニュートンの遠隔作用（瞬時に引き合う）は、\(c\) が日常の距離では一瞬に思えるほど速いための、優秀な近似にすぎなかった。相対論・因果律が \(c\) を上限に強制し、重力波の観測が「重力の速さ＝光速」を裏づけた。第6回の「力は場を介する」に、「その場の変化は \(c\) で伝わる」という時間の一枚が加わりました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ただし“変化”の話</span>
+    <p style="margin-top:0;">\(c\) で伝わるのは力の<strong>変化（新しい情報）</strong>です。じつは、等速でまっすぐ動いている源については、相手が感じる力の向きが<em>源の「現在位置」を指す</em>ように見え、一見「瞬時に追随している（光速超え?）」ように思えることがあります。でもそれは情報を運んでおらず、因果律も破りません ── この微妙な話は、力の速さ③でちゃんと解きます。今回の要点は「<strong>源に本当の変化（加速・消失）が起きたとき、その報せは \(c\) でしか伝わらない</strong>」です。</p>
+    <p style="margin-bottom:0;">「太陽が消える」は因果律を破る非現実的な設定で、実際にはエネルギー保存等で起こり得ませんが、伝達速度を考える思考実験としては有効です。図の距離・時間は模式（地球＝光で約8分）で、軌道运動は簡略化しています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>太陽が消えたら、地球が引力を失うのはいつか。なぜか。
+        <details><summary>答えを見る</summary><div class="ans">約8分後（太陽までの光の到達時間 r/c）。力は場を介して伝わり、変化は光速で伝わるから。それまで地球は消えた太陽の重力を感じ続ける。光が消えるのと同時。</div></details>
+      </li>
+      <li>「力は瞬時に伝わる」がダメな、相対論的な理由は。
+        <details><summary>答えを見る</summary><div class="ans">c を超えて情報を送ると、見る人により原因と結果の順序が逆転し因果律が壊れるから。力は情報を運ぶので c を超えられない。瞬時の遠隔作用は因果律と両立しない。</div></details>
+      </li>
+      <li>「重力の速さ＝光速」はどうやって確かめられたか。
+        <details><summary>答えを見る</summary><div class="ans">2017年の中性子星合体（GW170817）で、重力波とガンマ線が約1.3億光年を旅して到着時刻差わずか1.7秒。長旅でほぼ同時＝重力の速さは光速に高精度で一致。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>変化は、光速で追いかけてくる</h2>
+    <p>力は瞬時には伝わらない。太陽が消えても地球が気づくのは約8分後 ── 力の変化（報せ）は場を通じて光速 \(c\) で伝わるから。ニュートンの遠隔作用（瞬時）は、\(c\) が桁違いに速いための近似。相対論・因果律が \(c\) を上限に強制し、2017年の重力波観測（GW170817）が「重力の速さ＝光速」を1.7秒の精度で裏づけた。</p>
+    <p>波②の「力を担う場を揺らすと波が飛ぶ、速さ \(c\)」と、ここで合流 ── <strong>力の変化＝場の波＝光速</strong>。第6回の「力は場を介する」に、時間の一枚（伝わるのに \(c\) だけかかる）が加わった。次回は「なぜ<em>ちょうど光速</em>なのか」── 担い手の質量と速さ、そして「射程と速さは別物」という混同を解きます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力の速さ②</span>
+    「なぜ光速なのか ── 担い手の質量と速さ」。力の変化がちょうど \(c\) で伝わるのは、担い手（光子・重力子）が<strong>質量ゼロ</strong>だから。重い担い手（W・Z）の弱い力はどうなる? そして「射程が短い＝伝わるのが遅い」という<em>よくある混同</em>を、はっきり腑分けします（射程≠速さ）。第6回の湯川と再会します。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力の速さ」①、物理好きの高校生・大学生向け読み物です。相互作用が場を介し、場の擾乱（変化）が有限速度 \(c\) で伝播すること（遅延ポテンシャル）、ニュートン的な瞬時遠隔作用がその非相対論的近似であること、\(c\) を超える情報伝達が因果律に反すること、重力の伝播速度が光速に一致することが GW170817（2017年、重力波と電磁波の到着時間差 \(\sim\)1.7秒／距離約1.3億光年）で高精度に検証されたことは、確立した内容です。等速運動する源については場が源の現在位置方向を指す効果があり、これは情報伝達ではありません（力の速さ③で扱います）。「太陽が消える」は因果律・保存則に反する非現実的設定で、思考実験としてのみ用いています。図は距離・時間を簡略化した模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、変化の輪が広がって地球に届く様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var EARTH_MIN=8;  // 地球は光で8分
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseFloat(sk.value); vk.textContent=t.toFixed(1);
+    ctx.clearRect(0,0,w,h);
+    var cx=w*0.30, cy=h/2;
+    var perMin=(Math.min(w*0.6, h*0.42))/16;  // 1分あたりの半径ピクセル
+    var Rearth=EARTH_MIN*perMin;
+    var front=t*perMin;   // 変化の輪の半径
+    var reached = t>=EARTH_MIN;
+    // 地球軌道（点線円）
+    ctx.strokeStyle='#e0d5c2';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,Rearth,0,7);ctx.stroke();ctx.setLineDash([]);
+    // 変化の輪
+    if(t>0.02){
+      ctx.strokeStyle='#b0561e';ctx.lineWidth=2.6;ctx.globalAlpha=.9;
+      ctx.beginPath();ctx.arc(cx,cy,front,0,7);ctx.stroke();ctx.globalAlpha=1;
+      ctx.fillStyle='rgba(176,86,30,0.06)';ctx.beginPath();ctx.arc(cx,cy,front,0,7);ctx.fill();
+      ctx.fillStyle='#8a4a1a';ctx.font='11px sans-serif';ctx.fillText('変化の報せ（c で拡大）', cx+front*0.7+4, cy-front*0.7);
+    }
+    // 太陽
+    if(!reached){
+      var g=ctx.createRadialGradient(cx,cy,3,cx,cy,16);g.addColorStop(0,'#f4c14e');g.addColorStop(1,'#d98a1e');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,15,0,7);ctx.fill();
+      ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('太陽（t=0 に消える）',cx,cy+30);ctx.textAlign='left';
+    } else {
+      ctx.strokeStyle='#b0561e';ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.arc(cx,cy,13,0,7);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx-9,cy-9);ctx.lineTo(cx+9,cy+9);ctx.moveTo(cx+9,cy-9);ctx.lineTo(cx-9,cy+9);ctx.stroke();
+      ctx.fillStyle='#a5311f';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('太陽（消えた）',cx,cy+30);ctx.textAlign='left';
+    }
+    // 地球（右側）
+    var ex=cx+Rearth, ey=cy;
+    ctx.fillStyle= reached? '#a5311f' : '#2166a0';
+    ctx.beginPath();ctx.arc(ex,ey,8,0,7);ctx.fill();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('地球（光で8分）', ex-30, ey-14);
+    // 力の矢印（まだ気づいていないなら太陽方向へ引かれ続ける）
+    if(!reached){
+      ctx.strokeStyle='#2166a0';ctx.fillStyle='#2166a0';ctx.lineWidth=2.2;
+      ctx.beginPath();ctx.moveTo(ex-10,ey);ctx.lineTo(ex-30,ey);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ex-30,ey);ctx.lineTo(ex-22,ey-4);ctx.lineTo(ex-22,ey+4);ctx.closePath();ctx.fill();
+    }
+    // readout
+    if(t<0.05) rd.textContent='t=0：太陽が消えた瞬間。でも変化の報せはまだ広がり始めたばかり。地球はまだ何も知らない。';
+    else if(!reached) rd.textContent='t='+t.toFixed(1)+'分：変化の輪は半径 '+t.toFixed(1)+'分ぶんまで。まだ地球（8分）に届いていない → 地球は消えた太陽の重力を感じ、回り続ける。';
+    else rd.textContent='t='+t.toFixed(1)+'分：ついに輪が地球に到達（8分）。いま初めて引力が消え、同時に太陽の光も消える。力の変化は光速でしか伝わらなかった。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

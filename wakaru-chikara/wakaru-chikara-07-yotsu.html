@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四つの力を、無次元で並べる ── わかる力 第7回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f0; --paper-edge:#e9e0cf;   /* 第7回：古金の紙（一覧・図鑑） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#7a5410; --calc-bg:#f3ecdc;
+    --rule:#ddd2ba; --hair:#ccc0a6;
+    --acc:#9a6a12;    /* 第7回アクセント＝古金 */
+    --grid:#e2d7c0;
+    --grav:#4b3fa0; --em:#b0561e;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdcb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddceac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.f{width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.f th,table.f td{border:1px solid var(--rule);padding:9px 10px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.f thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.f th.rowh{background:#f0e8d6;color:var(--ink);font-weight:600;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7ee;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f4ecdc);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.f{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 7 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第6回：力は担い手のやりとり → 第7回：四つの力を、一枚の表に並べて比べる</p>
+  <h1>四つの力を、<br>無次元で並べる
+    <span class="sub">重力・電磁・強・弱。強さを比べたい ── でも「強さ」を単位つきで言っても比べられない。<br>単位の消えた数＝結合定数でだけ、公平に並ぶ。そして重力の“最弱なのに支配的”という謎が見える。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回のやりとり、姉妹編の α、桁（対数）</span>
+    <span>強さは無次元でしか比べられない</span>
+  </div>
+
+  <p class="lead">第6回で、四つの力はどれも「担い手のやりとり」という同じ仕組みだと見ました。では、その<strong>強さ</strong>はどう違うのか。ここで第1回の教訓が効きます ── 力の絶対値（ニュートン）は単位しだいで、そのままでは比べられない。公平に並べるには、<em>単位の消えた数＝結合定数</em>で測るしかない。姉妹編「わかる宇宙論」の主役 \(\alpha\)（微細構造定数 ≈ 1/137）は、まさに電磁気力の“無次元の強さ”でした。四つを無次元で並べると、驚くほど桁が離れていて ── そして<strong>いちばん弱い重力が、なぜか宇宙を支配している</strong>という謎が、くっきり浮かびます。</p>
+
+  <h2><span class="n">01</span>強さは、無次元でしか比べられない</h2>
+
+  <p>「電磁気と重力、どっちが強い?」に答えるには、両者を<em>同じものさし</em>に載せねばなりません。でも力の値はニュートン単位で、単位を変えれば数字も変わる（第1回・第2回）。そこで、各力について「二つの基本粒子の間で、その力がどれだけ効くか」を<strong>単位の消えた比</strong>にした<strong>結合定数</strong>を使う。電磁気なら、それが \(\alpha=e^2/4\pi\varepsilon_0\hbar c\approx 1/137\) です。</p>
+
+  <table class="f">
+    <thead><tr><th class="rowh">力</th><th>無次元の強さ（目安）</th><th>担い手</th><th>到達距離</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">強い力</th><td>\(\alpha_s \sim 1\)</td><td>グルーオン</td><td>短い（閉じ込め）</td></tr>
+      <tr><th class="rowh">電磁気</th><td>\(\alpha \approx 1/137 \sim 10^{-2}\)</td><td>光子</td><td>無限（1/r²）</td></tr>
+      <tr><th class="rowh">弱い力</th><td>\(\sim 10^{-6}\)（低エネルギーでの実効）</td><td>W・Z</td><td>極短</td></tr>
+      <tr><th class="rowh">重力</th><td>\(\alpha_G=\dfrac{G m_p^2}{\hbar c}\sim 10^{-38}\)</td><td>重力子（仮説）</td><td>無限</td></tr>
+    </tbody>
+  </table>
+
+  <p>この表の衝撃は、<strong>強さが約36桁もばらついている</strong>ことです。強い力を1とすると、重力は \(10^{-38}\) ── 1 と、小数点以下38桁のゼロ。同じ「力」という言葉でくくるのがためらわれるほど違う。そして重力は、四つのうち<em>ダントツで最弱</em>です。</p>
+
+  <h2><span class="n">02</span>最弱の重力が、なぜ宇宙を支配するのか</h2>
+
+  <p>ここが今回の急所。日常でも宇宙でも、私たちを地面に留め、月を回し、星を作り、銀河をまとめているのは重力です。<strong>いちばん弱いのに、大きなスケールでは独り勝ち</strong>。なぜか。理由は強さではなく、<em>打ち消すか、積み上がるか</em>にあります。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── キャンセルするか、しないか</div>
+    <p style="margin:6px 0 0;">電磁気：電荷にプラスとマイナスがあり、物質は中性。集めるほど<strong>打ち消し合って、正味はほぼゼロ</strong>。桁違いに強いのに、大きな物体では顔を出せない。<br>重力：質量（エネルギー）は<strong>正だけ</strong>。打ち消しがなく、集めるほど<strong>ひたすら積み上がる</strong>。おまけに無限遠まで届く。<br>だから、大きな中性の塊（惑星・星）では、弱くてもキャンセルしない重力が勝つ。</p>
+  </div>
+
+  <p>下の図で、物体を大きく（粒子数を多く）していくと、電磁気の正味の力は打ち消しで伸び悩む一方、重力がぐんぐん積み上がって<strong>ある大きさで逆転</strong>する様子を見てください。per-粒子では \(10^{36}\) 倍も強い電磁気が、大きな物体では重力に負ける ── これが「最弱なのに支配的」の正体です。</p>
+
+  <div class="fig">
+    <div class="cap">図：物体を大きくすると（横：含む粒子数、対数）、重力（打ち消さない・紫）は積み上がり、電磁気（中性で打ち消す・橙）は伸び悩む。やがて重力が逆転する</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>物体の大きさ ＝ 含む粒子数 N（右ほど大きい・対数）<span class="val" id="vk">10^10</span>
+        <input type="range" id="sk" min="0" max="30" step="0.1" value="10">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--grav);"></i>重力（打ち消さない）</span>
+      <span><i class="swatch" style="background:var(--em);"></i>電磁気（中性で打ち消す・正味）</span>
+    </div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 「強い/弱い」は無次元の話</h2>
+
+  <p>第7回の結論。四つの力の「強さ」は、ニュートン単位では比べられず、<strong>単位の消えた結合定数でだけ意味を持つ</strong>。第1回「絶対値は約束、比が物理」が、力の比較でそのまま効いた。そして「重力は弱い」「強い力は強い」という言い方は、<em>無次元の結合の大小</em>を指していたのです。姉妹編の \(\alpha\) は、その電磁気版でした。</p>
+
+  <div class="keybox">
+    <div class="lbl">四つを並べて分かること</div>
+    <p style="margin:6px 0 0;">・強さは無次元（\(\alpha_s\sim1,\ \alpha\sim10^{-2},\ \text{弱}\sim10^{-6},\ \alpha_G\sim10^{-38}\)）でだけ比べられる。<br>・「支配的かどうか」は強さだけでは決まらない ── <strong>打ち消すか（電磁気）／積み上がるか（重力）</strong>と<strong>到達距離</strong>が効く。<br>・力ごとの個性（強さ・射程・担い手）は、次回の“走り”で、さらに一枚めくれる。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">表の無次元の強さは<strong>桁の目安</strong>です。とくに弱い力の「\(\sim10^{-6}\)」は、担い手 W・Z が重いための低エネルギーでの<em>実効的</em>な弱さで、本来の結合は電磁気と同程度（電弱統一）。強い力の \(\alpha_s\sim1\) も、次回見るように見るエネルギーで大きく変わります。\(\alpha_G\) は「陽子質量どうし」を基準にした値で、基準粒子を変えれば数値も変わる（重力は質量に依るので無次元化に基準が要る）。</p>
+    <p style="margin-bottom:0;">図は「打ち消す／積み上がる」の対比を示す模式で、粒子数と力の関係を単純化しています（重力 ∝ N²、電磁気の正味は中性度に依存）。逆転する粒子数の位置も概念的なものです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「電磁気と重力、どちらが強いか」に答えるには、なぜ結合定数（無次元）が要るのか。
+        <details><summary>答えを見る</summary><div class="ans">力の絶対値はニュートン単位で、単位を変えれば数字も変わり比べられない（第1回）。単位の消えた結合定数にして初めて、公平に大小を言える。</div></details>
+      </li>
+      <li>重力は最弱（\(\sim10^{-38}\)）なのに、なぜ惑星や星のスケールで支配的になるのか。
+        <details><summary>答えを見る</summary><div class="ans">電磁気は正負が打ち消して中性物体では正味ほぼゼロだが、重力は質量（正のみ）で打ち消さず積み上がり、しかも無限遠まで届くから。強さではなく「打ち消すか積み上がるか」で決まる。</div></details>
+      </li>
+      <li>「重力は弱い」という言い方は、正確には何を指しているか。
+        <details><summary>答えを見る</summary><div class="ans">無次元の結合定数 \(\alpha_G\sim10^{-38}\) が、他の力の結合より桁違いに小さいこと。単位付きの力の値ではなく、比（無次元）の大小の話。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>強さは無次元、支配は打ち消しで決まる</h2>
+    <p>四つの力の強さは、ニュートン単位では比べられず、単位の消えた結合定数でだけ並ぶ ── 強い力 \(\sim1\)、電磁気 \(\alpha\sim10^{-2}\)、弱い力 \(\sim10^{-6}\)、重力 \(\alpha_G\sim10^{-38}\)。約36桁のばらつき。第1回「比が物理」が、力の比較の土台だった。姉妹編の \(\alpha\) は、この電磁気版。</p>
+    <p>そして最弱の重力が宇宙を支配するのは、強さではなく<strong>打ち消さずに積み上がる</strong>から。電磁気は桁違いに強くても、正負が中性で打ち消して大きな物体では消える。重力は質量で積み上がり、無限遠まで届く。── 次回は、この「強さ」が固定値ではなく<em>見るエネルギーで走る</em>ことを見ます。姉妹編・第6回の running を、力の側から。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第8回</span>
+    「力の強さは、“見る細かさ”で変わる」。今回並べた結合定数は、実は固定値ではありません。近づいて（高エネルギーで）見ると、電磁気は強くなり、強い力は逆に弱くなる ── <strong>走る結合定数</strong>。姉妹編「わかる宇宙論」第6回の \(\alpha\) の running を、四つの力の視点から。そして、三つの力が高エネルギーで一点に近づく“統一”の気配まで。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第7回、物理好きの高校生・大学生向け読み物です。基本相互作用を無次元結合で比較すること、電磁気の \(\alpha\approx1/137\)、強い力の \(\alpha_s\sim1\)、弱い力の低エネルギー実効的弱さ（媒介 W/Z が重いため）、重力の \(\alpha_G=Gm_p^2/\hbar c\sim10^{-38}\)（陽子質量基準）は標準的な目安です。重力が巨視的に支配的なのは、質量が正のみで打ち消さず加算的である一方、電磁気は中性物質で相殺するためであり、確立した理解です。数値は桁の目安で、弱い力の結合や \(\alpha_s\) はエネルギースケールに依存します（第8回）。図は「相殺 vs 加算」を示す模式で、粒子数依存や逆転位置は概念的です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、物体を大きくすると重力が電磁気を逆転する様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // 横：L=log10(N)、縦：log10(正味の力)（模式）
+  // 重力：per対で 10^-38 弱いが、質量で加算 → log F_g = 2L - 38
+  // 電磁気：本来 per対で強い（-2）が中性で相殺 → 正味はほぼ頭打ち（√N ゆらぎ的）：log F_e ≈ -2 + 0.5*L まで、ただし上限で頭打ち
+  var LMIN=0, LMAX=30, YLO=-40, YHI=18;
+  function logFg(L){ return 2*L - 38; }
+  function logFe(L){ return -2 + 0.5*L; } // 相殺後に残るゆらぎ的な正味（模式）
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=52;
+    var L=parseFloat(sk.value); vk.textContent='10^'+L.toFixed(0);
+    ctx.clearRect(0,0,w,h);
+    function X(l){return pad+(l-LMIN)/(LMAX-LMIN)*(w-pad-14);}
+    function Y(y){var yy=y;if(yy>YHI)yy=YHI;if(yy<YLO)yy=YLO;return 12+(YHI-yy)/(YHI-YLO)*(h-pad-12);}
+    // grid + y labels
+    ctx.strokeStyle='#efe4dc';ctx.lineWidth=1;ctx.fillStyle='#a98a5a';ctx.font='10.5px sans-serif';
+    for(var yv=-40;yv<=10;yv+=10){var yy=Y(yv);ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();ctx.fillText('10^'+yv,6,yy+4);}
+    // axes
+    ctx.strokeStyle='#ccc0a6';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,12);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('物体の大きさ（粒子数 N, 10^）→', w-250, h-pad+18);
+    // 交点（logFg=logFe → 2L-38 = -2+0.5L → 1.5L=36 → L=24）
+    var Lx=24;
+    // gravity line
+    ctx.strokeStyle='#4b3fa0';ctx.lineWidth=2.8;ctx.beginPath();var f=true;
+    for(var l1=LMIN;l1<=LMAX+1e-9;l1+=0.2){var x=X(l1),y=Y(logFg(l1));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // em line
+    ctx.strokeStyle='#b0561e';ctx.lineWidth=2.8;ctx.beginPath();f=true;
+    for(var l2=LMIN;l2<=LMAX+1e-9;l2+=0.2){var x2=X(l2),y2=Y(logFe(l2));if(f){ctx.moveTo(x2,y2);f=false;}else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+    // 交点マーク
+    ctx.strokeStyle='#9a6a12';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(X(Lx),12);ctx.lineTo(X(Lx),h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#9a6a12';ctx.font='11px sans-serif';ctx.fillText('逆転（重力が勝つ）', Math.min(X(Lx)+6,w-140), 24);
+    // labels
+    ctx.fillStyle='#4b3fa0';ctx.font='12px sans-serif';ctx.fillText('重力（積み上がる）', X(LMAX)-140, Y(logFg(LMAX))+4);
+    ctx.fillStyle='#b0561e';ctx.fillText('電磁気（相殺で頭打ち）', X(6), Y(logFe(6))-8);
+    // marker
+    var mx=X(L);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,12);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#4b3fa0';ctx.beginPath();ctx.arc(mx,Y(logFg(L)),5,0,7);ctx.fill();
+    ctx.fillStyle='#b0561e';ctx.beginPath();ctx.arc(mx,Y(logFe(L)),5,0,7);ctx.fill();
+    // readout
+    if(L<Lx-0.5) rd.textContent='N=10^'+L.toFixed(0)+'（小さい物体）：正味は電磁気が優勢。重力は桁違いに弱く埋もれている。';
+    else if(Math.abs(L-Lx)<=0.5) rd.textContent='N≈10^'+L.toFixed(0)+'：ちょうど逆転域。ここを超えると、弱いはずの重力が勝ち始める。';
+    else rd.textContent='N=10^'+L.toFixed(0)+'（惑星・星の規模）：重力が支配。電磁気は中性で相殺、重力は質量で積み上がるから ── 最弱なのに宇宙を動かす。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

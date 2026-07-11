@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力を、全部消せるか ── わかる力 第12回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#fbf6f9; --paper-edge:#ecdde6;   /* 第12回：梅紫の紙（統一・締め） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#6b2f56; --calc-bg:#f3e6ee;
+    --rule:#e0cdd8; --hair:#d0bac7;
+    --acc:#7d3b63;    /* 第12回アクセント＝梅紫 */
+    --grid:#ecd7e2;
+    --gone:#2f7d55; --resid:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:38px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd2e0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e3cdda;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf9fb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fefbfd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf5f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#40233a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fefbfd,#f2e6ed);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#40233a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:27px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 12 回（本編の締め）／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第4・5・9回で「消せる力」を見た → 第12回：では、どこまで消せて、何が残るのか</p>
+  <h1>力を、全部消せるか
+    <span class="sub">慣性力は座標で消え、重力は自由落下で消え、四つの力は統一で数を減らす。<br>剥がしの旅の頂上から見渡すと ── 消せるのは「帳簿」、消せないのは「曲率」だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4・5回の消える力、第8回の統一、第9回のつなぎ</span>
+    <span>局所的に消せる力 ／ 消えない曲率</span>
+  </div>
+
+  <p class="lead">ここまで11回かけて、力の正体を一枚ずつ剥がしてきました。慣性力は座標の帳尻（第4回）、重力は幾何（第5回）、本物の力は場のやりとり（第6回）、そして根っこは局所対称性のつなぎ（第9回）。剥がすほど「力って、消せるのでは?」という気配が濃くなってきた。最終手前のこの回は、旅の<strong>頂上</strong>から全体を見渡します ── <em>力は、どこまで消せるのか。そして、どうしても消えずに残るものは何か。</em> 答えは、このシリーズ全体を一言に畳みます ── <strong>消せるのは帳簿（ゲージ・座標）、消せないのは曲率（関係の本体）</strong>。</p>
+
+  <h2><span class="n">01</span>消せる力たち ── 座標と自由落下で</h2>
+
+  <p>まず、確かに消せた力を思い出します。<strong>慣性力</strong>（第4回）は、加速する座標を選んだ帳尻だったので、慣性系に戻れば消えた。<strong>重力</strong>（第5回）は、自由落下する座標を選べば、<em>局所的には</em>消えて無重量になった。どちらも「座標（見方）の付け替え」で消える。第9回の言葉でいえば、これらは<strong>ゲージ（局所的な選び方）を取り替えると消える成分</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">消せる ＝ 帳簿（ゲージ・座標）の成分</div>
+    <p style="margin:6px 0 0;">慣性力：慣性系に戻ると消える。<br>重力（の一部）：自由落下系に移ると、その一点では消える。<br>共通点 ── <strong>座標・ゲージの選び方で現れたり消えたりする“見かけ”の成分</strong>。物理の本体ではない。</p>
+  </div>
+
+  <h2><span class="n">02</span>数を減らす ── 統一</h2>
+
+  <p>「消す」のもう一つの形が<strong>統一</strong>です。第8回で、電磁・弱・強の三つの結合が高エネルギーで一点に近づくのを見ました。もし本当に一点で出会うなら、三つは<em>一つの力の枝分かれ</em>で、「三つ」という区別自体が低エネルギーの見かけ ── 高エネルギーでは消える。第9回で見たように、四つの力はどれも「局所対称性のつなぎ」という同じ型でした。<strong>力の“種類の多さ”も、より深い対称性の下では減らせる（消せる）</strong>。四つを、一つの原理へ。</p>
+
+  <h2><span class="n">03</span>でも、消えない残りがある ── 曲率</h2>
+
+  <p>では全部消せるのか? いいえ。第5回で予告した<strong>潮汐力</strong>を思い出してください。自由落下で重力を消しても、<em>広い範囲では</em>場所ごとに重力の向きが違うので、物体は伸ばされたり縮められたりする。この潮汐＝<strong>時空の曲率</strong>は、どんな座標を選んでも消せない。同じことが、電磁気にもあります ── 一点で場をゼロにできても、<strong>ループを一周したときの“回り込み”（場の強さ＝曲率）は、ゲージを変えても不変</strong>。</p>
+
+  <div class="fig">
+    <div class="cap">図：惑星の重力場。スライダーで「自由落下（座標変換）」を強めると、中心の力は消せる（緑＝ゼロへ）。でも周りの潮汐＝曲率は消えず残る（赤）</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>自由落下の強さ（座標変換で中心の力を打ち消す）<span class="val" id="vk">0%</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--gone);"></i>中心の力（消せる＝帳簿）</span>
+      <span><i class="swatch" style="background:var(--resid);"></i>潮汐＝曲率（消えない＝物理）</span>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 消せる帳簿と、消せない曲率</div>
+    <p style="margin:6px 0 0;">力は二層でできている。<br>① <strong>局所的に消せる成分</strong>（座標・ゲージの取り替えで現れ消える＝帳簿）。<br>② <strong>消せない曲率</strong>（一周の回り込み・潮汐。どんな見方でも残る＝物理の本体）。<br>「力を全部消せるか」の答え：<em>帳簿は消せる。曲率は消せない。</em></p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がしの頂上 ── 力は、消せる分と残る分でできていた</h2>
+
+  <p>これが本編の到達点です。第1回で「力は関係の名前」と言い、第9回で「局所的自由が要求するつなぎ」と具体化しました。最後にもう一枚めくると ── そのつなぎ（力）は、<strong>見方を変えれば消える“帳簿”の分</strong>と、<strong>どうやっても消えない“曲率”の分</strong>に分かれていた。私たちが「力」と呼んで感じているものの多くは、実は前者（座標・ゲージの帳尻）で、消せる。消せない後者（曲率）こそが、力の物理的な本体 ── 二者の間に本当に存在する<em>関係の芯</em>です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「全部一つに・全部消す」は、まだ夢の途中</span>
+    <p style="margin-top:0;">統一は<strong>有力だが未確立</strong>です。電磁・弱は電弱統一として実証済みですが、強い力まで含む大統一（第8回）は陽子崩壊などの決定的証拠がなく未確認。そして<strong>重力を他の三つと同じ枠に入れる（量子重力）のは、まだ誰も完成させていません</strong>。重力は局所的に消せる（等価原理）点で他と似ますが、量子論にすると繰り込めない ── 姉妹編「わかる宇宙論」最終回の“開いたままの扉”です。</p>
+    <p style="margin-bottom:0;">「消せる／消せない」の二分は、ゲージ場（接続）と曲率（場の強さ）の関係を平易にした言い方で、数学的には局所的にゲージを標準形にできること、曲率がゲージ不変量であること、に対応します。図は重力場と潮汐の関係を単純化した概念モデルです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>慣性力と重力（の一部）が「消せる」のは、どんな操作によってか。
+        <details><summary>答えを見る</summary><div class="ans">座標（見方）の取り替え。慣性力は慣性系に戻れば、重力は自由落下系に移れば、局所的に消える。ゲージ・座標の選び方で現れ消える“帳簿”の成分だから。</div></details>
+      </li>
+      <li>自由落下で重力を消しても残るものは何か。それは何を意味するか。
+        <details><summary>答えを見る</summary><div class="ans">潮汐力＝時空の曲率。どんな座標でも消せず、これが重力の物理的な本体。局所的に消せる帳簿の下に、消せない曲率が残る。</div></details>
+      </li>
+      <li>「力を全部消せるか」への、この回の答えを一言で。
+        <details><summary>答えを見る</summary><div class="ans">帳簿（座標・ゲージで現れ消える見かけの成分）は消せるが、曲率（一周の回り込み・潮汐＝関係の本体）は消せない。力は、消せる分と消えない分でできている。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">本編まとめ</span>消せるのは帳簿、消せないのは曲率</h2>
+    <p>力は、どこまで消せるか。慣性力は座標で、重力は自由落下で局所的に消え（第4・5回）、四つの力は統一で種類を減らせる（第8・9回）。これらはみな「座標・ゲージの取り替えで現れ消える帳簿の成分」。でも、自由落下でも消えない潮汐＝<strong>曲率</strong>、一点でゼロにしても残るループの回り込み＝<strong>場の強さ</strong>は、どんな見方でも消えない。</p>
+    <p>力は二層 ── <strong>消せる帳簿（ゲージ・座標）</strong>と<strong>消せない曲率（物理の本体）</strong>。第1回「力は関係の名前」は、ここで「見方で消える分と、残る分に分かれる関係」にまで解像された。私たちが感じる力の多くは帳簿で、消せる。消せない曲率こそが、関係の芯。── ただし全統一・量子重力は、まだ夢の途中。最終回は、この旅の意味を締めます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 最終回</span>
+    「力は、結局あったのか」。第1回から剥がし続けた末に残ったのは、モノとしての力ではなく、関係・幾何・対称性、そして消せない曲率でした。「力」という言葉は、結局のところ何を指していたのか ── 言葉の店じまいをして、この旅を閉じます。そのあと番外編で、力を「波」「速さ」「AI」の三方向から、もう少しだけ深掘りします。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第12回、物理好きの高校生・大学生向け読み物です。慣性力・重力が局所的に座標（自由落下系）で消せること、消せない残りが潮汐力＝時空の曲率であること、ゲージ理論で局所的に接続（ゲージ場）を標準形にできる一方で曲率（場の強さ）がゲージ不変量として残ること、電弱統一が実証済みで大統一・量子重力が未確立であることは、いずれも標準的な理解です。「消せる帳簿／消せない曲率」は接続と曲率の関係の平易な言い換えです。図は重力場と潮汐の関係を単純化した概念モデルで、一般相対論の曲率そのものの厳密な描像ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、中心の力は消せるのに潮汐（曲率）が残る様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function arrow(ctx,x,y,vx,vy,col,wd){
+    var L=Math.hypot(vx,vy); if(L<0.6){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,2.6,0,7);ctx.fill();return;}
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=wd||2;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+vx,y+vy);ctx.stroke();
+    var a=Math.atan2(vy,vx);
+    ctx.beginPath();ctx.moveTo(x+vx,y+vy);
+    ctx.lineTo(x+vx-8*Math.cos(a-0.4),y+vy-8*Math.sin(a-0.4));
+    ctx.lineTo(x+vx-8*Math.cos(a+0.4),y+vy-8*Math.sin(a+0.4));ctx.closePath();ctx.fill();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var s=parseInt(sk.value,10)/100; vk.textContent=Math.round(s*100)+'%';
+    ctx.clearRect(0,0,w,h);
+    // 惑星は下方ずっと遠くに（重力は下向き＋わずかに中心へ収束）
+    var pc={x:w/2, y:h+520};
+    // 窓の3x3格子
+    var gx0=w*0.30, gy0=70, dx=(w*0.40)/2, dy=(h-150)/2;
+    var cxRef=gx0+dx, cyRef=gy0+dy; // 中心（基準点）
+    // 各点の重力ベクトル（惑星方向、大きさ一定っぽく）
+    function gvec(x,y){ var ux=pc.x-x, uy=pc.y-y, L=Math.hypot(ux,uy); return {x:ux/L, y:uy/L}; }
+    var gRef=gvec(cxRef,cyRef);
+    var G=44; // 表示スケール
+    var uMag=s; // 自由落下で引く一様場（中心の重力に合わせる割合）
+    // 中心残差 と 潮汐（上下差）を測る
+    function residual(x,y){
+      var g=gvec(x,y);
+      // 一様に引く分：中心の重力方向 gRef を uMag だけ
+      return {x:(g.x - uMag*gRef.x)*G, y:(g.y - uMag*gRef.y)*G};
+    }
+    var centerR = residual(cxRef,cyRef); var centerMag=Math.hypot(centerR.x,centerR.y)/G;
+    var topR = residual(cxRef, gy0); var botR = residual(cxRef, gy0+2*dy);
+    var tidal = Math.hypot(topR.x-botR.x, topR.y-botR.y)/G;
+    // 描画
+    for(var i=0;i<3;i++)for(var j=0;j<3;j++){
+      var x=gx0+i*dx, y=gy0+j*dy;
+      var rv=residual(x,y);
+      var isCenter=(i===1&&j===1);
+      var col = isCenter? '#2f7d55' : '#a83a22';
+      arrow(ctx,x,y,rv.x,rv.y,col, isCenter?2.6:2);
+    }
+    // 中心を丸で強調
+    ctx.strokeStyle='#2f7d55';ctx.setLineDash([3,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(cxRef,cyRef,16,0,7);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('あなた（基準点）',cxRef, gy0-14);
+    ctx.fillText('↓ 惑星の中心はずっと下 ↓', w/2, h-16);ctx.textAlign='left';
+    // readout
+    if(s<0.05) rd.textContent='自由落下 0%：全点に重力（下向き）が働いている。ふつうに重さを感じる状態。';
+    else if(centerMag>0.08) rd.textContent='自由落下 '+Math.round(s*100)+'%：中心の力が弱まってきた（残り '+centerMag.toFixed(2)+'）。でも上下の点はまだ潮汐でずれている（曲率 '+tidal.toFixed(2)+'）。';
+    else rd.textContent='自由落下 ~100%：中心の力はほぼ消えた（無重量）！ でも上下の潮汐＝曲率（'+tidal.toFixed(2)+'）は消えない ── これが座標で消せない重力の本体。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

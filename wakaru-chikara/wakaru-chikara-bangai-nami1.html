@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力から、波が生まれる ── わかる力 番外編・波と力①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf9; --paper-edge:#d9e8e4;   /* 波と力：青緑の紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d5b56; --calc-bg:#e6f0ed;
+    --rule:#cbdcd7; --hair:#b7ccc5;
+    --acc:#1f7a6e;    /* 波と力アクセント＝青緑 */
+    --grid:#d3e4df;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe8e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4faf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1a4741;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1a4741;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・波と力 ①（三部作その1）</span></div>
+  <p class="eyebrow">本編で力を剥がし切った。番外編では、力と“波”の深い縁を追う</p>
+  <h1>力から、波が生まれる
+    <span class="sub">波は、独立した何かではない ── <em>復元力（第3回のばね）と慣性（第1回）が、空間に並んで手をつないだ</em>もの。<br>波とは、力の“伝言ゲーム”。その速さは √(復元力 / 慣性) で決まる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の慣性、第3回のばね、√</span>
+    <span>v = √(張力 / 線密度) = √(復元力 / 慣性)</span>
+  </div>
+
+  <p class="lead">本編12回で、力の正体を関係・幾何・ゲージ・曲率まで剥がしました。番外編では少し目線を変えて、<strong>力と「波」の縁</strong>を三回で追います。波 ── 弦の振動、音、水面、光 ── は、何か独立した“波というもの”があるように感じますが、じつは違う。その一本目は、いちばん素朴な向き：<em>力から、どうやって波が生まれるのか</em>。答えは拍子抜けするほど単純で、しかも本編で作った道具（ばね＝復元力、慣性）だけで組み上がります。<strong>波とは、隣が隣を押す“力の伝言ゲーム”</strong>だったのです。</p>
+
+  <h2><span class="n">01</span>ばね（復元力）＋ 慣性 ＝ 波のタネ</h2>
+
+  <p>たくさんの小さなおもり（質量）を、ばねで数珠つなぎにします。おもり一つを横にはじくと、何が起きるか。第3回で見たように、ばねは<strong>元に戻そうとする復元力</strong>で隣を引っぱる。引っぱられた隣は、第1回の<strong>慣性</strong>のせいで、すぐには動かず<em>少し遅れて</em>動き出す。動いた隣は、さらに次の隣を引っぱる ── この「引っぱる（力）→遅れて動く（慣性）→次を引っぱる」の連鎖が、端から端へ伝わっていく。これが<strong>波</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">波の正体 ── 力の伝言ゲーム</div>
+    <p style="margin:6px 0 0;">復元力（隣を引き戻す力・第3回）＋ 慣性（すぐには動けない・第1回）。<br>この二つが空間に並ぶと、ひとつの揺れが「隣へ、また隣へ」と<strong>遅れて伝わる</strong>。<br>波は独立した実体ではなく、<em>力と慣性の連鎖が伝わっていく現象</em>。</p>
+  </div>
+
+  <h2><span class="n">02</span>波の速さ ＝ √(復元力 / 慣性)</h2>
+
+  <p>では、その伝言はどれくらい速く伝わるか。二つの綱引きで決まります ── <strong>復元力が強い</strong>ほど隣を素早く引くので速い。<strong>慣性（重さ）が大きい</strong>ほど動き出しが鈍いので遅い。弦なら、復元力は<em>張力 \(T\)</em>、慣性は<em>線密度 \(\mu\)</em>（1メートルあたりの重さ）。式にすると、\(F=ma\)（第1回）を鎖に当てはめるだけで、こうなります。</p>
+
+  <div class="calc">
+    <span class="tag">波の速さ</span>
+    $$v=\sqrt{\frac{T}{\mu}}=\sqrt{\frac{\text{復元力の強さ}}{\text{慣性}}}$$
+    <p style="margin-bottom:14px;">ギターの弦をきつく張る（\(T\) 大）と音が高くなる（波が速い）。太い弦（\(\mu\) 大）は低い（波が遅い）── まさにこの式のとおり。波の速さは、媒質のなかの<strong>力と慣性の比</strong>で決まっていた。下の図で、張力を変えて、同じ時間でどこまで波が進むかを見てください。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図：ばねで数珠つなぎのおもりを、左端ではじいた。張力（復元力）を強めると、同じ時間で波が速く伝わる。v=√(T/μ)</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>張力 T（復元力の強さ。右ほど強い）<span class="val" id="vk">1.0</span>
+        <input type="range" id="sk" min="0.2" max="3" step="0.02" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 姉妹編の c·t=一定 とも</span>
+    「波の速さ＝√(復元力/慣性)」は、あらゆる波に共通の形です。音なら復元力＝圧力（空気の弾性）、慣性＝密度。そして光の速さ \(c\) も、真空という“媒質”の電気的・磁気的な復元力と慣性の比 \(c=1/\sqrt{\varepsilon_0\mu_0}\) で書ける ── まったく同じ骨格。姉妹編「わかる宇宙論」で \(c\) を主役にした話と、ここで静かにつながります。<strong>波の速さは、媒質のなかの力の性質そのもの</strong>。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 波は「力の伝わり方」</h2>
+
+  <p>この番外編一本目の結論。<strong>波は、力とは別の何かではなく、力（復元力）と慣性が空間に並んだときの“伝わり方”</strong>でした。ひとつの揺れが、隣を引く力と、遅れて動く慣性の連鎖で、端から端へ運ばれる。だから「波の速さ」を問うことは、「その媒質のなかで、力と慣性がどう釣り合っているか」を問うことと同じ。本編の背骨「力は関係」が、ここでは<em>「波は、力という関係が空間を伝わる姿」</em>という形をとりました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ここでは波動方程式そのものは書かず、\(v=\sqrt{T/\mu}\) の“気持ち”（復元力÷慣性の綱引き）を述べました。厳密には、鎖に \(F=ma\) を適用して連続極限をとると波動方程式 \(\partial^2 y/\partial t^2 = v^2\,\partial^2 y/\partial x^2\) が出ます。また \(v=\sqrt{T/\mu}\) は小さな振れ（線形）での話で、大振幅や、波長で速さが変わる媒質（分散）では修正されます。</p>
+    <p style="margin-bottom:0;">図は横波のパルスを模式化したもので、実際のばね鎖の運動を数値的に解いたものではありません（速さが √T に比例する点だけを再現しています）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>波が伝わるのに、波動方程式を持ち出さずに一言で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">隣を引く復元力（ばね）と、すぐには動けない慣性の連鎖。ひとつの揺れが「引く→遅れて動く→次を引く」と伝わるのが波。</div></details>
+      </li>
+      <li>ギターの弦をきつく張ると音が高くなる（波が速くなる）のはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">張力 T（復元力）が増えるから。v=√(T/μ) で、復元力が強いほど隣を素早く引き、波が速く伝わる。太い弦（μ大）は遅く低い。</div></details>
+      </li>
+      <li>音や光の速さも、同じ形で書けるか。
+        <details><summary>答えを見る</summary><div class="ans">書ける。音は v=√(圧力弾性/密度)、光は c=1/√(ε₀μ₀)。どれも「復元力/慣性」の平方根。波の速さは媒質の力の性質そのもの。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>波は、力の伝言ゲームだった</h2>
+    <p>復元力（第3回のばね）と慣性（第1回）を空間に並べると、ひとつの揺れが「隣を引く→遅れて動く→次を引く」の連鎖で伝わる。これが波。波は独立した実体ではなく、<strong>力と慣性が空間を伝わる姿</strong>。その速さは綱引きで決まり、\(v=\sqrt{T/\mu}=\sqrt{\text{復元力}/\text{慣性}}\)。ギターの弦も、音も、光さえも、同じ骨格で書ける。</p>
+    <p>本編の「力は関係」が、ここでは「波＝力という関係の伝播」になった。次回は逆向き ── <strong>力そのものが、波だった</strong>という話へ。電磁気力の場は、静かなときは近くの力、揺らすと遠くへ飛ぶ波（光）。同じ一つの場の、二つの顔を見ます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 波と力②</span>
+    「力そのものが、波だった」。今回は「力→波」でしたが、次は「力＝波」。電磁気力を伝える場は、静かなときは近くの物を引く/押す“力”として、揺らすと遠くへ飛ぶ“波（光）”として現れる ── 同じ一つの電磁場の、二つの顔。第6回「力＝担い手のやりとり」の担い手（光子）が、場の波の粒だったことと握手します。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「波と力」①、物理好きの高校生・大学生向け読み物です。連続弾性体（張力 T・線密度 μ の弦）を伝わる横波の速さ \(v=\sqrt{T/\mu}\)、一般に波速が「復元力/慣性」の平方根で決まること、質点＋ばね鎖に \(F=ma\) を適用し連続極限で波動方程式 \(\partial_t^2 y=v^2\partial_x^2 y\) が導かれること、音速 \(v=\sqrt{K/\rho}\)、光速 \(c=1/\sqrt{\varepsilon_0\mu_0}\) が同型であることは、確立した内容です。\(v=\sqrt{T/\mu}\) は微小振幅（線形）近似で、分散や非線形では修正されます。図は横波パルスの模式で、速さの √T 依存のみを再現した概念モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、張力を強めると波が速く進む様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var MU=1.0, TMAX=3.0;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var T=parseFloat(sk.value); vk.textContent=T.toFixed(2);
+    var v=Math.sqrt(T/MU);
+    ctx.clearRect(0,0,w,h);
+    var y0=h*0.55, xL=40, xR=w-40, span=xR-xL, A=42, wd=42;
+    // 同じ経過時間での波の先端位置：√T に比例（vmax=√TMAX）
+    var frac=v/Math.sqrt(TMAX/MU);        // 0..1
+    var xc=xL + frac*span*0.92;
+    // ビーズ列＋ばね
+    var N=26;
+    function yAt(x){ return y0 - A*Math.exp(-Math.pow((x-xc)/wd,2)); }
+    // ばね（線）
+    ctx.strokeStyle='#9fc0b8';ctx.lineWidth=1.5;ctx.beginPath();
+    for(var i=0;i<N;i++){ var x=xL+i/(N-1)*span, y=yAt(x); if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y); }
+    ctx.stroke();
+    // ビーズ
+    for(var j=0;j<N;j++){ var xb=xL+j/(N-1)*span, yb=yAt(xb);
+      ctx.fillStyle='#1f7a6e';ctx.beginPath();ctx.arc(xb,yb,4.2,0,7);ctx.fill(); }
+    // 基準線
+    ctx.strokeStyle='#cbdcd7';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(xL,y0);ctx.lineTo(xR,y0);ctx.stroke();ctx.setLineDash([]);
+    // 伝言の矢印（先端の少し後ろで、隣を引き上げる力）
+    var xa=xc-wd*0.9, ya=yAt(xa);
+    ctx.strokeStyle='#a83a22';ctx.fillStyle='#a83a22';ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.moveTo(xa, ya+26);ctx.lineTo(xa, ya+6);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xa,ya+6);ctx.lineTo(xa-4,ya+14);ctx.lineTo(xa+4,ya+14);ctx.closePath();ctx.fill();
+    ctx.font='11px sans-serif';ctx.fillText('復元力が隣を引き上げる', xa+8, ya+22);
+    // ラベル
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('はじいた端', xL-6, y0+30);
+    ctx.fillStyle='#1d5b56';ctx.font='12px sans-serif';ctx.fillText('波の先端 →', Math.min(xc+8,w-90), yAt(xc)-12);
+    rd.textContent='張力 T='+T.toFixed(2)+'（μ=1）→ 波の速さ v=√(T/μ)='+v.toFixed(2)+'。同じ時間なら、復元力が強いほど波は遠くへ。弦をきつく張ると音が高い（速い）のはこれ。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

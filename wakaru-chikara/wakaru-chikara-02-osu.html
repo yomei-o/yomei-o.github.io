@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「押す」の正体は、全部 電磁気 ── わかる力 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f3; --paper-edge:#ece6d8;   /* 第2回：琥珀の紙（電磁気） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a5a1e; --calc-bg:#f4ecdf;
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --acc:#b06a12;    /* 第2回アクセント＝琥珀 */
+    --grid:#e0d8c6;
+    --rep:#a83a22; --att:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0e0c4 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2d3ba;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfaf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7f0;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3413;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcf9,#f6f2e9);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3413;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 2 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第1回：力は関係の名前だった → 第2回：日常の「押す」を剥がすと、電磁気が出てくる</p>
+  <h1>「押す」の正体は、<br>全部 電磁気
+    <span class="sub">机を押すと、手ごたえがある。何かが押し返している。でも ── あなたの手は、机に<em>触れてすらいない</em>。<br>「接触」という、いちばん身近な感覚が、最初に剥がれます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回、原子のイメージ、グラフを読む</span>
+    <span>接触力 ＝ 電子雲どうしの電磁気</span>
+  </div>
+
+  <p class="lead">第1回で「力は物体が握るモノではなく、二者の関係の名前」と言いました。今回から、その“関係”の正体を一枚ずつ剥がします。最初の獲物は、いちばん身近な<strong>「押す」</strong>。机を手で押すと、確かに押し返される。その手ごたえは、いったい何が生んでいるのか。答えは意外で、しかもこのシリーズの登場人物・<strong>電磁気力</strong>の初登場になります ── <em>あなたの手のひらは、机の表面に一度も触れていない</em>。</p>
+
+  <h2><span class="n">01</span>原子は、すかすか ── でも重なれない</h2>
+
+  <p>手も机も、原子でできています。原子は中心の小さな原子核と、まわりに広がる<strong>電子の雲</strong>。原子の大きさのほとんどは、この電子雲が占める“すかすかの空間”です。だから物が硬いのは「中身が詰まっているから」ではありません。</p>
+
+  <p>手を机に近づけていくと、手の表面の原子の電子雲と、机の表面の原子の電子雲が、だんだん<strong>重なろうとする</strong>。ここで、電子どうしが強烈に<em>反発</em>する。マイナスの電気を帯びた電子雲どうしが近づくのだから電磁気的に反発するし、さらに量子力学のルール（同じ状態に電子は入れない）も重なりを強く拒む。この<strong>反発が、あなたの感じる「手ごたえ」の正体</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 誰も何にも触れていない</div>
+    <p style="margin:6px 0 0;">手と机の原子は、電子雲の反発で<strong>ナノメートル手前で止まる</strong>。原子核どうしはもちろん、電子雲どうしも“接触”しない。<br>「触れた」という感覚の実体は、<strong>電子雲どうしの電磁気的な反発</strong>。接触は幻で、あなたはいつも、ごくわずかに<em>浮いている</em>。</p>
+  </div>
+
+  <h2><span class="n">02</span>近づけるほど、急に強く押し返す</h2>
+
+  <p>この反発には、はっきりした特徴があります。<em>遠いとほとんど効かないのに、ある距離まで近づくと急激に強くなる</em>。二つの原子の間の「位置エネルギー」を距離の関数で描くと、谷（安定な間隔）があり、そこより近づくと壁のように立ち上がる。力は、この位置エネルギーの<strong>坂の急さ</strong>（傾き）です ── \(F=-\dfrac{dV}{dr}\)。</p>
+
+  <div class="fig">
+    <div class="cap">図：二つの原子の間の位置エネルギー V(r)。谷より近づくと壁のように立ち上がり、強い反発（＝押し返す手ごたえ）が生まれる。力は坂の傾き</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>二つの原子の間隔 r（左ほど近い）<span class="val" id="vk">1.30</span>
+        <input type="range" id="sk" min="0.98" max="2.6" step="0.01" value="1.3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <p>近づけるほど坂が急になり、押し返す力がぐんと増える ── これが「硬い」という感覚。逆に、谷より少し離すと今度は弱く<em>引き合う</em>（この引力が、次回の“くっつく力”＝張力や粘着の芽になります）。<strong>一枚の位置エネルギーの谷が、押す力も引く力も両方生んでいる</strong>。</p>
+
+  <div class="aside">
+    <span class="tag">四つの力のうち、なぜ電磁気だけ?</span>
+    第1回で挙げた四つの力のうち、日常の「押す」に効くのは<strong>電磁気だけ</strong>です。重力は桁違いに弱く（手と机の間の重力なんて感じない）、強い力・弱い力は原子核より小さいごく近距離でしか働かない。だから<em>人間のスケールで“触る・押す・支える”をぜんぶ担っているのは、電磁気力ひとつ</em>。あなたが椅子から落ちないのも、床の電子雲があなたの電子雲を電磁気で押し返しているからです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 「接触」は関係の言い換え</h2>
+
+  <p>第1回の背骨がさっそく効きます。「押す」という力は、手が机に対して単独で持つモノではなく、<strong>二つの電子雲のあいだの電磁気的な関係</strong>でした。「触れる」という言葉は、その関係の<em>日常語の言い換え</em>にすぎない。剥がすと、接触という素朴な描像は消え、電磁気の場を介した相互作用だけが残ります。</p>
+
+  <div class="keybox">
+    <div class="lbl">置き換えの一歩目</div>
+    <p style="margin:6px 0 0;">「手が机を押す」 → 実体は「手の表面の電子雲と、机の表面の電子雲が、電磁気で反発し合う関係」。<br>力＝モノ、から、力＝<strong>場を介した関係</strong>へ。第6回では、この「場を介する」をもっと深く（力＝粒子のやりとり）掘ります。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「同じ電気だから反発」だけではない</span>
+    <p style="margin-top:0;">「電子はマイナスどうしだから反発する」は入口の説明で、厳密には少し足りません。原子は全体として電気的に中性なので、単純な静電反発だけでは強い斥力になりにくい。至近距離の強い反発の主役は、量子力学の<strong>パウリの排他原理</strong>（電子が同じ状態に重なれず、無理に近づけるとエネルギーが跳ね上がる）で、それが電磁気の枠組みの中で働いています。だから正確には「電磁気＋量子のルール」。ただし<em>四つの力でいえば電磁気の領分</em>である、という今回の結論は変わりません。</p>
+    <p style="margin-bottom:0;">図の位置エネルギー曲線（谷＋反発の壁）は、分子間ポテンシャルの典型的な形をなぞった模式で、特定の物質の実測値ではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「硬い物」が硬いのは、中身が詰まっているからではない。ではなぜか。
+        <details><summary>答えを見る</summary><div class="ans">原子はすかすかだが、表面の電子雲どうしが電磁気的に強く反発し（＋パウリの排他原理）、それ以上重なれないから。硬さ＝反発の強さで、詰まっているからではない。</div></details>
+      </li>
+      <li>力と位置エネルギー V(r) の関係を式で書け。図の谷の底では力はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">\(F=-dV/dr\)（力は位置エネルギーの傾きの逆符号）。谷の底は傾きゼロなので力もゼロ＝安定な間隔。そこより近いと反発、遠いと引力。</div></details>
+      </li>
+      <li>日常の「押す・支える」に、四つの力のうち電磁気だけが効く理由を一言で。
+        <details><summary>答えを見る</summary><div class="ans">重力は弱すぎ、強い力・弱い力は原子核サイズの超近距離しか届かないから。人間スケールで触れ合う力を担えるのは電磁気だけ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>触れていないのに、押し返される</h2>
+    <p>手も机も原子ででき、原子は電子雲が広がるすかすかの空間。近づけると電子雲どうしが電磁気で強く反発し（＋パウリの排他原理）、ナノメートル手前で止まる。「触れた」という手ごたえの正体は、この反発 ── <strong>誰も何にも触れていない</strong>。力は位置エネルギーの傾き \(F=-dV/dr\) で、谷より近いと壁のように反発する。</p>
+    <p>第1回の背骨どおり、「押す」は手が単独で持つモノではなく、<strong>二つの電子雲のあいだの電磁気的な関係</strong>だった。四つの力のうち、日常の接触・支持をぜんぶ担うのは電磁気ひとつ。次回は、摩擦も張力も抗力も ── 名前のちがう日常の力が、じつは全部この電磁気の化粧違いだと見ます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第3回</span>
+    「摩擦・張力・抗力は、電磁気の化粧違い」。日常には力の名前がたくさんある ── 摩擦力、張力、垂直抗力、弾性力。でも正体はほぼ全部ひとつ。とくに<strong>ばねの力 \(F=kx\)</strong> がどんな物でも成り立つのは、今回の“谷”の底が、近くで見るとどれも同じ形（放物線）だから。名前の多さにだまされない回です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第2回、物理好きの高校生・大学生向け読み物です。固体の非貫入性・接触力・垂直抗力が電磁相互作用に由来し、至近距離の強い斥力にはパウリの排他原理（電子の縮退）が本質的に効くことは、確立した物理です。原子はほとんどが電子雲の占める空間であり、巨視的な「接触」は電子雲どうしが反発して数ナノメートル以下に近づけない状態を指します。力とポテンシャルの関係は \(F=-dV/dr\)。図の分子間ポテンシャル（引力の谷＋近距離斥力の壁）はレナード-ジョーンズ型を模した概念図で、特定物質の実測ではありません。四つの基本相互作用のうち、日常スケールの接触・摩擦・支持はすべて電磁気力に帰着します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、近づけたときに反発が急に立ち上がる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // レナード-ジョーンズ型 V(r)=4eps[(sig/r)^12-(sig/r)^6]、sig=1, eps=1
+  function V(r){ var s6=Math.pow(1/r,6); return 4*(s6*s6 - s6); }
+  function F(r){ // -dV/dr = 4eps[12 sig^12/r^13 - 6 sig^6/r^7]
+    return 4*(12*Math.pow(1/r,13) - 6*Math.pow(1/r,7));
+  }
+  var RMIN=0.98, RMAX=2.6, VLO=-1.4, VHI=2.6, rmin_eq=Math.pow(2,1/6);
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=46, topH=78;
+    var r=parseFloat(sk.value); vk.textContent=r.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // === 上段：二つの原子 ===
+    var cy=topH/2+8, cxA=w*0.30, gap=(r-RMIN)/(RMAX-RMIN)*(w*0.32);
+    var ax=w*0.34, bx=w*0.34+40+gap;
+    function atom(x){
+      var g=ctx.createRadialGradient(x,cy,3,x,cy,20);
+      g.addColorStop(0,'#c98a3a');g.addColorStop(1,'rgba(176,106,18,0.12)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,cy,20,0,7);ctx.fill();
+      ctx.fillStyle='#8a5a1e';ctx.beginPath();ctx.arc(x,cy,3.5,0,7);ctx.fill();
+    }
+    atom(ax); atom(bx);
+    ctx.fillStyle='#8a5a1e';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('原子A（手）',ax,cy+34);ctx.fillText('原子B（机）',bx,cy+34);ctx.textAlign='left';
+    // === 下段：V(r) グラフ ===
+    var gy0=topH+18;
+    function X(rr){return pad+(rr-RMIN)/(RMAX-RMIN)*(w-pad-14);}
+    function Y(v){return gy0 + (VHI-v)/(VHI-VLO)*(h-pad-gy0);}
+    // grid
+    ctx.strokeStyle='#eee7d8';ctx.lineWidth=1;
+    for(var g2=0;g2<=4;g2++){var yy=gy0+g2*(h-pad-gy0)/4;ctx.beginPath();ctx.moveTo(pad,yy);ctx.lineTo(w-8,yy);ctx.stroke();}
+    // V=0 線
+    ctx.strokeStyle='#d8c9a8';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(pad,Y(0));ctx.lineTo(w-8,Y(0));ctx.stroke();ctx.setLineDash([]);
+    // axes
+    ctx.strokeStyle='#c9c2b2';ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(pad,gy0);ctx.lineTo(pad,h-pad);ctx.lineTo(w-8,h-pad);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';
+    ctx.fillText('間隔 r →', w-90, h-pad+18);
+    ctx.save();ctx.translate(14,(gy0+h-pad)/2);ctx.rotate(-Math.PI/2);ctx.fillText('位置エネルギー V(r)',0,0);ctx.restore();
+    // curve
+    ctx.strokeStyle='#b06a12';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var rr=RMIN;rr<=RMAX+1e-9;rr+=0.01){var v=V(rr);if(v>VHI)v=VHI;if(v<VLO)v=VLO;var x=X(rr),y=Y(v);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 谷の底
+    ctx.fillStyle='#8a8570';ctx.font='11px sans-serif';
+    ctx.fillText('谷（安定な間隔）', X(rmin_eq)-30, Y(-1)+2);
+    // marker
+    var vv=V(r); if(vv>VHI)vv=VHI; if(vv<VLO)vv=VLO;
+    var mx=X(r), my=Y(vv);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,gy0);ctx.lineTo(mx,h-pad);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b06a12';ctx.beginPath();ctx.arc(mx,my,5.5,0,7);ctx.fill();
+    // 力の矢印（原子Bにかかる向き）
+    var fr=F(r), dir=(fr>0)?1:-1, col=(fr>0)?'#a83a22':'#2f7d55';
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.4;
+    var ay=cy, axx=bx, len=Math.min(38, 10+Math.abs(fr)*2);
+    ctx.beginPath();ctx.moveTo(axx,ay);ctx.lineTo(axx+dir*len,ay);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(axx+dir*len,ay);ctx.lineTo(axx+dir*len-8*dir,ay-4);ctx.lineTo(axx+dir*len-8*dir,ay+4);ctx.closePath();ctx.fill();
+    // readout
+    if(fr>0.05){ rd.style.background='#f6e9e6';rd.style.color='#a5311f';
+      rd.textContent='間隔 r='+r.toFixed(2)+'：谷より近い → 強く反発（押し返す手ごたえ）。近づけるほど坂が急＝力が急増。'; }
+    else if(fr<-0.05){ rd.style.background='#eaf1ec';rd.style.color='#1f6b45';
+      rd.textContent='間隔 r='+r.toFixed(2)+'：谷より遠い → 弱く引き合う（くっつく力・張力の芽）。'; }
+    else { rd.style.background='#f4ecdf';rd.style.color='#8a5a1e';
+      rd.textContent='間隔 r='+r.toFixed(2)+'：谷の底あたり → 力ほぼゼロ＝安定な間隔。ここが物の“自然な”原子間隔。'; }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

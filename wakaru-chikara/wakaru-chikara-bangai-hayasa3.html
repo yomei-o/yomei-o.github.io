@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>静かな力は news を運ばない ── わかる力 番外編・力の速さ③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f2; --paper-edge:#ebe0d2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a4a1a; --calc-bg:#f4e9dd;
+    --rule:#dbcdba; --hair:#cbbaa2;
+    --acc:#b0561e;
+    --grid:#e2d5c2;
+    --old:#9aa5b5; --new:#2166a0; --shell:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0ddc2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddccb2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf7;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6ef;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a2c12;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf9,#f4ebde);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a2c12;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力の速さ ③（三部作の締め）</span></div>
+  <p class="eyebrow">速さ①変化はc ／ 速さ②なぜc → 速さ③：一見“瞬時”な力の正体</p>
+  <h1>静かな力は<br>news を運ばない
+    <span class="sub">等速で動く源の力は、<em>いまの位置</em>を指すように見え、まるで瞬時（光速超え?）。<br>でも情報は運んでいない。本当の news（波）を \(c\) で送るのは、加速だけ。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：速さ①②、波②の放射、第6回の仮想粒子</span>
+    <span>加速だけが news を出す</span>
+  </div>
+
+  <p class="lead">速さ①で置いた宿題 ── 「等速で動く源の力は、一見“瞬時に現在位置を追う”ように見える」── を、いよいよ解きます。これは光速超えではないし、因果律も破りません。カギは<strong>「情報（news）を運んでいるかどうか」</strong>。等速運動は予測可能なので news がなく、力が現在位置を指しても何も伝わっていない。本当に news を出して \(c\) で伝えるのは ── <strong>加速だけ</strong>。速さの三部作を、この一点で締めます。第6回の「仮想粒子」の正直な線も、ここで回収します。</p>
+
+  <h2><span class="n">01</span>等速の源 ── 力は“現在位置”を指す（でも瞬時ではない）</h2>
+
+  <p>電荷がまっすぐ<strong>一定速度</strong>で飛んでいるとします。遠くの相手が感じる電気の力は、意外なことに、光が届くのにかかる時間だけ<em>遅れた位置</em>ではなく、<strong>いまの位置</strong>を指すように働きます。まるで力が「電荷が今どこにいるか」を瞬時に知っているかのよう ── 光速超えに見える。でも違います。<em>等速運動は完全に予測可能</em>なので、相手の場は「このまま行けば今ここ」と<strong>前もって整えられていた</strong>だけ。新しい情報は何も届いていない。だから因果律は破れないし、これを使って信号は送れません。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 見かけの瞬時性は、情報ゼロ</div>
+    <p style="margin:6px 0 0;">等速の源の力が「現在位置」を指すのは、<strong>予測できる運動の分だけ、場が先回りして整っている</strong>から。<br>光速超えに見えても、<em>news（新しい情報）はゼロ</em>。信号は送れず、因果律も破れない。<br>「瞬時に見える」と「情報が瞬時に伝わる」は、まったく別のこと。</p>
+  </div>
+
+  <h2><span class="n">02</span>本当の news は、加速から ── キンクが c で飛ぶ</h2>
+
+  <p>では、本当に新しい情報 ── 「源の運動が変わった!」── はどう伝わるか。源を<strong>加速</strong>させた瞬間、場のパターンに<em>折れ目（キンク）</em>ができ、それが \(c\) で外へ広がります。この折れ目こそ、波②で見た<strong>放射（電磁波・光）</strong>。予測できない変化（加速）だけが news を生み、それは \(c\) でしか伝わらない。下の図で、静止していた電荷を t=0 に動かした（加速した）とき、更新された情報の“殻”が \(c\) で広がっていく様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：静止していた電荷を t=0 に動かす（加速）。殻（赤・半径 c·t）の内側は更新済み（新しい位置から）、外側はまだ古い情報（元の位置から）。殻＝キンク＝放射（news, c）</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>加速してからの時間 t<span class="val" id="vk">0.0</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="35">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>仮想粒子と実粒子 ── 静かな力 vs 放射</h2>
+
+  <p>第6回で「力は担い手（光子）の交換だが、静的な力の担い手は<em>仮想粒子</em>で、小さな玉が飛ぶわけではない」と正直な線を引きました。ここでつながります ── <strong>静的な力（等速の源）＝仮想（オフシェル）光子の交換</strong>で、これは計算上の項であって「\(c\) で飛ぶ実体」ではない。だから“現在位置を指す”ような見かけの瞬時性が出る。いっぽう<strong>加速で出る放射＝実（オンシェル）光子＝本物の光</strong>で、これは正真正銘 \(c\) で飛び、news を運ぶ。「力は光子が飛ぶ」の“飛ぶ”が意味を持つのは、後者（放射）だけだったのです。</p>
+
+  <div class="calc">
+    <span class="tag">静かな力 と 放射 の腑分け</span>
+    <p class="lbl">静的・等速の力（近接場）</p>
+    <p style="margin-top:8px;">仮想光子（オフシェル）。計算上の項で「速さ」を持たない。現在位置を指すように見えるが news ゼロ・信号不可。</p>
+    <p class="lbl">加速による放射（遠方場＝光）</p>
+    <p style="margin-bottom:14px;">実光子（オンシェル）。正真正銘 \(c\) で飛ぶ波。予測できない変化（news）を運ぶ。波②の光そのもの。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 速さの三部作、閉じる</h2>
+
+  <p>力の速さ③の結論。<strong>静かな（等速の）力は news を運ばない</strong>。現在位置を指す見かけの瞬時性は、予測できる運動の先回りにすぎず、情報ゼロ・因果律を破らない。本当の news は<strong>加速</strong>から生まれ、キンク＝放射（実光子＝光）として \(c\) で飛ぶ。速さの三部作を束ねると ── ①力の変化は \(c\) で伝わる、②ちょうど \(c\) なのは担い手が質量ゼロだから（射程≠速さ）、③静かな力は news を運ばず、news は加速から \(c\) で。<em>「瞬時に見える」と「情報が瞬時に伝わる」は別</em> ── 因果律は、どこでも守られていました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「等速の源の力が現在位置を指す」は<strong>等速直線運動のとき</strong>の性質で、加速していると指す方向は少しずれます（厳密にはリエナール-ヴィーヘルト・ポテンシャル）。ポイントは「予測できる分（等速）は先回りできるが、予測できない変化（加速）は \(c\) でしか伝わらない」こと。仮想光子は摂動計算の内線であって観測される粒子ではなく、「オフシェル」「速さを持たない」も、その意味での平易な言い換えです。</p>
+    <p style="margin-bottom:0;">図は「更新済みの内側／古い外側／殻＝キンク」という要点を再現した模式（Purcell 型の説明図の簡略版）で、実際の場線の形を厳密に計算したものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>等速で動く電荷の力が「現在位置」を指しても、光速超えでない理由は。
+        <details><summary>答えを見る</summary><div class="ans">等速運動は予測可能で、その分だけ場が先回りして整っているから。新しい情報（news）は届いておらず、これで信号は送れない。「瞬時に見える」と「情報が瞬時に伝わる」は別。</div></details>
+      </li>
+      <li>本当の news（新しい情報）は、何から生まれ、どう伝わるか。
+        <details><summary>答えを見る</summary><div class="ans">源の加速から。場に折れ目（キンク）ができ、放射（実光子＝光、波②）として c で外へ伝わる。予測できない変化だけが news を運ぶ。</div></details>
+      </li>
+      <li>静的な力と放射を、仮想/実の言葉で区別せよ。
+        <details><summary>答えを見る</summary><div class="ans">静的・等速の力＝仮想光子（オフシェル、計算上の項、速さを持たない、現在位置を指す見かけ）。加速の放射＝実光子（オンシェル、本物の光、c で飛び news を運ぶ）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>見かけの瞬時性は、情報を運ばない</h2>
+    <p>等速で動く源の力は現在位置を指し、一見“瞬時”に見えるが、それは予測できる運動の先回りにすぎず news はゼロ ── 光速超えでも因果律違反でもない。本当の news は加速から生まれ、場のキンク＝放射（実光子＝光）として \(c\) で飛ぶ。静的な力＝仮想光子（速さを持たぬ計算項）、放射＝実光子（c で飛ぶ本物の光）── 第6回の正直な線が、ここで腑分けされた。</p>
+    <p>速さの三部作：①変化は \(c\)、②ちょうど \(c\) は質量ゼロゆえ・射程≠速さ、③静かな力は news を運ばず news は加速から \(c\) で。<strong>「瞬時に見える」と「情報が瞬時」は別物</strong>で、因果律はどこでも守られていた。力は、関係であると同時に、その関係の“更新”は必ず \(c\) 以下でしか伝わらない ── 本編と番外を貫く筋が、時間の側でも閉じました。次は最終番外「AIと力」へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 最終番外「AIと力」</span>
+    「AIの学習は、力に従う運動だった」。損失の地形をポテンシャルとして、AIは \(F=-\nabla V\)（第1・6回）に従って転がり落ちる。モーメンタムは慣性（第1回）、weight decay はばね（第3回）、平坦な方向はゲージで力ゼロ（第9・12回）。姉妹編「わかる宇宙論」⑩と握手して、二つのシリーズを閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力の速さ」③、物理好きの高校生・大学生向け読み物です。等速直線運動する電荷の電場が（遅延位置ではなく）瞬間位置方向を向くこと、これが情報伝達ではなく信号を送れないこと、加速する電荷が場のキンク（横方向成分）として放射を生じ光速で伝播すること（Purcell の説明図に対応）は、確立した内容です。静的・等速の相互作用の仮想光子（オフシェル）記述と、放射の実光子（オンシェル）の区別も標準的です。厳密にはリエナール-ヴィーヘルト・ポテンシャルで記述され、瞬間位置を向く性質は等速の場合の帰結です。仮想粒子は摂動論の内線で観測される粒子ではありません。図は概念の簡略模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、更新の殻が c で広がる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var NLINES=12;
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseInt(sk.value,10)/100; vk.textContent=t.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var ox=w*0.42, oy=h*0.52;              // 元の位置（原点）
+    var Rmax=Math.min(w*0.44, h*0.44);
+    var ct=t*Rmax;                          // 殻の半径（c·t）
+    var v=0.42;                             // 見かけの速度（<1）
+    var cx=ox + v*ct;                       // 現在位置（更新後）
+    // 場線
+    for(var i=0;i<NLINES;i++){
+      var a=i/NLINES*2*Math.PI;
+      var sx=ox+Math.cos(a)*ct, sy=oy+Math.sin(a)*ct;   // 殻上の点（原点からの方向）
+      // 内側：現在位置 (cx,oy) から殻上の点へ（更新済み情報）
+      ctx.strokeStyle='#2166a0';ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.moveTo(cx,oy);ctx.lineTo(sx,sy);ctx.stroke();
+      // 外側：殻上の点から Rmax へ（原点方向のまま＝古い情報）
+      var ex=ox+Math.cos(a)*Rmax, ey=oy+Math.sin(a)*Rmax;
+      ctx.strokeStyle='#9aa5b5';ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
+    }
+    // 殻（キンク＝放射）
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.6;ctx.beginPath();ctx.arc(ox,oy,ct,0,7);ctx.stroke();
+    // 元位置と現在位置
+    ctx.fillStyle='#9aa5b5';ctx.beginPath();ctx.arc(ox,oy,4,0,7);ctx.fill();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('元の位置', ox-20, oy+42);
+    ctx.fillStyle='#b0561e';ctx.beginPath();ctx.arc(cx,oy,7,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('+',cx,oy+4);ctx.textAlign='left';
+    // ラベル
+    ctx.fillStyle='#2166a0';ctx.font='11px sans-serif';ctx.fillText('内側＝更新済み（現在位置から）', 16, 22);
+    ctx.fillStyle='#9aa5b5';ctx.fillText('外側＝まだ古い情報（元位置から）', 16, 38);
+    ctx.fillStyle='#a83a22';ctx.fillText('殻＝キンク＝放射（news, c で拡大）', 16, 54);
+    // readout
+    if(t<0.05) rd.textContent='t=0：電荷を動かした（加速した）瞬間。まだ誰も“動いた”ことを知らない。';
+    else rd.textContent='t='+t.toFixed(2)+'：更新の殻（赤）が半径 c·t まで広がった。内側は新しい位置を、外側はまだ元の位置を指す。殻＝放射（news）が c で外へ ── 加速だけが news を出し、光速で伝える。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

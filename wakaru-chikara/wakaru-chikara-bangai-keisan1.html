@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自然は、力で計算する ── わかる力 番外編・力と計算①</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf8f1; --paper-edge:#e9e1cd;   /* 力と計算：古金ブロンズの紙 */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#6f5410; --calc-bg:#f2ebda;
+    --rule:#ddd3ba; --hair:#cdc1a2;
+    --acc:#8a6a1e;    /* 力と計算アクセント＝古金ブロンズ */
+    --grid:#e3d8bf;
+    --spring:#8a6a1e; --anchor:#2f3a72;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecdfb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddceac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf5;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf7ec;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a3810;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f3ecda);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a3810;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と計算 ①（三部作その1）</span></div>
+  <p class="eyebrow">力と数学を終えて → 「自然は、その力で計算している」</p>
+  <h1>自然は、力で計算する
+    <span class="sub">石鹸膜は最小曲面を、ばね網は連立方程式を、力（エネルギー最小化）で<em>一瞬に解く</em>。<br>自然は巨大な最適化器。AIの勾配降下も、その一員だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回 力＝−∇V、数学①の停留、AIと力</span>
+    <span>求解 ＝ エネルギー最小化</span>
+  </div>
+
+  <p class="lead">最後のクラスタ「力と計算」です。力と数学で「自然は作用を停留させる」と見ました。それを<em>計算</em>の目で見ると、驚くことが言えます ── <strong>自然は、力を使って“計算”している</strong>。石鹸の膜は、複雑な針金の枠に張ると、面積が最小の曲面を<em>一瞬で</em>作る（数学者が解くのに苦労する「最小曲面問題」を、膜は考えずに解く）。ばねの網は、引っぱって放すと、力のつり合い＝連立方程式の解に自分で落ち着く。<strong>エネルギーを最小化する物理過程は、そのまま「問題を解く」ことになっている</strong>。そして最終番外で見たAIの勾配降下も、この大きな仲間の一員でした。</p>
+
+  <h2><span class="n">01</span>石鹸膜とばね網は、答えに“落ちる”</h2>
+
+  <p>針金の枠を石鹸水に浸すと、膜は<strong>表面張力（力）</strong>で面積を減らそうとし、<em>面積が最小の曲面</em>に落ち着く。これは「与えられた縁を張る、いちばん面積の小さい膜は?」という数学の難問（プラトー問題）の答えそのもの。膜は方程式を解いていないのに、<strong>力に従うだけで答えを出す</strong>。ばねの網も同じ ── 節点を引いて放せば、各ばねの力がつり合う配置＝<em>連立方程式の解</em>に、自分で緩んでいく。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── エネルギー最小化＝求解</div>
+    <p style="margin:6px 0 0;">物理系は、力 \(F=-\nabla(\text{エネルギー})\)（第6回）に従って、エネルギーの谷へ転がる。<br>その谷（力のつり合い）が、<strong>解きたい問題の答え</strong>になっている。<br>石鹸膜＝最小曲面、ばね網＝連立方程式の解。<em>「解く」とは「エネルギーを最小化する」こと</em>。</p>
+  </div>
+
+  <h2><span class="n">02</span>力で解く仕組み ── 谷が答え</h2>
+
+  <p>なぜ力が計算になるのか。数学①で「自然は作用（やエネルギー）を停留させる道を選ぶ」と見ました。計算の言葉に翻訳すると ── <strong>解きたい問題を「エネルギーが最小になる配置は?」の形に書けば、あとは物理系を放っておくだけ</strong>。系は力 \(-\nabla E\) に従って谷へ落ち、止まったところが答え。下の図で、でこぼこに引っぱったばね網が、力に従ってエネルギーの谷（＝つり合いの解）へ緩んでいく様子を見てください。ステップを進めると、ぐしゃぐしゃだった網が、なめらかな“答え”の形に落ち着きます。</p>
+
+  <div class="fig">
+    <div class="cap">図：両端を留めたばね網（＋重力）。でこぼこの初期状態から、力に従ってエネルギー最小の形へ緩む。落ち着いた形＝連立方程式の解＝「計算結果」</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>緩和のステップ（右へ進めると自然が計算する）<span class="val" id="vk">0</span>
+        <input type="range" id="sk" min="0" max="140" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>アナログ計算機、そしてAI ── みな同じ仲間</h2>
+
+  <p>この「物理で解く」は、昔から使われてきました。<strong>アナログ計算機</strong>は、電気回路の電圧が微分方程式を満たすように組み、回路が落ち着いた電圧を読めば答えが出る（電流・電圧という“力の系”に計算させる）。石鹸膜で最短ネットワークを求める実験も有名です。そして ── 最終番外で見た<strong>AIの学習（勾配降下）も、まさにこれ</strong>。損失というエネルギーの地形を、力 \(-\nabla(\text{損失})\) に従って転がり、谷（答え）へ落ちる。<em>自然も、アナログ計算機も、AIも、「力でエネルギーを最小化して解く」という一つの仲間</em>だったのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 数学①・AIと力と、一本に</span>
+    数学①「自然は作用を停留させる」は、計算の言葉では「エネルギーを最小化する＝解く」。AIと力「学習＝\(F=-\nabla V\) で谷へ転がる」は、その最新の実装。石鹸膜・ばね網・アナログ計算機・AI ── <strong>停留原理（数学①）が、そのまま計算装置（力と計算）になっている</strong>。力は、世界を動かすだけでなく、<em>問題を解く道具</em>でもありました。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 力は「解く」道具でもあった</h2>
+
+  <p>力と計算①の結論。<strong>自然は、力を使って計算している</strong>。エネルギー最小化を物理過程が実行し、その谷が問題の答えになる。石鹸膜は最小曲面を、ばね網は連立方程式を、AIは損失最小のパラメータを ── みな「力に従ってエネルギーの谷へ落ちる」だけで解く。本編で「力は関係」と剥がしたその力は、<em>世界を動かすと同時に、世界に問題を解かせる</em>道具でもあった。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「力で解く」は万能ではありません。系は<strong>近くの谷（局所最小）</strong>に落ちるだけで、いちばん深い谷（大域最小）に必ず届くとは限らない（AIの学習と同じ悩み）。緩和には時間がかかり、アナログな解は精度・ノイズの限界を持ちます。だから現実には、熱ゆらぎ（焼きなまし）や工夫で谷から抜け出させる。「物理は考えずに解く」は美しい真実ですが、<em>いつも最良の答え、とは限らない</em>のが正直なところです。</p>
+    <p style="margin-bottom:0;">図は両端固定のばね鎖（＋一様な下向きの力）をエネルギー勾配で緩和させた模式で、平衡形（離散版の放物線状）へ収束します。実際の石鹸膜や一般の連立方程式そのものを解いたものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>石鹸膜が「最小曲面問題」を解けるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">表面張力（力）で面積＝エネルギーを最小化しようとし、力のつり合い＝面積最小の曲面に落ち着くから。膜は方程式を解かず、力に従うだけで答え（最小曲面）を出す。</div></details>
+      </li>
+      <li>「問題を解く」を、力・エネルギーの言葉で言い換えよ。
+        <details><summary>答えを見る</summary><div class="ans">解きたい問題を「エネルギーが最小になる配置は?」の形に書き、物理系を力 F=−∇E に従って谷へ落とす。止まった所（力のつり合い）が答え。求解＝エネルギー最小化。</div></details>
+      </li>
+      <li>AIの勾配降下（AIと力）は、この話とどう同じか。
+        <details><summary>答えを見る</summary><div class="ans">損失というエネルギーの地形を、力 −∇(損失) に従って転がり、谷（答え）へ落ちる。石鹸膜・ばね網・アナログ計算機と同じ「力でエネルギーを最小化して解く」仲間。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>自然は、力で問題を解く</h2>
+    <p>石鹸膜は最小曲面を、ばね網は連立方程式（力のつり合い）を、力に従ってエネルギーの谷へ落ちるだけで解く。「解く」とは「エネルギーを最小化する」こと ── 数学①「自然は作用を停留させる」の、計算版。アナログ計算機（電気回路）も、AIの勾配降下（AIと力）も、この同じ仲間だった。力は、世界を動かすだけでなく、<strong>問題を解く道具</strong>でもある。</p>
+    <p>ただし系は近くの谷（局所最小）に落ちるだけで、いつも最良とは限らない ── そこは正直な線。次回（計算②）は逆側 ── <strong>力の法則はこんなに単純なのに、解こうとすると計算不能になる</strong>という話。三体問題とカオス。単純な力から、予測できない複雑さが生まれる不思議へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力と計算②</span>
+    「解けない力 ── 三体問題とカオス」。力の法則（万有引力）はたった一行なのに、太陽・地球・月の三体になると、閉じた式では<strong>解けない</strong>。わずかな初期条件の違いが爆発的に広がる（カオス）ので、遠い未来は原理的に予測できず、計算に頼るしかない。単純な力則から、計算不能な複雑さが生まれる ── 力と計算の、もう一つの顔です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と計算」①、物理好きの高校生・大学生向け読み物です。物理系がポテンシャルエネルギーを（力 \(F=-\nabla E\) に従って）最小化し、その平衡が最適化問題・方程式の解に対応すること（石鹸膜＝極小曲面／プラトー問題、ばね網＝離散ラプラス方程式・線形系の解、アナログ計算機、勾配降下）は、確立した対応です。物理的緩和は一般に局所最小へ収束し大域最適を保証せず、精度・ノイズ・収束時間の制約があります（焼きなまし等で緩和）。図は両端固定のばね鎖＋一様力をエネルギー勾配降下で緩和させた模式で、離散平衡形へ収束します。最終番外「AIと力」と同じ主題（学習＝勾配降下＝力に従う運動）です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、ばね網が力に従って“答え”の形へ緩む様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var Nn=22, kspring=1.0, grav=0.09, lr=0.18;
+  // 初期のでこぼこ（決定論的）
+  function y0(i){ return 0.9*Math.sin(i*1.9) + 0.5*Math.sin(i*0.8+1) ; }
+  // ステップ k までの緩和（両端固定 y=0）
+  function relax(k){
+    var y=[]; for(var i=0;i<Nn;i++) y[i]=(i===0||i===Nn-1)?0:y0(i);
+    for(var s=0;s<k;s++){
+      var ny=y.slice();
+      for(var i2=1;i2<Nn-1;i2++){
+        // dE/dy_i = k(2y_i - y_{i-1} - y_{i+1}) + grav
+        var grad=kspring*(2*y[i2]-y[i2-1]-y[i2+1]) + grav;
+        ny[i2]=y[i2]-lr*grad;
+      }
+      y=ny;
+    }
+    return y;
+  }
+  function energy(y){
+    var E=0; for(var i=0;i<Nn-1;i++){var dy=y[i+1]-y[i];E+=0.5*kspring*dy*dy;}
+    for(var j=0;j<Nn;j++) E+=grav*y[j];
+    return E;
+  }
+  var E0=energy(relax(0)), Emin=energy(relax(400));
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, pad=44;
+    var k=parseInt(sk.value,10); vk.textContent=k;
+    var y=relax(k);
+    ctx.clearRect(0,0,w,h);
+    var gx=pad, gw=w-2*pad, cy=h*0.42, yscale=48;
+    function X(i){return gx+i/(Nn-1)*gw;}
+    function Y(v){return cy+v*yscale;}
+    // 基準線
+    ctx.strokeStyle='#e3d8bf';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(gx,Y(0));ctx.lineTo(gx+gw,Y(0));ctx.stroke();ctx.setLineDash([]);
+    // ばね（線）
+    ctx.strokeStyle='#8a6a1e';ctx.lineWidth=2.2;ctx.beginPath();
+    for(var i=0;i<Nn;i++){var x=X(i),yy=Y(y[i]);if(i===0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}
+    ctx.stroke();
+    // 節点
+    for(var j=0;j<Nn;j++){
+      var pinned=(j===0||j===Nn-1);
+      ctx.fillStyle=pinned?'#2f3a72':'#8a6a1e';
+      ctx.beginPath();ctx.arc(X(j),Y(y[j]),pinned?5.5:3.6,0,7);ctx.fill();
+    }
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';
+    ctx.fillText('固定端', X(0)-6, Y(0)+22); ctx.fillText('固定端', X(Nn-1)-14, Y(0)+22);
+    // エネルギーバー
+    var E=energy(y), rel=(E-Emin)/((E0-Emin)||1);
+    var bx=gx, by=h-30, bw=gw;
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('エネルギー（右へ緩和すると下がる → 谷＝答え）', bx, by-8);
+    ctx.strokeStyle='#cdc1a2';ctx.strokeRect(bx,by,bw,12);
+    ctx.fillStyle=(rel<0.03)?'#2f7d55':'#8a6a1e';
+    ctx.fillRect(bx+1,by+1,Math.max(0,Math.min(1,rel))*(bw-2),10);
+    // readout
+    if(k===0) rd.textContent='ステップ0：でこぼこの初期状態（エネルギー高い）。ここから力（−∇E）に従って緩む＝自然が計算を始める。';
+    else if(rel>0.06) rd.textContent='ステップ'+k+'：力に従ってエネルギーの谷へ緩和中（残りエネルギー '+(rel*100).toFixed(0)+'%）。形がなめらかな“答え”に近づく。';
+    else rd.textContent='ステップ'+k+'：エネルギー最小＝力のつり合いに到達。この形が連立方程式の解＝「計算結果」。ばね網が、考えずに解いた。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

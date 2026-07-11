@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>重力は、力なのか ── わかる力 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f7fc; --paper-edge:#e0dcec;   /* 第5回：藍紫の紙（幾何） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#3b3477; --calc-bg:#e9e7f4;
+    --rule:#d5cfe4; --hair:#c3bcd8;
+    --acc:#4b3fa0;    /* 第5回アクセント＝藍紫 */
+    --grid:#ddd7ec;
+    --heavy:#a83a22; --free:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d7d2ee 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cec8e6;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfcff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f7f5fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2c2560;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eeebf6);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2c2560;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 5 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第4回：座標が生む見かけの力があった → 第5回：重力も、その仲間かもしれない</p>
+  <h1>重力は、力なのか
+    <span class="sub">重さは確かに感じる。なのに自由落下すると、ふっと消える。<br>慣性質量と重力質量がぴったり一致する謎 ── そこから、重力＝力ではなく“幾何”が見えてくる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の質量、第4回の見かけの力、\(F=ma\)</span>
+    <span>重さ＝床が押し上げる力。重力は座標で消せる</span>
+  </div>
+
+  <p class="lead">第4回で、遠心力のような「座標が生む見かけの力」を見ました。その最後に、不穏な伏線を置いた ── 見かけの力は<em>質量に比例して、皆に同じ加速を与える</em>。そして重力もまた、そうなのです（羽と鉄球は同時に落ちる）。ならば ── <strong>重力も、座標で消せる見かけの力なのでは?</strong> この問いを本気で追ったのがアインシュタインでした。重さは確かに感じるのに、自由落下では消える。この一点を突くと、重力は「力」ではなく、<em>自由落下こそが真っ直ぐで、床が我々を押し上げているだけ</em>だ、と見えてきます。</p>
+
+  <h2><span class="n">01</span>二つの「質量」が、なぜか一致する</h2>
+
+  <p>第1回で質量は「加速のしにくさ」\(m=F/a\)（<strong>慣性質量</strong>）でした。いっぽう重力の強さも質量で決まる ── \(F=\dfrac{GMm}{r^2}\) の \(m\)（<strong>重力質量</strong>）。この二つ、定義がまるで違うのに、あらゆる実験で<strong>厳密に一致</strong>します。落下の加速度を書くと、なぜ一致が効くかが見える。</p>
+
+  <div class="calc">
+    <span class="tag">落下加速度から質量が消える</span>
+    <p class="lbl">重力による運動（慣性質量 mᵢ、重力質量 m_g）</p>
+    $$m_i\,a = \frac{G M m_g}{r^2}\quad\Rightarrow\quad a=\frac{m_g}{m_i}\cdot\frac{GM}{r^2}$$
+    <p style="margin-bottom:14px;">もし \(m_g=m_i\) なら、\(a=\dfrac{GM}{r^2}\) ── <strong>質量が消える</strong>。だから重い物も軽い物も同じ加速で落ちる（ガリレオ）。電気力ではこうならない（加速は電荷/質量比しだい）。重力だけが、皆に同じ加速を与える ── 第4回の<em>見かけの力の“しっぽ”</em>と、そっくり同じです。</p>
+  </div>
+
+  <h2><span class="n">02</span>エレベーターの中では、区別がつかない</h2>
+
+  <p>アインシュタインの思考実験。窓のない箱（エレベーター）の中にいるとします。床から体重を感じる。この「重さ」は、<em>地球の重力</em>のせいなのか、それとも<em>箱が上向きに加速している</em>せいなのか ── <strong>箱の中では区別できません</strong>。逆に、ケーブルが切れて自由落下すれば、重力があるのに<strong>無重量</strong>になる（宇宙飛行士と同じ）。下の図で、箱の加速度を変えて、体重計の表示がどう化けるか見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：エレベーターの中の体重計。箱の加速度を変えると「見かけの体重」が変わる。自由落下（a=−g）で無重量、上向き加速で重く。重力ありの静止と、重力なしのロケット加速が、区別できない</div>
+    <canvas id="cv" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>エレベーターの加速度 a（上向きが＋、g 単位）<span class="val" id="vk">0.0 g</span>
+        <input type="range" id="sk" min="-1" max="2" step="0.05" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">等価原理 ── 重力と加速は、区別できない</div>
+    <p style="margin:6px 0 0;">「重力の中で静止」と「重力なしで加速」は、箱の中の実験では見分けられない。<br>だから逆に、<strong>自由落下する箱の中では重力が消える</strong>（無重量）。重力は、正しい座標（自由落下系）を選べば<em>局所的に消せる</em> ── 第4回の見かけの力と、まったく同じふるまい。</p>
+  </div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 重力は“力”ではなく、幾何</h2>
+
+  <p>ここでアインシュタインは大胆に読み替えます。重力が座標で消せるなら、それは電磁気のような実在の力とは違う。真実はこうだ ── <strong>自由落下こそが「真っ直ぐ進む」（何の力も受けていない自然な運動）</strong>。地面に立つあなたが重さを感じるのは、重力に引かれているからではなく、<em>床（の電子雲）があなたを押し上げて、自然な自由落下から無理やり逸らしている</em>から。あなたが感じる「重さ」の実体は、第2回の<strong>電磁気の垂直抗力</strong>だったのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">置き換えの三歩目 ── 重力＝時空の幾何</div>
+    <p style="margin:6px 0 0;">「重力があなたを下へ引く」 → 実体は「自由落下が真っ直ぐ（測地線）で、床が電磁気であなたを上へ押している」。<br>物体は、質量エネルギーで<strong>曲がった時空</strong>の中を“真っ直ぐ”進んでいるだけ。重力は物体間の力ではなく、<em>時空の幾何</em>。だから質量が消え、皆が同じ加速で落ちた。</p>
+  </div>
+
+  <p>第4回の慣性力が「座標を回した帳尻」だったように、重力は「時空という座標そのものが曲がっている帳尻」。両者は同じ穴のむじな ── これが<strong>等価原理</strong>の意味です。剥がすと、重力という“力”は消え、幾何と、床が押す電磁気だけが残りました。あなたを椅子に留めているのは重力ではなく、椅子の電子雲の反発です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 力の地図が塗り変わる</span>
+    第4回で「実在の力は座標で消えない、見かけの力は消える」と線を引きました。重力は、その線を<strong>またいで</strong>しまう。座標（自由落下）で局所的に消せる点では見かけの力の親戚。でも完全には消せない残り（次の“正直な線”）があり、そこに幾何＝時空の曲がりの本体がある。姉妹編「わかる宇宙論」の最終回「重力をこの絵に入れられるか」は、まさにこの続きです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「重力は消せる」は“局所的に”だけ</span>
+    <p style="margin-top:0;">自由落下で消えるのは、<strong>狭い範囲（局所）でだけ</strong>です。広い箱で落下すると、地球中心へ向かう重力の向きがわずかに違うため、中の二つの物体は近づいたり伸ばされたりする ── これが<strong>潮汐力</strong>で、どんな座標を選んでも消えません。この「消せない残り」こそが時空の<em>曲率</em>＝重力の本体。だから「重力は完全な見かけの力」ではなく、正しくは「<strong>局所的には座標で消せるが、曲率としては実在する</strong>」。慣性力と重力の、似て非なる点はここです。</p>
+    <p style="margin-bottom:0;">図は「見かけの体重＝\(m(g+a)\)」という初等的な関係を示す模式で、一般相対論の時空の曲がりそのものを描いたものではありません。等価原理も、厳密には局所的な主張です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>羽と鉄球が（空気を除けば）同時に落ちるのは、二つの質量のどんな性質のためか。
+        <details><summary>答えを見る</summary><div class="ans">慣性質量と重力質量が一致するため。落下加速度 \(a=(m_g/m_i)\,GM/r^2\) で \(m_g=m_i\) なら質量が消え、\(a=GM/r^2\) が物体によらず同じになる。</div></details>
+      </li>
+      <li>地面に立って感じる「重さ」の実体は、四つの力のどれか。
+        <details><summary>答えを見る</summary><div class="ans">電磁気力。床（の電子雲）があなたを上へ押す垂直抗力（第2回）。自由落下という自然な運動から逸らされているのを「重さ」と感じている。重力そのものは力ではなく幾何。</div></details>
+      </li>
+      <li>「自由落下で重力が消える」は、どの範囲での話か。消えない残りを何と呼ぶか。
+        <details><summary>答えを見る</summary><div class="ans">狭い局所でだけ。広い範囲では重力の向きの差で潮汐力が残り、これはどんな座標でも消せない。この消せない残り＝時空の曲率が重力の本体。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>重さの正体は、床が押す電磁気だった</h2>
+    <p>慣性質量と重力質量が厳密に一致するため、重力は皆に同じ加速を与え、落下から質量が消える ── 第4回の見かけの力の“しっぽ”とそっくり。エレベーターの思考実験では、重力での静止と加速が区別できず（等価原理）、自由落下では重力が消えて無重量になる。だから重力は、正しい座標（自由落下系）で局所的に消せる。</p>
+    <p>剥がして見えたのは ── <strong>重力は物体を引く“力”ではなく、時空の幾何</strong>。自由落下こそが真っ直ぐで、あなたが感じる重さは、床の電子雲が押し上げる電磁気の抗力だった。ただし完全には消えない残り（潮汐力＝曲率）があり、そこに重力の本体がある。慣性力（第4回）と重力は同じ穴のむじな ── 力を「座標・幾何の帳尻」へ置き換える流れが、ここで頂点に達しました。次回からは、残った“本物の力”たちの正体（やりとり・四つの力）へ向かいます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第6回</span>
+    「力は“やりとり”だ」。電磁気も、強い力も弱い力も、離れた二者がどうやって力を及ぼし合うのか ── 答えは<strong>場と、粒子の交換</strong>。しかも<em>担い手の粒子の重さが、力の届く距離を決める</em>（湯川）。光（質量ゼロ）が無限遠まで届き、弱い力がごく近距離なのも、これで一望できます。四つの力を「やりとり」という同じ言葉で並べ直す準備です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第5回、物理好きの高校生・大学生向け読み物です。慣性質量と重力質量の等価（弱い等価原理）は高精度で検証され（現代の実験で \(10^{-13}\) 以上）、これを出発点とする等価原理と一般相対論（重力＝時空の曲率、自由落下＝測地線）は確立した物理です。自由落下系で重力が消えるのは局所的な話で、潮汐力（曲率）は座標変換で消せません。地面上で感じる重さは垂直抗力（電磁気）に由来します。図の「見かけの体重 \(=m(g+a)\)」は初等力学の関係を示す模式で、時空の曲率そのものの描像ではありません。姉妹編「わかる宇宙論」最終回の重力の扱いに接続します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、加速度を変えると見かけの体重が化ける様子（自由落下で無重量）が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var ag=parseFloat(sk.value); // a/g
+    var factor=1+ag; // 見かけ体重 / 本当の体重
+    vk.textContent=ag.toFixed(2)+' g';
+    ctx.clearRect(0,0,w,h);
+    // === エレベーター箱（左） ===
+    var bx=60, by=30, bw=250, bh=h-70;
+    ctx.strokeStyle='#8a84a8';ctx.lineWidth=2;ctx.strokeRect(bx,by,bw,bh);
+    ctx.fillStyle='rgba(75,63,160,0.04)';ctx.fillRect(bx,by,bw,bh);
+    // ケーブル
+    ctx.strokeStyle=(ag<=-0.98)?'#a83a22':'#8a84a8';ctx.lineWidth=(ag<=-0.98)?1:2.5;
+    ctx.beginPath();ctx.moveTo(bx+bw/2, by);ctx.lineTo(bx+bw/2, 8);ctx.stroke();
+    if(ag<=-0.98){ ctx.fillStyle='#a83a22';ctx.font='11px sans-serif';ctx.fillText('ケーブル断！',bx+bw/2+8,16); }
+    // 体重計
+    var scaleY=by+bh-24, scaleX=bx+bw/2;
+    ctx.fillStyle='#c9c2d8';ctx.fillRect(scaleX-40, scaleY, 80, 16);
+    // 人（頭＋体）
+    var pc=scaleX;
+    ctx.strokeStyle='#3b3477';ctx.fillStyle='#4b3fa0';ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(pc, scaleY-52, 11, 0, 7);ctx.fill();
+    ctx.beginPath();ctx.moveTo(pc, scaleY-41);ctx.lineTo(pc, scaleY-14);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pc,scaleY-34);ctx.lineTo(pc-14,scaleY-22);ctx.moveTo(pc,scaleY-34);ctx.lineTo(pc+14,scaleY-22);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pc,scaleY-14);ctx.lineTo(pc-10,scaleY);ctx.moveTo(pc,scaleY-14);ctx.lineTo(pc+10,scaleY);ctx.stroke();
+    // 加速度矢印（箱の外・右辺）
+    if(Math.abs(ag)>0.02){
+      var dir=(ag>0)?-1:1; var col=(ag>0)?'#2f7d55':'#a83a22';
+      var axx=bx+bw+22, ayy=by+bh/2, L=Math.min(60, 20+Math.abs(ag)*30);
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.6;
+      ctx.beginPath();ctx.moveTo(axx,ayy-dir*L/2);ctx.lineTo(axx,ayy+dir*L/2);ctx.stroke();
+      var ty=ayy+dir*L/2;
+      ctx.beginPath();ctx.moveTo(axx,ty);ctx.lineTo(axx-4,ty-dir*8);ctx.lineTo(axx+4,ty-dir*8);ctx.closePath();ctx.fill();
+      ctx.font='11px sans-serif';ctx.fillText('箱の加速 a', axx+8, ayy);
+    }
+    // === 体重計の表示バー（右） ===
+    var gx=360, gy=50, gw=44, gh=h-110;
+    ctx.fillStyle='#6b6f60';ctx.font='12px sans-serif';ctx.fillText('見かけの体重', gx-6, gy-16);
+    ctx.strokeStyle='#c3bcd8';ctx.lineWidth=1;ctx.strokeRect(gx, gy, gw, gh);
+    // 目盛 0,1,2,3×
+    for(var i=0;i<=3;i++){ var yy=gy+gh-(i/3)*gh; ctx.strokeStyle='#ddd7ec';ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+gw+40,yy);ctx.stroke();
+      ctx.fillStyle='#8a84a8';ctx.fillText(i+'×', gx+gw+10, yy+4); }
+    // バー
+    var fc=Math.max(0,Math.min(3,factor));
+    var barH=(fc/3)*gh, col2=(factor<0.05)?'#2f7d55':(factor>1.5?'#a83a22':'#4b3fa0');
+    ctx.fillStyle=col2;ctx.fillRect(gx+1, gy+gh-barH+1, gw-2, barH-1);
+    ctx.fillStyle='#25272e';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(factor.toFixed(2)+'×', gx+gw/2, gy+gh+24);ctx.textAlign='left';
+    // readout
+    if(ag<=-0.98){ rd.style.background='#eaf1ec';rd.style.color='#1f6b45';
+      rd.textContent='a=−g（自由落下・ケーブル断）：見かけの体重ゼロ＝無重量。重力があるのに消えた。深宇宙に浮かぶのと区別できない。'; }
+    else if(Math.abs(ag)<0.03){ rd.style.background='#e9e7f4';rd.style.color='#3b3477';
+      rd.textContent='a=0（床に静止）：見かけの体重＝本当の体重（1×）。この「重さ」の実体は、床が電磁気で押し上げる垂直抗力。'; }
+    else if(ag>0){ rd.style.background='#f6e9e6';rd.style.color='#a5311f';
+      rd.textContent='a=+'+ag.toFixed(2)+'g（上向き加速／ロケット）：重く感じる（'+factor.toFixed(2)+'×）。重力なしでも加速だけで同じ重さが作れる＝等価原理。'; }
+    else { rd.style.background='#e9e7f4';rd.style.color='#3b3477';
+      rd.textContent='a='+ag.toFixed(2)+'g（下向き加速）：軽く感じる（'+factor.toFixed(2)+'×）。自由落下（−g）に近づくほど無重量へ。'; }
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

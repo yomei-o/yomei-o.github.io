@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力は曲率 ── わかる力 番外編・力と数学③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7fc; --paper-edge:#dbdfef;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#2f3a72; --calc-bg:#e7e9f5;
+    --rule:#cdd2e6; --hair:#bcc2dc;
+    --acc:#3a4a8c;
+    --grid:#d6dbee;
+    --start:#2f7d55; --end:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d2d8f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd0e8;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.g{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  table.g th,table.g td{border:1px solid var(--rule);padding:10px 12px;text-align:left;line-height:1.55;vertical-align:top;}
+  table.g thead th{background:var(--calc-bg);color:var(--calc);font-weight:700;}
+  table.g th.rowh{background:#eceef7;color:var(--ink);font-weight:600;width:34%;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f7fd;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#2a3260;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdff,#eaedf7);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2a3260;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.g{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力と数学 ③（三部作の締め）</span></div>
+  <p class="eyebrow">数学①作用 ／ ②対称性 → ③力を、幾何と群の言葉で見晴らす</p>
+  <h1>力は曲率
+    <span class="sub">第9回の“つなぎ”は、数学では<em>接続</em>。第12回の“消せない残り”は、<em>曲率</em>。<br>重力は時空の曲がり、電磁気は別の空間の曲がり ── 力はみな「何かの曲率」だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第9回のつなぎ、第12回の曲率、波③の位相</span>
+    <span>力 ＝ 接続の曲率／種類 ＝ 群</span>
+  </div>
+
+  <p class="lead">「力と数学」の締めです。数学①で作用、②で対称性を主役にしました。最後に、力そのものを<strong>幾何</strong>の言葉で見晴らします。第9回で「力＝各点の自由をつなぐ“つなぎ”」、第12回で「消せない残り＝曲率」と見ました。この“つなぎ”と“曲率”には、ちゃんとした数学の名前があります ── <strong>接続（connection）</strong>と<strong>曲率（curvature）</strong>。そして驚くことに、重力も電磁気も強い力も、すべて<em>「何かの空間の曲がり（曲率）」</em>として、同じ形で書ける。「どの力か」を決めるのは、<strong>群</strong>という数学。力の正体を、幾何と群で一枚に畳みます。</p>
+
+  <h2><span class="n">01</span>曲率とは「一周して戻ると、向きがズレる」こと</h2>
+
+  <p>曲率のいちばん素朴な姿は、<strong>平行移動</strong>で見えます。矢印を「向きを保ったまま」運んで、閉じた道を一周させる。平らな面（曲率ゼロ）なら、戻ってきた矢印は<em>元と同じ向き</em>。ところが曲がった面（球面など）では、同じように運んでも<strong>戻ると向きがズレている</strong>。このズレ（ホロノミー）こそ<strong>曲率</strong>であり ── <em>力の正体</em>です。第12回で「一点で力を消せても、一周の回り込み（曲率）は消せない」と言った、あの回り込みです。</p>
+
+  <div class="fig">
+    <div class="cap">図：矢印を持って閉じた道を一周する（平行移動）。曲率ゼロ＝戻ると同じ向き（力なし・純ゲージ）。曲率あり＝戻ると向きがズレる＝そのズレが力</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>曲率（囲んだ“曲がり”の量）<span class="val" id="vk">0.00</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--start);"></i>出発の向き</span>
+      <span><i class="swatch" style="background:var(--end);"></i>一周して戻った向き（ズレ＝曲率）</span>
+    </div>
+  </div>
+
+  <p>ここで第9回・波③がつながります。第9回の“つなぎ \(A\)”は、隣へ矢印を運ぶときの<em>回し方の規則＝接続</em>。波③のアハラノフ=ボーム効果で「一周すると電子波の位相がズレた」のも、まさにこのホロノミー。<strong>力（場の強さ）＝接続の曲率＝一周のズレ</strong>。局所的に消せる“帳簿（ゲージ）”と、消せない“曲率（力の本体）”の区別（第12回）が、幾何の言葉でくっきりします。</p>
+
+  <h2><span class="n">02</span>どの空間の曲がりか ── 重力・電磁気・強い力</h2>
+
+  <p>力ごとに、「何が曲がっているか」が違うだけです。</p>
+
+  <table class="g">
+    <thead><tr><th class="rowh">力</th><th>何の曲がり（曲率）か</th></tr></thead>
+    <tbody>
+      <tr><th class="rowh">重力</th><td><strong>時空そのもの</strong>の曲がり（リーマン曲率）。第5回の「重力＝幾何」。</td></tr>
+      <tr><th class="rowh">電磁気</th><td>各点の<strong>位相（内部空間）</strong>の曲がり。場の強さ \(F_{\mu\nu}\)＝ゲージ場 \(A\) の曲率。</td></tr>
+      <tr><th class="rowh">弱い力・強い力</th><td>もっと大きな内部空間の曲がり（非可換ゲージ場の曲率）。</td></tr>
+    </tbody>
+  </table>
+
+  <p>重力は「時空」という目に見える空間の曲がり、電磁気は「各点に付いた位相」という<em>内部空間</em>の曲がり。舞台は違っても、<strong>力＝接続の曲率</strong>という数学の形はまったく同じ。第5回「重力＝幾何」は特別な例ではなく、<em>すべての力が幾何（曲率）だった</em> ── これが数学から見た、力の統一像です。</p>
+
+  <h2><span class="n">03</span>「どの力か」を決めるのは、群</h2>
+
+  <p>では、電磁気・弱・強の違いはどこから来るか。<strong>群</strong>です。第9回で「認める局所対称性の違い」と言ったもの ── 位相を1つ回す \(U(1)\)（電磁気）、\(SU(2)\)（弱い力）、色を3つ回す \(SU(3)\)（強い力）。これらは<strong>リー群</strong>という、連続的な対称変換の集まり。<em>どの群の“曲がり”か</em>で、力の種類が決まる。さらに、群の<strong>表現論</strong>が「どんな粒子がその力を感じるか」を分類し、<strong>トポロジー</strong>が磁束の量子化やアハラノフ=ボーム効果（波③）を支配する。力の世界は、幾何と群論の言葉で、まるごと書けてしまうのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 力＝曲率、種類＝群</div>
+    <p style="margin:6px 0 0;">・<strong>力の本体</strong>＝接続（つなぎ・第9回）の<strong>曲率</strong>（消せない残り・第12回）＝一周のズレ。<br>・<strong>どの力か</strong>＝どの<strong>群</strong>（\(U(1)/SU(2)/SU(3)\)、重力は時空の対称性）の曲がりか。<br>・<strong>誰が感じるか</strong>＝群の表現、<strong>大域的な効き方</strong>＝トポロジー（波③）。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がしの数学的総括 ── 幾何と群で、全部書けた</h2>
+
+  <p>「力と数学」の結論。<strong>力は、接続の曲率。その種類は、群が決める。</strong> 第5回（重力＝幾何）、第9回（力＝ゲージのつなぎ）、第12回（消せない曲率）、波③（位相のホロノミー）── 本編と波クラスタで別々に見た景色が、幾何（接続と曲率）と群という一枚の数学に、すべて収まりました。数学①の作用、②の対称性（ネーター）と合わせれば ── <em>自然は作用を停留させ、その対称性が力（曲率）と保存則を生む</em>。これが、力の数学的な全体像です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">ゲージ理論の数学は、厳密には<strong>ファイバー束の上の接続と、その曲率（場の強さ \(F=dA+A\wedge A\)）</strong>で定式化され、重力は時空の（レヴィ=チヴィタ）接続とリーマン曲率で書かれます。ここでの「一周のズレ＝力」は、その本質（ホロノミー＝曲率）を平易にした絵解きです。群 \(U(1)/SU(2)/SU(3)\) はリー群で、粒子分類は表現論、磁束量子化やAB効果はトポロジー（特性類・ホロノミー）に対応します。重力を他の力と同じ枠で<em>量子化</em>することは、依然として未完成です（本編最終回・姉妹編と同じ宿題）。</p>
+    <p style="margin-bottom:0;">図は「平行移動で一周すると曲率のぶん向きがズレる」というホロノミーの要点を、平面上の回転で模式化したものです（球面上の実際の平行移動を厳密に描いたものではありません）。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>「曲率」を、矢印の平行移動の言葉で説明せよ。力とどう関係するか。
+        <details><summary>答えを見る</summary><div class="ans">矢印を向きを保ったまま閉じた道で一周させたとき、戻った向きが元とズレる度合いが曲率（ホロノミー）。平らならズレゼロ（力なし・純ゲージ）、曲がっているとズレる＝それが力（場の強さ）。第12回の消せない回り込み。</div></details>
+      </li>
+      <li>重力と電磁気は、それぞれ「何の曲がり」か。
+        <details><summary>答えを見る</summary><div class="ans">重力＝時空そのものの曲がり（リーマン曲率、第5回）。電磁気＝各点の位相（内部空間）の曲がり（ゲージ場 A の曲率、場の強さ F）。舞台は違うが「力＝接続の曲率」という形は同じ。</div></details>
+      </li>
+      <li>電磁気・弱・強の「力の種類」を決めるのは何か。
+        <details><summary>答えを見る</summary><div class="ans">群（リー群）。U(1)＝電磁気、SU(2)＝弱い力、SU(3)＝強い力。どの群の曲がりかで力の種類が決まる（第9回の「どの局所対称性か」）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>力は接続の曲率、種類は群</h2>
+    <p>力の本体は、接続（第9回のつなぎ）の<strong>曲率</strong>（第12回の消せない残り）＝矢印を一周させたときの向きのズレ（ホロノミー、波③のAB効果）。重力は時空の曲がり（第5回）、電磁気は位相（内部空間）の曲がり、弱・強はより大きな内部空間の曲がり ── 舞台は違えど「力＝接続の曲率」の形は共通。そして「どの力か」は群 \(U(1)/SU(2)/SU(3)\) が、「誰が感じるか」は表現論が、「大域的な効き方」はトポロジーが決める。</p>
+    <p>数学①（作用）②（対称性→保存則）③（力＝曲率・群）で、「力と数学」を閉じます。<em>自然は作用を停留させ、対称性が力（曲率）と保存則を生み、群が力を分類する</em>。本編で「力は関係」と剥がしたものは、数学の目には<strong>「接続の曲率」</strong>という、これ以上ないほど明快な姿をしていました。次は最後のクラスタ「力と計算」── 自然は、その力で計算している、という話へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力と計算①</span>
+    「自然は、力で計算する」。石鹸膜は最小曲面を、ばね網は連立方程式を、力（エネルギー最小化）で一瞬に解く ── 自然は巨大な最適化器。数学①の「作用を停留させる」が、計算の言葉では「答えを解く」になる。最終番外「AIと力」の勾配降下も、この一員でした。「力と計算」クラスタを始めます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力と数学」③、物理好きの高校生・大学生向け読み物です。ゲージ場を主バンドル上の接続、力（場の強さ）をその曲率 \(F=dA+A\wedge A\) とし、平行移動のホロノミーが曲率に対応すること、重力を時空の接続とリーマン曲率で記述すること、ゲージ群 \(U(1)/SU(2)/SU(3)\)（リー群）が相互作用の種類を、表現論が物質場の分類を、トポロジー（特性類）が磁束量子化やアハラノフ=ボーム効果を与えることは、確立した数学的定式化です。本稿はこれらを平面回転で平易化した絵解きです。重力の量子化（量子重力）は未解決です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、曲率を上げると一周後の矢印のズレ（＝力）が大きくなる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function arrow(ctx,x,y,ang,len,col,wd){
+    var dx=Math.cos(ang)*len, dy=Math.sin(ang)*len;
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=wd||2;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+dx,y+dy);
+    ctx.lineTo(x+dx-9*Math.cos(ang-0.4),y+dy-9*Math.sin(ang-0.4));
+    ctx.lineTo(x+dx-9*Math.cos(ang+0.4),y+dy-9*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var kf=parseInt(sk.value,10)/100; vk.textContent=kf.toFixed(2);
+    var HOL=kf*2.1;   // 一周でのズレ（ホロノミー）ラジアン
+    ctx.clearRect(0,0,w,h);
+    var cx=w*0.36, cy=h*0.52, R=Math.min(w*0.24,h*0.32);
+    // ループ（道）
+    ctx.strokeStyle=(kf<0.02)?'#2f7d55':'#3a4a8c';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+    if(kf>0.02){ ctx.fillStyle='rgba(58,74,140,0.06)';ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill(); }
+    // ループ上を運ばれる矢印（基準向きは接線＋累積回転）
+    var N=12, baseAng=-Math.PI/2; // 出発時の矢印の向き
+    for(var i=0;i<N;i++){
+      var t=i/N;                       // 0..1 周回位置
+      var pa=-Math.PI/2 + t*2*Math.PI; // ループ上の角度位置
+      var px=cx+Math.cos(pa)*R, py=cy+Math.sin(pa)*R;
+      var ang=baseAng - t*HOL;         // 運ぶにつれ徐々に回る（曲率のぶん）
+      arrow(ctx,px,py,ang,22,'rgba(58,74,140,0.55)',1.6);
+    }
+    // 出発点（上）に、出発の向きと戻った向きを重ねて比較
+    var sx=cx+Math.cos(-Math.PI/2)*R, sy=cy+Math.sin(-Math.PI/2)*R;
+    arrow(ctx,sx,sy-2,baseAng,30,'#2f7d55',3);          // 出発
+    arrow(ctx,sx,sy-2,baseAng-HOL,30,'#a83a22',3);      // 一周後
+    // ズレ角の弧
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.arc(sx,sy-2,20,baseAng,baseAng-HOL,true);ctx.stroke();
+    // 説明ラベル
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';
+    ctx.fillText('矢印を持って一周', cx-40, cy+R+26);
+    // 右に度数表示
+    var deg=HOL*180/Math.PI;
+    ctx.fillStyle='#2f3a72';ctx.font='bold 15px sans-serif';
+    ctx.fillText('一周のズレ ＝ '+deg.toFixed(0)+'°', w*0.62, cy-10);
+    ctx.fillStyle='#4a4e5a';ctx.font='12px sans-serif';
+    ctx.fillText('＝ 曲率 ＝ 力（場の強さ）', w*0.62, cy+14);
+    // readout
+    if(kf<0.02) rd.textContent='曲率0：平ら。矢印を一周させても向きは元どおり（ズレ0）。力なし＝どう運んでも同じ＝純ゲージ（消せる帳簿）。';
+    else rd.textContent='曲率'+kf.toFixed(2)+'：一周すると矢印が '+deg.toFixed(0)+'° ズレる（ホロノミー）。このズレこそ曲率＝力（場の強さ）。どんな座標でも消せない（第12回）。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

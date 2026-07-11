@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慣性力は、力じゃない力 ── わかる力 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf8; --paper-edge:#d8e7e2;   /* 第4回：ティールの紙（座標の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d5b56; --calc-bg:#e6f0ed;
+    --rule:#cbdcd7; --hair:#b7ccc5;
+    --acc:#1f7a6e;    /* 第4回アクセント＝ティール */
+    --grid:#d3e4df;
+    --lab:#2166a0; --rot:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6df 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4faf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1a4741;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1a4741;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 4 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第2・3回：日常の力は電磁気 → 第4回：そもそも“力じゃない力”がある</p>
+  <h1>慣性力は、力じゃない力
+    <span class="sub">カーブで外に振られる遠心力、台風を渦にするコリオリ力。押し返す電子雲も、担い手もない。<br>それは<em>座標を回した瞬間に湧いて出る見かけの力</em>で、座標を選び直せば、消える。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の F=ma、慣性、座標の考え方</span>
+    <span>見かけの力 ＝ 座標の帳尻</span>
+  </div>
+
+  <p class="lead">ここまで「押す・摩擦・張力」の正体は電磁気だと剥がしてきました。今回は毛色が変わります ── <strong>そもそも“力”ではない力</strong>の話。カーブする車で外へ振られる遠心力、電車の急発進で後ろに押される感じ、台風を渦巻きにするコリオリ力。どれも確かに<em>感じる</em>のに、押し返す電子雲もなければ、担い手の粒子もない。第1回で予告した「\(F=ma\) の足場は座標に依る」を、ここで回収します。これらは<strong>座標を回した（加速した）せいで湧いて出る帳尻</strong>で、座標を選び直せば跡形もなく消える。これが、このシリーズの「力を消す」というテーマの始まりです。</p>
+
+  <h2><span class="n">01</span>遠心力の正体 ── 本当は、真っ直ぐ飛びたいだけ</h2>
+
+  <p>回るメリーゴーラウンドの上で、あなたは外へ引っぱられる（遠心力）と感じます。でも外から（回っていない地面から）見ると、話はまるで違う。あなたは<strong>本当は真っ直ぐ進みたい</strong>だけ（慣性）。それを手すりや床が<em>内向きに</em>引き留めている。外向きの力なんて、どこにも働いていません。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 遠心力は「帳尻合わせ」</div>
+    <p style="margin:6px 0 0;">回らない座標（慣性系）で見れば：物体は真っ直ぐ進もうとし、実在の力（手すり・道路）が内向きに引く。<strong>外向きの力は無い。</strong><br>回る座標で見ると：物体が外へ逃げるので、\(F=ma\) を成り立たせるために<em>外向きの「遠心力」を書き足す</em>。これが座標の帳尻＝見かけの力。</p>
+  </div>
+
+  <p>下の図で、回る円盤の上で手を離したボールを、<strong>二つの視点</strong>で同時に見てください。左（地面から）では真っ直ぐ。右（円盤の上から）では外へ曲がって逃げる。同じ運動が、座標のせいで別の顔に見える。</p>
+
+  <div class="fig">
+    <div class="cap">図：回る円盤の上で手を離したボール。左＝地面から見る（真っ直ぐ＝慣性）／右＝円盤の上から見る（外へ曲がる＝遠心力＋コリオリ力と“呼ばれる”帳尻）</div>
+    <canvas id="cv" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>手を離してからの時間 t<span class="val" id="vk">0.0</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--lab);"></i>地面から（慣性系）：真っ直ぐ</span>
+      <span><i class="swatch" style="background:var(--rot);"></i>円盤から（回転系）：曲がる</span>
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>見かけの力を見分ける、二つの“しっぽ”</h2>
+
+  <p>慣性力（遠心力・コリオリ力）が「本物の力ではない」ことには、はっきりした<strong>見分けの印</strong>が二つあります。</p>
+
+  <div class="calc">
+    <span class="tag">見かけの力の“しっぽ”</span>
+    <p class="lbl">① 相手（反作用のペア）がいない</p>
+    <p style="margin-top:8px;">本物の力は必ずペア（第1回・作用反作用）。でも遠心力には「押し返している相手」がいない。ペアのない力は、実在の力ではない印。</p>
+    <p class="lbl">② 質量に比例して、みなに同じ加速を与える</p>
+    <p style="margin-bottom:14px;">見かけの力は必ず「\(m\times\)（座標の加速度）」の形。だから重い物も軽い物も<strong>同じように</strong>振られる。電磁気力（電荷しだいで効き方が変わる）とは、ここが決定的に違う。── この②が、次回の重力の伏線です。</p>
+  </div>
+
+  <p>要するに慣性力は、\(F=ma\) を<em>加速する座標の上でも無理やり成り立たせる</em>ために足す補正項 \(-m\vec{a}_{\text{座標}}\)。座標の加速をやめれば（慣性系に戻れば）、この項は消える。<strong>実在の力は座標を変えても消えない。見かけの力は、座標で消える。</strong> これが両者を分ける、いちばん本質的な線です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── これは“ゲージ”の最初の顔</span>
+    「座標（見方）を変えると現れたり消えたりする力」── これは姉妹編「わかる宇宙論」でしつこく出た<strong>ゲージ（記述の付け替え）</strong>の、力学における最初の実例です。物理の中身（地面から見た真っ直ぐな運動）は変わらないのに、座標の言葉づかいが遠心力という“項”を生む。第9回「力はどこから来るのか」で、この発想が四つの力すべての起源にまで育ちます。慣性力は、その予告編。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 座標が生む力がある</h2>
+
+  <p>第4回の結論。力には、電磁気のように<strong>座標を変えても消えない本物</strong>と、遠心力のように<strong>座標の付け替えで湧いたり消えたりする見かけ</strong>の二種類がある。見かけの力は「モノ」でも「関係」でもなく、<em>加速する座標を選んだことの帳尻</em>。第1回で「\(F=ma\) の足場（慣性系）は選び方に依る」と留保したのは、このためでした。</p>
+
+  <div class="keybox">
+    <div class="lbl">力の地図が、二層になった</div>
+    <p style="margin:6px 0 0;">実在の力（電磁気・重力・強・弱）：座標を変えても消えない…<em>はず</em>。<br>見かけの力（遠心・コリオリ・電車の慣性力）：座標の加速で湧き、慣性系で消える。<br>── ところが次回、この境界線が揺らぎます。<strong>重力は、どっち側なのか?</strong></p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">「見かけの力」という呼び方は、実在しない・無視してよい、という意味ではありません。回る座標の上で暮らす限り（地球も回っています）、遠心力・コリオリ力は運動を実際に左右し、計算に入れないと答えを間違えます。台風の渦、フーコーの振り子、砲弾の軌道 ── みな現実の効果。<strong>「実在の相互作用ではない（座標で消せる）」だが「その座標では確かに効く」</strong>、この二つは両立します。</p>
+    <p style="margin-bottom:0;">図は摩擦・重力を無視した理想化（手を離すと慣性で直進）で、遠心力とコリオリ力を分けずに「回転系での曲がり」としてまとめて見せています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>実在の力と見かけの力を、いちばん本質的に分ける基準は何か。
+        <details><summary>答えを見る</summary><div class="ans">座標（見方）を変えても消えないのが実在の力、加速する座標を選んだせいで湧き、慣性系に戻ると消えるのが見かけの力。ほかに「反作用のペアの有無」「質量に比例して皆に同じ加速か」も印になる。</div></details>
+      </li>
+      <li>遠心力を感じているとき、地面（慣性系）から見ると本当は何が起きているか。
+        <details><summary>答えを見る</summary><div class="ans">物体は慣性で真っ直ぐ進もうとし、実在の力（手すり・道路など）が内向き（求心方向）に引き留めている。外向きの力は働いていない。</div></details>
+      </li>
+      <li>見かけの力が「質量に比例して皆に同じ加速を与える」ことは、次回のどの力の伏線か。
+        <details><summary>答えを見る</summary><div class="ans">重力。重力も質量に比例し、質量によらず同じ加速（ガリレオ：羽と鉄球が同時に落ちる）を与える ── 見かけの力と同じ“しっぽ”を持つ。これが第5回「重力は力なのか」の核。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>座標を回すと、力が湧く</h2>
+    <p>遠心力・コリオリ力は、押し返す電子雲も担い手もない“力じゃない力”。地面（慣性系）から見れば、物体は慣性で真っ直ぐ進み、実在の力が内向きに引くだけ。回る座標で \(F=ma\) を無理に成り立たせるための補正項 \(-m\vec a_{座標}\) が、見かけの力の正体。だから座標を選び直せば消える ── 実在の力（電磁気など）は消えないのに。</p>
+    <p>見分けの印は「反作用のペアがない」「質量に比例して皆に同じ加速」。この二つ目が次回の急所です。<strong>重力もまた、質量に比例して皆に同じ加速を与える</strong> ── ならば重力も、座標で消せる“見かけの力”なのでは? 力を消すというテーマは、こうして最大の獲物・重力へ向かいます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第5回</span>
+    「重力は、力なのか」。重さは確かに感じるのに、自由落下（エレベーターのケーブルが切れる、宇宙飛行士）では<strong>ふっと消える</strong>。慣性質量と重力質量がぴったり一致する謎（等価原理）を突くと ── 重力は“力”ではなく、自由落下こそが真っ直ぐで、床が我々を押し上げている（電磁気の抗力！）から重く感じる、と見えてくる。重力＝時空の幾何へ。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第4回、物理好きの高校生・大学生向け読み物です。慣性力（遠心力・コリオリ力・並進加速による見かけの力）が非慣性系で \(F=ma\) を保つための補正項 \(-m\vec a_{\text{frame}}\)（回転系では \(-m\vec\omega\times(\vec\omega\times\vec r)\) や \(-2m\vec\omega\times\vec v\)）として現れ、慣性系では消えること、実在の相互作用と異なり反作用対を持たず質量に比例することは、確立した内容です。ただし非慣性系での慣性力は現実の運動に効き、計算上必須です（台風の渦、フーコーの振り子等）。「座標変換で現れ消える力」という見方は、一般相対論での重力の扱い（第5回）およびゲージ対称性の考え方に直結します。図は摩擦・重力を無視した理想化で、遠心力とコリオリ力を区別せず回転系での見かけの曲がりとして示しています。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、同じ運動が二つの座標で別の顔になる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var W=1.0, r0=1.0, v=1.0, TMAX=3.0, S=40;
+  function labPos(t){ return {x:r0, y:v*t}; }
+  function rotPos(t){ var th=W*t, x=r0, y=v*t;
+    return {x: x*Math.cos(th)+y*Math.sin(th), y: -x*Math.sin(th)+y*Math.cos(th)}; }
+  function panel(ctx,cx,cy,t,fn,color,label,spin){
+    // platform
+    ctx.strokeStyle='#b7ccc5';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,r0*S,0,7);ctx.stroke();
+    ctx.fillStyle='rgba(31,122,110,0.06)';ctx.beginPath();ctx.arc(cx,cy,r0*S,0,7);ctx.fill();
+    // spoke（回転系では固定、慣性系では現在角に回す）
+    var sp = spin? 0 : (W*t);
+    ctx.strokeStyle='#9fc0b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(sp)*r0*S, cy-Math.sin(sp)*r0*S);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.beginPath();ctx.arc(cx,cy,3,0,7);ctx.fill();
+    // trail
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.globalAlpha=.5;ctx.beginPath();var f=true;
+    for(var tt=0;tt<=t+1e-9;tt+=0.03){var p=fn(tt);var X=cx+p.x*S, Y=cy-p.y*S;if(f){ctx.moveTo(X,Y);f=false;}else ctx.lineTo(X,Y);}
+    ctx.stroke();ctx.globalAlpha=1;
+    // ball
+    var p=fn(t), bx=cx+p.x*S, by=cy-p.y*S;
+    ctx.fillStyle=color;ctx.beginPath();ctx.arc(bx,by,6,0,7);ctx.fill();
+    ctx.fillStyle=color;ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(label,cx,cy+r0*S+24);ctx.textAlign='left';
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var t=parseInt(sk.value,10)/100*TMAX; vk.textContent=t.toFixed(1);
+    ctx.clearRect(0,0,w,h);
+    // 仕切り線
+    ctx.strokeStyle='#dbe7e2';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w/2,10);ctx.lineTo(w/2,h-10);ctx.stroke();
+    var cy=h*0.44;
+    panel(ctx,w*0.25,cy,t,labPos,'#2166a0','地面から（真っ直ぐ）',false);
+    panel(ctx,w*0.75,cy,t,rotPos,'#a83a22','円盤から（曲がる）',true);
+    rd.textContent='t='+t.toFixed(1)+'：同じ1個のボール。左（地面）では力ゼロで真っ直ぐ飛ぶ。右（回る円盤の上）では外へ曲がって逃げる ── これを「遠心力＋コリオリ力」と呼んで F=ma の帳尻を合わせているだけ。本当は力は働いていない。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

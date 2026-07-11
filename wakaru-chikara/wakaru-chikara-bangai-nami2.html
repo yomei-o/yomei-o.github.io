@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力そのものが、波だった ── わかる力 番外編・波と力②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf9; --paper-edge:#d9e8e4;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d5b56; --calc-bg:#e6f0ed;
+    --rule:#cbdcd7; --hair:#b7ccc5;
+    --acc:#1f7a6e;
+    --grid:#d3e4df;
+    --force:#b0561e; --wave:#2166a0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe8e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4faf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1a4741;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1a4741;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・波と力 ②（三部作その2）</span></div>
+  <p class="eyebrow">波①：力から波が生まれる → 波②：力そのものが、波だった</p>
+  <h1>力そのものが、波だった
+    <span class="sub">電気の場は、静かなときは物を引く/押す“力”。同じ場を揺らすと、遠くへ飛ぶ“波（光）”になる。<br>力と光は、別物ではなく、<em>一つの電磁場の、二つの顔</em>だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第2・6回の場、波①、c の気持ち</span>
+    <span>力（近接場） と 光（放射） は同じ場</span>
+  </div>
+
+  <p class="lead">波①では「力から波が生まれる」（復元力＋慣性の連鎖）を見ました。今回は、もう一歩踏み込んで<strong>「力そのものが波だった」</strong>という話。第6回で、力は場を介して伝わると見ました。その場 ── 電磁場 ── は、静かなときは電荷どうしを引く/押す“力”として現れます。ところが同じ場を<em>揺らす</em>と、さざ波が立って遠くへ飛んでいく。それが<strong>光</strong>です。力を担う場と、光の正体が、同じ一つのものだった。マクスウェルが電気・磁気・光を一つに束ねた、あの発見の中身を、力の側から見ます。</p>
+
+  <h2><span class="n">01</span>静かなときは「力」── 近くを引く場</h2>
+
+  <p>電荷は、まわりの空間に電磁場を作ります（第2・6回）。静かに置いてあるとき、この場は<strong>放射状にのびて、近くの別の電荷を引いたり押したりする力</strong>として働く。これが日常の電気の力であり、原子を束ねる力（第2回）。場が「力」の顔をしている状態です。</p>
+
+  <h2><span class="n">02</span>揺らすと「波」── 遠くへ飛ぶ光</h2>
+
+  <p>ここで電荷を<strong>揺さぶって</strong>みます。すると場の“のび”が揺れ、その揺れが波紋のように外へ伝わっていく。伝わっていく揺れ ── それが<strong>電磁波、すなわち光</strong>です。マクスウェルは、電気と磁気の法則を突き詰めると、この波の速さが \(c=1/\sqrt{\varepsilon_0\mu_0}\) になると導き、それが光速と一致することから「<em>光は電磁波だ</em>」と見抜きました。波①の \(v=\sqrt{\text{復元力}/\text{慣性}}\) と、まったく同じ骨格（真空の電気的・磁気的な“かたさ”の比）です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 一つの場、二つの顔</div>
+    <p style="margin:6px 0 0;">静かな電磁場 → <strong>力</strong>（近くを引く/押す・近接場）。<br>揺らした電磁場 → <strong>波（光）</strong>（遠くへ飛ぶ放射）。<br>両者は別物ではなく、<em>同じ一つの電磁場</em>の、静と動の顔。力そのものが、揺らせば波になる。</p>
+  </div>
+
+  <p>下の図で、電荷の揺らし方を変えてみてください。揺らさなければ、場はまっすぐのびた“力”のまま。揺らすほど、場に波（光）が乗って遠くへ飛んでいきます。同じ一本の場が、力にも波にもなる。</p>
+
+  <div class="fig">
+    <div class="cap">図：電荷から右へのびる場。揺らさない＝まっすぐ（力・近接場）。揺らすと波（光）が乗って遠くへ飛ぶ。同じ一つの場の二つの顔</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>電荷を揺らす強さ（右ほど激しく揺らす）<span class="val" id="vk">0%</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <h2><span class="n">03</span>第6回の担い手と、握手する</h2>
+
+  <p>第6回で「力は担い手（光子）のやりとり」と見ました。その光子の正体が、今つながります ── <strong>光子は、この電磁場の波の“粒”</strong>。つまり、力を伝える担い手（光子）と、光（電磁波）は、同じもの。<em>力を伝えるものと、光は、区別がない</em>。「力そのものが波だった」というのは、力を運ぶ場が、そのまま波として飛べる、という意味でした。第6回（やりとり）と波①（力→波）が、ここで一点に合流します。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 重力にも“波”がある</span>
+    同じことは重力にも起きます。第5回で重力は時空の幾何だと見ました。その時空を<strong>揺らす</strong>と ── 重力波（時空のさざ波）が光速で飛ぶ。2015年に初検出され、2017年には光と同時に届いて「重力の速さ＝光速」も確かめられました（番外編「力の速さ①」で扱います）。<em>どの力も、静かなときは“力”、揺らせば“波”</em>。力と波は、あらゆる力に共通の、静と動の関係だったのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 力と波は、一つの場の静と動</h2>
+
+  <p>波②の結論。<strong>力と波は、別々の現象ではなく、一つの場の“静”と“動”の顔</strong>でした。静かな場は近くに力を及ぼし、揺れた場は波となって遠くへ飛ぶ。電磁気なら、力（電気の引き合い）と光（電磁波）が同じ電磁場。だから「力そのものが波だった」。本編の背骨「力は場を介した関係」に、「その場は揺らせば波になる」という一枚が重なりました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">静的な力（近接場）と、飛んでいく波（放射場）は、厳密には場の別の成分で、放射は<strong>電荷を加速したときだけ</strong>出ます（等速では出ない ── 番外編「力の速さ③」の話）。「力と波は同じ場の二つの顔」は正しい一方、「静かな力がそのまま波になる」わけではなく、<em>揺らす（加速する）と波が生じる</em>のが正確です。</p>
+    <p style="margin-bottom:0;">静的なクーロン力を「仮想光子の交換」と書くのは計算上の記述で、実在の光（実光子）と同一ではありません（第6回の正直な線）。図は場のふるまいを1本の線で単純化した模式で、電場・磁場が直交して伝わる実際の電磁波を厳密に描いたものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>電気の「力」と「光」が同じ場の二つの顔だ、とはどういう意味か。
+        <details><summary>答えを見る</summary><div class="ans">同じ電磁場が、静かなときは近くを引く/押す力（近接場）として、揺らすと遠くへ飛ぶ波（光＝電磁波）として現れる、という意味。力と光は別物ではなく静と動の顔。</div></details>
+      </li>
+      <li>マクスウェルは、光が電磁波だとどうやって見抜いたか。
+        <details><summary>答えを見る</summary><div class="ans">電磁気の法則から電磁波の速さ \(c=1/\sqrt{\varepsilon_0\mu_0}\) を導き、それが測定済みの光速と一致したから。波①の v=√(復元力/慣性) と同型。</div></details>
+      </li>
+      <li>第6回の担い手（光子）と光の関係は。
+        <details><summary>答えを見る</summary><div class="ans">光子は電磁場の波の粒。力を伝える担い手（光子）と光（電磁波）は同じもの。だから「力を伝えるもの」と「光」に区別がない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>一つの場が、力にも波にもなる</h2>
+    <p>電荷のまわりの電磁場は、静かなときは近くを引く/押す“力”（近接場）。同じ場を揺らす（電荷を加速する）と、さざ波が立って遠くへ飛ぶ“波（光）”になる。マクスウェルは電磁波の速さが光速に一致することから「光は電磁波」と見抜いた ── 波①の v=√(復元力/慣性) と同じ骨格。力と光は、一つの電磁場の静と動の顔だった。</p>
+    <p>第6回の担い手（光子）は、この場の波の粒。だから力を伝えるものと光は同じ ── 「力そのものが波だった」。重力も同様で、時空を揺らせば重力波が飛ぶ。どの力も、静なら力・動なら波。次回（波③）は、その波が逆に<strong>力を及ぼす</strong>側（輻射圧）と、量子で「粒子が波・力が位相」という、いちばん深い「波に見える力」へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 波と力③</span>
+    「波が力を及ぼす／波に見える力」。今度は逆 ── 波が物を<strong>押す</strong>（光の輻射圧、太陽帆、音圧）。そして最深部：量子では粒子そのものが波で、力は<strong>波の位相のズレ</strong>として現れる（アハラノフ=ボーム効果・第9回のゲージ）。「波に見える力」の到達点で、波と力の三部作を締めます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「波と力」②、物理好きの高校生・大学生向け読み物です。静電・静磁場（力）と電磁波（光）が単一の電磁場の異なる側面であること、加速する電荷が電磁波を放射すること、マクスウェル理論が電磁波速度 \(c=1/\sqrt{\varepsilon_0\mu_0}\) を与え光の電磁波説を確立したこと、光子が電磁場の量子であることは、確立した内容です。放射（遠方場）は電荷の加速で生じ、静的近接場とは区別されます。静的クーロン相互作用の仮想光子記述は摂動論的であり実光子とは異なります。重力波は2015年に初検出（LIGO）、2017年に電磁波との同時観測（GW170817）で伝播速度が光速と一致することが確認されました。図は場を1次元で単純化した概念モデルです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、揺らすと場が波（光）になって飛ぶ様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var s=parseInt(sk.value,10)/100; vk.textContent=Math.round(s*100)+'%';
+    ctx.clearRect(0,0,w,h);
+    var qx=54, cy=h/2, xR=w-30;
+    // 近接場（力）領域と放射（波）領域の境目
+    var xNear=qx+120;
+    // 複数の場の線（横に少しずらして）
+    var lines=[-40,-20,0,20,40];
+    for(var li=0; li<lines.length; li++){
+      var off=lines[li];
+      ctx.strokeStyle = (li===2)? '#2166a0' : 'rgba(33,102,160,0.4)';
+      ctx.lineWidth = (li===2)? 2.4 : 1.4;
+      ctx.beginPath();
+      for(var x=qx;x<=xR;x+=2){
+        // 近くは揺れ小さく（力）、遠いほど波の振幅が大きく見える（放射）
+        var grow = Math.max(0,(x-xNear))/(xR-xNear);
+        var amp = s*26*Math.max(0.05,grow);
+        var k=0.06+s*0.02, ph=x*k;
+        var y = cy + off + amp*Math.sin(ph);
+        if(x===qx)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    // 電荷（揺れている）
+    var qOff = s*10*Math.sin(0); // 静止スナップ
+    ctx.fillStyle='#b0561e';ctx.beginPath();ctx.arc(qx,cy,9,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText('+',qx,cy+4);ctx.textAlign='left';
+    if(s>0.03){ // 揺らす矢印
+      ctx.strokeStyle='#8a4b2f';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(qx,cy-16);ctx.lineTo(qx,cy-16-14*s-6);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(qx,cy+16);ctx.lineTo(qx,cy+16+14*s+6);ctx.stroke();
+      ctx.fillStyle='#8a4b2f';ctx.font='11px sans-serif';ctx.fillText('揺らす',qx+14,cy-22);
+    }
+    // 領域ラベル
+    ctx.fillStyle='#b0561e';ctx.font='12px sans-serif';ctx.fillText('近く＝力（近接場）', qx+8, h-16);
+    ctx.fillStyle='#2166a0';ctx.fillText('遠く＝波（光・放射）', xNear+80, h-16);
+    ctx.strokeStyle='#cbdcd7';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(xNear,20);ctx.lineTo(xNear,h-30);ctx.stroke();ctx.setLineDash([]);
+    // readout
+    if(s<0.03) rd.textContent='揺らさない：場はまっすぐのびた“力”のまま（近接場）。近くの電荷を引く/押す。これが日常の電気の力。';
+    else if(s<0.5) rd.textContent='少し揺らす：場に波が乗り、遠くへ光（電磁波）が飛び始めた。同じ場が、力と波の両方の顔を持つ。';
+    else rd.textContent='激しく揺らす：はっきりした光（電磁波）が遠くへ飛ぶ。力を担う場と光は、同じ一つの電磁場だった。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

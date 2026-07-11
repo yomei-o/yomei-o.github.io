@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜ光速なのか ── わかる力 番外編・力の速さ②</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f2; --paper-edge:#ebe0d2;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a4a1a; --calc-bg:#f4e9dd;
+    --rule:#dbcdba; --hair:#cbbaa2;
+    --acc:#b0561e;
+    --grid:#e2d5c2;
+    --range:#2166a0; --speed:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0ddc2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #ddccb2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf7;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf9;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6ef;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#4a2c12;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf9,#f4ebde);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4a2c12;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・力の速さ ②（三部作その2）</span></div>
+  <p class="eyebrow">速さ①：変化は c で伝わる → 速さ②：なぜ“ちょうど” c なのか</p>
+  <h1>なぜ光速なのか
+    <span class="sub">力の変化がちょうど \(c\) で伝わるのは、担い手が<em>質量ゼロ</em>だから。<br>重い担い手なら? ── 力は近くしか届かない。でも「射程が短い」は「遅い」ではない。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：速さ①、第6回の湯川 λ=ℏ/mc</span>
+    <span>射程 ≠ 速さ</span>
+  </div>
+
+  <p class="lead">速さ①で「力の変化は光速 \(c\) で伝わる」と見ました。でも、なぜ<em>ちょうど</em> \(c\) なのか。そして、弱い力のように担い手が重い場合はどうなるのか。ここでいちばん多い混同を、はっきり腑分けします ── <strong>「射程（どこまで届くか）」と「速さ（どれだけ速く伝わるか）」は、別のもの</strong>。担い手の質量は<em>射程</em>を決めますが、変化の<em>速さ</em>はどんな担い手でも \(c\) を上限に保たれる。第6回の湯川（\(\lambda=\hbar/mc\)）と再会しながら、この二つを切り分けます。</p>
+
+  <h2><span class="n">01</span>質量ゼロの担い手 ── ちょうど c、届く先は無限</h2>
+
+  <p>力を伝える担い手（第6回）が<strong>質量ゼロ</strong>のとき、その場の変化は<em>ちょうど光速</em>で伝わり、力は<strong>無限遠まで</strong>届きます。光子（電磁気）、グルーオン、重力子（仮説）がこれ。第6回の \(\lambda=\hbar/mc\) で \(m\to0\) なら \(\lambda\to\infty\)（射程無限）、第10回の逆二乗 \(1/r^2\) もこの「質量ゼロ＋長距離」の帰結でした。だから電磁気も重力も、遠くまで届き、変化は \(c\) で追いかける（速さ①の太陽の話）。<strong>質量ゼロ ↔ 速さ \(c\) ↔ 射程無限</strong>が、ひとつの packaging です。</p>
+
+  <h2><span class="n">02</span>重い担い手 ── 射程は縮む。でも速さは縮まない</h2>
+
+  <p>では、弱い力のように担い手（W・Z）が<strong>重い</strong>とどうなるか。第6回のとおり、射程は \(\lambda=\hbar/mc\) で<em>ぐっと短く</em>なります（W・Z は陽子の約90倍も重いので、力は原子核よりずっと小さい範囲しか届かない）。ここで多くの人が誤解する ── 「射程が短い＝伝わるのが遅い」。<strong>これは間違いです。</strong> 重い担い手でも、変化（報せ）の<em>先端</em>が進む速さは、やはり \(c\) を超えず、実質 \(c\)。質量が変えるのは<strong>どこまで届くか（射程）</strong>であって、<strong>どれだけ速く伝わるか（速さ）</strong>ではない。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 射程 と 速さ は別物</div>
+    <p style="margin:6px 0 0;">担い手の質量 \(m\) が決めるのは <strong>射程 \(\lambda=\hbar/mc\)</strong>（どこまで届くか）。<br>変化が伝わる <strong>速さ</strong>は、質量によらず \(c\) が上限（因果律・速さ①）。<br>だから「弱い力は近距離」だが「弱い力が遅い」わけではない。<em>近い＝遅い、ではない。</em></p>
+  </div>
+
+  <p>下の図で、担い手の質量を変えてみてください。質量を上げると、力の<strong>包絡線（届く範囲）はみるみる縮む</strong>のに、変化の<strong>先端（news の位置）は同じところ</strong>にある ── つまり速さは変わらない。射程と速さが、独立に動くのが見えます。</p>
+
+  <div class="fig">
+    <div class="cap">図：力の変化の広がり。担い手の質量を上げると、届く範囲（青の包絡線＝射程 λ=ℏ/mc）は縮むが、先端（赤＝news の位置＝速さ c）は動かない。射程≠速さ</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>担い手の質量 m（右ほど重い）<span class="val" id="vk">0.3</span>
+        <input type="range" id="sk" min="0.05" max="3" step="0.01" value="0.3">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--range);"></i>届く範囲（射程 λ＝質量で変わる）</span>
+      <span><i class="swatch" style="background:var(--speed);"></i>変化の先端（速さ c＝一定）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>なぜ「射程」と「速さ」は別なのか</h2>
+
+  <p>直感でいうと ── <strong>射程</strong>は「静かな源が、まわりにどれだけ力を及ぼしていられるか」の話。重い担い手は“借金”できる時間が短く（第6回の不確定性）、遠くまで出張できないので射程が短い。いっぽう<strong>速さ</strong>は「源に変化が起きたとき、その報せがどれだけ速く届くか」の話。報せ（情報）は、担い手が重かろうが軽かろうが、\(c\) という因果の壁を超えられない。<em>どこまで（射程）と、どれだけ速く（速さ）は、そもそも別の問い</em>なのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 第6回・第10回と一枚に</span>
+    第6回で「担い手の質量が射程を決める（\(\lambda=\hbar/mc\)）」、第10回で「質量ゼロ＋3次元で逆二乗」、速さ①で「変化は \(c\)」と見てきました。今回はそれらを一枚に束ねます ── <strong>質量が射程を決め、\(c\) は速さの上限として全部に共通</strong>。質量ゼロなら射程無限＋逆二乗＋変化は \(c\)。重ければ射程短＋変化はやはり \(c\) 以下。三つの回が、ここで矛盾なくかみ合います。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 質量は射程を、c は速さを</h2>
+
+  <p>力の速さ②の結論。<strong>力の変化がちょうど \(c\) なのは、担い手が質量ゼロだから。担い手が重いと射程は縮むが、変化の速さは \(c\) のまま</strong>。「質量ゼロ ↔ \(c\) ↔ 射程無限」がひとつのパッケージで、質量を与えると射程だけが縮み、速さは触られない。「弱い力は近距離だから遅い」という混同は、射程と速さを取り違えたもの ── この二つは、初めから別の問いでした。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">厳密には、重い担い手の<strong>実在の粒子</strong>（本物の W・Z 粒子）は質量を持つので、光速<em>より遅く</em>進みます。ただし力の変化の“先端（信号の最前線）”が進む速さ（フロント速度）は、質量があっても \(c\) を超えず、\(c\) が上限。「変化は \(c\) 以下（実質 \(c\) の壁を超えない）」が正確な言い方で、「射程が短い＝遅い」ではない、という結論は変わりません（位相速度・群速度など波の速さの区別は、ここでは立ち入りません）。</p>
+    <p style="margin-bottom:0;">図は「射程は質量で縮むが、変化の先端の位置（＝速さ）は不変」という要点だけを再現した模式で、実際の場の伝播を数値計算したものではありません。先端の位置は一定時間後の到達点として描いています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>力の変化がちょうど光速 \(c\) で伝わる力は、担い手にどんな共通点があるか。
+        <details><summary>答えを見る</summary><div class="ans">担い手が質量ゼロ（光子・グルーオン・重力子）。質量ゼロ↔速さc↔射程無限がひとつのパッケージ。第6回のλ=ℏ/mcでm→0なら射程無限。</div></details>
+      </li>
+      <li>「弱い力は近距離だから、伝わるのも遅い」── どこが間違いか。
+        <details><summary>答えを見る</summary><div class="ans">射程と速さを取り違えている。担い手が重いと射程λ=ℏ/mcは短くなるが、変化が伝わる速さはcが上限で変わらない。近い＝遅い、ではない。</div></details>
+      </li>
+      <li>担い手の質量が決めるのは何で、cが決めるのは何か。
+        <details><summary>答えを見る</summary><div class="ans">質量は射程（どこまで届くか、λ=ℏ/mc）を決める。cは変化の速さ（どれだけ速く報せが届くか）の上限を、全ての力に共通で決める。別々の問い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>質量は射程を、c は速さを決める</h2>
+    <p>力の変化がちょうど \(c\) で伝わるのは、担い手が質量ゼロ（光子・グルーオン・重力子）だから ── 質量ゼロ↔速さ \(c\)↔射程無限が一つのパッケージ。担い手が重い（W・Z）と射程 \(\lambda=\hbar/mc\) は短くなるが、変化の速さは \(c\) を上限に保たれる。<strong>質量が決めるのは射程、\(c\) が決めるのは速さ ── 別の問い</strong>。「近距離だから遅い」は射程と速さの混同だった。</p>
+    <p>第6回（湯川の射程）・第10回（逆二乗）・速さ①（変化はc）が、ここで一枚にかみ合った。次回は、いちばん微妙で面白い話 ── <strong>「静かな力は news を運ばない」</strong>。等速で動く源の力は、一見“瞬時に現在位置を追う”ように見える。でも情報は運んでおらず、因果律も破らない。仮想粒子と、見かけの瞬時性の正体を解いて、速さの三部作を締めます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力の速さ③</span>
+    「静かな力は news を運ばない ── 仮想粒子と見かけの瞬時性」。等速でまっすぐ動く電荷の力は、<em>遅れた位置</em>ではなく<em>いまの位置</em>を指すように見え、まるで瞬時。でもそれは情報を運ばず、光速超えでもない。実際に news（波）を出して \(c\) で伝えるのは<strong>加速</strong>だけ。第6回の仮想粒子と、波②の放射が、ここで最終的に腑分けされます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「力の速さ」②、物理好きの高校生・大学生向け読み物です。媒介粒子が質量ゼロのとき相互作用が長距離（\(\propto1/r^2\)）で場の擾乱が光速で伝播すること、質量 \(m\) の媒介粒子では到達距離が湯川的に \(\lambda=\hbar/mc\) に制限されること、しかし信号（変化の先端）の伝播速度は媒介粒子の質量によらず \(c\) を上限とすることは、確立した内容です。到達距離（レンジ）と伝播速度は独立な概念です。質量を持つ実在の媒介粒子は光速未満で運動しますが、フロント速度は \(c\) を超えません（位相速度・群速度の区別には立ち入っていません）。図は「射程は質量依存・先端位置は質量非依存」という要点を示す模式です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、質量を上げると射程は縮むのに先端（速さ）は動かない様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var m=parseFloat(sk.value); vk.textContent=m.toFixed(2);
+    var lam=1/m;
+    ctx.clearRect(0,0,w,h);
+    var x0=44, xR=w-24, cy=h*0.52, src=x0;
+    // 先端（news の位置）は一定時間後の到達点＝c·t0 で固定
+    var xFront=x0+(xR-x0)*0.82;
+    // 包絡線スケール：λ をピクセルに。λ=1/m。基準で m=0.3→λ=3.33→大きめ
+    var lamPx=(xR-x0)*0.30*lam;   // 表示用
+    // 基準線
+    ctx.strokeStyle='#e0d5c2';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0,cy);ctx.lineTo(xR,cy);ctx.stroke();ctx.setLineDash([]);
+    // 場の擾乱：振幅 A*exp(-(x-x0)/lamPx)*sin、ただし x<xFront のみ
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2.4;ctx.beginPath();var f=true;
+    for(var x=x0;x<=xFront;x+=2){
+      var env=42*Math.exp(-(x-x0)/lamPx);
+      var y=cy - env*Math.sin((x-x0)*0.12);
+      if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // 包絡線（上側）
+    ctx.strokeStyle='rgba(33,102,160,0.45)';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;ctx.beginPath();f=true;
+    for(var xe=x0;xe<=xFront;xe+=3){var env2=42*Math.exp(-(xe-x0)/lamPx);var ye=cy-env2;if(f){ctx.moveTo(xe,ye);f=false;}else ctx.lineTo(xe,ye);}
+    ctx.stroke();ctx.setLineDash([]);
+    // 射程マーカー λ（包絡線が 1/e に落ちる位置）
+    var xLam=Math.min(x0+lamPx, xFront);
+    ctx.strokeStyle='#2166a0';ctx.setLineDash([2,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(xLam,cy-46);ctx.lineTo(xLam,cy+30);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2166a0';ctx.font='11px sans-serif';ctx.fillText('射程 λ', xLam-14, cy+44);
+    // 先端（速さ）
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(xFront,cy-50);ctx.lineTo(xFront,cy+40);ctx.stroke();
+    ctx.fillStyle='#a83a22';ctx.font='12px sans-serif';ctx.fillText('変化の先端（速さ c・不変）', Math.min(xFront+6,w-160), cy-40);
+    // 源
+    ctx.fillStyle='#b0561e';ctx.beginPath();ctx.arc(src,cy,7,0,7);ctx.fill();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('源', src-4, cy+40);
+    // readout
+    var rangeword = m<0.4?'とても長い（軽い担い手）':(m>1.5?'ごく短い（重い担い手＝弱い力型）':'中くらい');
+    rd.textContent='担い手の質量 m='+m.toFixed(2)+' → 射程 λ=ℏ/mc ≈ '+lam.toFixed(2)+'（'+rangeword+'）。でも変化の先端（赤）の位置＝速さは動かない。質量は射程だけを縮め、速さは c のまま。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

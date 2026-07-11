@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F=ma は、法則か定義か ── わかる力 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f8fb; --paper-edge:#dbe2ea;   /* 第1回：藍鉄の紙（土台の色） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e7edf4;
+    --rule:#ccd6e0; --hair:#bac6d3;
+    --acc:#2f5a8c;    /* 第1回アクセント＝藍鉄 */
+    --grid:#d5dee7;
+    --m1:#b0561e; --m2:#2f5a8c;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cddcec 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f5f8fc;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfeff,#e9eff5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#22354a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 1 回 ／ 「力」という言葉に、だまされないために</span></div>
+  <p class="eyebrow">姉妹編「わかる宇宙論」の続き ── 今度は“力”の正体を、一枚ずつ剥がしていく</p>
+  <h1>F=ma は、法則か定義か
+    <span class="sub">誰もが知る \(F=ma\)。でもこの式、よく見ると<em>力と質量が互いを定義し合う円環</em>になっている。<br>ではこの式の“中身”はどこにあるのか。剥がすと、力は「モノ」ではなく「関係」だと見えてくる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：割り算、比、\(F=ma\)</span>
+    <span>相互作用がくれるのは、質量の「比」だけ</span>
+  </div>
+
+  <p class="lead">「力」と聞けば、押す・引く・重い ── 手に伝わるあの感覚を思い浮かべます。物理はそれを \(F=ma\) の一本で表す。あまりに有名で、疑う気も起きない。でも今回、最初の一歩として、この式を<em>疑って</em>みます。\(F=ma\) は、自然が従う<strong>法則</strong>なのか、それとも力という言葉の<strong>定義</strong>にすぎないのか。ここを突くと、力という概念の足元がぐらつき、このシリーズがずっと追う問い ── <strong>「力」とは実体ではなく、関係の名前ではないか</strong> ── の入口が開きます。</p>
+
+  <h2><span class="n">01</span>F=ma を、記号ごとに分解する</h2>
+
+  <p>\(F=ma\) の三つの記号を、一つずつ「これは何?」と問い詰めます。</p>
+
+  <ul>
+    <li><strong>\(a\)（加速度）</strong>：これははっきりしている。位置を時間で二回微分したもの。物差しと時計があれば<em>測れる</em>。文句なし。</li>
+    <li><strong>\(m\)（質量）</strong>：何? 「同じ力をかけたときの、加速のしにくさ」。式で書けば \(m=F/a\)。── あれ、力が出てきた。</li>
+    <li><strong>\(F\)（力）</strong>：何? 「質量 × 加速度」、つまり \(F=ma\)。── あれ、質量が出てきた。</li>
+  </ul>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 円環</div>
+    <p style="margin:6px 0 0;">力を知るには質量が要る（\(F=ma\)）。質量を知るには力が要る（\(m=F/a\)）。<br><strong>力と質量が、互いを使って定義し合っている。</strong> 測れるのは加速度 \(a\) だけで、\(F\) と \(m\) は、この一本の式だけからは<em>どちらも単独では決まらない</em>。</p>
+  </div>
+
+  <p>だから素朴には、\(F=ma\) は「自然の法則」というより、<em>力という量をこう呼ぶことにする、という約束（定義）</em>に見えてしまう。実際この点は、物理学者マッハ以来くり返し議論されてきた、由緒ある急所です。では ── この円環は、どうやって破るのか。</p>
+
+  <h2><span class="n">02</span>円環を破る ── 相互作用は、質量の「比」をくれる</h2>
+
+  <p>鍵は、力を<em>単独で</em>考えるのをやめること。二つの物体を<strong>相互作用</strong>させます。ばねを挟んで押し合う、ぶつける ── なんでもいい。ニュートンの第3法則（作用・反作用）で、二つが受ける力は<strong>大きさが同じで向きが逆</strong>。だから、</p>
+
+  <div class="calc">
+    <span class="tag">力の値を知らなくても、質量の比が出る</span>
+    <p class="lbl">二つの物体が受ける力は同じ大きさ \(F\)</p>
+    $$m_1 a_1 = F = m_2 a_2$$
+    <p class="lbl">力 F を消すと</p>
+    $$\frac{a_1}{a_2}=\frac{m_2}{m_1}$$
+    <p style="margin-bottom:14px;">\(F\) がいくらかは<strong>いっさい知らなくていい</strong>。二つの加速度を測って比を取れば、質量の比 \(m_2/m_1\) がそのまま出てくる。軽いほうが余計に加速する、その度合いが質量比です。</p>
+  </div>
+
+  <p>これは大きい。\(F\) の絶対値という「決まらないもの」を経由せず、<em>相互作用させて加速度の比を見る</em>だけで、質量の比という<strong>単位の消えた数</strong>が測れてしまう。姉妹編「わかる宇宙論」でくり返した合言葉 ── <strong>絶対値は約束、比が物理</strong> ── が、力学のいちばん最初の一歩から効いています。下の図で、質量比を変えて、加速度の比が裏返しに動くのを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：ばねで押し合う二つの台車。手を離すと、軽いほうが大きく加速する。力 F の値は不明でも、加速度の比 a₁:a₂ は質量比 m₂:m₁ で決まる</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>質量比 m₂ / m₁（右の台車の重さ。左は基準 m₁=1）<span class="val" id="vk">1.0</span>
+        <input type="range" id="sk" min="0.3" max="4" step="0.05" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--m1);"></i>台車1（基準 m₁=1）</span>
+      <span><i class="swatch" style="background:var(--m2);"></i>台車2（m₂）</span>
+    </div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── では kg はどこから来た?</span>
+    相互作用がくれるのは質量の<strong>比</strong>だけ。「1 kg」という絶対値は、比べる基準を一つ人間が<em>約束</em>して初めて決まります（かつては金属の原器、2019年からはプランク定数 \(h\) を固定して定義）。これは姉妹編・番外編②「なぜ光速を固定したのか」と同じ話 ── <strong>絶対値は帳簿（約束）、物理は比の側にある</strong>。力学も、その例外ではありませんでした。
+  </div>
+
+  <h2><span class="n">03</span>では F=ma の“中身”は、どこにあるのか</h2>
+
+  <p>円環の話だけ聞くと「\(F=ma\) は空っぽの定義なの?」と思えます。でも、そうではない。<strong>経験的な中身は、\(F=ma\) の外 ── 個別の「力の法則」の側にある</strong>のです。</p>
+
+  <div class="keybox">
+    <div class="lbl">力の中身は「力の法則」が運ぶ</div>
+    <p style="margin:6px 0 0;">万有引力 \(F=\dfrac{G m_1 m_2}{r^2}\)、クーロン力 \(F=\dfrac{1}{4\pi\varepsilon_0}\dfrac{q_1 q_2}{r^2}\)、ばね \(F=kx\) …<br>これらが「どんな配置で、どれだけの力が出るか」を<strong>独立に</strong>決める。\(F=ma\) は、その力を「運動」へ翻訳する接続板。<em>中身（物理）は力の法則、\(F=ma\) は翻訳の枠組み</em>。</p>
+  </div>
+
+  <p>つまり \(F=ma\) 単体は定義に近く、<strong>物理の中身は「どんな力の法則があるか」に宿る</strong>。そして自然界の力の法則は、突き詰めると<strong>四種類</strong>しかありません ── このシリーズを通して何度も出てくる、登場人物です。</p>
+
+  <div class="calc">
+    <span class="tag">力の“正体”の登場人物（四つの力）</span>
+    <p style="margin-top:8px;"><strong>重力</strong>（万物を引く。いちばん弱いのに宇宙を支配）／<strong>電磁気力</strong>（電気と磁気。原子・分子・光）／<strong>強い力</strong>（原子核を束ねる）／<strong>弱い力</strong>（放射性崩壊を起こす）。</p>
+    <p style="margin-bottom:14px;">そして ── あなたが日常で感じる力（押す・摩擦・張力・抗力）は、この四つのうち<strong>ほぼ全部が電磁気力</strong>の化粧違い。第2回・第3回で、その正体を剥がします。「たくさんの力の名前」は、じつは数種類の顔にすぎません。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 力は「関係」の名前</h2>
+
+  <p>第1回の結論です。\(F=ma\) を分解して見えたのは、<strong>「力」は物体が単独で持つモノではない</strong>ということ。力は、二つのものが<em>相互作用する関係</em>として現れる。第3法則が象徴的で、<strong>力はつねにペアで現れ、単独の力は存在しない</strong>。単独の絶対値が決まらなかったのも、力が本来「関係」だから ── 関係は、二者の間にしかない。</p>
+
+  <div class="keybox">
+    <div class="lbl">このシリーズの背骨</div>
+    <p style="margin:6px 0 0;"><strong>「力」は名詞（モノ）ではなく、関係の名前である。</strong><br>「AがBに力を及ぼす」の正体は、この先の回で、場・幾何・座標の付け替え・対称性の局所化 ── といった“関係”に一枚ずつ置き換わっていく。剥がしの終着点は、姉妹編で見た<em>ゲージ場の曲がり</em>（第9回）。</p>
+  </div>
+
+  <p>力を「物体が握っているモノ」だと思うと、単独の値を測ろうとして \(F=ma\) の円環にはまる。「二者の関係」だと思えば、比・相互作用・場という、測れるものだけで話が回る。このシリーズは、身のまわりの押す力から始めて、この<em>関係への置き換え</em>を、四つの力ぜんぶについて最後までやり切ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「ただの定義」と言い切るのも過剰</span>
+    <p style="margin-top:0;">\(F=ma\) を「空っぽの定義」と決めつけるのは行き過ぎです。この式には、\(F=ma\) が単純な形で成り立つ<strong>特別な座標系（慣性系）が存在する</strong>こと、力が<strong>ベクトルとして足し合わさる</strong>こと、第3法則が成り立つこと ── といった、れっきとした<em>経験的な中身</em>が含まれています。だから正確には「\(F=ma\) は定義と法則が混ざった枠組み」。今回の主張は、\(F\) の<strong>絶対値の意味</strong>が円環的で、物理は<strong>比と力の法則</strong>の側にある、という一点です。</p>
+    <p style="margin-bottom:0;">また第4回で見るように、慣性系という前提が崩れると「慣性力」という“力じゃない力”が湧きます。\(F=ma\) の足場そのものが、実は選び方（座標）に依っている ── その話は、そこで。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>台車1（\(m_1=1\)）と台車2をばねで押し合わせたら、加速度が \(a_1:a_2 = 3:1\) だった。\(m_2\) は?
+        <details><summary>答えを見る</summary><div class="ans">\(a_1/a_2=m_2/m_1\) より \(m_2/m_1=3\)。\(m_1=1\) なので \(m_2=3\)。加速度が小さいほう（台車2）が重い。力Fの値は知らなくても出る。</div></details>
+      </li>
+      <li>「\(F=ma\) は円環的だ」とは、どういう意味か。一文で。
+        <details><summary>答えを見る</summary><div class="ans">力を定義するのに質量が要り（\(F=ma\)）、質量を定義するのに力が要る（\(m=F/a\)）ので、この一本の式だけでは \(F\) も \(m\) も単独では決まらない、という意味。</div></details>
+      </li>
+      <li>\(F=ma\) が「空っぽの定義」ではない、と言える経験的な中身を一つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">例：慣性系という特別な座標系が存在すること／力がベクトルとして重ね合わさること／作用・反作用（第3法則）が成り立つこと。これらは自然についての本当の主張で、定義ではない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>力は、モノではなく関係だった</h2>
+    <p>\(F=ma\) は、力と質量が互いを定義し合う円環を含む。測れるのは加速度だけ。だが二つの物体を相互作用させ、作用・反作用を使えば、\(F\) の値を知らずとも \(a_1/a_2=m_2/m_1\) ── 質量の<strong>比</strong>が測れる。絶対値は約束（kg はプランク定数で定義）、物理は比の側。姉妹編の「絶対値は帳簿、比が物理」が、力学の初手から効いていた。</p>
+    <p>そして \(F=ma\) の経験的な中身は、式の外の「力の法則」（重力・電磁・強・弱）に宿る。日常の力はほぼ電磁気の化粧違い。剥がして見えたのは ── <strong>力は物体が握るモノではなく、二者の関係の名前</strong>だということ。単独の力は存在せず、つねにペア。このシリーズは、この“関係への置き換え”を、四つの力ぜんぶで最後までやり切ります。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第2回</span>
+    「『押す』の正体は、全部 電磁気」。机を押す、壁を押す ── その手ごたえは、原子の電子雲どうしの<strong>電磁気の反発</strong>です。あなたの手は、机に<em>触れてすらいない</em>。「接触」という日常の感覚が、いちばん最初に剥がれます。四つの力のうちの一つ・電磁気が、日常をどれだけ支配しているかを見ます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第1回、物理好きの高校生・大学生向け読み物です。\(F=ma\) における力と（慣性）質量の定義の循環性は、マッハ以来くり返し論じられてきた実在の論点で、相互作用（作用・反作用と運動量保存）から質量比が単位に依らず得られること \(a_1/a_2=m_2/m_1\) は標準的な操作的定義です。質量の絶対単位 kg は2019年のSI改定でプランク定数 \(h\) を定義値に固定して定められています。\(F=ma\) は慣性系の存在・力のベクトル的重ね合わせ・第3法則などの経験的内容を含み、「定義と法則が混ざった枠組み」と表現するのが正確です。自然界の基本相互作用は重力・電磁・強い・弱いの四つで、日常的な接触力・摩擦・張力・抗力は本質的に電磁気力に由来します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、質量比と加速度比の裏返しの関係が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function block(ctx,x,y,side,color,label){
+    ctx.fillStyle=color;ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.rect(x-side/2,y-side,side,side);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(label,x,y-side/2+4);ctx.textAlign='left';
+  }
+  function arrow(ctx,x,y,dx,color){
+    ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y);ctx.stroke();
+    var s=(dx>=0)?1:-1;
+    ctx.beginPath();ctx.moveTo(x+dx,y);ctx.lineTo(x+dx-8*s,y-4);ctx.lineTo(x+dx-8*s,y+4);ctx.closePath();ctx.fill();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var r=parseFloat(sk.value); vk.textContent=r.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2, trackY=h*0.60;
+    // track
+    ctx.strokeStyle='#c6cfda';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(30,trackY);ctx.lineTo(w-30,trackY);ctx.stroke();
+    // 中心（ばねの位置）
+    ctx.strokeStyle='#9aa5b5';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,26);ctx.lineTo(cx,trackY);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('ばね（同じ力 F で押し合う）',cx,20);ctx.textAlign='left';
+    // 変位 ∝ 1/m（同じ時間後のスナップ）。m1=1, m2=r
+    var K=Math.min(w*0.30, 190);
+    var d1=K/1, d2=K/r;
+    // ブロックの大きさ ∝ 質量^(1/3)（見た目）
+    var s1=34, s2=34*Math.cbrt(r);
+    var x1=cx-40-d1*0.55, x2=cx+40+d2*0.55;
+    // 加速度矢印（∝1/m）
+    arrow(ctx,cx-30,trackY-52,-(d1*0.55),'#b0561e');
+    arrow(ctx,cx+30,trackY-52, (d2*0.55),'#2f5a8c');
+    // spring coil (簡易)
+    ctx.strokeStyle='#7a8496';ctx.lineWidth=2;ctx.beginPath();
+    for(var i=0;i<=8;i++){var xx=cx-24+i*6, yy=trackY-8+((i%2)?-6:6);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}
+    ctx.stroke();
+    // blocks
+    block(ctx,x1,trackY,s1,'#b0561e','m₁=1');
+    block(ctx,x2,trackY,s2,'#2f5a8c','m₂='+r.toFixed(2));
+    // 加速度ラベル
+    ctx.font='12px sans-serif';
+    ctx.fillStyle='#b0561e';ctx.textAlign='center';ctx.fillText('a₁',cx-30-d1*0.55*0.5,trackY-60);
+    ctx.fillStyle='#2f5a8c';ctx.fillText('a₂',cx+30+d2*0.55*0.5,trackY-60);ctx.textAlign='left';
+    // readout
+    var ratio=r; // a1/a2 = m2/m1 = r
+    rd.textContent='m₂/m₁ = '+r.toFixed(2)+'　→　a₁ : a₂ = m₂ : m₁ = '+r.toFixed(2)+' : 1　（軽い台車1が'+(r>=1?r.toFixed(2)+'倍':'') +(r>=1?'大きく加速）':'…比の分だけ差がつく）')+'　力 F の値は不明のまま。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

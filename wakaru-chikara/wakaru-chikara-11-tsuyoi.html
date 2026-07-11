@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>強い力だけ、逆さま ── わかる力 第11回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf6f4; --paper-edge:#e8dad5;   /* 第11回：赤の紙（強い力） */
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#8a2f1e; --calc-bg:#f4e5e1;
+    --rule:#dcc9c2; --hair:#ccb4ab;
+    --acc:#a83a22;    /* 第11回アクセント＝赤 */
+    --grid:#e4d2cc;
+    --em:#2166a0; --st:#a83a22;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.28;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0d5cd 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e2cbc3;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffcfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#fbf6f4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#5a2318;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffcfb,#f4e8e3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5a2318;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:24pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">第 11 回 ／ 力の正体を、一枚ずつ剥がす</span></div>
+  <p class="eyebrow">第10回：逆二乗は3次元の指紋 → 第11回：その常識を唯一破る力がある</p>
+  <h1>強い力だけ、逆さま
+    <span class="sub">四つの力で、強い力だけが常識を裏切る ── <em>近いほど自由、離すほど強い</em>。<br>だからクォークは単独では絶対に取り出せない。逆二乗も湯川も通じない、変わり者の力。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第8回の走り、第9回のSU(3)、第10回の流線</span>
+    <span>近い＝自由 ／ 離す＝ちぎれて対生成</span>
+  </div>
+
+  <p class="lead">第10回で、力のかたち \(1/r^2\) は「3次元空間で流線が薄まる」ことの帰結だと見ました。重力も電気も、遠ざかれば弱くなる ── 当たり前に思えます。ところが、四つの力のうち<strong>強い力だけ</strong>が、この当たり前を根こそぎ裏返します。近づくとほとんど<em>自由</em>になり、離すほど<em>強く</em>なる。だからクォークは、陽子の中に閉じ込められ、<strong>単独では宇宙のどこにも取り出せない</strong>。逆二乗も湯川も通じない、いちばんの変わり者。第8回で「強い力は近づくと弱くなる」と見た、その裏側の顔を、今回ちゃんと見ます。</p>
+
+  <h2><span class="n">01</span>近いほど自由 ── 漸近的自由</h2>
+
+  <p>第8回で、強い力の結合は<strong>高エネルギー（＝近距離）で弱くなる</strong>と見ました。これを<em>漸近的自由</em>といいます。だから陽子の中の、ごく近くにいるクォークたちは、意外にも<strong>ほとんど自由に動いている</strong>。ぎゅうぎゅうに縛られているのではなく、近い者どうしはむしろゆるい。これだけでも常識と逆です（ふつうの力は近いほど強い）。</p>
+
+  <h2><span class="n">02</span>離すほど強い ── 閉じ込めと、ちぎれるひも</h2>
+
+  <p>本当の変わり者ぶりは、<strong>引き離そうとしたとき</strong>に出ます。電磁気なら、離すほど流線が広がって薄まり、力は \(1/r^2\) で弱まりました（第10回）。ところが強い力の流線は ── <em>広がらずに、一本の“ひも（フラックスチューブ）”に束ねられる</em>。ひもの張力は距離によらずほぼ一定。だから<strong>離しても力が落ちない</strong>。エネルギーは距離に比例してどんどん溜まる。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 引き離せない</div>
+    <p style="margin:6px 0 0;">強い力の流線は“ひも”に束ねられ、張力ほぼ一定 → 力が落ちない → エネルギー ∝ 距離。<br>無理に引き離すと、溜まったエネルギーが \(E=mc^2\) で<strong>新しいクォーク・反クォークの対</strong>に化け、ひもがちぎれる。結果、単独のクォークは取り出せず、<em>いつも対や三つ組（陽子・中間子）になる</em> ── これが<strong>閉じ込め</strong>。</p>
+  </div>
+
+  <p>下の図で、二つのクォークを引き離してみてください。近いうちはゆるい（漸近的自由）。離すとひもが伸び、力は落ちず、やがて<strong>ちぎれて新しい対ができる</strong>。どれだけ強く引いても、手元に残るのは単独クォークではなく、また“対”です。</p>
+
+  <div class="fig">
+    <div class="cap">図：上＝クォーク対を引き離す（ひも＝フラックスチューブ）。下＝力の比較。電磁気（青）は 1/r² で落ちるが、強い力（赤）は落ちず、伸ばすとちぎれて新対ができる</div>
+    <canvas id="cv" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>クォークどうしの距離 r（右ほど引き離す）<span class="val" id="vk">0.6</span>
+        <input type="range" id="sk" min="0.3" max="4" step="0.02" value="0.6">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--em);"></i>電磁気（1/r² で落ちる）</span>
+      <span><i class="swatch" style="background:var(--st);"></i>強い力（落ちない・ひも）</span>
+    </div>
+  </div>
+
+  <h2><span class="n">03</span>なぜ逆さまなのか ── 担い手が、自分にも力を及ぼす</h2>
+
+  <p>この異常のもとは、担い手<strong>グルーオン</strong>の性質にあります。電磁気の担い手・光子は電荷を持たず、光子どうしは力を及ぼし合わない。だから流線は自由に広がり、\(1/r^2\) で薄まった。ところがグルーオンは、自分自身が“色荷”を持っている。<strong>担い手どうしが引き合い、流線を広げるどころか一本に束ねてしまう</strong>。これがひも（閉じ込め）を生む。第9回の言葉でいえば、強い力は非可換な \(SU(3)\) 対称性のつなぎで、そのつなぎ（グルーオン）が<em>自己相互作用する</em>。だから逆二乗が破れる。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 力のかたちは、担い手で決まる</span>
+    第10回で「力のかたち \(1/r^2\) は3次元空間の指紋」と言いました。今回はその補足 ── <strong>担い手が自分自身に力を及ぼすかどうか</strong>でも、かたちは決まる。光子（自己相互作用なし）→流線が広がり \(1/r^2\)。グルーオン（自己相互作用あり）→流線が束ねられ、閉じ込め。力のかたちは、空間の次元と担い手の性質、その両方の刻印だったのです。第9回の「どの対称性か」が、ここでも効いています。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>剥がして見えたもの ── 「取り出せる」という前提が崩れる</h2>
+
+  <p>第11回の結論。強い力は、逆二乗も湯川も通じない ── 近いほど自由（漸近的自由）、離すほど強い（閉じ込め）。その結果、<strong>クォークという“部品”は、単独では決して取り出せない</strong>。私たちは物を分解して部品を取り出せると思っていますが、強い力の世界では、その素朴な前提そのものが崩れる。力のかたちが変われば、「単独で存在できるもの」の意味さえ変わってしまうのです。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 閉じ込めは、まだ“証明”されていない</span>
+    <p style="margin-top:0;">漸近的自由は理論的にも実験的にも確立しています（1973年、グロス・ウィルチェック・ポリツァーがβ関数で示し、後にノーベル賞）。いっぽう<strong>閉じ込めは、実験・数値計算では強く支持されているのに、数学的な証明はまだありません</strong>。「強い力の理論（ヤン=ミルズ）がなぜ質量ギャップを持ち閉じ込めるか」は、100万ドルの<em>ミレニアム懸賞問題</em>の一つ。分かっているようで、いちばん基礎のところが未解決 ── 姉妹編でくり返した「正直な線」の、力学における好例です。</p>
+    <p style="margin-bottom:0;">図の力は「電磁気 ∝ 1/r²／強い力 ≈ 一定」という模式で、実際の強い力は近距離にクーロン的な項も持ちます（コーネル・ポテンシャル \(V\approx -a/r + b\,r\)）。ちぎれる距離や張力の値も概念的なものです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>クォークが単独で取り出せないのはなぜか。第11回の言葉で。
+        <details><summary>答えを見る</summary><div class="ans">強い力の流線がひも（フラックスチューブ）に束ねられ張力一定で、離しても力が落ちずエネルギーが距離に比例して溜まる。引き離すとそのエネルギーが新しいクォーク対に化けてひもがちぎれ、また対になる（閉じ込め）。</div></details>
+      </li>
+      <li>電磁気は 1/r² で薄まるのに、強い力が薄まらないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">担い手の違い。光子は電荷を持たず流線が自由に広がるが、グルーオンは色荷を持ち担い手どうしが引き合って流線を一本に束ねる（自己相互作用＝非可換SU(3)）。だから逆二乗が破れる。</div></details>
+      </li>
+      <li>強い力について「確立していること」と「未解決なこと」を一つずつ。
+        <details><summary>答えを見る</summary><div class="ans">確立：漸近的自由（近距離＝高エネルギーで弱くなる）。未解決：閉じ込めの数学的証明（ヤン=ミルズの質量ギャップ＝ミレニアム懸賞問題）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>近いほど自由、離すほど強い</h2>
+    <p>強い力は四つの力の変わり者。近距離では弱く（漸近的自由）、陽子の中のクォークはむしろ自由。ところが引き離すと、流線が広がらずひも（フラックスチューブ）に束ねられ、張力一定で力が落ちない。エネルギーは距離に比例して溜まり、無理に引くとちぎれて新しいクォーク対ができる ── だからクォークは単独では取り出せない（閉じ込め）。逆二乗も湯川も通じない。</p>
+    <p>もとは担い手グルーオンが色荷を持ち、担い手どうしが引き合って流線を束ねるから（第9回の非可換SU(3)の自己相互作用）。力のかたちは、空間の次元（第10回）と担い手の性質、その両方の刻印だった。閉じ込めの数学的証明は今なお未解決（ミレニアム問題）。── これで四つの力の個性を出そろえました。次回、いよいよ<strong>四つを一つにできるか</strong>、統一へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第12回</span>
+    「力を、全部消せるか」。第8回で三つの力が高エネルギーで一点に近づくのを見ました。四つを一つに（大統一）、重力を幾何で消し（第5回）、慣性力を座標で消す（第4回）── どこまで“消せて”、何が消えずに残るのか。剥がしの旅の、いちばん高いところから力の全体を見渡します。姉妹編「わかる宇宙論」の統一・重力とも握手する回です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ第11回、物理好きの高校生・大学生向け読み物です。強い相互作用（QCD）の漸近的自由（高エネルギー／短距離で結合が弱化；Gross–Wilczek–Politzer 1973）と、色閉じ込め（クォークが単独で取り出せず、フラックスチューブの一定張力によりポテンシャルが距離に線形に増大、引き離すとハドロン化＝対生成が起きる）は、実験・格子計算で強く支持される確立した理解です。ただし閉じ込め（ヤン=ミルズの質量ギャップ）の数学的証明は未解決で、ミレニアム懸賞問題の一つです。閉じ込めの起源はグルーオンの自己相互作用（非可換 SU(3)）にあります。図は「電磁気 ∝ 1/r²／強い力 ≈ 一定張力」の模式で、実際はコーネル型 \(V\approx -a/r+b\,r\)。数値・ちぎれる距離は概念的です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、クォークを引き離すとひもが伸び、やがてちぎれて新しい対ができる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  var RMIN=0.3, RMAX=4, RSNAP=3.0, FHI=3.2;
+  function quark(ctx,x,y,col,label){
+    var g=ctx.createRadialGradient(x-2,y-2,1,x,y,11);
+    g.addColorStop(0,'#fff');g.addColorStop(1,col);
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,11,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(label,x,y+4);ctx.textAlign='left';
+  }
+  function tube(ctx,x1,x2,y,col){
+    ctx.strokeStyle=col;ctx.lineWidth=7;ctx.globalAlpha=.5;
+    ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();ctx.globalAlpha=1;
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var r=parseFloat(sk.value); vk.textContent=r.toFixed(2);
+    ctx.clearRect(0,0,w,h);
+    // === 上：クォーク対 ===
+    var topY=64, cx=60, scale=(w-140)/RMAX;
+    var x1=cx, x2=cx+r*scale;
+    if(r<RSNAP){
+      tube(ctx,x1,x2,topY,'#a83a22');
+      quark(ctx,x1,topY,'#a83a22','q');
+      quark(ctx,x2,topY,'#7a2318','q̄');
+      ctx.fillStyle='#8a2f1e';ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText('フラックスチューブ（張力ほぼ一定）',(x1+x2)/2, topY-16);ctx.textAlign='left';
+    } else {
+      // ちぎれて2つの対に
+      var xm=(x1+x2)/2;
+      tube(ctx,x1,xm-14,topY,'#a83a22');
+      tube(ctx,xm+14,x2,topY,'#a83a22');
+      quark(ctx,x1,topY,'#a83a22','q');
+      quark(ctx,xm-14,topY,'#7a2318','q̄');
+      quark(ctx,xm+14,topY,'#a83a22','q');
+      quark(ctx,x2,topY,'#7a2318','q̄');
+      ctx.fillStyle='#8a2f1e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText('★ ちぎれた！新しいクォーク対が生まれ、また“対”に',w/2, topY-18);ctx.textAlign='left';
+    }
+    // === 下：力の比較 ===
+    var gy=120, gh=h-gy-38, gx=54, gw=w-70;
+    function X(rr){return gx+(rr-RMIN)/(RMAX-RMIN)*gw;}
+    function Y(f){var ff=f;if(ff>FHI)ff=FHI;return gy+(FHI-ff)/FHI*gh;}
+    ctx.strokeStyle='#eaddd7';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=gy+g*gh/4;ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+gw,yy);ctx.stroke();}
+    ctx.strokeStyle='#ccb4ab';ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('距離 r →', gx+gw-54, gy+gh+16);
+    ctx.save();ctx.translate(16,gy+gh/2);ctx.rotate(-Math.PI/2);ctx.fillText('力',0,0);ctx.restore();
+    // 電磁気 1/r²
+    ctx.strokeStyle='#2166a0';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var r1=RMIN;r1<=RMAX+1e-9;r1+=0.02){var y1=Y(0.5/(r1*r1));var xa=X(r1);if(f){ctx.moveTo(xa,y1);f=false;}else ctx.lineTo(xa,y1);}
+    ctx.stroke();
+    // 強い力 ≈ 一定（漸近的自由で近距離やや低→一定）
+    ctx.strokeStyle='#a83a22';ctx.lineWidth=2.8;ctx.beginPath();f=true;
+    for(var r2=RMIN;r2<=RMAX+1e-9;r2+=0.02){var sF=(r2<RSNAP)?(1.2 - 0.5*Math.exp(-r2*2)):0.15; var y2=Y(sF);var xb=X(r2);if(f){ctx.moveTo(xb,y2);f=false;}else ctx.lineTo(xb,y2);}
+    ctx.stroke();
+    // snap 線
+    ctx.strokeStyle='#8a2f1e';ctx.setLineDash([4,3]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(X(RSNAP),gy);ctx.lineTo(X(RSNAP),gy+gh);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a2f1e';ctx.font='10.5px sans-serif';ctx.fillText('ちぎれる', X(RSNAP)+4, gy+14);
+    // marker
+    var mx=X(r);
+    ctx.strokeStyle='#9aa5a1';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,gy);ctx.lineTo(mx,gy+gh);ctx.stroke();ctx.setLineDash([]);
+    // labels
+    ctx.fillStyle='#2166a0';ctx.font='12px sans-serif';ctx.fillText('電磁気 1/r²', X(2.3), Y(0.5/(2.3*2.3))-8);
+    ctx.fillStyle='#a83a22';ctx.fillText('強い力（落ちない）', X(1.4), Y(1.15)-8);
+    // readout
+    if(r<0.7) rd.textContent='r='+r.toFixed(2)+'（近い）：強い力はむしろ弱く、クォークはほぼ自由（漸近的自由）。電磁気は近いほど強い ── 逆さま。';
+    else if(r<RSNAP) rd.textContent='r='+r.toFixed(2)+'：離しても強い力は落ちない（ひもの張力一定）。エネルギーがどんどん溜まる。電磁気はもう 1/r² でぐんと弱い。';
+    else rd.textContent='r='+r.toFixed(2)+'：溜まったエネルギーが E=mc² で新しいクォーク対に。ひもがちぎれ、単独クォークは取り出せず、また“対”になる＝閉じ込め。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

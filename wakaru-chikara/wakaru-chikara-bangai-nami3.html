@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波が力を及ぼす／波に見える力 ── わかる力 番外編・波と力③</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf9; --paper-edge:#d9e8e4;
+    --side:#2f5d62; --side-bg:#eef3f2;
+    --warn:#8a4b2f;
+    --calc:#1d5b56; --calc-bg:#e6f0ed;
+    --rule:#cbdcd7; --hair:#b7ccc5;
+    --acc:#1f7a6e;
+    --grid:#d3e4df;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:35px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe8e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#22343a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #c6dbd5;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4faf8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#1a4741;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffe,#eef5f3);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1a4741;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる力</span><span class="ep">番外編・波と力 ③（三部作の締め）</span></div>
+  <p class="eyebrow">波①力→波 ／ 波②力＝波 → 波③波→力、そして「波に見える力」</p>
+  <h1>波が力を及ぼす／<br>波に見える力
+    <span class="sub">波は物を押す（光の圧力・太陽帆）。そして最深部 ── 量子では粒子が波で、<br>力は<em>波の位相のズレ</em>として現れる。「波に見える力」の到達点で、三部作を締める。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：波①②、第9回のゲージ（位相のつなぎ）</span>
+    <span>力が、干渉縞のズレに現れる</span>
+  </div>
+
+  <p class="lead">波①「力から波が生まれる」、波②「力そのものが波だった」と来て、最後は波と力の関係をぐるっと閉じます。まず素朴な向き ── <strong>波は、物を押す</strong>。光にも音にも圧力があり、太陽の光は帆を押して宇宙船を進めます（波②の逆向き）。そしてもっと深いところに、このシリーズでいちばん不思議な「力」があります ── 量子の世界では、粒子そのものが波で、<strong>力は「波の位相のズレ」として現れる</strong>。局所的にはどこにも力が働いていないのに、干渉縞がずれる。第9回のゲージ（位相のつなぎ）が、ここで<em>目に見える波の模様</em>として顔を出します。これが「波に見える力」の正体です。</p>
+
+  <h2><span class="n">01</span>波は、物を押す ── 運動量を運ぶから</h2>
+
+  <p>波②で「揺らした場は波になって飛ぶ」と見ました。飛ぶ波は<strong>運動量を運びます</strong>。だから物に当たって吸収・反射されると、その運動量を渡して<em>押す</em>。光の<strong>輻射圧</strong>です。ふだんは小さすぎて感じませんが、太陽帆（日本の「IKAROS」など）は本当にこれで進むし、レーザーピンセットは光で微粒子をつまむ。音も同じ（音圧）。波②が「力→波」なら、こちらは<strong>「波→力」</strong>── 波と力は、行き来する。</p>
+
+  <h2><span class="n">02</span>量子では、粒子が波 ── だから力は位相に効く</h2>
+
+  <p>ここから深くなります。量子力学では、電子のような<strong>粒子そのものが波</strong>として振る舞う（ド・ブロイ）。波である以上、二つの経路を通って<em>干渉</em>する（二重スリット）。そして波には<strong>位相（時計の針・第9回）</strong>があり、干渉縞は二つの経路の<em>位相差</em>で決まります。ここに力が効くと、どうなるか。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の核心 ── 力は「位相のズレ」に現れる</div>
+    <p style="margin:6px 0 0;">粒子＝波なので、力（正確には第9回のゲージ場 \(A\)）は、波の<strong>位相をずらす</strong>形で効く。<br>局所的にはどこにも力（押す・引く）が働いていなくても、経路にそって位相がずれれば ── <strong>干渉縞が横に動く</strong>。力が、波の模様のズレとして目に見える。</p>
+  </div>
+
+  <p>これを鮮やかに見せるのが<strong>アハラノフ=ボーム効果</strong>。細いソレノイドの外側は磁場ゼロ（＝局所的な力ゼロ）なのに、その周りを通る電子波の位相が、第9回の \(A\)（ベクトルポテンシャル＝つなぎ）によってずれ、<em>干渉縞が動く</em>。古典的には「力が働いていないのに影響がある」という不思議。第9回で「力の本体はつなぎ \(A\)」と言ったことが、ここで<strong>波の干渉縞のズレ</strong>という見える形になります。下の図で、位相のズレ（＝ゲージ \(A\) の効果）を変えて、干渉縞が滑るのを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図：二経路で干渉する電子波。局所的な力がゼロでも、位相のズレ（＝第9回のつなぎ A）を変えると干渉縞が横に滑る ── 力が「波の模様」に現れる</div>
+    <canvas id="cv" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>位相のズレ Δφ（＝ゲージ A・アハラノフ=ボーム）<span class="val" id="vk">0.00π</span>
+        <input type="range" id="sk" min="0" max="100" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rd"></div>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>剥がして見えたもの ── 波と力は、ずっと表裏だった</h2>
+
+  <p>波の三部作の結論。<strong>力と波は、初めから同じものの表と裏</strong>でした。①復元力と慣性を並べると波が生まれ（力→波）、②その力を担う場は揺らせば波になり（力＝波）、③波は運動量で物を押し（波→力）、量子では力が波の位相のズレとして現れる（力＝位相）。第9回で「力＝局所対称性のつなぎ（位相のつなぎ）」と見たものが、波の言葉では<em>「干渉縞を動かす位相のズレ」</em>として、目に見える形をとる。<strong>「波に見える力」とは、力が本来、波の位相に宿る関係だったということ</strong>です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 第9回と、波でも握手</span>
+    第9回で、力の起源は「各点で位相を選び直す自由（局所ゲージ）」と、それを繋ぐ \(A\) だと見ました。あのときの \(A\) は抽象的でしたが、アハラノフ=ボーム効果では、その \(A\) が<strong>電子波の干渉縞を実際に動かす</strong>。位相・つなぎ・干渉 ── 第9回の抽象が、波③で手に触れる現象になりました。<em>力の本体（つなぎ）は、波の位相として世界に現れている</em>。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線</span>
+    <p style="margin-top:0;">アハラノフ=ボーム効果は実在で、外村彰らの精密実験で確認されています。ただし「局所的な力がゼロ」でも影響が出るのは、ゲージ場 \(A\)（つなぎ）が経路にそって効くためで、観測できるのは<strong>経路差＝相対位相</strong>（一周の回り込み＝第12回の曲率／磁束）です。位相の絶対値そのものは見えません（第9回・背骨のまま）。輻射圧は実在だが日常では極小で、太陽帆やレーザーピンセットのような工夫で顕在化します。</p>
+    <p style="margin-bottom:0;">図は干渉縞が位相差で滑るという要点だけを再現した模式で、実際の二重スリット・AB配置の強度分布を厳密に計算したものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題</div>
+    <ol>
+      <li>光が物を押せる（輻射圧）のはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">波（光）が運動量を運ぶから。物に吸収・反射されると運動量を渡して押す。太陽帆やレーザーピンセットはこれを利用。波②の「力→波」の逆向き（波→力）。</div></details>
+      </li>
+      <li>アハラノフ=ボーム効果で「不思議」なのは何か。第9回とどうつながるか。
+        <details><summary>答えを見る</summary><div class="ans">局所的な力（磁場）がゼロの領域を通っても、ゲージ場 A（第9回のつなぎ）で電子波の位相がずれ、干渉縞が動くこと。力の本体がつなぎ A であるという第9回が、波の干渉縞のズレとして見える形になる。</div></details>
+      </li>
+      <li>波の三部作を一言でまとめると。
+        <details><summary>答えを見る</summary><div class="ans">力と波は表裏。力→波（復元力＋慣性）、力＝波（場は揺らせば波）、波→力（輻射圧）／力＝位相（量子の干渉）。力は本来、波の位相に宿る関係だった。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>波に見える力 ── 位相のズレに宿る</h2>
+    <p>波は運動量を運ぶので物を押す（輻射圧・太陽帆・音圧）── これが「波→力」。さらに量子では粒子が波で、力（ゲージ場 \(A\)）は<strong>波の位相をずらす</strong>形で効く。局所的な力がゼロでも位相がずれれば干渉縞が動く（アハラノフ=ボーム効果）。第9回「力＝位相のつなぎ \(A\)」が、ここで目に見える波の模様のズレになった。</p>
+    <p>波の三部作を通して見えたのは ── <strong>力と波は、初めから同じものの表と裏</strong>。力から波が生まれ（①）、力を担う場は波になり（②）、波は力を及ぼし、力は波の位相に宿る（③）。「波に見える力」とは、力が本来、波の位相という関係だったということ。本編の背骨「力は関係」が、波の言葉で、いちばん深いところまで届きました。次は番外クラスタ「力の速さ」へ ── そもそも、その力（や波）は、どれくらいの速さで伝わるのか。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 力の速さ①</span>
+    「力は瞬時には伝わらない ── 変化は光速で追いかける」。波②で場を揺らすと光が飛びましたが、では力（場の変化）は<strong>どれくらいの速さ</strong>で伝わるのか。ニュートンの遠隔作用は近似で、太陽が消えても地球が気づくのは8分後。重力の速さ＝光速も、いまや実証済み（GW170817）。力の速さをめぐる誤解を、次のクラスタで解きます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかる力」シリーズ番外編「波と力」③、物理好きの高校生・大学生向け読み物です。電磁波・音波が運動量を運び輻射圧・音圧として力を及ぼすこと（太陽帆・光ピンセット）、物質粒子の波動性（ド・ブロイ）、二経路干渉、およびアハラノフ=ボーム効果（局所的な場がゼロの領域でもゲージポテンシャル A により電子波の位相が変化し干渉縞が移動する；外村彰らにより高精度で実証）は、確立した内容です。観測可能なのは経路間の相対位相（ゲージ不変な磁束）であり、位相の絶対値は観測されません。第9回のゲージ場・つなぎと同一の主題です。図は干渉縞の位相依存の移動を示す模式で、厳密な強度分布計算ではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面ではスライダーで、位相のズレ（＝つなぎ A）を変えると干渉縞が滑る様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), rd=document.getElementById('rd');
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var frac=parseInt(sk.value,10)/100; var dphi=frac*2*Math.PI; vk.textContent=(frac*2).toFixed(2)+'π';
+    ctx.clearRect(0,0,w,h);
+    var pad=44, x0=pad, x1=w-14, curveH=120, curveTop=18, bandTop=curveTop+curveH+16, bandH=70;
+    var k=0.055;
+    function I(x){ return 0.5*(1+Math.cos(k*(x-w/2) - dphi)); }
+    // 強度カーブ
+    ctx.strokeStyle='#eef4f2';ctx.lineWidth=1;
+    for(var g=0;g<=2;g++){var yy=curveTop+g*curveH/2;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();}
+    ctx.strokeStyle='#1f7a6e';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var x=x0;x<=x1;x+=2){var y=curveTop+curveH*(1-I(x));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('干渉の強度 →（明＝上）', x0, curveTop-4);
+    // 縞（グレースケール帯）
+    for(var xb=x0;xb<x1;xb+=2){var v=I(xb);var g2=Math.round(255*(1-v));
+      ctx.fillStyle='rgb('+g2+','+g2+','+g2+')';ctx.fillRect(xb,bandTop,2,bandH);}
+    ctx.strokeStyle='#b7ccc5';ctx.strokeRect(x0,bandTop,x1-x0,bandH);
+    ctx.fillStyle='#6b6f60';ctx.font='11px sans-serif';ctx.fillText('スクリーンの干渉縞', x0, bandTop+bandH+16);
+    // 基準線（縞が動くのが分かるよう固定マーカー）
+    var refx=w/2;
+    ctx.strokeStyle='#a83a22';ctx.setLineDash([4,3]);ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(refx,curveTop);ctx.lineTo(refx,bandTop+bandH);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a83a22';ctx.font='11px sans-serif';ctx.fillText('基準', refx+4, bandTop+bandH-6);
+    // readout
+    rd.textContent='位相のズレ Δφ = '+(frac*2).toFixed(2)+'π：局所的な力はゼロのまま。でも位相がずれると干渉縞が横に滑る（基準線の位置の明暗が変わる）。力（つなぎ A）が、波の模様のズレとして現れている ── これが「波に見える力」。';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',draw);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60); window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>
