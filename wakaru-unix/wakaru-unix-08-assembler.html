@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アセンブラは、何が作った？ ｜ わかるUNIXの歴史 第8回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7ef; --paper-edge:#e7dcc2;   /* 第8回：古金の紙 */
+    --side:#1f7a6e; --side-bg:#e7f2ef;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#e0d4b8; --hair:#cfc09a;
+    --acc:#8a5e10;    /* 第8回アクセント＝古金 */
+    --grid:#e6dcc4;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #efe0b8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f2ecdd;border:1px solid #e7dcc2;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#173e37;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini.alt{background:#c1a969;}
+  .seg{background:#eee2c8;color:#6a4a08;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f4ead2;color:#6a4a08;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f8f1e2;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf6,#f0e6cf);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ead2;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4a08;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 8 回 ／ よそで作って、運ぶ</span></div>
+  <p class="eyebrow">第7回の宿題 ── 最初のアセンブラは、何が組んだのか</p>
+  <h1>アセンブラは、何が作った？
+    <span class="sub">最初の PDP-7 Unix は、じつは PDP-7 <em>だけ</em>では作れませんでした。別の大型機（GE-635／GECOS）でアセンブルし、結果を<strong>紙テープに穴で刻んで、物理的に PDP-7 まで運んだ</strong>のです。第6回の O-code と同じ「よそで作って運ぶ」── その、いちばん泥くさい実物。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第6回（運ぶ）・第7回（アセンブラ）</span>
+    <span>種明かし：新しい機械は、既にある機械から立ち上げる</span>
+  </div>
+
+  <p class="lead">第7回で「最初の Unix は PDP-7 のアセンブリで書かれた」と見て、宿題を残しました ── <strong>アセンブリを機械語にするアセンブラが要るのに、その最初のアセンブラは何が組んだのか?</strong> PDP-7 には、最初アセンブラすらありません。鶏がいないのです。答えは意外なほど物理的でした。Thompson は<em>別の機械</em>を使ったのです。すでに立派に動いていた大型機 GE-635（OS は GECOS）で PDP-7 向けの機械語を作り、それを<strong>紙テープ</strong>に刻んで PDP-7 まで持って行った。この「よその機械を借りる」やり方を、<strong>クロスアセンブル</strong>と呼びます。</p>
+
+  <h2><span class="n">01</span>PDP-7 だけでは、始められなかった</h2>
+
+  <p>第7回の自己ホスティングの輪 ── アセンブラが自分自身を組む ── は、<em>いったん回り始めれば</em>強い。でも回す前は、PDP-7 にアセンブラが1本も無い。「アセンブリを機械語にするにはアセンブラが要るのに、そのアセンブラを機械語にするアセンブラが無い」。第0回の鶏と卵、そのものです。Thompson の解は、<strong>この機械の中で解こうとしない</strong>ことでした。</p>
+
+  <h2><span class="n">02</span>クロスアセンブル ── host と target は、別でいい</h2>
+
+  <p>ふつう「アセンブラで組む」と言うと、<em>同じ機械</em>の上で、その機械向けの機械語を作る（ネイティブ）。でも、アセンブラを<strong>動かす機械（host）</strong>と、機械語を<strong>向ける機械（target）</strong>は、<em>別々でかまわない</em>。GE-635 の上で動くアセンブラ（GEMAP のマクロ）が、PDP-7 向けの機械語を吐く ── これがクロスです。下の図で、ネイティブとクロスを切り替えて、なぜ最初はクロスしかなかったかを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：ネイティブ vs クロス。ネイティブは host＝target（同じ機械）。だが生まれる前の PDP-7 にはアセンブラが無く始められない。クロスは host≠target ── 既に動く GE-635 を借りて PDP-7 向けを作る</div>
+    <canvas id="cvCross" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini seg" data-k="native">ネイティブ（同じ機械）</button>
+      <button class="btnmini seg on" data-k="cross">クロス（よその機械を借りる）</button>
+    </div>
+    <div class="readout" id="rdCross"></div>
+  </div>
+
+  <h2><span class="n">03</span>紙テープで運ぶ ── 「運搬」は徒歩だった</h2>
+
+  <p>クロスでできた PDP-7 向けの機械語は、GE-635 の中にあります。これを PDP-7 へ移さねばならない。ネットワークなどない時代です。どうしたか ── <strong>紙テープに穴を開けて出力し、そのテープを手に持って PDP-7 まで歩いて運び、読み取り機に通した</strong>。第6回で「O-code を新マシンへ運ぶ」と言った、あの「運ぶ」の正体が、この<em>穴あきテープの徒歩搬送</em>です。下の図で、その一連を動かしてみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：クロスアセンブル→紙テープ→PDP-7。GE-635 で PDP-7 向け機械語を作り、紙テープに穴で刻み、物理的に運び、PDP-7 が読んで実行する。やがて PDP-7 は自前アセンブラを持ち、GECOS を卒業する</div>
+    <canvas id="cvTape" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="tapeBtn">▶ 作って・運んで・動かす</button>
+      <button class="btnmini alt" id="tapeReset">リセット</button>
+    </div>
+    <div class="readout" id="rdTape">GE-635（GECOS）で PDP-7 向けの機械語を用意。「▶」で、紙テープに刻んで運び、PDP-7 で動かすまでを再生。</div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 新しい機械は、既にある機械から立ち上げる</div>
+    <p style="margin:6px 0 0;">クロスの発想はこうです ── <strong>「target で target を作らなくていい。動く host を1台借りればいい」</strong>。鶏がいない新機種でも、<em>よその鶏</em>から卵をもらえる。これは第3回の「既存の <code>cc</code> を借りて gcc を着火」、第6回の「O-code を運ぶ」、そして現代の<strong>クロスコンパイル</strong>（新しい CPU や組込み機器向けを、手元の PC で作る）と、まったく同じ骨格です。半世紀、ずっと使われている“新機種の産声のあげ方”。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>そして自立 ── GECOS を卒業する</h2>
+
+  <p>クロスで PDP-7 に最小限の道具が載り、カーネル・エディタ・シェル・そして<strong>アセンブラ</strong>が揃うと、Unix は<em>自分自身の上で</em>プログラムを書きテストできるようになります（self-supporting）。Thompson は仕上げに、<strong>PDP-7 ネイティブのアセンブラ</strong>を書いて、GE-635 を使うのを完全にやめました。第7回の図で点滅していた「最初の <code>as</code> は何が組んだ?」の答えが、ここで埋まります ── <em>最初の <code>as</code> は、GE-635 のクロスアセンブラが組んだ</em>。輪は、よその機械から着火されたのです。</p>
+
+  <div class="calc">
+    <span class="tag">問いは1個ずれた（でも、無限には続かない）</span>
+    <p style="margin-top:8px;">では「その GE-635 のツールチェーンは何が作った?」── また下段送りに見えます。でも今回は少し違う。GE-635 も<em>かつては新品</em>で、さらに古い機械や、もっと原始的な手段から立ち上げられた。<strong>すべての“既にある機械”は、かつて新機種だった</strong>。クロスは「1つ前に立ち上がった機械」を借りる連鎖で、これは<em>有限</em>です。さかのぼると、いつか ── <strong>借りる host が1台も無かった、いちばん最初の機械</strong>に着く。そこにはクロスの魔法が効きません。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 「運ぶもの」の正体いろいろ</span>
+    第6回は O-code を運び、今回は PDP-7 向け機械語を紙テープで運びました。運ぶ中身は「中間コード」でも「機械語」でもよく、媒体は紙テープでもネットワークでも構いません。共通するのは <strong>“動く host で作って、target へ渡す”</strong> という骨格ひとつ。番外編「クロスコンパイル」で、この現代版（新 CPU の立ち上げ、Canadian Cross など）を深掘りします。
+  </div>
+
+  <h2><span class="n">05</span>底は、もう見えている</h2>
+
+  <p>クロスの連鎖をさかのぼると、必ず<strong>「借りる相手がいなかった最初の機械」</strong>に着きます。世界で初めてのそのコンピュータには、アセンブルしてくれる別の機械も、読み込ませる完成済みの紙テープもありません。ではその機械には、どうやって<em>いちばん最初の命令</em>を入れたのか? ── 次回、ついに底です。答えは、<strong>人間の手</strong>。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── クロスは鶏と卵を“移す”だけ</span>
+    <p style="margin-top:0;">(1) クロスアセンブルは鶏と卵を<em>解決</em>しません。「この機械の中で解く」のをやめ、<strong>別の（既に動く）機械へ問題を移す</strong>だけです。ただしその連鎖は有限で、さかのぼれば最初の機械（第9回）に底を打ちます。無限後退ではありません。</p>
+    <p style="margin-bottom:0;">(2) GE-635／GECOS／GEMAP、紙テープ搬送、self-supporting へ移る時期などの細部は、資料により表現に幅があります（骨格＝「GECOS 上のクロスアセンブラ→紙テープ→PDP-7→やがて自前アセンブラで自立」は、Ritchie 自身の回想などで一致）。(3) 図はワークフローを模式化したもので、実機の外観・操作を厳密に再現したものではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>クロスアセンブルとは何か。host・target の語を使って一文で。
+        <details><summary>答えを見る</summary><div class="ans">アセンブラを動かす機械（host）と、機械語を向ける機械（target）が別であるアセンブル。例：GE-635（host）上で PDP-7（target）向けの機械語を作る。</div></details>
+      </li>
+      <li>最初の PDP-7 Unix で、GE-635 で作った機械語をどうやって PDP-7 へ移したか。
+        <details><summary>答えを見る</summary><div class="ans">紙テープに穴で出力し、物理的に PDP-7 まで運んで読み取り機に通した。</div></details>
+      </li>
+      <li>「最初の as は何が組んだか」（第7回の宿題）の答えは。
+        <details><summary>答えを見る</summary><div class="ans">GE-635（GECOS）上のクロスアセンブラ。それで PDP-7 に道具が揃い、やがて Thompson が PDP-7 ネイティブのアセンブラを書いて GECOS を卒業した。</div></details>
+      </li>
+      <li>クロスは鶏と卵を解決するか。無限後退にならないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">解決せず、問題を「既に動く別の機械」へ移すだけ。だが借りる相手は「1つ前に立ち上がった機械」で連鎖は有限。さかのぼると、借りる相手がいない最初の機械（第9回）に底を打つ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>よその機械で作って、紙テープで運んだ</h2>
+    <p>第7回の宿題「最初のアセンブラは何が組んだか」の答えは、<strong>別の機械</strong>だった。生まれる前の PDP-7 にはアセンブラが無く、自分の中では始められない。そこで Thompson は、すでに動く大型機 <strong>GE-635（GECOS）</strong>の上でアセンブラ（GEMAP のマクロ）を動かし、<em>PDP-7 向けの機械語</em>を作った ── host≠target の<strong>クロスアセンブル</strong>。できた機械語は<strong>紙テープに穴で刻み、手で運んで</strong> PDP-7 に読ませた。第6回「O-code を運ぶ」の、泥くさい実物である。</p>
+    <p>やがて PDP-7 にカーネル・エディタ・シェル・アセンブラが揃い、Unix は自分の上で開発できる（self-supporting）ようになり、Thompson は<strong>PDP-7 ネイティブのアセンブラ</strong>を書いて GECOS を卒業した。クロスの急所は「<em>target で target を作らなくていい、動く host を借りればいい</em>」── 第3回の既存 cc、現代のクロスコンパイルと同じ骨格だ。ただしこれは鶏と卵を<strong>別の（既にある）機械へ移す</strong>だけ。連鎖は有限で、さかのぼれば<strong>借りる相手がいない最初の機械</strong>に着く。── 次回、ついに底。最初の1バイトは、人間の手で入れられた。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第9回</span>
+    「最初の1バイト ── 手で入れる」。クロスで借りる相手すらいない、世界で最初の機械。そこには、アセンブラも紙テープも無い。人間が命令表を見て機械語の数値を<strong>手で作り（ハンドアセンブル）</strong>、<strong>トグルスイッチ</strong>で1語ずつメモリに入れる。合言葉「最初の卵は、手で彫った」が、ほぼ文字どおりの事実になる回です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第8回です。史実：Ken Thompson は最初、PDP-7 上ではなく GE-635 上の GEMAP アセンブラ用のマクロで PDP-7 のコードを記述し、GECOS 上で動くクロスアセンブラが紙テープを生成、それを PDP-7 へ運んで実行した。やがて Unix は自分自身で開発できる（self-supporting）状態になり、Thompson は GE-635 を完全に使わずに済ませるため PDP-7 ネイティブのアセンブラを書いた（Dennis Ritchie「The Evolution of the Unix Time-sharing System」などの回想に基づく）。クロスアセンブル／クロスコンパイルは、アセンブラ・コンパイラを動かす機械（host）と生成コードの対象機械（target）が異なる方式で、新機種の立ち上げ（ブートストラップ）に広く用いられる。クロスは鶏と卵を解決せず、既に動く別の機械へ移すが、連鎖は有限で最初の機械に底を打つ。GE-635／GECOS／GEMAP、搬送や自立時期の細部は資料により表現に幅がある。図はワークフローの模式化で実機の厳密な再現ではない。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作とアニメ・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンでネイティブ／クロスを切り替え、図2の「▶」で紙テープ搬送のワークフローを再生できます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function machineBox(ctx,x,y,w,h,name,sub,col,active){
+    ctx.fillStyle= active?'#fff':'#f4f2ec'; ctx.strokeStyle=col; ctx.lineWidth= active?2.4:1.6;
+    rr(ctx,x,y,w,h,10); ctx.fill(); ctx.stroke();
+    // screen
+    ctx.fillStyle= active? '#1b2330':'#c8c4ba'; rr(ctx,x+10,y+10,w-20,h*0.42,4); ctx.fill();
+    ctx.fillStyle=col; ctx.textAlign='center'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+    ctx.fillText(name, x+w/2, y+h-20);
+    ctx.fillStyle='#8a8175'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif';
+    ctx.fillText(sub, x+w/2, y+h-6);
+  }
+
+  /* ============ 図1：ネイティブ vs クロス ============ */
+  (function(){
+    var cv=document.getElementById('cvCross'), rd=document.getElementById('rdCross');
+    if(!cv) return;
+    var kind='cross';
+    function chip(ctx,x,y,label,ok){
+      ctx.fillStyle= ok? '#efe0b8':'#f0e6e2'; ctx.strokeStyle= ok? '#8a5e10':'#b06a45'; ctx.lineWidth=1.8; ctx.setLineDash(ok?[]:[4,3]);
+      rr(ctx,x-46,y-16,92,32,6); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle= ok? '#6a4a08':'#9a6a55'; ctx.textAlign='center'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(label, x, y+4);
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cross = kind==='cross';
+      var hx=w*0.06, tx=w*0.62, my=h*0.30, mw=w*0.30, mh=h*0.44;
+      if(cross){
+        machineBox(ctx,hx,my,mw,mh,'GE-635','GECOS（既に動く）','#2166a0',true);
+        machineBox(ctx,tx,my,mw,mh,'PDP-7','これから動かす target','#9a4230',false);
+        chip(ctx, hx+mw/2, my+mh+22, 'アセンブラ（動く）', true);
+        // arrow host->target
+        ctx.strokeStyle='#8a5e10'; ctx.fillStyle='#8a5e10'; ctx.lineWidth=2.4;
+        var ax0=hx+mw, ax1=tx; var ay=my+mh*0.32;
+        ctx.beginPath(); ctx.moveTo(ax0,ay); ctx.lineTo(ax1-2,ay); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax1,ay); ctx.lineTo(ax1-10,ay-5); ctx.lineTo(ax1-10,ay+5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#6a4a08'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('PDP-7 向け機械語を吐く', (ax0+ax1)/2, ay-10);
+        ctx.fillStyle='#1f7a6e'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('host ≠ target → 動く ✓', w/2, h-12);
+      } else {
+        machineBox(ctx,hx,my,mw,mh,'PDP-7','host','#9a4230',false);
+        machineBox(ctx,tx,my,mw,mh,'PDP-7','target（同じ機械）','#9a4230',false);
+        chip(ctx, hx+mw/2, my+mh+22, 'アセンブラ？（まだ無い）', false);
+        ctx.strokeStyle='#c9b6ac'; ctx.setLineDash([5,4]); ctx.lineWidth=2;
+        var ax0=hx+mw, ax1=tx, ay=my+mh*0.32;
+        ctx.beginPath(); ctx.moveTo(ax0,ay); ctx.lineTo(ax1,ay); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#a83a22'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('PDP-7 にアセンブラが無い → 始められない ✕', w/2, h-12);
+      }
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(kind==='cross') rd.style.background='#e7f2ef',rd.style.color='#155249',
+        rd.innerHTML='<strong>クロス</strong>：host＝GE-635（既に動く）、target＝PDP-7。GE-635 上のアセンブラが PDP-7 向け機械語を吐く。host≠target だから、生まれる前の PDP-7 でも立ち上げられる。';
+      else rd.style.background='#f4e4df',rd.style.color='#6f2d1e',
+        rd.innerHTML='<strong>ネイティブ</strong>：host＝target＝PDP-7。だが最初は PDP-7 にアセンブラが1本も無い ── これでは始められない（第0回の鶏と卵）。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-k]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      kind=b.getAttribute('data-k'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：紙テープ搬送 ============ */
+  (function(){
+    var cv=document.getElementById('cvTape'), btn=document.getElementById('tapeBtn'), reset=document.getElementById('tapeReset'),
+        rd=document.getElementById('rdTape');
+    if(!cv) return;
+    var playing=false, raf=null, t0=0;
+    // phases: 0 assemble/punch, 1 carry, 2 read, 3 run+self
+    var PHASE=[1400,1800,1300,1200];
+    function tape(ctx,x,y,len,progress){
+      // paper tape strip with sprocket + data holes, drawn from x to x+len
+      ctx.fillStyle='#e8d9b0'; ctx.strokeStyle='#c9b57e'; ctx.lineWidth=1;
+      rr(ctx,x,y,len,26,2); ctx.fill(); ctx.stroke();
+      var cols=Math.floor(len/12);
+      for(var i=0;i<cols;i++){
+        var cxp=x+8+i*12;
+        // sprocket hole (small, center)
+        ctx.fillStyle='#8a7a4a'; ctx.beginPath(); ctx.arc(cxp,y+13,1.6,0,2*Math.PI); ctx.fill();
+        // data holes appear per progress
+        if(i/cols <= progress){
+          for(var r0=0;r0<3;r0++){
+            if((i*7+r0)%2===0){ ctx.fillStyle='#1b2330'; ctx.beginPath(); ctx.arc(cxp,y+5+r0*8,2.1,0,2*Math.PI); ctx.fill(); }
+          }
+        }
+      }
+    }
+    function draw(t){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var e = t0? (t-t0):0;
+      var phase=0, acc=0; while(phase<PHASE.length && e>acc+PHASE[phase]){ acc+=PHASE[phase]; phase++; }
+      var localT = playing? Math.min((e-acc)/PHASE[Math.min(phase,PHASE.length-1)],1) : (t0? 1:0);
+      if(!playing && !t0){ phase=0; localT=0; }
+      if(!playing && t0){ phase=PHASE.length-1; localT=1; } // finished
+      var gx=w*0.05, gy=h*0.30, gw=w*0.28, gh=h*0.40, px=w*0.67, py=gy, pw=w*0.28, ph=gh;
+      var geActive = true, pdpActive = (phase>=3);
+      machineBox(ctx,gx,gy,gw,gh,'GE-635','GECOS（クロスアセンブル）','#2166a0',geActive);
+      machineBox(ctx,px,py,pw,ph,'PDP-7', pdpActive?'自立へ':'待機','#9a4230',pdpActive);
+      // tape logic
+      var tapeY=h*0.80, tapeLen=w*0.22;
+      if(phase===0){ // punching at GE
+        tape(ctx, gx+gw*0.2, tapeY, tapeLen, localT);
+        ctx.fillStyle='#2166a0'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('① アセンブル＆紙テープに穴を開ける', w/2, tapeY-14);
+      } else if(phase===1){ // carry
+        var x0=gx+gw*0.2, x1=px+pw*0.2, xx=x0+(x1-x0)*localT;
+        tape(ctx, xx, tapeY, tapeLen, 1);
+        ctx.fillStyle='#8a5e10'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('② 紙テープを手で運ぶ（徒歩）→', w/2, tapeY-14);
+        // little walking dots
+        ctx.fillStyle='#c1a969'; ctx.beginPath(); ctx.arc(xx+tapeLen+12, tapeY+13, 4,0,2*Math.PI); ctx.fill();
+      } else if(phase===2){ // read into PDP-7
+        var x1=px+pw*0.2; tape(ctx, x1 - tapeLen*localT*0.4, tapeY, tapeLen, 1);
+        ctx.fillStyle='#9a4230'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('③ PDP-7 の読み取り機に通す', w/2, tapeY-14);
+      } else { // run + self
+        ctx.fillStyle='#1f7a6e'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('④ PDP-7 で動く → やがて自前アセンブラを持ち、GECOS を卒業（自立）', w/2, tapeY-2);
+        // self loop on PDP-7
+        var lx=px+pw/2, ly=py-6, R=16;
+        ctx.strokeStyle='#9a4230'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(lx,ly,R,Math.PI*0.2,Math.PI*1.8); ctx.stroke();
+        ctx.fillStyle='#9a4230'; var ea=Math.PI*1.8;
+        ctx.beginPath(); ctx.moveTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea)-6,ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)+6); ctx.closePath(); ctx.fill();
+      }
+      // arrow between machines (dim)
+      ctx.strokeStyle='#e0d4b8'; ctx.lineWidth=1.4; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(gx+gw, gy+gh*0.3); ctx.lineTo(px, py+ph*0.3); ctx.stroke(); ctx.setLineDash([]);
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!t0)t0=t; var e=t-t0; var total=PHASE.reduce(function(a,b){return a+b;},0);
+      draw(t);
+      if(playing){ if(e>=total){ playing=false; btn.textContent='▶ 作って・運んで・動かす';
+        rd.innerHTML='PDP-7 が紙テープの機械語で動いた。以後、自前アセンブラを書いて <strong>GECOS を卒業＝自立</strong>。第7回の「最初の as」は、この GE-635 のクロスアセンブラが組んだもの。'; return; }
+        raf=requestAnimationFrame(loop); } }
+    btn.addEventListener('click', function(){ if(playing) return; playing=true; t0=0; btn.textContent='… 再生中';
+      rd.innerHTML='GE-635 でアセンブル→紙テープに穴あけ→手で PDP-7 へ運搬→読み取り→実行…';
+      raf=requestAnimationFrame(loop); });
+    reset.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); playing=false; t0=0; btn.textContent='▶ 作って・運んで・動かす';
+      rd.innerHTML='GE-635（GECOS）で PDP-7 向けの機械語を用意。「▶」で、紙テープに刻んで運び、PDP-7 で動かすまでを再生。'; draw(0); });
+    window.addEventListener('resize',function(){ draw(t0?performance.now():0); });
+    setTimeout(function(){draw(0);},60); window.addEventListener('load',function(){draw(0);});
+  })();
+})();
+</script>
+</body>
+</html>

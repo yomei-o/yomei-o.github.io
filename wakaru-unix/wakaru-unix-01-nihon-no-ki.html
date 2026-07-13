@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二本の木を、混同しない ｜ わかるUNIXの歴史 第1回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f7f9f6; --paper-edge:#dee6dd;   /* 第1回：緑の紙 */
+    --side:#a2621c; --side-bg:#f6efe3;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#ccd7cd; --hair:#b7c4b8;
+    --acc:#2f7d55;    /* 第1回アクセント＝緑 */
+    --grid:#d6e0d7;
+    --gene:#2166a0;   /* 血統の木＝青 */
+    --reimpl:#2f7d55; /* 再実装の木＝緑 */
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6d5 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#eef2ee;border:1px solid #e0e7e0;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a16;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#e6ede8;color:#3c5347;}
+  .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#eaf3ee;color:#1f5a3c;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .lseg{width:26px;height:0;border-top:2.4px solid var(--gene);display:inline-block;}
+  .lseg.dash{border-top:2.4px dashed var(--reimpl);}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfffd;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f2f8f4;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfffd,#e8f1ea);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#eaf3ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1f4a34;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 1 回 ／ 系譜の腑分け</span></div>
+  <p class="eyebrow">第0回の宿題 ── 「Linux は MINIX の子か?」に、はっきり答える</p>
+  <h1>二本の木を、混同しない
+    <span class="sub">「Linux は MINIX から来て、MINIX は BSD から…」── この言い方には、<em>まったく別の二つの木</em>が混ざっている。<strong>コードの血統</strong>と、<strong>思想の再実装</strong>。この二本を描き分けると、あの有名な論争まで一気に見通せる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第0回（自己ホスティングの輪）</span>
+    <span>種明かし：遺伝子 ≠ 思想</span>
+  </div>
+
+  <p class="lead">第0回で、鶏と卵の輪を「何が何をコンパイルしたか」でさかのぼりました。でもUNIXの歴史にはもう一本、まったく別の系図があります ── <strong>誰の“ソースコード”を受け継いだか</strong>という血統です。初学者が必ずやる誤解「Linux は MINIX の子」「MINIX は BSD の子」は、この<em>血統の木</em>と、<em>思想だけを受け継ぐ再実装の木</em>を、一本に混ぜてしまうことから起きます。今回は二本の木をていねいに描き分け、最後に <strong>Tanenbaum–Torvalds 論争</strong>を、その二本の木で読み解きます。</p>
+
+  <h2><span class="n">01</span>「受け継ぐ」には、二種類ある</h2>
+
+  <p>ソフトが別のソフトから何かを「受け継ぐ」とき、受け継ぐ中身は大きく二つに分かれます。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 遺伝子か、思想か</div>
+    <p style="margin:6px 0 0;">
+    <strong>① コードの血統（遺伝子）</strong>：<em>実際のソースコードの行</em>を受け継ぐ。親のコードをコピーし、改変して育てる。だから著作権・ライセンスが付いて回る。<br>
+    <strong>② 思想の再実装（設計・API）</strong>：コードは<em>1行も</em>もらわず、「どう振る舞うか（システムコール・設計思想）」だけを真似て、白紙から書き直す。互換はあっても、遺伝子は無関係。</p>
+  </div>
+
+  <p>この二つは<strong>直交</strong>します。あるソフトが別のソフトと「そっくりに振る舞う」からといって、コードを受け継いでいるとは限らない。逆に、見た目が違っても中身のコードは親ゆずり、ということもある。UNIX一族は、この二本の木がからみ合って森になっています。</p>
+
+  <h2><span class="n">02</span>木その一 ── 血統の木（コードが流れる）</h2>
+
+  <p>まず<strong>実コードが流れる</strong>本流。1969年、ベル研の <strong>AT&amp;T UNIX</strong> が源です（その手前の Multics は“反面教師”としての思想的影響で、コードは受け継いでいません ── これは番外編で）。AT&amp;T UNIX のソースコードは、ライセンスされて各所へ渡り、改変されて子孫を残します。</p>
+
+  <div class="calc">
+    <span class="tag">血統の本流（実コードの継承）</span>
+    <p style="margin-top:8px;">AT&amp;T UNIX(1969) → 二つの大きな枝：</p>
+    <p class="lbl">枝A：バークレー系（BSD）</p>
+    <p style="margin:4px 0;">大学（UCバークレーCSRG）がAT&amp;Tの<em>ソースライセンス</em>を得て改変 → BSD（1978〜）→ 386BSD(1992) → <strong>NetBSD / FreeBSD</strong>(1993)、のちに OpenBSD。</p>
+    <p class="lbl">枝B：AT&amp;T商用系</p>
+    <p style="margin:4px 0 14px;">System III → <strong>System V</strong>(1983) → 各社の商用UNIX（Solaris など）。</p>
+  </div>
+
+  <p>この木が「本当にコードを受け継いでいる」ことの、いちばん強い証拠は ── <strong>裁判になった</strong>ことです。1992年、AT&amp;T（USL）が「BSDに我々のUNIXコードが入っている」とバークレーを提訴（USL v. BSDi）。1994年の和解で、BSDの<em>18,000ファイル中、削除は3・修正は70</em>だけと判明しました。逆に言えば、<strong>コードの出どころを1行単位で法廷が追える</strong>ほど、この木には実物のコードが流れているのです。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── なぜ NetBSD が Linux の親になれないか</span>
+    第0回で「NetBSD は Linux(1991) より後(1993)・別の枝」と言いました。血統の木で見ると一目瞭然です。NetBSD は<strong>血統の木（BSD側）の若い葉</strong>で、Linux は<strong>次に見る再実装の木の葉</strong>。木が違ううえに、NetBSD のほうが後発。時間的にも系統的にも、親子になりようがありません。
+  </div>
+
+  <h2><span class="n">03</span>木その二 ── 再実装の木（思想だけが流れる）</h2>
+
+  <p>もう一本は、<strong>コードを1行も受け継がない</strong>木です。「UNIXのように振る舞うが、中身は白紙から書いた」もの ── <em>Unix風（Unix-like）</em>と呼ばれる一族。</p>
+
+  <div class="calc">
+    <span class="tag">再実装の木（思想・APIだけの継承）</span>
+    <p style="margin-top:8px;"><strong>MINIX</strong>(1987, Tanenbaum)：教育用に、UNIX V7 と互換に振る舞うOSを白紙から記述。AT&amp;Tのコードは入れない（授業で配れるように）。</p>
+    <p style="margin:8px 0;"><strong>GNU</strong>(1983, Stallman)：“GNU's Not Unix”。UNIXのユーザーランド（<code>gcc</code>・<code>bash</code> など）を、自由に使えるよう白紙から作り直す。</p>
+    <p style="margin:8px 0 14px;"><strong>Linux</strong>(1991, Torvalds)：カーネルを白紙から記述。MINIX の<em>上で</em>開発し影響も受けたが、MINIX のコードは受け継いでいない。</p>
+  </div>
+
+  <p>「白紙から書く」は例外的な離れ業に聞こえますが、そうではありません。のちに Tanenbaum 自身が挙げたように、OSをゼロから書いた人は歴史上たくさんいます ── 自分(MINIX)、Thompson(UNIX)、Holt(Tunis)、Comer(Xinu)、Williams(Coherent)…。<strong>再実装は、UNIX文化の“ふつうの営み”</strong>なのです。</p>
+
+  <h2><span class="n">04</span>二本の木を、一枚に重ねて見る</h2>
+
+  <p>では二本を同じ絵に置いてみましょう。下の図は、横軸が年、上半分が<strong>血統の木（実線＝コードが流れる）</strong>、下半分が<strong>再実装の木（点線＝思想だけ）</strong>です。ボタンで木を切り替えて、Linux・MINIX が<em>点線の側</em>に、NetBSD・FreeBSD が<em>実線の側</em>にぶら下がっていることを確かめてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：UNIX一族の二本の木。実線＝実コードの継承（血統）、点線＝思想・APIだけの継承（再実装）。Multics は思想的な源（コードは流れない）</div>
+    <canvas id="cvTree" width="680" height="380"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-m="both">両方の木</button>
+      <button class="btnmini seg" data-m="gene">血統の木だけ</button>
+      <button class="btnmini seg" data-m="reimpl">再実装の木だけ</button>
+    </div>
+    <div class="legend">
+      <span><i class="lseg"></i>実線＝コードが流れる（血統）</span>
+      <span><i class="lseg dash"></i>点線＝思想・APIだけ（再実装）</span>
+    </div>
+    <div class="readout" id="rdTree"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">種明かし ── だから「Linux は MINIX の子」は不正確</div>
+    <p style="margin:6px 0 0;">Linux は MINIX の<em>点線</em>の先にいます。つまり<strong>思想（Unixらしさ）は受け継いだが、コード（遺伝子）は受け継いでいない</strong>。第0回で見た「MINIX の上で開発した（産室を借りた）」ことと、「MINIX の子ではない（血縁は無い）」ことは、<strong>両立します</strong>。産室と血統は別の話だからです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">05</span>有名な論争を、二本の木で読む</h2>
+
+  <p>1992年1月29日、Tanenbaum が <code>comp.os.minix</code> に「<strong>LINUX is obsolete</strong>（Linuxは時代遅れ）」と投稿し、有名な論争が始まりました。ここで大事なのは ── <strong>これはコードの盗用をめぐる争いでは、まったくない</strong>ということです。争点は<em>設計思想</em>でした。</p>
+
+  <div class="calc">
+    <span class="tag">1992年の論争の“本当の争点”</span>
+    <p style="margin-top:8px;"><strong>Tanenbaum</strong>：カーネルは小さく分割すべき（<em>マイクロカーネル</em>）。Linux のような<em>モノリシック</em>（全部入り）は「1970年代への逆戻り」。しかも386に密結合で、将来性がない。</p>
+    <p style="margin:8px 0 14px;"><strong>Torvalds</strong>：モノリシックは実用上まっとうな設計判断だ。「linux は minix より（APIの意味で）ポータブルだ」。── のちに Linux は ARM・POWER・SPARC など多数へ移植され、Tanenbaum の「386は廃れる」予測は外れました。</p>
+  </div>
+
+  <p>つまり二人は<strong>「どう作るのが良い設計か」を議論していた</strong>のであって、「誰のコードか」を争っていたわけではありません。下の図で、論争の“本当の中身”＝二つのカーネル設計を切り替えて見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：1992年論争の争点。マイクロカーネル（MINIX流：小さな核＋部品はユーザ空間）と、モノリシック（Linux流：全部を核に）。争点は設計であって、コードの血統ではない</div>
+    <canvas id="cvKernel" width="680" height="320"></canvas>
+    <div class="controls">
+      <button class="btnmini seg" data-k="mono">モノリシック（Linux流）</button>
+      <button class="btnmini seg on" data-k="micro">マイクロカーネル（MINIX流）</button>
+    </div>
+    <div class="readout" id="rdKernel"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── では「Linux はコピーだ」説は?</span>
+    ずっと後の2004年、ある団体が「Linux は MINIX から違法にコピーされた」という本(<em>Samizdat</em>)を出しました。結果は<strong>完全な否定</strong>です。依頼を受けた技術者が MINIX と Linux 0.01 のソースを照合しても<em>コピーの証拠はゼロ</em>。そして誰よりも強く反論したのが ── <strong>MINIX の作者 Tanenbaum 本人</strong>でした。ライバルの作者が「Linus が自分で書いた。コピーではない」と擁護した。これ以上ない、<strong>「再実装の木にはコードが流れていない」証言</strong>です。
+  </div>
+
+  <h2><span class="n">06</span>二本の木は、こずえで葉を交換する</h2>
+
+  <p>根は別々の二本の木ですが、<em>てっぺん（こずえ）</em>では葉をやりとりします。ここが面白いところ。</p>
+
+  <div class="calc">
+    <span class="tag">根は別、こずえで交わる</span>
+    <p style="margin-top:8px;">・<strong>GNU ＋ Linux</strong>：再実装の木の二枚の葉（GNUのユーザーランド＋Linuxのカーネル）が合体して、私たちが日常「Linux」と呼ぶOSになる（だから “GNU/Linux” とも）。</p>
+    <p style="margin:8px 0 14px;">・<strong>MINIX 3 ← NetBSD</strong>：後年の MINIX 3 は、<em>血統の木</em>側の NetBSD のユーザーランドを取り込みました。第0回で触れた「矢印は逆・ずっと後」の正体がこれ。再実装の木が、血統の木から葉を借りたのです。</p>
+  </div>
+
+  <p>だから「二本の木」は、根では厳密に分かれているのに、こずえでは互いの葉を貸し借りする。この<em>根は別・こずえで交わる</em>像を持てば、UNIX一族の“ごちゃっとした森”がすっきり見えます。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 木は固定でも純粋でもない</span>
+    <p style="margin-top:0;">二本の木は、話を整理するための<strong>模型</strong>です。現実はもっと連続的です。(1) 血統の木も“純血”ではない ── BSD は初期に AT&amp;T コードを含み、裁判を経て徐々に除去して 4.4BSD-Lite で“実質フリー”になりました。血統は<em>抜いたり足したり</em>されます。(2) 「思想の継承」も程度問題で、POSIX のように<strong>わざと互換をとる標準</strong>もあります（番外編で）。(3) Multics→UNIX を「思想」に入れましたが、これは影響であって、はっきりした継承関係ではありません。</p>
+    <p style="margin-bottom:0;">要は、<strong>「コードが流れたか（遺伝子）」と「振る舞いが似ているか（思想）」を分けて問う</strong>という<em>視点</em>が本体で、木の形そのものは目安だと思ってください。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の二本の木で解けます）</div>
+    <ol>
+      <li>「コードの血統」と「思想の再実装」の違いを一文で。
+        <details><summary>答えを見る</summary><div class="ans">血統は実際のソースコードの行を受け継ぐこと（ライセンスが付く）、再実装は振る舞い・設計だけ真似てコードは白紙から書くこと（遺伝子は無関係）。</div></details>
+      </li>
+      <li>NetBSD が Linux の親になれない理由を、二本の木で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">NetBSD は血統の木（BSD側）の葉、Linux は再実装の木の葉で、そもそも別の木。しかも NetBSD(1993) は Linux(1991) より後発。木も時代も噛み合わない。</div></details>
+      </li>
+      <li>1992年の Tanenbaum–Torvalds 論争の争点は何だったか。「コード」という語を使わずに答えよ。
+        <details><summary>答えを見る</summary><div class="ans">カーネルの設計思想。マイクロカーネル（分割）か、モノリシック（全部入り）か、そして移植性。設計の良し悪しの議論であって、盗用の争いではない。</div></details>
+      </li>
+      <li>「Linux は MINIX の上で開発された」と「Linux は MINIX の子ではない」は、なぜ両立するのか。
+        <details><summary>答えを見る</summary><div class="ans">前者は開発環境（産室）を借りた話、後者はコードの血統の話で、別の軸だから。産室を借りてもコードを受け継がなければ血縁は生じない。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>遺伝子と思想は、別の木に生えている</h2>
+    <p>UNIX一族には二本の木がある。<strong>血統の木</strong>は実コードが流れる本流で、AT&amp;T UNIX → BSD → NetBSD/FreeBSD、および → System V。コードの出どころは、USL v. BSDi 裁判が1行単位で追えたほど実在する。もう一本の<strong>再実装の木</strong>は、思想・APIだけを受け継ぎコードは白紙から書く ── MINIX・GNU・Linux。両者は直交し、「似て振る舞う」ことと「コードを継ぐ」ことは別問題だ。</p>
+    <p>だから「Linux は MINIX の子」は不正確 ── Linux は MINIX の<em>点線</em>（思想）の先にいて、遺伝子は継いでいない。1992年の論争も、二本の木で読めば<strong>設計（マイクロ vs モノリシック）の議論</strong>であって盗用の争いではなく、2004年の「コピー説」は、MINIX の作者本人にまで否定された。根は別々でも、GNU⊕Linux や MINIX 3←NetBSD のように、<em>こずえでは葉を交換する</em>。── 遺伝子か、思想か。この一問を分けて問うのが、系譜を読む鍵だ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第2回</span>
+    「最初のLinux ── MINIX上のgccで生まれた」。再実装の木の若葉・Linux が、どうやって産声をあげたのかを、1991年に密着します。単体では動けなかった v0.01 から、Linux が Linux 自身をコンパイルできた v0.11 へ ── 第0回の「輪の着火」を、コミットとバージョンの解像度で見ます。産室(MINIX)から巣立つ瞬間です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第1回です。史実：AT&amp;T UNIX(1969, ベル研)のソースコードはライセンスを通じて継承され、UCバークレーCSRGはソースライセンスの下で BSD 系を派生させた。USL v. BSDi（1992提訴・1994和解）では、BSD 18,000ファイル中、削除3・修正70に留まり、4.4BSD-Lite が proprietary UNIX コードを含まない版として公開された。System V は AT&amp;T の商用系(1983)。MINIX(1987, Tanenbaum)・GNU(1983, Stallman)・Linux(1991, Torvalds)はいずれも AT&amp;T UNIX のコードを継承しない“Unix風”の独立実装。Tanenbaum–Torvalds 論争は1992年1月29日の comp.os.minix 投稿「LINUX is obsolete」に始まり、争点はマイクロカーネル対モノリシックおよび移植性であって、コード盗用ではない。2004年の Ken Brown / Alexis de Tocqueville Institution による『Samizdat』のコピー主張は、MINIXとLinux 0.01のソース照合で否定され、Tanenbaum・Ritchie・Stallman らが反論した。Multics は UNIX への思想的影響であり、コード継承ではない。「二本の木」は理解のための模型で、血統・思想いずれの継承も現実には程度差がある。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンで二本の木を切り替え、図2で論争の争点（カーネル設計）を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：二本の木 ============ */
+  (function(){
+    var cv=document.getElementById('cvTree'), rd=document.getElementById('rdTree');
+    if(!cv) return;
+    var mode='both';
+    // tree: 'src'(Multics), 'gene', 'reimpl'
+    var NODES=[
+      {id:'multics', l:'Multics',    yr:'~1965', gx:1965, gy:0.30, tree:'src'},
+      {id:'unix',    l:'AT&T UNIX',  yr:'1969',  gx:1969, gy:0.44, tree:'src'},
+      {id:'bsd',     l:'BSD',        yr:'1978',  gx:1978, gy:0.22, tree:'gene'},
+      {id:'sysv',    l:'System V',   yr:'1983',  gx:1983, gy:0.50, tree:'gene'},
+      {id:'b386',    l:'386BSD',     yr:'1992',  gx:1990.5, gy:0.12, tree:'gene'},
+      {id:'netbsd',  l:'NetBSD',     yr:'1993',  gx:1994.4, gy:0.07, tree:'gene'},
+      {id:'freebsd', l:'FreeBSD',    yr:'1993',  gx:1994.4, gy:0.23, tree:'gene'},
+      {id:'gnu',     l:'GNU',        yr:'1983',  gx:1983, gy:0.66, tree:'reimpl'},
+      {id:'minix',   l:'MINIX',      yr:'1987',  gx:1987, gy:0.90, tree:'reimpl'},
+      {id:'linux',   l:'Linux',      yr:'1991',  gx:1991.5, gy:0.74, tree:'reimpl'}
+    ];
+    var EDGES=[
+      {f:'multics', t:'unix', k:'idea'},
+      {f:'unix', t:'bsd',   k:'code'},
+      {f:'unix', t:'sysv',  k:'code'},
+      {f:'bsd',  t:'b386',  k:'code'},
+      {f:'b386', t:'netbsd',k:'code'},
+      {f:'b386', t:'freebsd',k:'code'},
+      {f:'unix', t:'minix', k:'idea'},
+      {f:'unix', t:'gnu',   k:'idea'},
+      {f:'minix',t:'linux', k:'idea'}
+    ];
+    var minY=1962, maxY=1997;
+    function nodeActive(n){
+      if(mode==='both') return true;
+      if(n.tree==='src') return true;
+      return n.tree===mode;
+    }
+    function pos(n,w,h,padL,padT,uW,uH){
+      return { x: padL + (n.gx-minY)/(maxY-minY)*uW, y: padT + n.gy*uH };
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var padL=54, padR=16, padT=20, padB=26, uW=w-padL-padR, uH=h-padT-padB;
+      // 中央の仕切り線
+      ctx.strokeStyle='#e2e8e3'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+      ctx.beginPath(); ctx.moveTo(padL, padT+uH*0.56); ctx.lineTo(w-padR, padT+uH*0.56); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#9aa5ab'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('血統の木（実線＝コードが流れる）', padL, padT+10);
+      ctx.fillText('再実装の木（点線＝思想だけ）', padL, padT+uH-2);
+      // 年軸目盛
+      ctx.fillStyle='#b3bdb4'; ctx.font='9px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      [1965,1975,1985,1995].forEach(function(yy){
+        var xx=padL+(yy-minY)/(maxY-minY)*uW; ctx.fillText(''+yy, xx, h-6);
+      });
+      var P={}; NODES.forEach(function(n){ P[n.id]=pos(n,w,h,padL,padT,uW,uH); });
+      // edges
+      EDGES.forEach(function(e){
+        var a=P[e.f], b=P[e.t]; var na=NODES.filter(function(x){return x.id===e.f;})[0], nb=NODES.filter(function(x){return x.id===e.t;})[0];
+        var act = nodeActive(na)&&nodeActive(nb) && (mode==='both' || (mode==='gene'&&e.k==='code') || (mode==='reimpl'&&e.k==='idea') || na.tree==='src');
+        // idea edges only relevant to reimpl view; code edges to gene view
+        if(mode==='gene' && e.k==='idea' && !(e.f==='multics')) act=false;
+        if(mode==='reimpl' && e.k==='code') act=false;
+        ctx.save();
+        ctx.globalAlpha = act?1:0.12;
+        if(e.k==='code'){ ctx.strokeStyle='#2166a0'; ctx.setLineDash([]); ctx.lineWidth=2.2; }
+        else { ctx.strokeStyle='#2f7d55'; ctx.setLineDash([5,4]); ctx.lineWidth=2; }
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        // arrowhead
+        var ang=Math.atan2(b.y-a.y,b.x-a.x);
+        ctx.setLineDash([]); ctx.fillStyle=ctx.strokeStyle;
+        ctx.beginPath(); ctx.moveTo(b.x,b.y);
+        ctx.lineTo(b.x-9*Math.cos(ang-0.4), b.y-9*Math.sin(ang-0.4));
+        ctx.lineTo(b.x-9*Math.cos(ang+0.4), b.y-9*Math.sin(ang+0.4));
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      });
+      // nodes
+      NODES.forEach(function(n){
+        var p=P[n.id], act=nodeActive(n);
+        ctx.save(); ctx.globalAlpha=act?1:0.16;
+        var col = n.tree==='reimpl' ? '#2f7d55' : (n.tree==='gene' ? '#2166a0' : '#6a6f78');
+        ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+        var tw=ctx.measureText(n.l).width, bw=Math.max(tw+18, 46), bh=28;
+        ctx.fillStyle='#fff'; ctx.strokeStyle=col; ctx.lineWidth=1.8;
+        rr(ctx,p.x-bw/2,p.y-bh/2,bw,bh,6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle=col; ctx.textAlign='center'; ctx.fillText(n.l,p.x,p.y-1);
+        ctx.fillStyle='#9aa5ab'; ctx.font='8.5px "SFMono-Regular",Consolas,monospace';
+        ctx.fillText(n.yr, p.x, p.y+10);
+        ctx.restore();
+      });
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='gene') rd.style.background='#e7eef6', rd.style.color='#1e4a78',
+        rd.innerHTML='<strong>血統の木</strong>：AT&amp;T UNIX の実コードが BSD・System V へ流れ、NetBSD/FreeBSD へ。出どころは USL v. BSDi 裁判が1行単位で追えた本物のコード。';
+      else if(mode==='reimpl') rd.style.background='#eaf3ee', rd.style.color='#1f5a3c',
+        rd.innerHTML='<strong>再実装の木</strong>：UNIX の思想・API だけを受け継ぎ、コードは白紙から。MINIX・GNU・Linux。点線の先にコードは流れていない。';
+      else rd.style.background='#f0f0ee', rd.style.color='#41474a',
+        rd.innerHTML='二本の木を重ねた図。<strong>NetBSD/FreeBSD は実線（血統）側、Linux/MINIX/GNU は点線（再実装）側</strong>。木が違うので、Linux は MINIX の子ではない。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m');
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize', draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：マイクロ vs モノリシック ============ */
+  (function(){
+    var cv=document.getElementById('cvKernel'), rd=document.getElementById('rdKernel');
+    if(!cv) return;
+    var kind='micro', t0=0, raf=null;
+    function draw(t){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var midY=h*0.52;
+      // user/kernel 境界
+      ctx.strokeStyle='#d3ddd4'; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(20,midY); ctx.lineTo(w-20,midY); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#9aa5ab'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('ユーザ空間', 24, 20); ctx.fillText('カーネル空間', 24, midY+16);
+      ctx.textAlign='center';
+      if(kind==='mono'){
+        // 全部入りの1個
+        var bx=w*0.5, bw=w*0.62, bh=h*0.30, by=midY+18;
+        ctx.fillStyle='#e7eef6'; ctx.strokeStyle='#2166a0'; ctx.lineWidth=2.2;
+        rr(ctx,bx-bw/2,by,bw,bh,8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#1e4a78'; ctx.font='bold 14px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('カーネル（全部入り）', bx, by+22);
+        ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#3a5f86';
+        ctx.fillText('ファイルシステム ・ ドライバ ・ ネットワーク ・ メモリ管理', bx, by+bh*0.66);
+        // アプリ
+        ctx.fillStyle='#f6efe3'; ctx.strokeStyle='#a2621c'; ctx.lineWidth=1.6;
+        rr(ctx,bx-70,midY-52,140,32,6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#7a4a10'; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('アプリ',bx,midY-31);
+        ctx.strokeStyle='#a2621c'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(bx,midY-20); ctx.lineTo(bx,by); ctx.stroke();
+      } else {
+        // 小さな核＋ユーザ空間のサーバ群
+        var kx=w*0.5, kw=w*0.34, kh=h*0.20, ky=midY+22;
+        ctx.fillStyle='#eaf3ee'; ctx.strokeStyle='#2f7d55'; ctx.lineWidth=2.2;
+        rr(ctx,kx-kw/2,ky,kw,kh,8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#1f5a3c'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('小さな核', kx, ky+kh*0.42);
+        ctx.font='10.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#3c7a58';
+        ctx.fillText('IPC・スケジューラだけ', kx, ky+kh*0.80);
+        // servers (user space)
+        var servers=[['FS',0.22],['ドライバ',0.5],['ネット',0.78]];
+        var sy=midY-52, sh=32;
+        var pts=[];
+        servers.forEach(function(s){
+          var sx=20+(w-40)*s[1], sw=96;
+          ctx.fillStyle='#f6efe3'; ctx.strokeStyle='#a2621c'; ctx.lineWidth=1.6;
+          rr(ctx,sx-sw/2,sy,sw,sh,6); ctx.fill(); ctx.stroke();
+          ctx.fillStyle='#7a4a10'; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText(s[0],sx,sy+21);
+          pts.push({x:sx,y:sy+sh});
+        });
+        // メッセージ線＋動く点
+        var ph=((t||0)-t0)/1400; ph=ph-Math.floor(ph);
+        pts.forEach(function(pt){
+          ctx.strokeStyle='#c7d8cd'; ctx.lineWidth=1.6; ctx.setLineDash([4,3]);
+          ctx.beginPath(); ctx.moveTo(pt.x,pt.y); ctx.lineTo(kx,ky); ctx.stroke(); ctx.setLineDash([]);
+          var mx=pt.x+(kx-pt.x)*ph, my=pt.y+(ky-pt.y)*ph;
+          ctx.fillStyle='#2f7d55'; ctx.beginPath(); ctx.arc(mx,my,3.2,0,2*Math.PI); ctx.fill();
+        });
+        ctx.fillStyle='#9aa5ab'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('部品はユーザ空間で動き、核とメッセージでやりとり', kx, sy-8);
+      }
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!t0)t0=t; draw(t); if(kind==='micro') raf=requestAnimationFrame(loop); }
+    function start(){ if(raf)cancelAnimationFrame(raf); if(kind==='micro'){ t0=0; raf=requestAnimationFrame(loop);} else draw(0); }
+    function setReadout(){
+      if(kind==='mono') rd.style.background='#e7eef6', rd.style.color='#1e4a78',
+        rd.innerHTML='<strong>モノリシック（Linux流）</strong>：機能を全部カーネルに詰める。速いが大きい。Tanenbaum は「1970年代への逆戻り」と批判した。';
+      else rd.style.background='#eaf3ee', rd.style.color='#1f5a3c',
+        rd.innerHTML='<strong>マイクロカーネル（MINIX流）</strong>：核は最小限、部品はユーザ空間でメッセージ通信。安全で分割的、と Tanenbaum は主張した。── 論争の争点は<strong>この設計</strong>で、コードの血統ではない。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-k]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      kind=b.getAttribute('data-k');
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); start();
+    });});
+    window.addEventListener('resize', function(){ if(kind!=='micro') draw(0); });
+    setReadout(); setTimeout(start,60); window.addEventListener('load',start);
+  })();
+})();
+</script>
+</body>
+</html>

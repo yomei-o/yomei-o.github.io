@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最初の1バイト ── 手で入れる ｜ わかるUNIXの歴史 第9回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#fbf5f3; --paper-edge:#ead6cf;   /* 第9回：赤の紙 */
+    --side:#1f7a6e; --side-bg:#e7f2ef;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#e6cdc5; --hair:#d8afa4;
+    --acc:#a83a22;    /* 第9回アクセント＝赤 */
+    --grid:#ecd8d1;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f3d3ca 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f2e6e2;border:1px solid #ead6cf;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#173e37;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdf9f8;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;cursor:pointer;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini.alt{background:#c98a7c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f4e0da;color:#7a2513;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9eeeb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdfc,#f1e0da);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4e0da;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#7a2513;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 9 回 ／ ソフトの底</span></div>
+  <p class="eyebrow">借りる相手が1台も無い、世界で最初の機械 ── どうやって最初の命令を入れたか</p>
+  <h1>最初の1バイト ── 手で入れる
+    <span class="sub">クロス（第8回）で借りる相手すらいない、いちばん最初の機械。そこにはアセンブラも、読み込ませる紙テープも無い。人間が命令表を見て機械語の数値を<strong>手で作り</strong>、<strong>トグルスイッチ</strong>で1語ずつメモリに入れる。合言葉「最初の卵は、手で彫った」が、ほぼ文字どおりの事実になります。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第7・8回（アセンブリ／クロス）</span>
+    <span>種明かし：bootstrap ＝ 靴ひもで自分を持ち上げる</span>
+  </div>
+
+  <p class="lead">第8回で、新しい機械は「すでに動く別の機械」を借りて立ち上げると見ました。でもその連鎖をさかのぼると、必ず ── <strong>借りる相手が1台も無い、いちばん最初の機械</strong>に着きます。世界初のそのコンピュータには、アセンブルしてくれる別の機械も、できあいの紙テープもありません。ではどうやって、いちばん最初の命令を入れたのか。答えは、これ以上ないほど素朴でした。<strong>人間が、手で。</strong> ここが、ソフトウェアの鶏と卵の<em>底</em>です。</p>
+
+  <h2><span class="n">01</span>まず、人間がアセンブラになる ── ハンドアセンブル</h2>
+
+  <p>第7回で、アセンブリ（人が読める）を機械語（数値）に変えるのはアセンブラだ、と見ました。そのアセンブラが無いなら ── <strong>人間が自分でその変換をやる</strong>。CPU の命令表（マニュアル）を見て、「この命令のオペコードは 6、番地はここ…」と、<em>紙の上で機械語の数値を手計算</em>する。これを<strong>ハンドアセンブル</strong>と言います。第7回の図1（アセンブル）を、機械の代わりに人間が鉛筆でやる、と思ってください。</p>
+
+  <div class="term">
+<span class="c">// 人間がマニュアルを見て、手で数値に翻訳（ハンドアセンブル）</span>
+   命令: 「メモリを読んで、次へ」
+   → オペコード表を引く … 6032（8進）  <span class="c">// 手で決める</span>
+   → 次の語 … 5357（8進）              <span class="c">// 手で決める</span>
+   <span class="q">この数値の列を、これから“手で”機械に入れる</span>
+  </div>
+
+  <h2><span class="n">02</span>トグルスイッチで、1語ずつ入れる</h2>
+
+  <p>手で作った数値を、どうやってメモリへ? 初期の機械（PDP-8、初期の PDP-11、Altair 8800 など）には、正面に<strong>トグルスイッチの列（フロントパネル）</strong>がありました。使い方はこうです ── <em>スイッチで1語ぶんのビット（0/1）を立て、「DEPOSIT（格納）」を押すと、その1語がメモリに書き込まれ、番地が1つ進む。</em> これを語の数だけ繰り返す。文字どおり、<strong>手でビットを並べて機械に入れる</strong>のです。下の<em>フロントパネル</em>を、実際に触ってみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：フロントパネル（さわれます）。スイッチをクリックしてビットを立て、DEPOSIT でメモリに1語書き込む。お手本のローダを上から順に入れてみよう（値は8進）</div>
+    <canvas id="cvPanel" width="680" height="360"></canvas>
+    <div class="controls">
+      <span style="font-size:12.5px;">スイッチ＝クリックで 0/1 を反転　／　下のボタンで操作</span>
+    </div>
+    <div class="readout" id="rdPanel">スイッチを立てて DEPOSIT。お手本の最初の値に合わせてみよう。</div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 消えないメモリ（コアメモリ）</span>
+    当時の主記憶は<strong>磁気コアメモリ</strong>で、電源を切っても内容が消えませんでした。だから一度手で入れたブートストラップは、<em>電源を落としても残っている</em>ことがあった。毎回ゼロから全部トグルし直す、とは限らなかったのです。とはいえ、いちばん最初の1回は ── やはり、誰かが手で入れました。
+  </div>
+
+  <h2><span class="n">03</span>全部は入れない ── ブートストラップローダ</h2>
+
+  <p>もちろん、OS 全部を手でトグルするのは正気の沙汰ではありません。だから入れるのは、<strong>ごく短い「ローダ」だけ</strong>。その小さなローダの仕事はただ一つ ── <em>紙テープ（や後のディスク）から、もっと大きなプログラムを読み込んでメモリに入れ、そこへ実行を移す</em>こと。PDP-11 のブートストラップローダは「手でトグルするので<strong>とにかく短く</strong>」設計されていました。多くの場合、<em>手で入れた極小ローダ → 紙テープの二段目ローダ → OS</em> と、読み込みが階段状に大きくなります。下の図で、その階段を昇ってください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：ブートストラップの階段。手でトグルするのは最初の数語だけ。その極小ローダが二段目を読み、二段目が OS を読む。上へ行くほど大きく、最初の種は手で彫った数語</div>
+    <canvas id="cvBoot" width="680" height="320"></canvas>
+    <div class="controls">
+      <label>段を昇る<span class="val" id="vBoot">① 人間の手（トグルスイッチ）</span>
+        <input type="range" id="boot" min="0" max="3" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdBoot"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 合言葉が、文字どおりになる</div>
+    <p style="margin:6px 0 0;">シリーズの合言葉「<strong>最初の卵は、手で彫った</strong>」は、ここでほぼ<em>比喩ではなくなります</em>。今あなたが使う OS も、コンパイラも、第0回の自己ホスティングの輪も、さかのぼれば ── <strong>誰かがマニュアルを片手に、スイッチで手入力した数語</strong>の上に載っている。巨大なソフトの塔の、いちばん底の礎石は、人間の指でした。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>語源 ── 自分の靴ひもで、自分を持ち上げる</h2>
+
+  <p><strong>bootstrap</strong>（ブートストラップ）という言葉は、19世紀の言い回し「自分の<em>靴ひも（bootstrap）</em>を引っぱって自分を持ち上げる」から来ています。物理的には不可能な、ほら話です。何も無い所から何かを立ち上げる、という含意。第0回で「輪は自力では始まらない、外から一度だけ持ち上げる」と言いました ── その<strong>“外からの持ち上げ”の物理的な現場が、このフロントパネル</strong>でした。そして今、コンピュータの電源を入れることを「<strong>ブート（boot）</strong>する」と言うのも、この bootstrap が語源です。毎朝あなたが押す電源ボタンは、手でスイッチを叩いた時代の、遠い子孫なのです。</p>
+
+  <div class="calc">
+    <span class="tag">第0回の合言葉、回収</span>
+    <p style="margin-top:8px;">「鶏が先か卵が先か ── 最初の卵は、手で彫った。」<br>鶏（動くソフト）も卵（そのソースやツール）も、無からは湧かなかった。いちばん最初だけは、<strong>人間が手で数語を彫り込み</strong>、その極小の種がローダを呼び、ローダが OS を呼び、OS の上でコンパイラが動き、コンパイラが自分を再生産する輪に入った。<em>種が撒かれたあとは、ソフトがソフトを作るループが回り続けている</em> ── これが、鶏と卵の答えの形でした。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「1バイト」「手で」の、ていねいな線引き</span>
+    <p style="margin-top:0;">(1) タイトルの「1バイト」は象徴で、実際に手で入れる単位は<strong>語（word）</strong>（機械により18ビットや16ビットなど）です。(2) 毎回すべてを手トグルしたわけではありません ── コアメモリで残ったり、のちの機械は<strong>ブートストラップを ROM に焼いて</strong>手トグルを卒業しました（今の PC の起動もその延長）。「手で入れる」は<em>いちばん最初の一回／新品の立ち上げ</em>の話です。</p>
+    <p style="margin-bottom:0;">(3) 図1の値やビット数、図の手順は、フロントパネル操作の<em>感じ</em>を伝えるための簡略化で、特定機種の厳密な再現ではありません（トグルスイッチでのメモリ格納とブートストラップローダは実在の実務）。(4) そして最大の但し書き ── <strong>手で入れた数値を“意味”に変えるのは、まだ下にいる「機械そのもの」</strong>です。スイッチの 0/1 を命令として実行するのは、配線された回路。ソフトの底には着きましたが、その下にハードウェアが残っています ── 最終回・第10回へ。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>ハンドアセンブルとは何か。第7回のアセンブラと対比して一文で。
+        <details><summary>答えを見る</summary><div class="ans">アセンブラ（プログラム）がやる「アセンブリ→機械語の数値」への変換を、人間がマニュアルを見て手で行うこと。人間が自分でアセンブラの役をする。</div></details>
+      </li>
+      <li>フロントパネルで1語をメモリに入れる操作を、簡単に述べよ。
+        <details><summary>答えを見る</summary><div class="ans">トグルスイッチで1語ぶんのビット（0/1）を設定し、DEPOSIT を押して現在番地に書き込む。番地が1つ進むので、語の数だけ繰り返す。</div></details>
+      </li>
+      <li>なぜ OS を全部手で入れず、短いローダだけ入れるのか。
+        <details><summary>答えを見る</summary><div class="ans">全部を手トグルするのは非現実的だから。極小のローダを手で入れ、それに紙テープ等から大きなプログラム（二段目ローダやOS）を読み込ませる。読み込みが階段状に大きくなる。</div></details>
+      </li>
+      <li>「bootstrap」「boot」の語源と、第0回の合言葉との関係は。
+        <details><summary>答えを見る</summary><div class="ans">bootstrap＝自分の靴ひもで自分を持ち上げる（不可能事）で、何も無い所から立ち上げる含意。第0回「輪は外から一度だけ持ち上げる」の物理的現場がフロントパネル。今の「ブート（起動）」もこの語源。合言葉「最初の卵は手で彫った」がここで文字どおりになる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>ソフトの底は、人間の指だった</h2>
+    <p>クロス（第8回）の連鎖をさかのぼると、借りる相手が1台も無い最初の機械に着く。そこには鶏（動くソフト）も卵（ツール）も無い。だから人間が、CPU のマニュアルを見て機械語の数値を<strong>手で作り（ハンドアセンブル）</strong>、フロントパネルの<strong>トグルスイッチで1語ずつメモリに入れた</strong>。全部は入れない ── 手で入れるのは極小の<strong>ブートストラップローダ</strong>だけで、それが紙テープから二段目を、二段目が OS を読む階段になる。</p>
+    <p><strong>bootstrap</strong> は「靴ひもで自分を持ち上げる」不可能事の名で、その“外からの一度きりの持ち上げ”の現場がこのフロントパネルだった（今の「ブート」の語源）。第0回の合言葉「最初の卵は、手で彫った」は、ここでほぼ文字どおりになる ── 巨大なソフトの塔の礎石は、人間の指。ただし、手で入れた 0/1 を<em>意味（実行）</em>に変えるのは、まだ下にいる<strong>機械そのもの</strong>だ。ソフトの底には着いた。残る問いは一つ ── <em>その機械語を「動作」にするハードウェアは、誰が作ったのか。</em> 最終回、いちばん下の底へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第10回（最終回の前の、最下層）</span>
+    「底 ── ハードウェアという本当の種」。手で入れた <code>6032</code> という数値を、「メモリを読め」という<em>動作</em>に変えるのは何か。それは、論理ゲートで配線された<strong>命令デコーダ</strong>── そしてそれを設計したのも、人間です。ソフトの連鎖のいちばん下には、配線された物理と、それを作った手がある。鶏と卵の、最後の底へ。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第9回です。史実：初期の計算機（IBM 650、DEC PDP-5〜PDP-8、初期の PDP-11、Altair 8800 など）はフロントパネルのトグルスイッチ列を備え、operator が起動命令を手動でメモリに入れてから CPU に制御を渡した。主記憶の磁気コアメモリは電源を切っても内容を保持したため、入力済みのブートストラップが残ることがあった。ブートストラップローダは手動トグルのため極力短く設計され、紙テープ読取機から二段目ローダ（チェックサム付き Binary Loader 等）や OS を読み込んだ。ハンドアセンブルは、アセンブラを用いずに人間がマニウアルから機械語を手作業で求めること。「bootstrap」は19世紀の「自分の靴ひもで自分を持ち上げる」に由来し、現在の「boot（起動）」の語源。図・数値・ビット数は操作の概念を伝えるための簡略化で、特定機種の厳密な再現ではない。手入力された機械語を実行（意味）に変えるのはハードウェア（命令デコーダ等）であり、次回第10回で扱う。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のフロントパネルのスイッチをクリックし DEPOSIT でメモリに書き込めます（お手本のローダを入れてみよう）。図2のスライダーでブートストラップの階段を昇れます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH,dpr:r};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function oct4(v){ return ((v>>9)&7).toString()+((v>>6)&7)+((v>>3)&7)+(v&7); }
+
+  /* ============ 図1：フロントパネル（インタラクティブ） ============ */
+  (function(){
+    var cv=document.getElementById('cvPanel'), rd=document.getElementById('rdPanel');
+    if(!cv) return;
+    var NB=12;
+    var bits=new Array(NB).fill(0);
+    var addr=0;
+    var mem=[]; // {addr,val}
+    var TARGET=[ 0o0006, 0o0025, 0o0100 ]; // お手本ローダ（8進）: 0006,0025,0100
+    var ptr=0, done=false;
+    // hit regions computed in draw; store for click
+    var swRects=[], depRect=null, clrRect=null;
+    function val(){ var v=0; for(var i=0;i<NB;i++){ if(bits[i]) v|=(1<<i); } return v; }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      // panel bg
+      ctx.fillStyle='#2a2f38'; rr(ctx,10,10,w-20,120,8); ctx.fill();
+      ctx.fillStyle='#c9c0bb'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('データスイッチ（クリックで 0/1）　MSB → LSB', 24, 30);
+      // switches (bit NB-1 leftmost)
+      swRects=[];
+      var n=NB, pad=24, gap=(w-2*pad)/n, sw=Math.min(gap*0.62,30);
+      for(var j=0;j<n;j++){
+        var bitIndex=NB-1-j;
+        var cx=pad+gap*j+gap/2, top=42, bh=52;
+        var on=bits[bitIndex];
+        // switch body
+        ctx.fillStyle='#1a1e24'; rr(ctx,cx-sw/2,top,sw,bh,4); ctx.fill();
+        // toggle knob (up=1)
+        ctx.fillStyle= on? '#e2b565':'#5a6068';
+        var ky= on? top+4 : top+bh-4-18;
+        rr(ctx,cx-sw/2+3,ky,sw-6,18,3); ctx.fill();
+        ctx.fillStyle= on? '#ffe6a8':'#8a9098'; ctx.font='bold 11px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText(on?'1':'0', cx, top+bh+14);
+        swRects.push({x:cx-sw/2,y:top,w:sw,h:bh,bit:bitIndex});
+      }
+      // value display
+      ctx.fillStyle='#7fd6a0'; ctx.font='bold 15px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='left';
+      ctx.fillText('現在のスイッチ = 8進 '+oct4(val())+'　（次の格納先 番地 '+oct4(addr)+'）', 24, 150);
+      // buttons
+      depRect={x:24,y:166,w:120,h:30}; clrRect={x:156,y:166,w:96,h:30};
+      ctx.fillStyle='#a83a22'; rr(ctx,depRect.x,depRect.y,depRect.w,depRect.h,5); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('DEPOSIT（格納）', depRect.x+depRect.w/2, depRect.y+20);
+      ctx.fillStyle='#8a7a72'; rr(ctx,clrRect.x,clrRect.y,clrRect.w,clrRect.h,5); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.fillText('CLEAR', clrRect.x+clrRect.w/2, clrRect.y+20);
+      // memory list (right)
+      var mx=w*0.62, my=212;
+      ctx.fillStyle='#7a2513'; ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('メモリ（入れた語）', mx, my);
+      ctx.font='12px "SFMono-Regular",Consolas,monospace'; ctx.fillStyle='#1a1c22';
+      for(var k=0;k<mem.length;k++){ ctx.fillText(oct4(mem[k].addr)+':  '+oct4(mem[k].val), mx, my+18+k*17); }
+      // target list (left)
+      var tx=24, ty=212;
+      ctx.fillStyle='#7a2513'; ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('お手本ローダ（上から順に入れる・8進）', tx, ty);
+      ctx.font='13px "SFMono-Regular",Consolas,monospace';
+      for(var i=0;i<TARGET.length;i++){
+        var got = i<ptr;
+        ctx.fillStyle= got? '#1f7a6e' : (i===ptr? '#a83a22':'#b7a49d');
+        ctx.fillText((got?'✓ ':(i===ptr?'▶ ':'   '))+oct4(TARGET[i]), tx, ty+20+i*20);
+      }
+      if(done){ ctx.fillStyle='#1f7a6e'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('ローダ入力完了！ これが紙テープを読み込みにいく →', tx, ty+20+TARGET.length*20+6); }
+      ctx.textAlign='left';
+    }
+    function evPos(ev){
+      var r=cv.getBoundingClientRect();
+      return { x:(ev.clientX-r.left)*(cv.clientWidth/r.width)*(cv.width/(cv.clientWidth*(window.devicePixelRatio||1))),
+               y:(ev.clientY-r.top)*(cv.clientHeight/r.height)*(cv.height/(cv.clientHeight*(window.devicePixelRatio||1))) };
+    }
+    function hit(rect,x,y){ return rect && x>=rect.x && x<=rect.x+rect.w && y>=rect.y && y<=rect.y+rect.h; }
+    cv.addEventListener('click', function(ev){
+      var r=cv.getBoundingClientRect();
+      var x=(ev.clientX-r.left)*(cv.width/r.width)/(window.devicePixelRatio||1);
+      var y=(ev.clientY-r.top)*(cv.height/r.height)/(window.devicePixelRatio||1);
+      // switches
+      for(var i=0;i<swRects.length;i++){ var s=swRects[i]; if(x>=s.x-4&&x<=s.x+s.w+4&&y>=s.y&&y<=s.y+s.h){ bits[s.bit]^=1; draw(); return; } }
+      if(hit(depRect,x,y)){
+        var v=val(); mem.push({addr:addr,val:v}); addr++;
+        if(!done && v===TARGET[ptr]){ ptr++; if(ptr>=TARGET.length){ done=true;
+            rd.innerHTML='<strong>ローダ入力完了！</strong> 手で入れたのは、たった数語。この極小ローダが、次は紙テープから大きなプログラムを読み込む ── これがブートストラップです（図2へ）。'; }
+          else rd.innerHTML='一致！ 次の語（8進 '+oct4(TARGET[ptr])+'）をスイッチで作って DEPOSIT。'; }
+        else if(!done){ rd.innerHTML='8進 '+oct4(v)+' を番地 '+oct4(addr-1)+' に格納。お手本の <strong>'+oct4(TARGET[ptr])+'</strong> を狙ってビットを合わせてみよう。'; }
+        // reset switches for next word (実機でも入れ直す)
+        bits=new Array(NB).fill(0);
+        draw(); return;
+      }
+      if(hit(clrRect,x,y)){ bits=new Array(NB).fill(0); draw(); return; }
+    });
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：ブートストラップの階段 ============ */
+  (function(){
+    var cv=document.getElementById('cvBoot'), sl=document.getElementById('boot'),
+        vBoot=document.getElementById('vBoot'), rd=document.getElementById('rdBoot');
+    if(!cv) return;
+    var ST=[
+      {h:'① 人間の手（トグルスイッチ）', size:0.16, col:'#a83a22', note:'マニュアルを見てハンドアセンブルした数語を、スイッチで手入力。ここだけが人間の仕事。'},
+      {h:'② 極小ローダ', size:0.34, col:'#b0651e', note:'手で入れた数語。仕事はただ一つ ── 紙テープからもっと大きなものを読むこと。'},
+      {h:'③ 二段目ローダ（紙テープ）', size:0.62, col:'#8a5e10', note:'極小ローダが紙テープから読み込む、チェックサム付きの本格ローダ。'},
+      {h:'④ OS（紙テープ／ディスク）', size:1.0, col:'#1f7a6e', note:'二段目ローダが OS を読み込む。以後、OS の上でコンパイラが動き、第0回の輪へ。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10);
+      var n=ST.length, padL=30, padR=20, baseY=h-40, uW=w-padL-padR;
+      var sw=uW/n;
+      // hand at bottom-left
+      for(var i=0;i<n;i++){
+        var x=padL+sw*i, cxp=x+sw/2;
+        var st=ST[i], on=i<=cur;
+        var bw=sw*0.66, bh=20+st.size*(h*0.5);
+        var y=baseY-bh;
+        // arrow from prev (loads next)
+        if(i>0){
+          ctx.strokeStyle= on? '#a83a22':'#e0ccc6'; ctx.fillStyle=ctx.strokeStyle; ctx.lineWidth=2;
+          var px=padL+sw*(i-1)+sw/2, py=baseY-(20+ST[i-1].size*(h*0.5))-6;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(cxp, y-6); ctx.stroke();
+          ctx.save(); ctx.translate(cxp,y-6); var ang=Math.atan2((y-6)-py,cxp-px); ctx.rotate(ang);
+          ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-9,-4); ctx.lineTo(-9,4); ctx.closePath(); ctx.fill(); ctx.restore();
+          if(on){ ctx.fillStyle='#8a5e10'; ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+            ctx.fillText('読み込む', (px+cxp)/2, (py+y)/2-4); }
+        }
+        // box
+        ctx.save(); ctx.globalAlpha= on?1:0.2;
+        ctx.fillStyle= i===cur? st.col : (on? '#fff':'#f3ece9'); ctx.strokeStyle=st.col; ctx.lineWidth= i===cur?2.6:1.6;
+        rr(ctx,cxp-bw/2,y,bw,bh,7); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= i===cur? '#fff':st.col; ctx.textAlign='center'; ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif';
+        var lbl=['手','ローダ小','ローダ大','OS'][i];
+        ctx.fillText(lbl, cxp, y+bh/2+4);
+        ctx.restore();
+        // step number
+        ctx.fillStyle= on? st.col:'#c9beba'; ctx.font='10px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText((i+1)+'', cxp, baseY+16);
+      }
+      // baseline
+      ctx.strokeStyle='#e0ccc6'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,baseY); ctx.lineTo(w-padR,baseY); ctx.stroke();
+      ctx.fillStyle='#b7a49d'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('小さく（手で彫った種）', padL, 20); ctx.textAlign='right'; ctx.fillText('大きく（自動で読み込む）', w-padR, 20); ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), st=ST[cur];
+      vBoot.textContent=st.h; rd.innerHTML='<strong>'+st.h+'</strong>：'+st.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

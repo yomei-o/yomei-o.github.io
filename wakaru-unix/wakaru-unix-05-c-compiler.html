@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cコンパイラの誕生 ── 自分で自分を ｜ わかるUNIXの歴史 第5回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fb; --paper-edge:#e2dbee;   /* 第5回：すみれの紙 */
+    --side:#2f6f55; --side-bg:#eaf2ee;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#d5cce6; --hair:#c2b5da;
+    --acc:#6d4aa7;    /* 第5回アクセント＝すみれ */
+    --grid:#ded5ee;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd0f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#efeaf6;border:1px solid #e2dbee;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#20342b;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfaff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini:disabled{opacity:.45;cursor:default;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#efe9f7;color:#492e78;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4f0fa;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#e7e0f2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#efe9f7;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#492e78;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 5 回 ／ 自己ホスティングの原点</span></div>
+  <p class="eyebrow">gcc を着火した cc の祖先 ── 最初の C コンパイラは、どう自分を作ったか</p>
+  <h1>Cコンパイラの誕生 ── 自分で自分を
+    <span class="sub">C で書いた C コンパイラは、C コンパイラが無いと作れない。第3回の輪の、いちばん深いところ。<em>まだ C が存在しない世界で、最初の C コンパイラは何が作ったのか。</em> 答えは「B から少しずつ<strong>育てた</strong>」。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第3回（gcc の3段ブートストラップ）</span>
+    <span>種明かし：言語を拡張しては再コンパイル</span>
+  </div>
+
+  <p class="lead">第3回で「最初の <code>gcc</code> は、そのマシンの既存の <code>cc</code> で着火した」と言い、その <code>cc</code> の祖先へ、と予告しました。祖先とは、1970年代初頭に Dennis Ritchie が書いた<strong>最初の C コンパイラ</strong>です。でもここで、輪はいちばん深いところに来ます ── <em>C コンパイラは C で書かれている。なのに C が世界にまだ1つも無い。</em> 借りてくる「既存の C コンパイラ」すら存在しない。ではどうやって? 答えは、いきなり C を書いたのではなく、<strong>すでにあった B という言語から、C を少しずつ育てた</strong>のです。</p>
+
+  <h2><span class="n">01</span>C は設計されたのではなく、B から“育った”</h2>
+
+  <p>C は白紙から設計された言語ではありません。系図はこうです ── <strong>BCPL →（Ken Thompson が）B →（Dennis Ritchie が）C</strong>。1970年に PDP-11 が入ると、B の「型が無い・語（ワード）単位」という性質が、<em>バイト単位</em>の PDP-11 に合わない。そこで Ritchie は B に<strong>型（<code>char</code>・<code>int</code> など）</strong>を足し始めます。この途中の言語は <em>NB（New B）</em>と呼ばれましたが、あまりに短命で、まともな仕様書も残っていません。B に型が生え、機械語を吐くように改造されていくうちに、それは C になっていました。</p>
+
+  <div class="term">
+<span class="c">/* 言語の系図（ざっくり） */</span>
+BCPL  ──▶  B      <span class="c">// Thompson, 型なし・ワード単位（PDP-7）</span>
+   B  ──▶  NB     <span class="c">// Ritchie, 型を足す（PDP-11のバイトに合わせる）</span>
+  NB  ──▶  <span class="o">C</span>      <span class="c">// 機械語出力へ。1973年、UnixカーネルをCで書き直し</span>
+  </div>
+
+  <h2><span class="n">02</span>自己ホスティングの鶏と卵 ── いちばん深いところ</h2>
+
+  <p>第3回の <code>gcc</code> は「既存の <code>cc</code> を1つ貸してくれ」で済みました。借りる相手がいたからです。でも<strong>最初の C コンパイラには、借りる相手がいない</strong>。C はまだ存在しないのだから。これが自己ホスティングの鶏と卵の、最深部です。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 「全部のC」を「無」から作ろうとしない</div>
+    <p style="margin:6px 0 0;">解けないように見えるのは、「<em>完全な C コンパイラ</em>を、<em>何も無い所</em>から一気に作る」と思うから。実際はそうしません。<strong>すでに動く小さな言語（B）から始め、コンパイラに機能を1つ足しては再コンパイルし、扱える言語を少しずつ広げていく</strong>。各段は、<em>1つ前の段のコンパイラ</em>だけで作れる。無から C を作るのではなく、B を C へ<strong>連続変形</strong>させるのです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>種明かし ── 言語を拡張しては、再コンパイルする</h2>
+
+  <p>この「育て方」を、階段で見ます。下の図のスライダーを進めてください。各段で、<strong>コンパイラが書かれている言語</strong>と、<strong>コンパイラがコンパイルできる言語</strong>が、追いかけっこしながら上がっていきます。両者が C で出会った瞬間が、自己ホスティングの成立です。</p>
+
+  <div class="fig">
+    <div class="cap">図1：言語拡張の階段。B のコンパイラに型・機械語出力・構造体…を足しては再コンパイルし、扱える言語を C まで広げる。土台の種（B／アセンブリ）は最後に退場する</div>
+    <canvas id="cvLadder" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>育成のステップを進める<span class="val" id="vLad">① 種：Bのコンパイラ</span>
+        <input type="range" id="lad" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdLad"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">自己育成ループ（feature をひとつ足すたびに）</span>
+    <p style="margin-top:8px;">① コンパイラに新機能（型・構造体…）を<strong>足す</strong>。② 今のコンパイラで<strong>再コンパイル</strong>する。③ すると、その新機能を<em>コンパイラ自身のソースコードでも使える</em>ようになる。④ ①へ戻る。</p>
+    <p style="margin:8px 0 14px;">この小さな輪を回すたび、言語もコンパイラも一段ずつ豊かになる。<strong>「作ったばかりの機能で、自分自身を書き直す」</strong> ── 自己ホスティングならではの、雪だるま式の成長です。</p>
+  </div>
+
+  <h2><span class="n">04</span>種の退場 ── C↔C の輪が、自走を始める</h2>
+
+  <p>やがて、C コンパイラは<strong>C で書かれ、C（自分のソース）をコンパイルできる</strong>地点に達します。こうなると、着火に使った <strong>B の種はもう要りません</strong>。第3回で stage1 を捨てたのと同じ ── 用ずみの足場は外す。1973年、Ritchie と Thompson はこの C で <strong>Unix カーネルそのものを書き直しました</strong>。下の図で、種を切って、C↔C の輪が自走を始める瞬間を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：種の退場。最初は B（種）が C コンパイラを着火する。自己ホスティングに達したら B との縁を切っても、C↔C の輪は自分だけで回り続ける</div>
+    <canvas id="cvSeed" width="680" height="270"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="seedBtn">自己ホスティング到達 → 種(B)を切る</button>
+      <button class="btnmini" id="seedReset" style="background:#9a86bd;">リセット</button>
+    </div>
+    <div class="readout" id="rdSeed">いまは B（種）が C コンパイラを着火している段階。まだ B に頼っている。</div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">この回の位置づけ ── 第0回の輪は、ここで生まれた</div>
+    <p style="margin:6px 0 0;">第0回で見た「<code>gcc</code> ← <code>gcc</code> ← <code>gcc</code> …」の自己ホスティングの輪。その<strong>いちばん最初のひと回し</strong>が、この Ritchie の C コンパイラです。<code>gcc</code> の輪も、あなたが今使うコンパイラの輪も、元をたどれば<em>ここで点火された同じ輪</em>の続き。C が「自分で自分をコンパイルできる」言語になった瞬間が、その後の全部の起点でした。</p>
+  </div>
+
+  <h2><span class="n">05</span>それでも、輪はさらに下へ続く</h2>
+
+  <p>「B から育てた」で C の鶏と卵は解けました。でも当然、次の問いが待っています ── <strong>では、その B は何が作ったのか?</strong> B もまた、いきなり存在したわけではない。B は <em>BCPL</em> から来て、PDP-7 の<strong>アセンブリ</strong>の上で動いていました。輪の外の手は、まだ下にあります。次回、B と BCPL、そして「中間コード（O-code）」へ。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「B で書いた」と「アセンブリで書いた」の腑分け</span>
+    <p style="margin-top:0;">(1) 「最初の C コンパイラはアセンブリで書かれた」と紹介されることがありますが、より正確には ── <strong>C コンパイラは B のコンパイラから連続的に進化した</strong>もので、Ritchie が B のコンパイラに型を足し機械語出力へ改造していく過程で C になりました。その土台（B の処理系）は PDP-11 のアセンブリやスレッデッドコードに支えられています。「B から育った」と「下にアセンブリがある」は両立します。</p>
+    <p style="margin-bottom:0;">(2) 「機能を足して再コンパイル」という自己育成ループは実在の手法ですが、実際の1971〜73年の作業はもっと込み入っていて、ここでは骨格を理想化して描いています。(3) 自己ホスティングでも、実行時ライブラリや起動処理などに<em>アセンブリは残ります</em>。「C だけで完結」という意味ではありません。(4) NB は短命で資料が乏しく、B→C の細部には諸説あります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>C の系図（3つの言語）を、古い順に並べよ。
+        <details><summary>答えを見る</summary><div class="ans">BCPL → B → C。B は Thompson、C は Ritchie。B に型を足す途中の言語が NB（New B）。</div></details>
+      </li>
+      <li>「最初の C コンパイラを、既存の C コンパイラで作る」ができないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">C がまだ世界に1つも存在せず、借りてくる既存の C コンパイラが無いから。第3回の gcc は既存 cc を借りられたが、その原点にはそれが無い。</div></details>
+      </li>
+      <li>では最初の C コンパイラは、どうやって作られたか。一文で。
+        <details><summary>答えを見る</summary><div class="ans">既にあった B のコンパイラに機能（型・機械語出力など）を少しずつ足して再コンパイルし、扱える言語を C まで連続的に広げた。無から作ったのではなく B を C へ変形させた。</div></details>
+      </li>
+      <li>自己ホスティングに達した後、着火に使った B の種はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">不要になり退場する（第3回で stage1 を捨てたのと同じ）。以後は C コンパイラが C で書かれ、自分で自分を再生産できる＝C↔C の輪が自走する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>無から作らず、B を C へ連続変形した</h2>
+    <p>gcc を着火した <code>cc</code> の祖先は、Ritchie の最初の C コンパイラ。ここで自己ホスティングの鶏と卵は最深部に達する ── C コンパイラは C で書かれているのに、借りる相手の C コンパイラが世界に無い。解けたのは、「完全な C を無から作る」のを<strong>やめた</strong>から。系図 <strong>BCPL→B→C</strong> のとおり、すでに動く B のコンパイラに<em>型・機械語出力・構造体</em>を足しては再コンパイルし、扱える言語を C まで<strong>連続変形</strong>させた。</p>
+    <p>「作ったばかりの機能で自分自身を書き直す」自己育成ループを回すうち、C コンパイラは C で書かれ C をコンパイルできる地点に達し、着火用の <strong>B の種は退場</strong>（stage1 を捨てるのと同じ）。1973年、この C で Unix カーネルが書き直された。第0回で見た自己ホスティングの輪は、<em>ここで点火された</em>。── でも輪はまだ下へ続く。その B は何が作ったのか? 次回、B と BCPL、そして中間コード O-code へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第6回</span>
+    「BとBCPL ── 中間コードという逃げ道」。C を育てた土台の B は、Martin Richards の <strong>BCPL</strong> の子でした。そして BCPL には、第4回の EM を先取りする発明 ── <strong>O-code</strong> という中間コードがあった。「機種が変わっても、真ん中まで作り直さなくていい」。移植とブートストラップを支えた、古くて強い考え方の源流に触れます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第5回です。史実：C は BCPL → B（Ken Thompson）→ C（Dennis Ritchie）と発展した。1970年に PDP-11 が導入され、B の移植にはスレッデッドコードが用いられ、アセンブラや dc、B 自身が B で書かれてブートストラップされた。1971年ごろから Ritchie はコンパイラを機械語生成へと変えつつ変数へのデータ型を導入し（この過渡的言語が New B, NB）、これが C へと連続的に発展した。NB は短命で完全な記述は残っていない。1973年初めに現代 C の骨格が整い、同年夏に PDP-11 版 Unix カーネルが C で書き直された。自己ホスティング（自作言語で書いたコンパイラを自分でコンパイルできる状態）は、初期の種コンパイラを別言語（アセンブリや既存言語）で用意し、言語を拡張しては再コンパイルして到達する標準的手法で、到達後は種を退役できる。「最初の C コンパイラはアセンブリ製」という要約もあるが、実態は B コンパイラからの連続的進化であり、その基盤に PDP-11 アセンブリがある。自己ホスティング後も実行時処理などにアセンブリは残る。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで言語拡張の階段を、図2のボタンで種(B)の退場と C↔C の自走を試せます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：言語拡張の階段 ============ */
+  (function(){
+    var cv=document.getElementById('cvLadder'), sl=document.getElementById('lad'),
+        vLad=document.getElementById('vLad'), rd=document.getElementById('rdLad');
+    if(!cv) return;
+    var RUNGS=[
+      {w:'B',    c:'B',        seed:true,  h:'① 種：B のコンパイラ',        note:'B で書かれ、B をコンパイルする。土台は PDP-11 のアセンブリ／スレッデッドコード。ここが着火装置。'},
+      {w:'B',    c:'B ＋型',    seed:true,  h:'② 型を足す（NB）',           note:'コンパイラに <code>char</code>・<code>int</code> などの型を追加。バイト単位の PDP-11 に合わせる。言語は NB へ。'},
+      {w:'NB→C', c:'C（初期）', seed:true,  h:'③ 機械語出力へ改造',          note:'コンパイラを機械語生成へ。扱える言語はぐっと C に近づく。コンパイラのソースも徐々に C 化。'},
+      {w:'C',    c:'C（ほぼ現代）', seed:true, h:'④ 構造体などを追加',        note:'現代の C にほぼ到達。コンパイラのソースを C で書き直していく。種にはまだ薄く支えられている。'},
+      {w:'C',    c:'C',        seed:false, h:'⑤ 自己ホスティング成立',      note:'C コンパイラが C で書かれ、C（自分のソース）をコンパイル。種(B)は退場。1973年、Unix を C で書き直し。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=RUNGS.length;
+      var padL=54, padR=20, padB=54, padT=20;
+      var uW=w-padL-padR, uH=h-padB-padT;
+      var sw=uW/n, sh=uH/n;
+      // dashed climb guide
+      ctx.strokeStyle='#d9cfe9'; ctx.setLineDash([4,4]); ctx.lineWidth=1.4; ctx.beginPath();
+      for(var i=0;i<n;i++){ var cxp=padL+sw*i+sw/2, cyp=(h-padB)-sh*i-sh/2; if(i===0)ctx.moveTo(cxp,cyp); else ctx.lineTo(cxp,cyp); }
+      ctx.stroke(); ctx.setLineDash([]);
+      // rung platforms
+      for(i=0;i<n;i++){
+        var x=padL+sw*i, y=(h-padB)-sh*i, tw=sw*0.9, th=12;
+        var passed=i<=cur, isc=i===cur;
+        ctx.fillStyle= isc? '#6d4aa7' : (passed? '#d8cced' : '#ede8f4');
+        ctx.strokeStyle= isc? '#513a7d' : '#c2b5da'; ctx.lineWidth=1.4;
+        rr(ctx,x,y-th,tw,th,3); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= isc? '#513a7d' : '#9a8bbd'; ctx.font='10px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText((i+1)+'', x+tw/2, y-th-4);
+      }
+      // current compiler box on current rung
+      var cr=RUNGS[cur], bx=padL+sw*cur+sw*0.45, by=(h-padB)-sh*cur-12-58;
+      var bw=Math.max(sw*1.15,148);
+      if(bx+bw/2>w-6) bx=w-6-bw/2; if(bx-bw/2<padL) bx=padL+bw/2;
+      ctx.fillStyle='#fff'; ctx.strokeStyle='#6d4aa7'; ctx.lineWidth=2.2;
+      rr(ctx,bx-bw/2,by,bw,50,8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#6d4aa7'; ctx.textAlign='center'; ctx.font='bold 12.5px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('C コンパイラ', bx, by+17);
+      ctx.font='11px "SFMono-Regular",Consolas,monospace'; ctx.fillStyle='#4a3670';
+      ctx.fillText('書＝'+cr.w+'  ／  訳＝'+cr.c, bx, by+36);
+      // seed box (bottom-left)
+      var seedActive=cr.seed;
+      ctx.save(); ctx.globalAlpha= seedActive?1:0.35;
+      ctx.fillStyle= seedActive? '#efe3d3':'#eeeeee'; ctx.strokeStyle= seedActive? '#a85f18':'#b0b0b0'; ctx.lineWidth=1.6;
+      rr(ctx,padL-40,h-padB+16,150,30,6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle= seedActive? '#7a4a10':'#8a8a8a'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('種：B ＋ アセンブリ'+(seedActive?'':'（退場）'), padL-40+75, h-padB+35);
+      ctx.restore();
+      // link seed -> current box
+      ctx.strokeStyle= seedActive? '#c3a06a' : '#cbcbcb'; ctx.lineWidth=1.6; ctx.setLineDash(seedActive?[]:[3,4]);
+      ctx.beginPath(); ctx.moveTo(padL-40+75, h-padB+16); ctx.lineTo(bx, by+50); ctx.stroke(); ctx.setLineDash([]);
+      if(!seedActive){
+        // cut mark
+        ctx.strokeStyle='#a83a22'; ctx.lineWidth=2.4;
+        var mx=(padL-40+75+bx)/2, my=(h-padB+16+by+50)/2;
+        ctx.beginPath(); ctx.moveTo(mx-8,my-8); ctx.lineTo(mx+8,my+8); ctx.moveTo(mx+8,my-8); ctx.lineTo(mx-8,my+8); ctx.stroke();
+      }
+      // top label
+      ctx.fillStyle='#9a8bbd'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('言語のレベル ↑', 6, padT); ctx.textAlign='left';
+      ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), cr=RUNGS[cur];
+      vLad.textContent=cr.h; rd.innerHTML='<strong>'+cr.h.replace(/^..\s?/,'')+'</strong>：'+cr.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：種の退場と C↔C の自走 ============ */
+  (function(){
+    var cv=document.getElementById('cvSeed'), btn=document.getElementById('seedBtn'), reset=document.getElementById('seedReset'),
+        rd=document.getElementById('rdSeed');
+    if(!cv) return;
+    var selfhost=false, phase=0, raf=null, last=0;
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var bx=w*0.24, cy=h*0.5, cxC=w*0.62;
+      // B seed box
+      ctx.save(); ctx.globalAlpha= selfhost?0.32:1;
+      ctx.fillStyle= selfhost? '#eeeeee':'#efe3d3'; ctx.strokeStyle= selfhost?'#b0b0b0':'#a85f18'; ctx.lineWidth=1.8;
+      rr(ctx,bx-70,cy-26,140,52,8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle= selfhost?'#8a8a8a':'#7a4a10'; ctx.textAlign='center';
+      ctx.font='bold 14px "SFMono-Regular",Consolas,monospace'; ctx.fillText('B（種）', bx, cy-2);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText(selfhost?'退場':'着火装置', bx, cy+16);
+      ctx.restore();
+      // link B -> C
+      ctx.strokeStyle= selfhost? '#cbcbcb':'#c3a06a'; ctx.setLineDash(selfhost?[3,4]:[]); ctx.lineWidth=2.2;
+      ctx.beginPath(); ctx.moveTo(bx+70, cy); ctx.lineTo(cxC-64, cy); ctx.stroke();
+      if(!selfhost){ ctx.fillStyle='#c3a06a'; ctx.beginPath(); ctx.moveTo(cxC-64,cy); ctx.lineTo(cxC-74,cy-5); ctx.lineTo(cxC-74,cy+5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#7a4a10'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center'; ctx.fillText('Bで着火', (bx+cxC)/2, cy-10); }
+      ctx.setLineDash([]);
+      if(selfhost){ // cut mark
+        ctx.strokeStyle='#a83a22'; ctx.lineWidth=2.4; var mx=(bx+70+cxC-64)/2;
+        ctx.beginPath(); ctx.moveTo(mx-8,cy-8); ctx.lineTo(mx+8,cy+8); ctx.moveTo(mx+8,cy-8); ctx.lineTo(mx-8,cy+8); ctx.stroke(); }
+      // C compiler box
+      ctx.fillStyle='#efe9f7'; ctx.strokeStyle='#6d4aa7'; ctx.lineWidth=2.6;
+      rr(ctx,cxC-64,cy-30,128,60,10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#6d4aa7'; ctx.textAlign='center';
+      ctx.font='bold 15px "SFMono-Regular",Consolas,monospace'; ctx.fillText('C コンパイラ', cxC, cy-4);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('C で書かれ C を訳す', cxC, cy+15);
+      // self loop (spins when selfhost)
+      if(selfhost){
+        var lx=cxC, ly=cy-30-4, R=30;
+        ctx.strokeStyle='#6d4aa7'; ctx.lineWidth=2.4;
+        ctx.beginPath(); ctx.arc(lx,ly,R, Math.PI*0.2, Math.PI*1.8); ctx.stroke();
+        var ea=Math.PI*1.8, ex=lx+R*Math.cos(ea), ey=ly+R*Math.sin(ea);
+        ctx.fillStyle='#6d4aa7'; ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-8,ey-1); ctx.lineTo(ex-2,ey+8); ctx.closePath(); ctx.fill();
+        // running pulse
+        var pa=Math.PI*0.2 + (phase*(Math.PI*1.6));
+        var px=lx+R*Math.cos(pa), py=ly+R*Math.sin(pa);
+        ctx.fillStyle='#2f8d5a'; ctx.beginPath(); ctx.arc(px,py,4,0,2*Math.PI); ctx.fill();
+        ctx.fillStyle='#492e78'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('自己ホスティングの輪（自走）', lx, ly-R-8);
+      }
+      ctx.textAlign='left';
+    }
+    function tick(t){ if(!last)last=t; var dt=(t-last)/1000; last=t; phase+=dt*0.5; if(phase>1)phase-=1; draw(); if(selfhost) raf=requestAnimationFrame(tick); }
+    btn.addEventListener('click', function(){
+      if(selfhost) return;
+      selfhost=true; last=0; rd.innerHTML='C コンパイラが C で書かれ、自分のソースをコンパイルできる。だから <strong>B（種）を切っても、C↔C の輪は自走し続ける</strong>。第0回の輪は、ここで生まれた。';
+      raf=requestAnimationFrame(tick);
+    });
+    reset.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); selfhost=false; phase=0;
+      rd.innerHTML='いまは B（種）が C コンパイラを着火している段階。まだ B に頼っている。'; draw(); });
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>

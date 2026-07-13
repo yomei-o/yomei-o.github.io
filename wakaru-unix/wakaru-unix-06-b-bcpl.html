@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BとBCPL ── 中間コードという逃げ道 ｜ わかるUNIXの歴史 第6回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf6fb; --paper-edge:#e8dcec;   /* 第6回：菫の紙 */
+    --side:#1f7a6e; --side-bg:#e7f2ef;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#e0cfe6; --hair:#cdb6d6;
+    --acc:#7d3b8f;    /* 第6回アクセント＝菫 */
+    --grid:#e6d5ec;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ecd3f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f0e8f2;border:1px solid #e8dcec;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#173e37;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#ece1ef;color:#5c3568;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f1e7f4;color:#5c2e6a;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f6f0f8;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfbff,#ece2f0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f1e7f4;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#5c2e6a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 6 回 ／ 中間コードという逃げ道</span></div>
+  <p class="eyebrow">C を育てた土台の B。その B は、何から来たのか</p>
+  <h1>BとBCPL ── 中間コードという逃げ道
+    <span class="sub">C の親 B は、Martin Richards の <strong>BCPL</strong> の子。そして BCPL には、第4回の EM を数年先取りする発明 ── <strong>O-code</strong> という中間コードがありました。「機種が変わっても、真ん中まで作り直さなくていい」。<em>移植とブートストラップを支えた、古くて強い逃げ道。</em></span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回（EM）・第5回（B→C）</span>
+    <span>種明かし：真ん中に“機種非依存の島”を置く</span>
+  </div>
+
+  <p class="lead">第5回で C は B から育ったと見て、最後に「では B は何から?」と残しました。答えは <strong>BCPL</strong>。1967年に Martin Richards が作った言語です。じつは Ken Thompson は最初 PDP-7 用に Fortran のコンパイラを書こうとし、メモリに収まらず、BCPL をぐっと簡略化して<em>型なし（1語だけ）</em>の B を作りました。そして BCPL には、今回の主役 ── <strong>O-code</strong> という<em>中間コード</em>があった。第4回の EM で見た「真ん中を挟む」発想の、ずっと古い先祖です。この逃げ道こそ、鶏と卵をさかのぼる旅でくり返し現れる“移植の魔法”でした。</p>
+
+  <h2><span class="n">01</span>系図の続き ── CPL → BCPL → B → C</h2>
+
+  <p>第5回の系図を、もう一段さかのぼります。C の祖先は一本道です。</p>
+
+  <div class="term">
+<span class="c">/* 言語の系図（続き） */</span>
+CPL   ──▶  <span class="o">BCPL</span>   <span class="c">// Martin Richards, 1967, Cambridge。移植性のために設計</span>
+BCPL  ──▶  B      <span class="c">// Thompson, 1969。BCPLを簡略化、型なし（1語）、PDP-7</span>
+   B  ──▶  C      <span class="c">// Ritchie（第5回）。型を足してCへ</span>
+  </div>
+
+  <p>B は「BCPL の意味を絞り込み、別の書き方に詰め込んだ」言語でした。最初期の PDP-7 版はスレッデッドコードにコンパイルされ、のちに Ritchie が <em>TMG</em> という道具（コンパイラを作るためのコンパイラ）を使って機械語を吐く B コンパイラを書いています。── 道具にもまた道具がある。輪は本当にどこまでも続きます。</p>
+
+  <h2><span class="n">02</span>BCPL の発明 ── O-code という中間コード</h2>
+
+  <p>BCPL がコンパイラ史に残る理由は、言語そのものより<strong>コンパイラの作り</strong>にあります。Richards は BCPL のコンパイラを、はっきり<em>二つ（実際は三段）</em>に割りました ── 前半が原文を読んで <strong>O-code（機種非依存の中間コード）</strong>を吐き、後半がその O-code を<em>その機種の機械語</em>へ翻訳する。第4回の ACK/EM と、まったく同じ骨格です。</p>
+
+  <div class="fig">
+    <div class="cap">図1：O-code パイプライン。フロントエンド（BCPL→O-code）は機種非依存で共通。機種を変えても、差し替えるのはバックエンド（O-code→機械語）だけ ── コンパイラの約1/5</div>
+    <canvas id="cvPipe" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-m="0">PDP-11 向け</button>
+      <button class="btnmini seg" data-m="1">VAX 向け</button>
+      <button class="btnmini seg" data-m="2">System/360 向け</button>
+      <button class="btnmini seg" data-m="3">新機種 向け</button>
+    </div>
+    <div class="readout" id="rdPipe"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">O-code がくれた具体的な数字</span>
+    <p style="margin-top:8px;">新しい機種に BCPL を移すとき、書き直すのは<strong>コンパイラの約 1/5（バックエンドだけ）</strong>。当時の見積もりで<em>2〜5人月</em>。残り 4/5（フロントエンド）は機種を知らないので、そのまま使い回せる。</p>
+    <p style="margin:8px 0 14px;">結果、BCPL コンパイラは<strong>それ自身が BCPL で書かれ、しかも移植が容易</strong>。だから当時「<em>新しいシステムをブートストラップする定番の言語</em>」になりました。Richards は2003年、この功績（「BCPL によるシステムソフトの移植性の先駆」）で表彰されています。まさに本シリーズのテーマそのものです。</p>
+  </div>
+
+  <h2><span class="n">03</span>種明かし ── 逃げ道の正体は「機種非依存の島」</h2>
+
+  <p>中間コードの正体は、<strong>ソース言語と機械語のあいだに、“機種を知らない島”を一つ置く</strong>ことです。フロントエンドは島まで運べばよく、機械のことを知らなくていい。機械の知識はバックエンドに<em>隔離</em>される。だから機種が変わっても、島から向こう（バックエンド）だけ架け替えればいい。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 一族の名を並べる</div>
+    <p style="margin:6px 0 0;">この「機種非依存の島」は、名前を変えて何度も現れます ── <strong>O-code</strong>(BCPL, 1967) → Pascal の <strong>P-code</strong> → 第4回の <strong>EM</strong>(ACK) → <strong>JVM バイトコード</strong> → <strong>LLVM IR</strong>(<code>clang</code>) → <strong>WebAssembly</strong>。半世紀を貫く同じ一つの発明です。ブートストラップの文脈では効き方が特に鮮やか ── <em>島まで作っておけば、新機種で架けるのは最後の短い橋（小さなバックエンド／インタプリタ）だけ</em>。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>逃げ道で、機械から機械へ渡る</h2>
+
+  <p>O-code が本当に威力を出すのは、<strong>コンパイラ自身を新しい機械へ運ぶ</strong>ときです。O-code は機種非依存なので、コンパイラを O-code の姿にしておけば、そのまま新しい機械へ<em>運べる</em>。あとは新機械で小さな受け皿（O-code を動かす後半）を用意するだけ。下の図で、その渡り方を順に見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：O-code で機械から機械へ。BCPLコンパイラを O-code にして新マシンへ運び、小さな受け皿を1つ書けば、そこでコンパイラが動きだす ── 第8回「紙テープで運ぶ」の原理版</div>
+    <canvas id="cvPort" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>移植のステップを進める<span class="val" id="vPort">① 既存マシンAで動くBCPLコンパイラ</span>
+        <input type="range" id="port" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdPort"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── これは第8回の“原理”です</span>
+    「機種非依存の姿にして、別の機械へ運び、向こうで受け取る」── この筋書きは、第8回で見る<strong>初代 Unix の作り方</strong>とそっくりです。あちらは、別のマシンでアセンブルした結果を<em>紙テープ</em>に穴で刻んで PDP-7 まで物理的に運びました。運ぶものが O-code か紙テープかの違いだけで、<strong>「よそで作って、こちらへ渡す」＝クロス方式</strong>という骨格は同じ。中間コードは、その渡しを身軽にする工夫でした（番外編「クロスコンパイル」でも深掘り）。
+  </div>
+
+  <h2><span class="n">05</span>それでも、逃げ道の下には機械がある</h2>
+
+  <p>O-code は移植を身軽にしますが、鶏と卵を消しはしません（第4回と同じ但し書き）。<strong>新機械には、結局「O-code を動かす最初の受け皿」を、機械語で用意しないといけない</strong>。その受け皿は誰が作る? ── ここからは中間コードの魔法が効かない領域です。B も BCPL も、いちばん下では<strong>アセンブリ言語</strong>、そして初代 Unix そのものへ。次回からは、いよいよ<em>言語の下・機械のすぐ上</em>へ降ります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ていねいに</span>
+    <p style="margin-top:0;">(1) 「約1/5」「2〜5人月」は当時の代表的な見積もりで、機種や時代で幅があります。骨格（フロントエンドは共通、バックエンドだけ差し替え）が本体です。(2) BCPL のコンパイラは「二つに割る」と言いましたが、実際は<em>三段</em>構成で、O-code はその中間段の名前です。さらに移植をうんと軽くするための、より単純な中間形（インタプリタで受ける方式）も用意されました。ここでは骨格を優先しています。</p>
+    <p style="margin-bottom:0;">(3) B が「BCPL の簡略化」なのは事実ですが、Thompson 自身の好みや以前の言語（bon）の影響も混じります。系図は一本の細い糸ではなく、束です。(4) 中間コードは移植を楽にするだけで、<strong>最初の受け皿（機械語）と最初の機械は、やはり別に用意が要る</strong> ── 鶏と卵は下段へ送られるだけ、という点は第3・4回と同じです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>C の系図を CPL から C まで並べよ。
+        <details><summary>答えを見る</summary><div class="ans">CPL → BCPL（Richards, 1967）→ B（Thompson, 1969, 型なし）→ C（Ritchie）。</div></details>
+      </li>
+      <li>O-code を挟むと、新機種への移植で書き直すのはどこか。だいたいどれくらいか。
+        <details><summary>答えを見る</summary><div class="ans">バックエンド（O-code→機械語）だけ。コンパイラの約1/5。フロントエンド（約4/5）は機種非依存なので使い回せる。</div></details>
+      </li>
+      <li>「機種非依存の島」を置くと、機械の知識はどこに集まるか。
+        <details><summary>答えを見る</summary><div class="ans">バックエンド（島→機械語）に隔離される。フロントエンドは機械を知らずに済み、島（中間コード）までを担当する。</div></details>
+      </li>
+      <li>O-code は「鶏と卵」を解決するか。第8回とどうつながるか。
+        <details><summary>答えを見る</summary><div class="ans">解決しない。新機械には最初の受け皿（機械語）が別に要る。「よそで作って運ぶ」という骨格は、第8回で紙テープを別マシンから PDP-7 へ運ぶクロス方式と同じ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>真ん中に島を置けば、機械が変わっても橋だけ架け替える</h2>
+    <p>C を育てた B は、Martin Richards の <strong>BCPL</strong>（1967）の子。Thompson が PDP-7 で Fortran コンパイラに挫折し、BCPL を型なしに簡略化したのが B だった（CPL→BCPL→B→C）。BCPL の真価はコンパイラの作りにあり、前半が<strong>O-code（機種非依存の中間コード）</strong>を吐き、後半がそれを機械語へ訳す。新機種にはバックエンド（約1/5・2〜5人月）だけ書き直せばよく、だから BCPL は<em>ブートストラップの定番言語</em>になった。</p>
+    <p>中間コードの正体は「機種を知らない島」を真ん中に置き、機械の知識をバックエンドに隔離すること。O-code → P-code → EM → JVM → LLVM IR → WASM と、半世紀を貫く同じ発明だ。しかも O-code は<em>コンパイラを別の機械へ運ぶ</em>逃げ道になる ── これは第8回「紙テープで運ぶ」初代 Unix の原理版。ただし逃げ道の下では、新機械に<strong>最初の受け皿（機械語）</strong>を別に用意せねばならず、鶏と卵は下段へ送られる。── 次回、いよいよ言語の下、<strong>アセンブリで書かれた初代 Unix</strong> へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第7回</span>
+    「最初のUnix ── アセンブリで書かれたOS」。C も B も無かった1969年、Ken Thompson は PDP-7 の<strong>アセンブリ言語</strong>で、最初の Unix を書きました。カーネルも、シェルも、エディタも、機械語のすぐ上の言葉で。言語という梯子をすべて外した、剥き出しの出発点を見ます。ここから底は、もうすぐです。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第6回です。史実：BCPL は Martin Richards が University of Cambridge で1967年に最初に実装した言語で、CPL に由来する。BCPL コンパイラはフロントエンドが機種非依存の中間コード O-code（OCODE）を生成し、バックエンドがそれを対象機種の機械語へ変換する構成（実際は三段）で、新機種対応に必要な書き換えはコンパイラの約1/5・当時の見積もりで2〜5人月とされた。BCPL コンパイラ自身が BCPL で書かれ移植容易だったため、システムのブートストラップに広く使われた。Richards は2003年に IEEE Computer Society の Computer Pioneer Award を「BCPL によるシステムソフトウェアの移植性の先駆」で受賞。B は Ken Thompson が1969年に Bell 研で作った BCPL の直系子孫で、当初 PDP-7 用 Fortran コンパイラの試みがメモリに収まらず、BCPL を簡略化した型なし（唯一のデータ型が計算機語）言語となった。最初期の PDP-7 実装はスレッデッドコードにコンパイルされ、Ritchie は TMG を用いて機械語を生成する B コンパイラを書いた。中間コードを介する設計は P-code・EM・JVM バイトコード・LLVM IR・WebAssembly に通じる。数値や段数、系図の細部には諸説・幅がある。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンで対象機種を変え（差し替わるのはバックエンドだけ）、図2のスライダーで O-code による機械間の移植を追えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：O-code パイプライン ============ */
+  (function(){
+    var cv=document.getElementById('cvPipe'), rd=document.getElementById('rdPipe');
+    if(!cv) return;
+    var MACH=[{l:'PDP-11',col:'#2166a0'},{l:'VAX',col:'#1f7a6e'},{l:'System/360',col:'#a85f18'},{l:'新機種',col:'#a83a22'}];
+    var sel=0;
+    function box(ctx,x,y,w,h,fill,stroke,lw){ ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=lw||1.8; rr(ctx,x,y,w,h,8); ctx.fill(); ctx.stroke(); }
+    function arrow(ctx,x0,x1,y,col){ ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=2.2;
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1-2,y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x1-9,y-5); ctx.lineTo(x1-9,y+5); ctx.closePath(); ctx.fill(); }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var m=MACH[sel], cy=h*0.42, bh=58;
+      var xs=[w*0.03, w*0.235, w*0.475, w*0.66, w*0.865];
+      var bw=w*0.175;
+      // 共通部分ラベル帯
+      ctx.fillStyle='#f2e9f5'; rr(ctx, xs[0]-4, cy-bh/2-24, (xs[2]+bw)-(xs[0])+8, bh+40, 8); ctx.fill();
+      ctx.fillStyle='#7d3b8f'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('機種非依存（共通・使い回せる ≒ 4/5）', xs[0]+2, cy-bh/2-10);
+      // machine-dependent band
+      ctx.fillStyle='#fbeee6'; rr(ctx, xs[3]-4, cy-bh/2-24, (xs[4]+bw)-(xs[3])+8, bh+40, 8); ctx.fill();
+      ctx.fillStyle=m.col; ctx.fillText('機種依存（'+m.l+'向けに差し替え ≒ 1/5）', xs[3]+2, cy-bh/2-10);
+      // boxes
+      box(ctx, xs[0], cy-bh/2, bw, bh, '#fff', '#b6a2c0');
+      ctx.fillStyle='#5c3568'; ctx.textAlign='center'; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('BCPL', xs[0]+bw/2, cy-2); ctx.fillText('ソース', xs[0]+bw/2, cy+15);
+      box(ctx, xs[1], cy-bh/2, bw, bh, '#efe4f2', '#7d3b8f');
+      ctx.fillStyle='#7d3b8f'; ctx.fillText('フロントエンド', xs[1]+bw/2, cy-2);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('BCPL→O-code', xs[1]+bw/2, cy+14);
+      // O-code hub (island)
+      box(ctx, xs[2], cy-bh/2, bw, bh, '#7d3b8f', '#5c2e6a');
+      ctx.fillStyle='#fff'; ctx.font='bold 14px "SFMono-Regular",Consolas,monospace'; ctx.fillText('O-code', xs[2]+bw/2, cy-2);
+      ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('機種非依存の島', xs[2]+bw/2, cy+15);
+      // backend (machine dependent)
+      box(ctx, xs[3], cy-bh/2, bw, bh, '#fbeee6', m.col, 2.4);
+      ctx.fillStyle=m.col; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('バックエンド', xs[3]+bw/2, cy-2);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('O-code→機械語', xs[3]+bw/2, cy+14);
+      // output
+      box(ctx, xs[4], cy-bh/2, bw, bh, '#fff', m.col, 2.4);
+      ctx.fillStyle=m.col; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText(m.l, xs[4]+bw/2, cy-2);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('機械語', xs[4]+bw/2, cy+14);
+      // arrows
+      arrow(ctx, xs[0]+bw, xs[1], cy, '#b6a2c0');
+      arrow(ctx, xs[1]+bw, xs[2], cy, '#9a6fae');
+      arrow(ctx, xs[2]+bw, xs[3], cy, m.col);
+      arrow(ctx, xs[3]+bw, xs[4], cy, m.col);
+      // gauge 1/5
+      var gx=xs[0], gy=h-26, gw=w-xs[0]*2-4, gh=12;
+      ctx.fillStyle='#efe4f2'; rr(ctx,gx,gy,gw,gh,6); ctx.fill();
+      ctx.fillStyle=m.col; rr(ctx,gx+gw*0.8,gy,gw*0.2,gh,6); ctx.fill();
+      ctx.fillStyle='#5c3568'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('書き直すのはこの 1/5（バックエンド）だけ →', gx, gy-4);
+      ctx.textAlign='left';
+    }
+    function setReadout(){ var m=MACH[sel];
+      rd.innerHTML='対象機種＝<strong>'+m.l+'</strong>。BCPLソース→フロントエンド→<strong>O-code（共通）</strong>までは全機種同じ。変わったのは <strong>バックエンドと出力だけ</strong>（≒1/5）。'; }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      sel=parseInt(b.getAttribute('data-m'),10);
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：O-code で機械から機械へ ============ */
+  (function(){
+    var cv=document.getElementById('cvPort'), sl=document.getElementById('port'),
+        vPort=document.getElementById('vPort'), rd=document.getElementById('rdPort');
+    if(!cv) return;
+    var STEPS=[
+      {h:'① 既存マシンAで動くBCPLコンパイラ', note:'BCPLコンパイラ自身が BCPL で書かれ、マシンAで自己ホスティングしている。'},
+      {h:'② 自分を O-code にする',            note:'コンパイラのソースを、機種非依存の O-code（配布形）へコンパイル。'},
+      {h:'③ O-code を新マシンBへ運ぶ',        note:'O-code は機種非依存だから、そのまま新マシンへ運べる（紙テープ／ネット）。第8回の原理。'},
+      {h:'④ 新マシンBに小さな受け皿を用意',   note:'O-code を機械語に直す小さなバックエンド（またはインタプリタ）を1本だけ書く。全体の約1/5。'},
+      {h:'⑤ 新マシンBでコンパイラが自立',      note:'受け皿の上でコンパイラが動き、ネイティブに再コンパイル。移植完了＝自己ホスティング復活。'}
+    ];
+    function machine(ctx,x,y,w,h,label,col,active){
+      ctx.fillStyle= active?'#fff':'#f4f4f6'; ctx.strokeStyle= active?col:'#c4c4cc'; ctx.lineWidth= active?2.2:1.6;
+      rr(ctx,x,y,w,h,10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle= active?col:'#9a9aa2'; ctx.textAlign='center'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(label, x+w/2, y+20);
+    }
+    function ocodeChip(ctx,x,y){
+      ctx.fillStyle='#7d3b8f'; ctx.strokeStyle='#5c2e6a'; ctx.lineWidth=1.5;
+      rr(ctx,x-30,y-14,60,28,5); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#fff'; ctx.font='bold 11px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      ctx.fillText('O-code', x, y+4);
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var st=parseInt(sl.value,10);
+      var ax=w*0.06, bx=w*0.62, my=h*0.34, mw=w*0.30, mh=h*0.42;
+      machine(ctx, ax, my, mw, mh, 'マシンA（既存）', '#2166a0', true);
+      var bActive = st>=4;
+      machine(ctx, bx, my, mw, mh, 'マシンB（新）', '#a83a22', bActive);
+      // compiler in A
+      ctx.fillStyle='#efe4f2'; ctx.strokeStyle='#7d3b8f'; ctx.lineWidth=1.8;
+      rr(ctx, ax+18, my+mh-46, mw-36, 32, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#7d3b8f'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('BCPLコンパイラ', ax+mw/2, my+mh-25);
+      // 受け皿 in B (step>=3)
+      if(st>=3){
+        ctx.fillStyle= bActive?'#fbeee6':'#f0e6e2'; ctx.strokeStyle='#a83a22'; ctx.lineWidth=1.6;
+        rr(ctx, bx+18, my+mh-46, mw-36, 32, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#a83a22'; ctx.font='10.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText(bActive?'コンパイラ稼働':'O-code受け皿(1/5)', bx+mw/2, my+mh-25);
+      }
+      // O-code chip position by step
+      var chipY=my-2;
+      if(st===1){ ocodeChip(ctx, ax+mw/2, chipY); }
+      else if(st===2){ ocodeChip(ctx, (ax+mw+bx)/2, chipY);
+        ctx.strokeStyle='#9a6fae'; ctx.setLineDash([5,4]); ctx.lineWidth=1.8;
+        ctx.beginPath(); ctx.moveTo(ax+mw, chipY); ctx.lineTo(bx, chipY); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#7d3b8f'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('運ぶ →', (ax+mw+bx)/2, chipY-18); }
+      else if(st>=3){ ocodeChip(ctx, bx+mw/2, chipY); }
+      // self loop when done
+      if(st>=4){
+        var lx=bx+mw/2, ly=my+8, R=18;
+        ctx.strokeStyle='#a83a22'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(lx,ly,R, Math.PI*0.2, Math.PI*1.8); ctx.stroke();
+        var ea=Math.PI*1.8; ctx.fillStyle='#a83a22';
+        ctx.beginPath(); ctx.moveTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea)-7,ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)+7); ctx.closePath(); ctx.fill();
+      }
+      ctx.textAlign='left';
+    }
+    function update(){ var st=parseInt(sl.value,10), s=STEPS[st];
+      vPort.textContent=s.h; rd.innerHTML='<strong>'+s.h+'</strong>：'+s.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

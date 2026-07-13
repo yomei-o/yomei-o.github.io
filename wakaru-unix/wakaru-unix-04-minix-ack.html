@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINIXとACK ── 中間コードという発明 ｜ わかるUNIXの歴史 第4回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4faf8; --paper-edge:#d6e7e2;   /* 第4回：ティールの紙 */
+    --side:#a85f18; --side-bg:#f6efe3;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#c6ddd6; --hair:#aecfc6;
+    --acc:#1f7a6e;    /* 第4回アクセント＝ティール */
+    --grid:#d3e7e1;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #bfe3db 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#e7f2ef;border:1px solid #d6e7e2;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a16;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f8fdfc;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:230px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini:disabled{opacity:.45;cursor:default;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e3f1ee;color:#155249;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef7f5;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfffe,#e5f1ee);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e3f1ee;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#155249;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 4 回 ／ 中間コードという発明</span></div>
+  <p class="eyebrow">Linux の産室・MINIX。その MINIX 自身は、何がコンパイルしたのか</p>
+  <h1>MINIXとACK ── 中間コードという発明
+    <span class="sub">第2回で Linux の産室だった MINIX。それを作ったのは、Tanenbaum 製の <strong>ACK</strong> というコンパイラでした。<code>gcc</code> とは違う思想 ── <em>EM という中間コードを真ん中に挟む</em>。この一手が、移植とブートストラップを一変させます。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回（再実装の木）・第3回（gcc）</span>
+    <span>種明かし：真ん中を挟めば、M×N が M+N になる</span>
+  </div>
+
+  <p class="lead">第2回で、Linux は MINIX という産室で生まれたと見ました。では ── その MINIX 自身は、何がコンパイルしたのか。答えは <strong>ACK（Amsterdam Compiler Kit）</strong>。Tanenbaum らが作った、<code>gcc</code> とはまた別の系統のコンパイラです。今回はさかのぼりを少し休めて、ACK が体現する<strong>「中間コードを挟む」という大発明</strong>を味わいます。これは移植を劇的に楽にし、しかも第6回の <em>BCPL の O-code</em>、さらには現代の LLVM IR や WebAssembly まで貫く、コンパイラ史の背骨のひとつです。</p>
+
+  <h2><span class="n">01</span>MINIX ── 教科書の付録として生まれたUnix</h2>
+
+  <p>MINIX は1987年、Tanenbaum が教科書『Operating Systems: Design and Implementation』の<em>付録</em>として作った、教育用のUnix風OSです。カーネル・メモリ管理・ファイルシステムで<strong>約12,000行</strong>。学生が丸ごと読める大きさに抑え、設計は<em>マイクロカーネル</em>（第1回の論争の主役）。第1回の言葉でいえば、<strong>再実装の木の一枚</strong> ── AT&amp;T のコードは1行も使わず、Unixらしさだけを白紙から書いたものでした。</p>
+
+  <h2><span class="n">02</span>MINIXを作ったのは、ACK</h2>
+
+  <p>その MINIX を実際にコンパイルしていたのが <strong>ACK</strong>。Tanenbaum と Ceriel Jacobs が作った、1980年代初頭としては先進的な<em>retargetable（機種を差し替えられる）</em>コンパイラ群です。ACK の特徴は、扱える言語が一つではないこと ── <strong>C・Pascal・Modula-2・Occam・BASIC</strong> のフロントエンドを持っていました。</p>
+
+  <div class="calc">
+    <span class="tag">ACK の中身（三段構え）</span>
+    <p style="margin-top:8px;"><strong>フロントエンド</strong>（言語ごと）→ <strong>EM</strong>（中間バイトコード）→ 汎用オプティマイザ → <strong>バックエンド</strong>（機種ごと）→ 機械語。</p>
+    <p style="margin:8px 0 14px;">肝は真ん中の <code>EM</code>。どの言語のフロントエンドも、いったん <strong>EM という共通の中間コード</strong>に落とす。あとはそれを機種ごとのバックエンドが機械語へ翻訳する。<code>gcc</code> の内部中間表現と似ていますが、EM は「ハードウェアでも実装できる<em>実在の抽象機械の言語</em>」として設計された点が個性です。</p>
+  </div>
+
+  <h2><span class="n">03</span>なぜ真ん中を挟むのか ── M×N 問題</h2>
+
+  <p>中間コードのありがたみは、数を数えるといっぺんに分かります。<strong>M 個の言語</strong>を <strong>N 種類の機種</strong>で動かしたい。素朴にやると、言語と機種の<em>全組み合わせ</em>ぶんのコンパイラが要る ── <strong>M×N 個</strong>。ところが真ん中に共通の中間コードを置けば、必要なのは<strong>M 個のフロントエンド ＋ N 個のバックエンド ＝ M+N 個</strong>で済む。下の図で、M と N を増やして、線の数がどれだけ違うか見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：M×N 問題。上＝素朴（言語×機種で M×N 個のコンパイラ）。下＝中間コードを挟む（M+N 個で済む）。M・N を増やすほど差が開く</div>
+    <canvas id="cvMN" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>言語の数 M<span class="val" id="vM">4</span>
+        <input type="range" id="mM" min="2" max="6" step="1" value="4">
+      </label>
+      <label>機種の数 N<span class="val" id="vN">4</span>
+        <input type="range" id="mN" min="2" max="6" step="1" value="4">
+      </label>
+    </div>
+    <div class="readout" id="rdMN"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 「1回だけ翻訳、あとは使い回す」</div>
+    <p style="margin:6px 0 0;">中間コードは、第0回の「<strong>1回だけ着火</strong>」の言語版です。言語の知識は<em>フロントエンドに1回だけ</em>、機種の知識は<em>バックエンドに1回だけ</em>書けばいい。両者は EM を介してだけ会話するので、互いを知らなくてよい。<strong>関心事を真ん中で切り離す</strong>ことで、掛け算だった手間が足し算になる。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>種明かし ── 中間コードは、移植とブートストラップの逃げ道</h2>
+
+  <p>M+N のありがたみが最大化するのは、<strong>新しい機種に移すとき</strong>です。中間コードが無ければ、新機種のために M 個のコンパイラを全部書き直す。中間コードがあれば ── <strong>バックエンド（あるいは EM を動かす小さな核）を1つ書くだけ</strong>で、既存の<em>全言語</em>がその機種で動きだす。下の図で、新機種を1台足してみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：新機種への移植。EM の核（バックエンド／インタプリタ）を1つ用意するだけで、既存の全フロントエンドの資産が一気にその機種で使えるようになる</div>
+    <canvas id="cvPort" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="portBtn">＋ 新機種に EM の核を移植</button>
+      <button class="btnmini" id="portReset" style="background:#8aa5a0;">リセット</button>
+    </div>
+    <div class="readout" id="rdPort">新機種（灰）にはまだ何も動かない。「EM の核」を1つ移植すると、C・Pascal・Modula-2… 全部が一気に動きだす。</div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">ブートストラップに効く理由</span>
+    <p style="margin-top:8px;">まっさらな新機種を立ち上げるとき（第3回の宿題）、素朴には「コンパイラをどう持ち込むか」で詰まります。中間コードなら、<strong>EM を動かす小さな核を1つ移植</strong>すれば、EM で配られたコンパイラ資産がまるごと動く。<em>大きな塔を、小さな土台1つで支える</em>。第0回「輪は外から一度だけ持ち上げる」の、持ち上げ方をうんと軽くする工夫です。</p>
+  </div>
+
+  <h2><span class="n">05</span>中間コードという一族 ── O-code から WASM まで</h2>
+
+  <p>「真ん中に共通の中間コードを置く」という発想は、ACK の専売ではありません。むしろ<strong>コンパイラ史を貫く大河</strong>です。次回以降でさかのぼる <strong>BCPL の O-code</strong>（第6回）は、この考えの<em>ずっと古い先祖</em>。そして現代の <strong>LLVM IR</strong>（<code>clang</code> の中間表現）、<strong>JVM バイトコード</strong>、<strong>WebAssembly</strong> は、みな同じ血を引く子孫です。ACK の EM は、その大河の途中にある、美しく分かりやすい一里塚でした。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── こずえで葉を交換する（第1回の続き）</span>
+    ACK は長く MINIX 純正のコンパイラでしたが、後年 <strong>MINIX 3</strong> は、ユーザーランドを<em>血統の木</em>側の <strong>NetBSD</strong> から取り込み、システムコンパイラを <code>clang</code> に切り替えました。第1回で予告した「再実装の木が、こずえで血統の木から葉を借りる」実例です。ACK 自身も2003年に BSD ライセンスでオープンソース化され、いまも読める古典になっています。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 中間コードは“楽にする”が“無くしはしない”</span>
+    <p style="margin-top:0;">(1) ACK 自身もプログラムであり、動かすにはコンパイラが要ります ── <strong>中間コードは鶏と卵を消しません</strong>。移植や再利用を劇的に楽にするだけで、「最初の種」はやはりどこかから持ち込む必要がある（第3回の宿題は生きたまま）。(2) 「M+N」は概念上の数え方で、実際には汎用オプティマイザや実行時ライブラリなど別の部品もあります。線の本数は理想化した目安です。</p>
+    <p style="margin-bottom:0;">(3) MINIX と ACK の関係も、バージョンや配布物で細部が異なります（初期は限定的なCコンパイラ、後年は他のコンパイラも移植・利用可能に）。ここでは「純正の中核ツールチェーンが ACK だった」という骨格を語っています。(4) 「EM はハードウェアで実装できる」は設計思想の主張で、実際に広く実装されたという意味ではありません。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>言語5種・機種4種を素朴に全部作ると何個のコンパイラが要るか。中間コードを挟むと何個か。
+        <details><summary>答えを見る</summary><div class="ans">素朴：5×4＝20個。中間コードあり：5＋4＝9個（フロントエンド5＋バックエンド4）。</div></details>
+      </li>
+      <li>中間コード方式で、新しい機種を1台増やすと、追加で作るものは何か。
+        <details><summary>答えを見る</summary><div class="ans">その機種向けのバックエンド（EM を動かす核）を1つだけ。既存の全フロントエンド＝全言語が、それだけで新機種に対応する。</div></details>
+      </li>
+      <li>中間コードは「鶏と卵」を解決するか。
+        <details><summary>答えを見る</summary><div class="ans">しない。移植・再利用を大幅に楽にするだけで、最初にコンパイラ（種）をどこかから持ち込む必要は残る。第3回の着火の問題は消えない。</div></details>
+      </li>
+      <li>ACK の EM と血のつながる“子孫”を1つ挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">例：BCPL の O-code（先祖）、LLVM IR、JVM バイトコード、WebAssembly。いずれも「真ん中に共通の中間コードを置く」同じ発想。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>真ん中を挟めば、掛け算が足し算になる</h2>
+    <p>Linux の産室・MINIX（1987, Tanenbaum, 約12,000行, マイクロカーネル, 再実装の木の一枚）をコンパイルしていたのは <strong>ACK</strong>。C・Pascal・Modula-2… を扱う retargetable なコンパイラで、肝は真ん中の中間コード <strong>EM</strong>。フロントエンド（言語ごと）→ EM → バックエンド（機種ごと）と三段に切り離すことで、素朴なら <strong>M×N 個</strong>要るコンパイラが <strong>M+N 個</strong>で済む。</p>
+    <p>真価は移植で出る。新機種には <strong>EM の核を1つ</strong>足すだけで全言語が動く ── 大きな塔を小さな土台で支える、ブートストラップの軽量化だ。ただし中間コードは鶏と卵を<em>楽にするだけで消しはしない</em>（種はやはり持ち込む）。この「真ん中に中間コードを置く」発想は、第6回の <strong>O-code</strong> を先祖に、LLVM IR や WebAssembly まで続く大河だった。── さて寄り道はここまで。次回はいよいよ、着火装置 <code>cc</code> の祖先、<strong>最初の C コンパイラ</strong>の誕生へ降ります。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第5回</span>
+    「Cコンパイラの誕生 ── 自分で自分を」。第3回で「gcc は既存の cc で着火した」と言い、その cc の祖先へ、と予告しました。いよいよ本丸です。Dennis Ritchie は、<strong>B という言語から C を少しずつ育て</strong>、ついに <em>C で書いた C コンパイラが、自分自身をコンパイルできる</em>地点まで持っていきました。自己ホスティングの、正真正銘の原点を見ます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第4回です。史実：MINIX は Andrew S. Tanenbaum（Albert S. Woodhull の協力）が教科書『Operating Systems: Design and Implementation』（Prentice Hall, 1987）のために作った教育用の Unix 風OSで、カーネル・メモリ管理・ファイルシステムの要約された約12,000行のCソースが書籍に収録された。マイクロカーネル設計で、AT&amp;T UNIX のコードを継承しない独立実装。ACK（Amsterdam Compiler Kit）は Andrew Tanenbaum と Ceriel Jacobs による retargetable なコンパイラ群で、C・Pascal・Modula-2・Occam・BASIC のフロントエンドを持ち、EM と呼ばれる中間バイトコードを介してフロントエンド／バックエンドを分離する。1980年代初頭に複数言語・複数機種を狙った初期の移植性コンパイル系として知られる。MINIX 3（3.2.0）でユーザーランドが NetBSD 由来のものに置き換わり、システムコンパイラが Clang になった。ACK は2003年に BSD ライセンスでオープンソース化された。中間コードを介する設計は BCPL の O-code（第6回）、LLVM IR、JVM バイトコード、WebAssembly などにも通じる。「M+N」の数え方は理想化した概念上のもので、実際には最適化器や実行時部品など追加の要素がある。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで M×N と M+N の差を、図2のボタンで新機種への移植を試せます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function dot(ctx,x,y,r,fill,stroke){ ctx.fillStyle=fill; ctx.strokeStyle=stroke||'rgba(0,0,0,.2)'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI); ctx.fill(); ctx.stroke(); }
+
+  /* ============ 図1：M×N vs M+N ============ */
+  (function(){
+    var cv=document.getElementById('cvMN'), mM=document.getElementById('mM'), mN=document.getElementById('mN'),
+        vM=document.getElementById('vM'), vN=document.getElementById('vN'), rd=document.getElementById('rdMN');
+    if(!cv) return;
+    var LANG='#1f7a6e', MACH='#a85f18', EM='#274a70';
+    function spread(cnt, y0, y1){ var a=[]; for(var i=0;i<cnt;i++){ a.push(cnt===1?(y0+y1)/2 : y0+(y1-y0)*i/(cnt-1)); } return a; }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var M=parseInt(mM.value,10), N=parseInt(mN.value,10);
+      var xL=w*0.16, xR=w*0.84, xMid=w*0.5, rr0=7;
+      // ---- 上：素朴 M×N ----
+      var top0=34, top1=h*0.44;
+      ctx.fillStyle='#6b7683'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('素朴：言語×機種ごとにコンパイラ', xL-30, 20);
+      var lyT=spread(M, top0+16, top1-6), myT=spread(N, top0+16, top1-6);
+      ctx.strokeStyle='rgba(160,110,40,.35)'; ctx.lineWidth=1;
+      for(var i=0;i<M;i++) for(var j=0;j<N;j++){ ctx.beginPath(); ctx.moveTo(xL,lyT[i]); ctx.lineTo(xR,myT[j]); ctx.stroke(); }
+      for(i=0;i<M;i++){ dot(ctx,xL,lyT[i],rr0,LANG); }
+      for(j=0;j<N;j++){ dot(ctx,xR,myT[j],rr0,MACH); }
+      ctx.fillStyle=EM; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('コンパイラ '+ (M*N) +' 個', xMid, (top0+top1)/2+4);
+      // ---- 下：中間コード M+N ----
+      var bot0=h*0.52, bot1=h-24;
+      ctx.fillStyle='#6b7683'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('中間コード(EM)を挟む：M+N 個', xL-30, bot0-6);
+      var lyB=spread(M, bot0+10, bot1), myB=spread(N, bot0+10, bot1), cy=(bot0+bot1)/2;
+      ctx.strokeStyle='rgba(31,122,110,.5)'; ctx.lineWidth=1.3;
+      for(i=0;i<M;i++){ ctx.beginPath(); ctx.moveTo(xL,lyB[i]); ctx.lineTo(xMid,cy); ctx.stroke(); }
+      ctx.strokeStyle='rgba(160,110,40,.55)';
+      for(j=0;j<N;j++){ ctx.beginPath(); ctx.moveTo(xMid,cy); ctx.lineTo(xR,myB[j]); ctx.stroke(); }
+      for(i=0;i<M;i++){ dot(ctx,xL,lyB[i],rr0,LANG); }
+      for(j=0;j<N;j++){ dot(ctx,xR,myB[j],rr0,MACH); }
+      // EM hub
+      ctx.fillStyle=EM; rr(ctx,xMid-26,cy-16,52,32,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 13px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      ctx.fillText('EM', xMid, cy+5);
+      // labels
+      ctx.fillStyle=LANG; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('言語 '+M, xL, h-6);
+      ctx.fillStyle=MACH; ctx.fillText('機種 '+N, xR, h-6);
+      ctx.textAlign='left';
+    }
+    function update(){
+      var M=parseInt(mM.value,10), N=parseInt(mN.value,10);
+      vM.textContent=M; vN.textContent=N;
+      rd.innerHTML='言語 '+M+' × 機種 '+N+'：素朴なら <strong>'+(M*N)+' 個</strong>のコンパイラ。中間コードを挟めば <strong>'+(M+N)+' 個</strong>（フロントエンド'+M+'＋バックエンド'+N+'）。差は '+(M*N-(M+N))+' 個。';
+      draw();
+    }
+    mM.addEventListener('input',update); mN.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：新機種への移植 ============ */
+  (function(){
+    var cv=document.getElementById('cvPort'), btn=document.getElementById('portBtn'), reset=document.getElementById('portReset'),
+        rd=document.getElementById('rdPort');
+    if(!cv) return;
+    var LANGS=['C','Pascal','Modula-2','BASIC'];
+    var MACHS=[{l:'PDP-11',on:true},{l:'VAX',on:true},{l:'8086',on:true},{l:'新機種',on:false}];
+    var pulse=0, raf=null, animating=false, tp=0;
+    var LANG='#1f7a6e', MACH='#a85f18', EM='#274a70';
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var xL=w*0.15, xR=w*0.85, xMid=w*0.5, cy=h*0.5, rr0=7;
+      function spread(cnt,y0,y1){ var a=[]; for(var i=0;i<cnt;i++){a.push(y0+(y1-y0)*i/(cnt-1));} return a; }
+      var ly=spread(LANGS.length, 40, h-40), my=spread(MACHS.length, 40, h-40);
+      // lang -> EM
+      ctx.strokeStyle='rgba(31,122,110,.5)'; ctx.lineWidth=1.3;
+      for(var i=0;i<LANGS.length;i++){ ctx.beginPath(); ctx.moveTo(xL,ly[i]); ctx.lineTo(xMid,cy); ctx.stroke(); }
+      // EM -> machines
+      for(var j=0;j<MACHS.length;j++){
+        ctx.strokeStyle= MACHS[j].on ? 'rgba(160,110,40,.6)' : 'rgba(150,150,150,.3)';
+        ctx.setLineDash(MACHS[j].on?[]:[4,4]); ctx.lineWidth=1.3;
+        ctx.beginPath(); ctx.moveTo(xMid,cy); ctx.lineTo(xR,my[j]); ctx.stroke(); ctx.setLineDash([]);
+      }
+      // pulses (fan-out to newest machine) while animating
+      if(animating){
+        var target=my[MACHS.length-1];
+        for(i=0;i<LANGS.length;i++){
+          // lang -> EM -> new machine, two legs; use pulse in [0,1] over whole path
+          var p=pulse;
+          var mx,myy;
+          if(p<0.5){ var t=p/0.5; mx=xL+(xMid-xL)*t; myy=ly[i]+(cy-ly[i])*t; }
+          else { var t2=(p-0.5)/0.5; mx=xMid+(xR-xMid)*t2; myy=cy+(target-cy)*t2; }
+          dot(ctx,mx,myy,3.4,'#2f8d5a','rgba(0,0,0,0)');
+        }
+      }
+      // nodes: languages
+      for(i=0;i<LANGS.length;i++){ dot(ctx,xL,ly[i],rr0,LANG);
+        ctx.fillStyle='#155249'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='right';
+        ctx.fillText(LANGS[i], xL-12, ly[i]+4); }
+      // EM hub
+      ctx.fillStyle=EM; rr(ctx,xMid-28,cy-17,56,34,8); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 14px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      ctx.fillText('EM', xMid, cy+5);
+      // machines
+      for(j=0;j<MACHS.length;j++){
+        var on=MACHS[j].on, last=(j===MACHS.length-1);
+        dot(ctx,xR,my[j],rr0, on? MACH : '#cfcfcf', on?'rgba(0,0,0,.2)':'#b0b0b0');
+        ctx.fillStyle= on? '#7a4a10' : '#9a9a9a'; ctx.font=(last?'bold ':'')+'11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+        ctx.fillText(MACHS[j].l + (last&&!on?'（核なし）':''), xR+12, my[j]+4);
+      }
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!tp)tp=t; pulse=((t-tp)/1100)%1; draw();
+      if(animating){ if((t-tp)>2400){ animating=false; MACHS[MACHS.length-1].on=true; draw();
+          rd.innerHTML='EM の核を1つ移植しただけで、<strong>C・Pascal・Modula-2・BASIC が一斉に新機種で動きだした</strong>。素朴なら言語ぶん（4本）書き直すところを、たった1本で。'; return; }
+        raf=requestAnimationFrame(loop); } }
+    btn.addEventListener('click', function(){
+      if(MACHS[MACHS.length-1].on || animating) return;
+      animating=true; tp=0; rd.innerHTML='移植中：新機種で EM を動かす「核」を1つ用意 → 全フロントエンドの EM がそこへ流れ込む…';
+      raf=requestAnimationFrame(loop);
+    });
+    reset.addEventListener('click', function(){
+      if(raf)cancelAnimationFrame(raf); animating=false; MACHS[MACHS.length-1].on=false;
+      rd.innerHTML='新機種（灰）にはまだ何も動かない。「EM の核」を1つ移植すると、C・Pascal・Modula-2… 全部が一気に動きだす。'; draw();
+    });
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trusting Trust ── 種は信用できるか ｜ わかるUNIXの歴史 番外編①</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f9f6fb; --paper-edge:#e4dbee;   /* 番外①：紫の紙 */
+    --side:#9a4230; --side-bg:#f5e6e1;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#ddd0e8; --hair:#c9b8db;
+    --acc:#6a4a9c;    /* 番外①アクセント＝紫 */
+    --grid:#e2d5ee;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #e0d3f2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#efe9f5;border:1px solid #e4dbee;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#4a241a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfaff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#e6ddf0;color:#4c3570;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#eee6f5;color:#4c2e78;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4eff9;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#e7ddf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#eee6f5;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4c2e78;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ①</span><span class="ep">信頼のブートストラップ ①</span></div>
+  <p class="eyebrow">本編で祝った「輪」と「種」の、暗い双子 ── 種は、信用できるのか</p>
+  <h1>Trusting Trust ── 種は信用できるか
+    <span class="sub">初代 Unix を書いた Ken Thompson が、1984年のチューリング賞講演で示した不気味な事実 ── <em>コンパイラのソースがどれだけクリーンでも、バイナリにトロイが潜んでいれば、それは自己ホスティングの輪に乗って永遠に、しかも一切ソースに現れずに増殖する。</em></span>
+  </h1>
+  <div class="byline">
+    <span>前提：第5回（自己ホスティング）・第9回（種）</span>
+    <span>教訓：自分が完全に作ったのでないコードは信用できない</span>
+  </div>
+
+  <p class="lead">本編で私たちは、自己ホスティングの輪（第5回）と、手で彫った種（第9回）を、いわば<em>希望</em>として語りました。ソフトはソフトを作り、最初の一度だけ人間が持ち上げる ── 美しい話です。でも同じ構造には、ぞっとする裏面があります。<strong>もし種が毒されていたら?</strong> 初代 Unix を書いた当人・Ken Thompson が、1984年のチューリング賞講演「<em>Reflections on Trusting Trust</em>」で示したのは、まさにこれ ── <strong>汚染は、輪に隠れて永遠に生き延びる。しかもソースをいくら読んでも、見つからない。</strong></p>
+
+  <h2><span class="n">01</span>問い ── どこまで信じられるか</h2>
+
+  <p>Thompson の講演は、一つの問いから始まります ── 「<strong>あるプログラムにトロイの木馬（悪意の仕掛け）が無い、という主張を、どこまで信用できるか?</strong>」。ふつうは「ソースを全部読んで、悪意が無ければ信用できる」と思う。彼は、その常識を鮮やかに崩してみせました。</p>
+
+  <h2><span class="n">02</span>三段の仕掛け</h2>
+
+  <p>Thompson の構成は、三段です。順に見ていきます。</p>
+
+  <div class="calc">
+    <span class="tag">Thompson の三段構え</span>
+    <p class="lbl">① 自己再生産（自分のソースを出力するプログラム）</p>
+    <p style="margin:4px 0;">まず「自分自身のソースコードを出力するプログラム（クワイン）」が書けることを示す。<em>プログラムは自分自身を“知り”、再生産できる</em>という下ごしらえ。</p>
+    <p class="lbl">② login にバックドアを仕込む</p>
+    <p style="margin:4px 0;">C コンパイラを改造し、<code>login</code> をコンパイルしていると気づいたら、<em>魔法のパスワードを通す裏口</em>をこっそり足す。── でもこれは、コンパイラのソースに証拠が残る。</p>
+    <p class="lbl">③ コンパイラ自身も“認識”させ、証拠を消す</p>
+    <p style="margin:4px 0 14px;">さらに改造し、<em>コンパイラが「自分自身（Cコンパイラ）をコンパイルしている」と気づいたら、②の裏口コードと、この③の認識コードの両方を、こっそり再注入</em>する。そのうえで<strong>コンパイラのソースから悪意を全部消す</strong>。一度だけ汚染版でコンパイルすれば ── 以後ソースは完全にクリーンなのに、バイナリはトロイを運び続ける。</p>
+  </div>
+
+  <p>ここが肝です。ソースはクリーン。誰が読んでも悪意は見つからない。でも<strong>そのクリーンなソースを、汚染バイナリの子孫であるコンパイラでビルドする限り、生まれるバイナリは毒されている</strong>。しかも新しいバイナリも「自分をコンパイルしたら再注入」する能力を受け継ぐ。下の図で、世代を進めて、<em>ソース監査は毎回合格するのに、毒が消えない</em>様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：トロイの世代伝播。汚染バイナリが「クリーンなソース」をビルドすると、新しいバイナリもやはり汚染される。ソース監査は毎世代“合格”なのに、login の裏口は生き続ける</div>
+    <canvas id="cvProp" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>ビルドの世代を進める<span class="val" id="vGen">第0世代（Thompson の汚染版）</span>
+        <input type="range" id="gen" min="0" max="5" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdProp"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 本編の「輪」の、暗い双子</div>
+    <p style="margin:6px 0 0;">第5回で祝った<strong>自己ホスティングの輪</strong>、第9回で彫った<strong>種</strong>。その<em>まさに同じ構造</em>が、この攻撃を可能にします。輪が「前の自分」を足場に回るなら、<strong>前の自分に仕込まれた毒も、そのまま受け継がれる</strong>。ソースは世代をまたいでクリーンなまま、毒だけがバイナリの系譜を伝って生き延びる。希望（自己再生産）と脅威（自己再生産する毒）は、同じ一枚のコインでした。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>では、どこまで下れば信用できるのか</h2>
+
+  <p>「ソースを読めば安心」が崩れたなら、どうすれば? ソースをコンパイルするのはコンパイラ（バイナリ）。そのバイナリを作ったのは別のコンパイラ。それを作ったのは…と、<strong>信頼もまた、コンパイルの鎖と同じように後退します</strong>。そして本編で見たとおり、その鎖は最後に<em>自分が作っていない何か</em>── 誰かのバイナリ、道具、そして第10回のハードウェア ── に行き着く。下の図で、その「信頼の後退」を降りてみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：信頼の後退。自分のソースは読めても、それを訳すコンパイラ、そのまた親…と下るほど「自分で作っていないもの」を信じるしかなくなる。信頼は必ずどこかで底を打つ</div>
+    <canvas id="cvTrust" width="680" height="340"></canvas>
+    <div class="controls">
+      <label>信頼をさかのぼる<span class="val" id="vTr">① 自分のソース</span>
+        <input type="range" id="tr" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdTr"></div>
+  </div>
+
+  <div class="term">
+<span class="c">// Thompson の結論（要約）</span>
+<span class="q">"You can't trust code that you did not totally create yourself."</span>
+   ── 自分で完全に作ったのでないコードは、信用できない。
+<span class="c">// しかし現実には、誰も“全部”は作れない。</span>
+  </div>
+
+  <h2><span class="n">04</span>絶望ではない ── 種を検める方法はある</h2>
+
+  <p>この講演は、しばしば「だから何も信用できない」と悲観的に受け取られます。でも本シリーズの立場はもう少し前向きです。鶏と卵の<em>希望</em>の側（本編）に現代の答えがあったように、この<em>脅威</em>の側にも、対抗する現代の技術があります ── <strong>信用しなければならない“種”を、極限まで小さくし、検証可能にする</strong>こと。次回の番外編②「Bootstrappable Builds」で、その具体を見ます。Thompson の毒でさえ、原理的には見破れる方法（多様な二重コンパイル）が後に示されました。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 教育・防御の文脈で</span>
+    <p style="margin-top:0;">(1) これは<strong>サプライチェーンの信頼を理解するための古典</strong>であり、攻撃の手引きではありません。要点は「ソース監査だけでは信頼の底に届かない」という<em>防御側の教訓</em>です。(2) Thompson は実際にこの仕掛けの実証版を作ったと後に認めていますが、広く配布されたわけではありません。講演は思考実験と実装の中間にある“実在する脅威モデル”です。</p>
+    <p style="margin-bottom:0;">(3) 現代のコンパイラは巨大で、講演どおりの単純な攻撃はそのままは通りません。しかし原理は生きていて、実際のサプライチェーン攻撃として形を変えて現れます。(4) 対抗策（番外②の Diverse Double-Compiling や再現ビルド）は強力ですが万能薬ではなく、最下層（ハードウェア・マイクロコード＝第10回の下）の信頼までは別問題として残ります。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>コンパイラのソースが完全にクリーンでも、生成物にトロイが入りうるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">ソースをビルドするコンパイラ（バイナリ）が汚染されていれば、クリーンなソースからでも毒入りバイナリが作られるから。毒はソースでなくバイナリの系譜に潜む。</div></details>
+      </li>
+      <li>なぜ毒は世代をまたいで消えないのか。本編のどの概念と同じ構造か。
+        <details><summary>答えを見る</summary><div class="ans">汚染バイナリが「自分をコンパイルするとき毒を再注入」するため。自己ホスティングの輪（第5回）／種（第9回）と同じ構造で、前の自分を足場にする輪が、毒も受け継ぐ。</div></details>
+      </li>
+      <li>「信頼の後退」は、本編のどの後退と鏡写しか。どこで底を打つか。
+        <details><summary>答えを見る</summary><div class="ans">「何が何をコンパイルしたか」の後退（本編）と鏡写し。信頼も、自分のソース→コンパイラ→その親…と下り、最後は自分が作っていないバイナリ／道具／ハードウェア（第10回）で底を打つ。</div></details>
+      </li>
+      <li>Thompson の教訓を一文で。それは絶望を意味するか。
+        <details><summary>答えを見る</summary><div class="ans">「自分で完全に作ったのでないコードは信用できない」。ただし絶望ではなく、信用する“種”を小さく・検証可能にする現代の対策（番外②）がある。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>希望と脅威は、同じ一枚のコイン</h2>
+    <p>初代 Unix を書いた Ken Thompson は、1984年のチューリング賞講演で問うた ── 「プログラムにトロイが無い、とどこまで信じられるか」。彼の三段の仕掛け（①自己再生産 ②<code>login</code> の裏口 ③コンパイラ自身を認識して裏口と認識コードを再注入し、ソースの証拠は消す）は、<strong>クリーンなソースからでも、汚染バイナリの子孫でビルドする限りトロイが生き延びる</strong>ことを示した。ソース監査は毎世代合格するのに、毒は消えない。</p>
+    <p>これは本編で祝った<strong>自己ホスティングの輪と種</strong>の、暗い双子だ ── 前の自分を足場にする輪は、前の自分の毒も受け継ぐ。信頼もまたコンパイルの鎖と同じく後退し、最後は「自分が作っていないもの」（バイナリ・道具・第10回のハードウェア）で底を打つ。教訓は「<em>自分で完全に作ったのでないコードは信用できない</em>」。でも絶望ではない ── 信用する種を極小化し検証する道がある。次回、その現代の答えへ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編②</span>
+    「Bootstrappable Builds ── 種を極小化する」。Trusting Trust への現代の応答。信用しなければならない“最初の種”を、数百バイトの<strong>人間可読なバイナリ</strong>まで小さくし、そこから全ツールチェーンを再構築する試み（GNU Mes / stage0 / live-bootstrap）。さらに、Thompson の毒すら見破る<strong>多様な二重コンパイル（DDC）</strong>。鶏と卵の“希望”の総仕上げです。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編①です。史実：Ken Thompson は1984年の ACM チューリング賞講演「Reflections on Trusting Trust」（Communications of the ACM, Vol. 27, No. 8, August 1984, pp. 761–763）で、コンパイラに自己伝播するトロイの木馬を仕込む構成を示した。手順は概略、(1) 自己複製プログラム（クワイン）、(2) C コンパイラが login を認識して裏口を挿入、(3) コンパイラ自身のコンパイルを認識して裏口挿入コードと認識コードを再注入し、コンパイラのソースからは痕跡を消す、というもの。結果として、ソースがクリーンでも、汚染バイナリの系譜でビルドされる限りトロイが持続する。結論は「自分で完全に作ったのでないコードは信用できない」。Thompson はこの実証版を作ったと後年述べている。対抗策として David A. Wheeler の Diverse Double-Compiling（多様な二重コンパイル）や再現ビルド／Bootstrappable Builds があり、番外編②で扱う。本稿は防御・教育目的の解説であり、攻撃手法の提供を意図しない。図は概念の模式化。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーでトロイの世代伝播（ソース監査は毎回合格・毒は残る）を、図2で信頼の後退を追えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：トロイの世代伝播 ============ */
+  (function(){
+    var cv=document.getElementById('cvProp'), sl=document.getElementById('gen'),
+        vGen=document.getElementById('vGen'), rd=document.getElementById('rdProp');
+    if(!cv) return;
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var gen=parseInt(sl.value,10), n=gen+1;
+      var padL=16, padR=16, uW=w-padL-padR;
+      var cyBin=h*0.34, bw=Math.min(uW/n*0.72, 96), bh=48;
+      // clean source strip (top)
+      ctx.fillStyle='#e7f2ec'; ctx.strokeStyle='#2f8d5a'; ctx.lineWidth=1.6;
+      rr(ctx,padL, h*0.06, uW, 30, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#1f6b45'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('コンパイラのソース（監査：クリーン ✓ 悪意なし）── 全世代でこれを使う', w/2, h*0.06+20);
+      // binaries chain
+      for(var i=0;i<n;i++){
+        var cx = n===1? w/2 : padL + uW*i/(n-1);
+        if(n>1){ cx = padL + bw/2 + (uW-bw)*i/(n-1); }
+        // arrow from prev
+        if(i>0){
+          var pcx = padL + bw/2 + (uW-bw)*(i-1)/(n-1);
+          ctx.strokeStyle='#9a4230'; ctx.fillStyle='#9a4230'; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(pcx+bw/2, cyBin); ctx.lineTo(cx-bw/2-2, cyBin); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx-bw/2, cyBin); ctx.lineTo(cx-bw/2-9,cyBin-5); ctx.lineTo(cx-bw/2-9,cyBin+5); ctx.closePath(); ctx.fill();
+        }
+        // downlink from source
+        ctx.strokeStyle='#c7d8cd'; ctx.setLineDash([3,4]); ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.moveTo(cx, h*0.06+30); ctx.lineTo(cx, cyBin-bh/2); ctx.stroke(); ctx.setLineDash([]);
+        // binary box (poisoned)
+        ctx.fillStyle='#f3e1dc'; ctx.strokeStyle='#9a4230'; ctx.lineWidth=2;
+        rr(ctx,cx-bw/2,cyBin-bh/2,bw,bh,7); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#7a2513'; ctx.textAlign='center'; ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(i===0?'第0世代':('第'+i+'世代'), cx, cyBin-4);
+        ctx.font='10px "SFMono-Regular",Consolas,monospace'; ctx.fillText('cc バイナリ', cx, cyBin+10);
+        // poison mark
+        ctx.fillStyle='#a83a22'; ctx.font='13px sans-serif'; ctx.fillText('☠ 毒', cx, cyBin-bh/2-6);
+      }
+      // login box under current gen
+      var lcx = padL + bw/2 + (uW-bw)*(n-1)/(n>1?(n-1):1); if(n===1) lcx=padL+bw/2;
+      var ly=h*0.72;
+      ctx.strokeStyle='#9a4230'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(lcx, cyBin+bh/2); ctx.lineTo(lcx, ly-16); ctx.stroke();
+      ctx.fillStyle='#a83a22'; ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('この世代がビルドした', lcx, cyBin+bh/2+14);
+      ctx.fillStyle='#fff'; ctx.strokeStyle='#9a4230'; ctx.lineWidth=1.8;
+      rr(ctx,lcx-70,ly-14,140,40,7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#7a2513'; ctx.font='bold 12px "SFMono-Regular",Consolas,monospace';
+      ctx.fillText('login', lcx, ly+4); ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('🔓 裏口が生きている', lcx, ly+20);
+      ctx.textAlign='left';
+    }
+    function update(){ var gen=parseInt(sl.value,10);
+      vGen.textContent= gen===0? '第0世代（Thompson の汚染版）' : ('第'+gen+'世代（クリーンなソースからビルド）');
+      rd.innerHTML= gen===0
+        ? '<strong>第0世代</strong>：Thompson が仕込んだ汚染バイナリ。ここから始まる。'
+        : '<strong>第'+gen+'世代</strong>：ソースは完全にクリーンで監査も合格。なのに、汚染バイナリでビルドしたので <strong>やはり毒入り</strong>。login の裏口も健在。── 毒はソースでなく<strong>バイナリの系譜</strong>を伝う。';
+      draw();
+    }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：信頼の後退 ============ */
+  (function(){
+    var cv=document.getElementById('cvTrust'), sl=document.getElementById('tr'),
+        vTr=document.getElementById('vTr'), rd=document.getElementById('rdTr');
+    if(!cv) return;
+    var L=[
+      {t:'自分のソース', q:'読める・自分で書いた', ok:true,  note:'ここは自分で完全に把握できる。悪意は無い、と確信できる。'},
+      {t:'それを訳すコンパイラ（バイナリ）', q:'自分で作った？ → いいえ', ok:false, note:'ソースをビルドするのはこのバイナリ。中身を自分では検証していない ── 信じるしかない。'},
+      {t:'そのコンパイラを作ったコンパイラ', q:'自分で作った？ → いいえ', ok:false, note:'さらに親。ここが汚染されていれば、下は全部汚染されうる（図1）。'},
+      {t:'…さらに前のコンパイラ／道具', q:'自分で作った？ → いいえ', ok:false, note:'鎖はコンパイルの後退（本編）と同じように続く。どこまで検証する？'},
+      {t:'最初のバイナリ／ハードウェア（種）', q:'自分で作った？ → いいえ', ok:false, note:'第9・10回の種。ここは自分で作っていない。信頼は必ず、ここで“作っていないもの”に底を打つ。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=L.length;
+      var padT=20, padB=16, uH=h-padT-padB, rowH=uH/n;
+      for(var i=0;i<n;i++){
+        var y=padT+rowH*i, x=30+i*22; // indent to feel like descending
+        var bw=w-60-i*22, bh=rowH-10;
+        var active=(i===cur), passed=(i<=cur);
+        ctx.save(); ctx.globalAlpha= passed?1:0.32;
+        ctx.fillStyle= active? (L[i].ok? '#e7f2ec':'#f3e1dc') : '#f2eef8';
+        ctx.strokeStyle= L[i].ok? '#2f8d5a' : '#9a4230'; ctx.lineWidth= active?2.4:1.4;
+        rr(ctx,x,y,bw,bh,7); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= L[i].ok? '#1f6b45':'#7a2513'; ctx.textAlign='left'; ctx.font='bold 12.5px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(L[i].t, x+12, y+bh*0.42);
+        ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle= L[i].ok? '#2f8d5a':'#a83a22';
+        ctx.fillText(L[i].q, x+12, y+bh*0.80);
+        ctx.restore();
+      }
+      // bottom note
+      if(cur===n-1){
+        ctx.fillStyle='#6a4a9c'; ctx.font='bold 11.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('信頼は必ず「自分が作っていないもの」で底を打つ', w/2, h-4);
+      }
+      ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), l=L[cur];
+      vTr.textContent=(cur+1)+' ── '+l.t;
+      rd.innerHTML='<strong>'+l.t+'</strong>（'+l.q+'）：'+l.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

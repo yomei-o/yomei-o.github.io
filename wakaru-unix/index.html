@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>わかるUNIXの歴史 ── シリーズ目次</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f7f2; --paper-edge:#e5e0d4;
+    --rule:#d8d2c4; --hair:#c9c2b2;
+    --e0:#2f4a6a;   /* 0 序：藍鉄 */
+    --e1:#2f7d55;   /* 1 二本の木：緑 */
+    --e2:#b0651e;   /* 2 最初のLinux：琥珀 */
+    --e3:#2166a0;   /* 3 GCC：青 */
+    --e4:#1f7a6e;   /* 4 MINIX/ACK：ティール */
+    --e5:#6d4aa7;   /* 5 Cコンパイラ：すみれ */
+    --e6:#7d3b8f;   /* 6 B/BCPL：菫紫 */
+    --e7:#9a4230;   /* 7 最初のUnix：赤錆 */
+    --e8:#9a6a12;   /* 8 アセンブラ：古金 */
+    --e9:#a83a22;   /* 9 最初の1バイト：赤 */
+    --e10:#3a4a5a;  /* 10 ハードウェア：鉄 */
+    --ef:#4a4f6a;   /* 最終：スレート */
+    --eb:#6a4a9c;   /* 番外：紫 */
+    --accent:#2f7d55;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px 80px;}
+
+  header{background:var(--paper);border-bottom:1px solid var(--paper-edge);
+    padding:56px 0 40px;margin-bottom:40px;box-shadow:0 10px 40px rgba(0,0,0,.05);}
+  .head-in{max-width:820px;margin:0 auto;padding:0 40px;}
+  .kicker{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.34em;color:var(--accent);font-weight:700;margin:0 0 16px;}
+  h1{font-size:44px;line-height:1.2;margin:0 0 14px;font-weight:600;letter-spacing:.03em;}
+  .tagline{font-size:17px;color:var(--ink-soft);max-width:660px;line-height:1.8;margin:0;}
+  .creed{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.06em;margin:14px 0 0;}
+  .meta{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:22px;
+    padding-top:18px;border-top:2px solid var(--ink);display:flex;gap:22px;flex-wrap:wrap;}
+
+  .dlbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:20px 24px;margin-bottom:36px;}
+  .dlbar .txt{flex:1;min-width:200px;}
+  .dlbar .txt strong{display:block;font-size:15px;margin-bottom:2px;}
+  .dlbar .txt span{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer;background:var(--ink);color:#fff;
+    border:none;border-radius:5px;padding:14px 26px;transition:transform .1s ease,opacity .2s ease;white-space:nowrap;}
+  .btn:hover{transform:translateY(-1px);} .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:.55;cursor:progress;transform:none;}
+  .dlnote{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;width:100%;}
+
+  .cards{display:flex;flex-direction:column;gap:16px;}
+  a.card,.card{display:flex;gap:22px;align-items:stretch;text-decoration:none;color:inherit;
+    background:var(--paper);border:1px solid var(--rule);border-radius:6px;overflow:hidden;
+    transition:transform .12s ease,box-shadow .2s ease,border-color .2s ease;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.10);border-color:var(--hair);}
+  .card.soon{opacity:.62;}
+  .spine{width:8px;flex-shrink:0;}
+  .card-body{padding:22px 24px 20px;flex:1;min-width:0;}
+  .card-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+  .epno{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11.5px;letter-spacing:.18em;font-weight:700;}
+  .badge{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:10.5px;letter-spacing:.1em;font-weight:700;padding:2px 9px;border-radius:20px;background:#efe9dc;color:var(--ink-soft);}
+  .badge.live{background:#e3efe8;color:#1f6b45;}
+  .badge.soon{background:#eee;color:#8a8a8a;}
+  .card-title{font-size:22px;font-weight:600;letter-spacing:.02em;margin:0 0 8px;line-height:1.35;}
+  .card-desc{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;color:var(--ink-soft);line-height:1.75;margin:0;}
+  .card-eq{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-style:normal;color:var(--ink);font-size:12.5px;}
+  .arrow{align-self:center;padding-right:22px;color:var(--hair);font-size:22px;flex-shrink:0;}
+
+  .divlabel{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.24em;color:var(--ink-soft);font-weight:700;
+    margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule);}
+
+  footer{margin-top:48px;padding-top:22px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;}
+
+  @media (max-width:640px){
+    .head-in{padding:0 22px;} h1{font-size:32px;}
+    a.card,.card{gap:0;} .card-body{padding:18px 18px 16px;} .arrow{display:none;} .btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <p class="kicker">計算機の歴史を、鶏と卵でさかのぼる読み物シリーズ</p>
+    <h1>わかるUNIXの歴史</h1>
+    <p class="tagline">Linuxカーネルは、Linux上の gcc / clang でコンパイルする。では<em>最初の</em>Linuxは、何がコンパイルしたのか？ この鶏と卵を、C言語とUNIXの歴史をさかのぼって、初代UNIX、そして“最初の1バイト”まで降りていく。すべてのソフトは、自分より前のソフトが作った ── その連鎖の、いちばん下に何があるか。</p>
+    <p class="creed">合言葉：鶏が先か卵が先か ── 最初の卵は、手で彫った。</p>
+    <div class="meta">
+      <span>本編11＋最終1＋番外6 ＝ 全18話・完結</span>
+      <span>各話：日常語 → 事実 → 種明かし → 正直な線</span>
+      <span>動く図つき／印刷・PDF化対応</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="dlbar">
+    <div class="txt">
+      <strong>公開済みファイルを一括ダウンロード</strong>
+      <span>下のボタンで、公開済みの回を1つの ZIP にまとめて保存できます（回が増えると対象も増えます）。</span>
+      <div class="dlnote" id="dlnote"></div>
+    </div>
+    <button class="btn" id="zipbtn">↓ ZIP で一括ダウンロード</button>
+  </div>
+
+  <div class="divlabel">本編 ── 階段を、上から下へ降りていく</div>
+  <div class="cards">
+
+    <a class="card" href="wakaru-unix-00-tamago.html">
+      <div class="spine" style="background:var(--e0);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e0);">第 0 回</span><span class="badge live">動く図つき</span><span class="badge">序</span></div>
+        <div class="card-title">鶏と卵 ── Linuxは、何がコンパイルしたのか</div>
+        <p class="card-desc">今のコンパイラは、過去の自分がコンパイルした（自己ホスティング）。ではループはいつ始まった？ 最初のLinux(1991)は MINIX 上の gcc で生まれた。ここから階段を降りる全体像。<span class="card-eq">gcc ← gcc ← gcc ← ?</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-01-nihon-no-ki.html">
+      <div class="spine" style="background:var(--e1);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e1);">第 1 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">二本の木を、混同しない</div>
+        <p class="card-desc">「血統（コードの継承）」と「再実装（思想の継承）」は別の木。Linux は MINIX の子ではなく、産室を借りて育った。Tanenbaum–Torvalds 論争。<span class="card-eq">遺伝子 ≠ 思想</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-02-saisho-no-linux.html">
+      <div class="spine" style="background:var(--e2);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e2);">第 2 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">最初のLinux ── MINIX上のgccで生まれた</div>
+        <p class="card-desc">v0.01 は MINIX がないとコンパイルできなかった。Torvalds は gcc と bash を MINIX に移植。v0.11 で初めて Linux が Linux をコンパイルし、自立する。<span class="card-eq">v0.01 → v0.11（自立）</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-03-gcc.html">
+      <div class="spine" style="background:var(--e3);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e3);">第 3 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">GCCは、何がコンパイルした？</div>
+        <p class="card-desc">Cコンパイラは C で書かれている。最初はマシンの既存 cc で1回だけ持ち上げ、以後は自分で自分を作る。stage1→stage2→stage3 の3段ブートストラップ。<span class="card-eq">stage2 == stage3 で検算</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-04-minix-ack.html">
+      <div class="spine" style="background:var(--e4);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e4);">第 4 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">MINIXとACK ── 教育用Unixのコンパイラ</div>
+        <p class="card-desc">MINIX(1987) の純正コンパイラは Tanenbaum 製の ACK。EM という中間バイトコードを挟んで移植性を稼ぐ。後年 MINIX 3 は NetBSD 側へ寄っていく。<span class="card-eq">前段 → EM → 後段</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-05-c-compiler.html">
+      <div class="spine" style="background:var(--e5);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e5);">第 5 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">Cコンパイラの誕生 ── 自分で自分を</div>
+        <p class="card-desc">Ritchie は B から C へ、コンパイラを少しずつ C で書き直し、ついに C コンパイラが自分自身をコンパイルできる地点まで“育て”た。自己ホスティングの原点。<span class="card-eq">B → NB → C</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-06-b-bcpl.html">
+      <div class="spine" style="background:var(--e6);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e6);">第 6 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">BとBCPL ── 中間コードという逃げ道</div>
+        <p class="card-desc">B は BCPL の子。BCPL は O-code、ACK は EM ── 「中間コード」を挟むと、機種が変わっても後段だけ書き直せばいい。移植とブートストラップの発明。<span class="card-eq">BCPL → O-code → 機械</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-07-saisho-no-unix.html">
+      <div class="spine" style="background:var(--e7);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e7);">第 7 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">最初のUnix ── アセンブリで書かれたOS</div>
+        <p class="card-desc">1969年、Thompson が PDP-7 のアセンブリで最初の Unix を書いた。C はまだ無い。カーネルもシェルもエディタも、機械語に近い言葉で。<span class="card-eq">PDP-7 assembly</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-08-assembler.html">
+      <div class="spine" style="background:var(--e8);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e8);">第 8 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">アセンブラは、何が作った？</div>
+        <p class="card-desc">最初は別のマシン（GE-635/GECOS）のクロスアセンブラでアセンブルし、結果を紙テープに穴で刻み、物理的に PDP-7 へ運んだ。やがて自己ホスティングへ。<span class="card-eq">別マシン → 紙テープ → PDP-7</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-09-saisho-no-1byte.html">
+      <div class="spine" style="background:var(--e9);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e9);">第 9 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">最初の1バイト ── 手で入れる</div>
+        <p class="card-desc">アセンブラも無い最初の最初。人間が命令表を見て機械語の数値を手で作り（ハンドアセンブル）、トグルスイッチで1語ずつ入れる。それがブートストラップローダ。<span class="card-eq">手 → スイッチ → メモリ</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-10-hardware.html">
+      <div class="spine" style="background:var(--e10);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--e10);">第 10 回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">底 ── ハードウェアという本当の種</div>
+        <p class="card-desc">機械語を“意味”にするのは、論理ゲートで配線された命令デコーダ。それを設計したのも人間。ソフトの連鎖のいちばん下には、配線された物理がある。<span class="card-eq">命令 → 論理ゲート → 物理</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="divlabel">最終回</div>
+  <div class="cards">
+    <a class="card" href="wakaru-unix-final-kotae.html">
+      <div class="spine" style="background:var(--ef);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--ef);">最終回</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">鶏と卵の答え ── 種は手で彫られた</div>
+        <p class="card-desc">階段の底で分かるのは、鶏も卵も無から湧かなかったということ。人間の手が最初の種を彫り、配線された機械がそれを意味に変え、あとはソフトがソフトを作るループが回り続けた。<span class="card-eq">bootstrap ＝ 靴ひも</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <div class="divlabel">番外編（本編を前提に、脇道を深掘り）</div>
+  <div class="cards">
+
+    <a class="card" href="wakaru-unix-bangai-trust1.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">信頼のブートストラップ ①</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">Trusting Trust ── 種は信用できるか</div>
+        <p class="card-desc">Thompson の1984年チューリング賞講演。ソースを消してもコンパイラのバイナリに潜んで生き延びるトロイ。「手で彫った種」を、そもそも信用できるのかという究極の問い。<span class="card-eq">source ≠ trust</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-bangai-trust2.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">信頼のブートストラップ ②</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">Bootstrappable Builds ── 種を極小化する</div>
+        <p class="card-desc">Trusting Trust への現代の答え。GNU Mes / stage0 は、信用しなければならない“最初の種”を数百バイトの人間可読なバイナリまで小さくする試み。①と握手。<span class="card-eq">seed → 全ツールチェーン</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-bangai-cross.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">クロスコンパイル</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">鶏なしで、卵を作る</div>
+        <p class="card-desc">新しいCPUには、まだ何も動いていない（鶏がいない）。別のマシンでそのCPU向けの卵を焼くのがクロスコンパイル。第8回の紙テープ運搬の、現代版。<span class="card-eq">host ≠ target</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-bangai-kigi.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">二本の木の続き</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">BSD訴訟・System V・POSIX</div>
+        <p class="card-desc">コードの血統をめぐる法廷闘争（AT&T vs BSD）と、System V、そして「Unixらしさ」を仕様で固定した POSIX。第1回「二本の木」の深掘り。<span class="card-eq">遺伝子の所有権</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-bangai-gnu.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">なぜGNUだったのか</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">自由なツールチェーンを持つために</div>
+        <p class="card-desc">Stallman が gcc・bash を書いた動機。ツールチェーンが自由でないと、種を自分で撒けない。Linux が gcc で立ち上がれたのは、この再実装があったから。<span class="card-eq">free toolchain</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card" href="wakaru-unix-bangai-multics.html">
+      <div class="spine" style="background:var(--eb);"></div>
+      <div class="card-body">
+        <div class="card-top"><span class="epno" style="color:var(--eb);">Multics → Unix</span><span class="badge live">動く図つき</span></div>
+        <div class="card-title">Unixは、何への反動だったか</div>
+        <p class="card-desc">系譜の最上流。巨大で野心的だった Multics から降りた Thompson と Ritchie が、小さく簡潔な Unix を作った。「小さいことは正しい」という設計思想の源流。<span class="card-eq">大 → 小</span></p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <footer>
+    「わかるUNIXの歴史」シリーズ。姉妹編の物理シリーズと同じく、わかりやすい語りと、それが技術的・歴史的に何を意味するかの「種明かし」、そして言い過ぎを戻す「正直な線」をセットで運びます。年号・人物・事実は各話末尾の脚注で出典の取れる範囲に留め、「手で彫った」等の言い回しは理解のための比喩であることを明示します。 ── 各ページはブラウザの「印刷 → PDF に保存」で PDF 化できます。この目次と各話 HTML は同じフォルダに置いてください（リンクが相対パスのため）。
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // 公開済みファイル（回が増えたらここに追記）
+  var FILES = [
+    "wakaru-unix-00-tamago.html",
+    "wakaru-unix-01-nihon-no-ki.html",
+    "wakaru-unix-02-saisho-no-linux.html",
+    "wakaru-unix-03-gcc.html",
+    "wakaru-unix-04-minix-ack.html",
+    "wakaru-unix-05-c-compiler.html",
+    "wakaru-unix-06-b-bcpl.html",
+    "wakaru-unix-07-saisho-no-unix.html",
+    "wakaru-unix-08-assembler.html",
+    "wakaru-unix-09-saisho-no-1byte.html",
+    "wakaru-unix-10-hardware.html",
+    "wakaru-unix-final-kotae.html",
+    "wakaru-unix-bangai-trust1.html",
+    "wakaru-unix-bangai-trust2.html",
+    "wakaru-unix-bangai-cross.html",
+    "wakaru-unix-bangai-kigi.html",
+    "wakaru-unix-bangai-gnu.html",
+    "wakaru-unix-bangai-multics.html"
+  ];
+  var btn=document.getElementById('zipbtn'), note=document.getElementById('dlnote');
+  btn.addEventListener('click', function(){
+    if(typeof JSZip==='undefined'){
+      note.textContent='ネットに接続できないため ZIP を作れません。各カードを開いて個別に保存してください。';
+      return;
+    }
+    btn.disabled=true; var orig=btn.textContent; btn.textContent='まとめています…'; note.textContent='';
+    var zip=new JSZip(); var folder=zip.folder('wakaru-unix');
+    var done=0, failed=[];
+    function finalize(){
+      if(failed.length===FILES.length){
+        note.textContent='ファイルを読み込めませんでした。この目次を各話 HTML と同じフォルダに置いた状態で開いてください。';
+        btn.disabled=false; btn.textContent=orig; return;
+      }
+      zip.generateAsync({type:'blob'}).then(function(blob){
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=url; a.download='wakaru-unix-series.zip';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        btn.disabled=false; btn.textContent='✓ ダウンロード完了';
+        note.textContent = failed.length? ('注：'+failed.length+' 件は読み込めませんでした。') : ('全 '+FILES.length+' ファイルを wakaru-unix-series.zip に保存しました。');
+        setTimeout(function(){btn.textContent=orig;},2500);
+      }).catch(function(){ btn.disabled=false; btn.textContent=orig; note.textContent='ZIP の生成に失敗しました。'; });
+    }
+    FILES.forEach(function(fn){
+      fetch(fn).then(function(r){ if(!r.ok) throw new Error(); return r.text(); })
+        .then(function(txt){ folder.file(fn, txt); })
+        .catch(function(){ failed.push(fn); })
+        .finally(function(){ done++; if(done===FILES.length) finalize(); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鶏と卵 ── Linuxは何がコンパイルしたのか ｜ わかるUNIXの歴史 第0回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f7f9; --paper-edge:#dde2e8;   /* 第0回：藍鉄の紙 */
+    --side:#2f6f55; --side-bg:#eaf2ee;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#ccd4de; --hair:#b7c1cd;
+    --acc:#2f4a6a;    /* 第0回アクセント＝藍鉄 */
+    --grid:#d5dce4;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5;
+    --c1:#2f6f55; --c2:#b0651e; --c3:#2166a0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe0d6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#eef1f5;border:1px solid #e0e5ec;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#20342b;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);}
+  .term .q{color:#e88;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 16px;}
+  .btnmini:hover{opacity:.9;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.6;
+    background:var(--calc-bg);color:var(--calc);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfeff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4f7fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfeff,#e9eef5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:var(--calc-bg);border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#22354a;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 0 回 ／ 序 ── 鶏と卵</span></div>
+  <p class="eyebrow">物理シリーズの計算機版 ── 今度は“ソフトの起源”を、一段ずつ降りていく</p>
+  <h1>鶏と卵 ── Linuxは、何がコンパイルしたのか
+    <span class="sub">Linuxカーネルは、Linux上の <code>gcc</code>（や <code>clang</code>）でコンパイルする。ではその <code>gcc</code> は？ ── <em>前の <code>gcc</code> がコンパイルした</em>。ではその前は？ この「回り続ける輪」は、いったいどこから始まったのか。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：好奇心だけ（コードは読めなくてよい）</span>
+    <span>合言葉：最初の卵は、手で彫った</span>
+  </div>
+
+  <p class="lead">あなたが Linux カーネルをビルドするとき、<code>gcc</code> という C コンパイラを使います。その <code>gcc</code> 自身も C で書かれたプログラムなので、動かすには<em>誰かがコンパイルした <code>gcc</code></em>が必要です。では、その <code>gcc</code> をコンパイルしたのは? ── また <code>gcc</code>。じゃあ<strong>いちばん最初の</strong> <code>gcc</code> は、コンパイラがまだ1つも無い世界で、何が作ったのか。これはニワトリとタマゴの問題です。このシリーズは、この輪を時間の逆向きにたどって、C言語の誕生、初代UNIX、そして“最初の1バイト”まで降りていきます。</p>
+
+  <h2><span class="n">00</span>まず、輪を目で見る</h2>
+
+  <p>「コンパイラをコンパイルする」は、こう書くと目が回ります。</p>
+
+  <div class="term">
+<span class="p">$</span> gcc -o vmlinux linux.c        <span class="c"># Linux を gcc がビルド</span>
+<span class="p">$</span> gcc -o gcc gcc.c               <span class="c"># その gcc は？ → 前の gcc がビルド</span>
+<span class="p">$</span> gcc -o gcc gcc.c               <span class="c"># その前の gcc は？ → もっと前の gcc が…</span>
+   <span class="q">…延々と、前の自分にさかのぼる（自己ホスティング）</span>
+  </div>
+
+  <p>現役のコンパイラは、たいてい<strong>自分自身の言語で書かれ</strong>、<strong>過去の自分がビルドした</strong>ものです。これを<em>自己ホスティング（self-hosting）</em>と呼びます。新しい <code>gcc</code> は古い <code>gcc</code> が作り、その古い <code>gcc</code> はもっと古い <code>gcc</code> が作り…と、輪がぐるぐる回り続けている。下の図で、その輪を回してみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：自己ホスティングの輪。各世代のコンパイラは、1つ前の世代がビルドした。輪は回り続けるが ── いちばん最初の1個は、この輪の中では作れない</div>
+    <canvas id="cvLoop" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="loopBtn">▶ 輪を回す</button>
+      <label style="min-width:200px;">回す速さ<span class="val" id="vSpd">ふつう</span>
+        <input type="range" id="spd" min="0.3" max="2.2" step="0.1" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rdLoop">各コンパイラは「1つ前の自分」がビルドした。では最初の1つは？</div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 輪は、外から一度だけ持ち上げられた</div>
+    <p style="margin:6px 0 0;">自己ホスティングの輪は、<strong>それ自身では始められない</strong>。「前の自分」が要るのに、最初は「前の自分」が居ないからです。だから輪は必ず、<em>輪の外にある何か</em>によって一度だけ着火される。<strong>bootstrap（ブートストラップ）</strong>という言葉は、もともと「自分の靴ひもを引っぱって自分を持ち上げる」という<em>物理的に不可能なほら話</em>から来ています。ソフトの世界でも、最初の一回だけは“外の手”が持ち上げた。</p>
+  </div>
+
+  <h2><span class="n">01</span>輪は、いつから回っていたのか ── 最初のLinux(1991)</h2>
+
+  <p>時間を巻き戻します。今の Linux は Linux 上でビルドできますが、<strong>1991年の最初の Linux は、まだ Linux が無い</strong>ので Linux 上ではビルドできません。ではどこで? ── 答えは <strong>MINIX</strong> という別の Unix風OSの上です。当時フィンランドの学生だった Linus Torvalds は、MINIX を積んだ386 PCで開発し、GNUの <code>gcc</code> と <code>bash</code> を MINIX に移植して、その <code>gcc</code> で Linux をコンパイルしました。</p>
+
+  <div class="calc">
+    <span class="tag">最初のLinuxの“産室”</span>
+    <p class="lbl">v0.01（1991年9月）</p>
+    <p style="margin:4px 0;">単体では起動すらできず、<strong>MINIX が無いとコンパイルもテストもできなかった</strong>。輪はまだ回っていない ── MINIX という別のOSに<em>おんぶ</em>している状態。</p>
+    <p class="lbl">v0.11（1991年12月）</p>
+    <p style="margin:4px 0 14px;">ここで初めて <strong>Linux が Linux 自身をコンパイルできた</strong>（自己ホスティング達成）。輪が回り始めた瞬間。以後およそ30年以上、その輪はずっと回り続けている。</p>
+  </div>
+
+  <p>つまり Linux の輪の“着火”は、<strong>MINIX の上の <code>gcc</code></strong> でした。では次の問いは自明です ── <em>その <code>gcc</code> は何が作った? MINIX は何が作った?</em> 輪の外に出ても、また別の「何が作った?」が待っている。この問いを繰り返すのが、このシリーズの背骨です。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── clang じゃないの?</span>
+    今の Linux は <code>clang</code>（LLVM）でもビルドできますが、それは<strong>2010年代後半にようやく主流化した後発</strong>で、歴史のほぼ全部は <code>gcc</code> の物語です。そして <code>clang</code> 自身も C++ で書かれたプログラムで、やはり<em>別のコンパイラがビルドした自己ホスティングの輪</em>の中にいます。道具が <code>gcc</code> か <code>clang</code> かは、鶏と卵の構造を何も変えません。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">02</span>これから降りる階段の、全体像</h2>
+
+  <p>「何が作った?」を繰り返すと、下へ下へと階段を降りていきます。この階段こそ、このシリーズの目次そのものです。下の図のスライダーを動かして、<strong>時代をさかのぼり</strong>、各段で「何が、何を作ったのか」を確かめてください。降り切った底に、鶏と卵の答えがあります。</p>
+
+  <div class="fig">
+    <div class="cap">図2：さかのぼりの階段。スライダーを右へ動かすほど過去へ降りる。各段は「その時代のソフトを、何が作ったか」。底（第10回）に、輪を着火した“外の手”がある</div>
+    <canvas id="cvStair" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>どこまでさかのぼる？<span class="val" id="vStep">今（自己ホスティングの輪）</span>
+        <input type="range" id="stair" min="0" max="9" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdStair"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">階段の降り方（このシリーズの順路）</div>
+    <p style="margin:6px 0 0;">今の輪（gcc/clang）→ 最初のLinux(1991)は<strong>MINIX上のgcc</strong> → gccは<strong>既存のcc</strong>で着火 → MINIXは<strong>ACK</strong> → 最初のCコンパイラは<strong>Bから育て</strong>て自己ホスティング → Bは<strong>BCPL</strong>の子 → 最初のUnix(1969)は<strong>PDP-7アセンブリ</strong> → そのアセンブラは<strong>別マシンのクロスアセンブラ＋紙テープ</strong> → その最初は<strong>人間がスイッチで手入力</strong> → 底は<strong>配線されたハードウェア</strong>。</p>
+  </div>
+
+  <h2><span class="n">03</span>二種類の「さかのぼり」を、混ぜない</h2>
+
+  <p>先回りして、初学者が必ずハマる罠を1つだけ潰しておきます。「Linux は MINIX から来て、MINIX は BSD から来て…」という<em>系譜（血統）</em>の話と、いま見てきた<em>何がコンパイルしたか</em>の話は、<strong>別物</strong>です。</p>
+
+  <div class="calc">
+    <span class="tag">直交する二つの問い</span>
+    <p style="margin-top:8px;"><strong>① コードの血統</strong>：実際のソースコードを受け継いだか。<br>Unix → BSD → NetBSD/FreeBSD… のように<em>遺伝子（コード）</em>が流れる系統樹。</p>
+    <p style="margin:8px 0 14px;"><strong>② ツールチェーンのブートストラップ</strong>：何が何をコンパイルしたか。<br>このシリーズが追う、鶏と卵の輪。<strong>Linux も MINIX も、実は誰かの血を引いた子ではなく、“Unixらしく振る舞う”白紙からの再実装</strong>です（だから①の血統には載らない）。この腑分けは第1回で。</p>
+  </div>
+
+  <p>この2つを混ぜると「Linux は MINIX の子だ」といった誤解になります。正しくは、<strong>Linux は MINIX という産室（開発環境）を借りて育っただけで、血のつながりは無い</strong>。この気持ちよい種明かしは、次回いちばん最初にやります。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「手で彫った」は、比喩と事実の中間</span>
+    <p style="margin-top:0;">このシリーズの合言葉「最初の卵は、手で彫った」は、詩的な比喩に聞こえますが、<strong>底の段ではほぼ文字通りの事実</strong>です（第9回）。初期の計算機では、人間が命令表を見て機械語の数値を手で作り、トグルスイッチで1語ずつメモリに入れました。一方で「Linux は MINIX の上の gcc がコンパイルした」のような各段の主張は、<em>年号・人物まで出典の取れる史実</em>です。この2種類 ── 検証できる史実と、理解のための言い回し ── を、各話の脚注できちんと分けて示します。</p>
+    <p style="margin-bottom:0;">また、v0.01 と v0.11 の線引き（どこから「自己ホスティング」と呼ぶか）や、「gcc か clang か」のように、雑に言うと角が立つ点は、その都度ていねいに区別します。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>「自己ホスティング」とは何か。一文で。
+        <details><summary>答えを見る</summary><div class="ans">コンパイラ（などのツール）が、自分自身の言語で書かれ、過去の自分でビルドされている状態。新しい版は古い版が作る。</div></details>
+      </li>
+      <li>自己ホスティングの輪は、なぜ「それ自身では始められない」のか。
+        <details><summary>答えを見る</summary><div class="ans">動かすには「前の自分」が要るのに、いちばん最初には「前の自分」が存在しないから。だから輪の外にある何か（別のコンパイラ／別のOS／最後は人間の手）が一度だけ着火する必要がある。</div></details>
+      </li>
+      <li>最初の Linux(v0.01) は、何の上の何でコンパイルされたか。
+        <details><summary>答えを見る</summary><div class="ans">MINIX というUnix風OSの上に移植された gcc。Linux が Linux 自身をビルドできる（自己ホスティング）ようになるのは v0.11 から。</div></details>
+      </li>
+      <li>「Linux は MINIX の子だ」という言い方の、どこが不正確か。
+        <details><summary>答えを見る</summary><div class="ans">コードの血統（遺伝子）と、開発環境（産室）を混同している。Linux は MINIX 上で開発され影響も受けたが、MINIX のソースコードは受け継いでいない。両者とも「Unix風の白紙からの再実装」。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>輪は回り続け、最初の一回だけ外から着火された</h2>
+    <p>Linux をコンパイルする <code>gcc</code> は、前の <code>gcc</code> が作った ── コンパイラは自分自身の言語で書かれ、過去の自分がビルドする<strong>自己ホスティングの輪</strong>の中にいる。だが輪は自力では始まらない。最初は「前の自分」が居ないからだ。Linux の輪は、1991年に <strong>MINIX 上の <code>gcc</code></strong> によって着火され（v0.01）、v0.11 で自立した。</p>
+    <p>「何が作った?」を繰り返すと、gcc → 既存cc → C → B → BCPL → アセンブリ → クロスアセンブラ → 手入力 → ハードウェア、と<strong>階段を降りていく</strong>。底にあるのは、輪の外から一度だけ持ち上げた<strong>人間の手と、配線された機械</strong>。それがこのシリーズの答えの形だ ── <em>最初の卵は、手で彫った。</em> なお「何がコンパイルしたか（ブートストラップ）」と「誰の遺伝子か（血統）」は別問題で、混ぜないこと。次回はまずその腑分けから。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第1回</span>
+    「二本の木を、混同しない」。Linux は MINIX の子なのか? NetBSD はどこから来た? ── <strong>コードの血統（遺伝子）</strong>と<strong>思想の再実装</strong>という二本の木を描き分け、初学者が必ず混ぜる系譜の誤解をほどきます。あの有名な Tanenbaum–Torvalds 論争も、この二本の木で読むと一気に見通せます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第0回（序）です。史実：Linux はフィンランドの学生 Linus Torvalds が1991年に開発を開始し、初期バージョン(v0.01)は MINIX 上でしかコンパイル・テストできず、Torvalds は gcc(1.40) と bash(1.08) を移植した。Linux が自分自身をコンパイルできる（自己ホスティング）ようになったのは v0.11（1991年12月）とされる。clang/LLVM による Linux カーネルのビルドは2010年代後半に主流化した後発の選択肢で、歴史的な標準コンパイラは gcc。「自己ホスティング」「ブートストラップ（bootstrap＝自分の靴ひもで自分を持ち上げる、の含意）」は計算機科学の標準用語。コードの血統（BSD 系など実コードの継承）と、Unix風の白紙再実装（MINIX・Linux・GNU）は別系統で、本シリーズ第1回で詳述する。「手で彫った」等の表現は理解のための言い回しだが、初期計算機での手作業によるブートストラップ（ハンドアセンブル・スイッチ入力）は事実に基づく（第9回）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーとアニメ・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1の「▶ 輪を回す」で自己ホスティングを回し、図2のスライダーで時代をさかのぼれます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  /* ============ 図1：自己ホスティングの輪 ============ */
+  (function(){
+    var cv=document.getElementById('cvLoop'), btn=document.getElementById('loopBtn'),
+        spd=document.getElementById('spd'), vSpd=document.getElementById('vSpd'), rd=document.getElementById('rdLoop');
+    if(!cv) return;
+    var N=5, phase=0, running=false, raf=null, last=0;
+    var labels=['第 N 世代','第 N+1','第 N+2','第 N+3','第 N+4'];
+    function speedText(v){ return v<0.7?'ゆっくり':(v>1.6?'はやい':'ふつう'); }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cx=w/2, cy=h/2+6, R=Math.min(w,h)*0.34;
+      // 中心の文字
+      ctx.textAlign='center'; ctx.fillStyle='#2f4a6a';
+      ctx.font='bold 15px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('自己ホスティング', cx, cy-6);
+      ctx.fillStyle='#8794a5'; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('回り続ける輪', cx, cy+14);
+      // 円弧の矢印（時計回り）
+      var i;
+      // ノード位置
+      var pos=[];
+      for(i=0;i<N;i++){ var a=-Math.PI/2 + i*2*Math.PI/N; pos.push({x:cx+R*Math.cos(a), y:cy+R*Math.sin(a), a:a}); }
+      // つなぐ弧＋矢印
+      ctx.strokeStyle='#c3cdd9'; ctx.lineWidth=2;
+      for(i=0;i<N;i++){
+        var a0=pos[i].a+0.34, a1=pos[(i+1)%N].a-0.34;
+        ctx.beginPath(); ctx.arc(cx,cy,R,a0,a1); ctx.stroke();
+        // 矢印頭（弧の終端）
+        var ae=a1, ax=cx+R*Math.cos(ae), ay=cy+R*Math.sin(ae);
+        var tx=-Math.sin(ae), ty=Math.cos(ae); // 接線（時計回り方向）
+        ctx.fillStyle='#c3cdd9';
+        ctx.beginPath(); ctx.moveTo(ax,ay);
+        ctx.lineTo(ax-7*tx+4*Math.cos(ae), ay-7*ty+4*Math.sin(ae));
+        ctx.lineTo(ax-7*tx-4*Math.cos(ae), ay-7*ty-4*Math.sin(ae));
+        ctx.closePath(); ctx.fill();
+      }
+      // 走るパルス
+      var pa=-Math.PI/2 + phase*2*Math.PI;
+      var px=cx+R*Math.cos(pa), py=cy+R*Math.sin(pa);
+      ctx.fillStyle='#2f6f55'; ctx.beginPath(); ctx.arc(px,py,6,0,2*Math.PI); ctx.fill();
+      ctx.globalAlpha=0.25; ctx.beginPath(); ctx.arc(px,py,12,0,2*Math.PI); ctx.fill(); ctx.globalAlpha=1;
+      // ノード（コンパイラの箱）
+      for(i=0;i<N;i++){
+        var p=pos[i];
+        ctx.fillStyle='#fff'; ctx.strokeStyle='#2f4a6a'; ctx.lineWidth=1.6;
+        var bw=76, bh=34;
+        ctx.beginPath(); ctx.rect(p.x-bw/2,p.y-bh/2,bw,bh); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#2f4a6a'; ctx.font='bold 13px "SFMono-Regular",Consolas,monospace';
+        ctx.textAlign='center'; ctx.fillText('gcc', p.x, p.y-1);
+        ctx.fillStyle='#8794a5'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(labels[i], p.x, p.y+13);
+      }
+      ctx.textAlign='left';
+    }
+    function tick(t){
+      if(!last) last=t; var dt=(t-last)/1000; last=t;
+      phase += dt*0.18*parseFloat(spd.value); if(phase>1) phase-=1;
+      draw();
+      if(running) raf=requestAnimationFrame(tick);
+    }
+    btn.addEventListener('click', function(){
+      running=!running;
+      if(running){ btn.textContent='⏸ 一時停止'; rd.innerHTML='輪が回っています。第Nの gcc は第N−1の gcc がビルドし… <strong>この輪は、それ自身では始められない</strong>（最初は「前の自分」が居ない）。'; last=0; raf=requestAnimationFrame(tick); }
+      else { btn.textContent='▶ 輪を回す'; if(raf)cancelAnimationFrame(raf); }
+    });
+    spd.addEventListener('input', function(){ vSpd.textContent=speedText(parseFloat(spd.value)); });
+    window.addEventListener('resize', draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：さかのぼりの階段 ============ */
+  (function(){
+    var cv=document.getElementById('cvStair'), sl=document.getElementById('stair'),
+        vStep=document.getElementById('vStep'), rd=document.getElementById('rdStair');
+    if(!cv) return;
+    // [段見出し, 年, そのソフト, 何が作ったか, 対応回]
+    var STEPS=[
+      ['今',      '現在',  'Linuxカーネル',   'gcc / clang（＝過去の自分）。自己ホスティングの輪', '序'],
+      ['一段目',  '1991',  '最初のLinux',      'MINIX 上に移植した gcc（v0.11で自立）',              '第2回'],
+      ['二段目',  '—',     'GCC（Cで記述）',    'そのマシンの既存 cc で1回着火 → 3段ブートストラップ','第3回'],
+      ['三段目',  '1987',  'MINIX',            'ACK（Tanenbaum製、EM中間コード）',                   '第4回'],
+      ['四段目',  '1972',  '最初のCコンパイラ', 'B から少しずつ育て、C が C 自身をコンパイル',        '第5回'],
+      ['五段目',  '1969',  'B 言語',           'BCPL（O-code 中間コード）の子',                      '第6回'],
+      ['六段目',  '1969',  '最初のUnix',        'PDP-7 のアセンブリ言語で手書き',                     '第7回'],
+      ['七段目',  '—',     'そのアセンブラ',    '別マシン(GE-635/GECOS)のクロスアセンブラ＋紙テープ', '第8回'],
+      ['八段目',  '—',     '最初の1バイト',     '人間のハンドアセンブル＋トグルスイッチ入力',         '第9回'],
+      ['底',      '—',     'ハードウェア',      '論理ゲートで命令デコーダを配線した人間',             '第10回']
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10);
+      var n=STEPS.length, padL=18, padR=18, padT=16, padB=16;
+      var usableW=w-padL-padR, usableH=h-padT-padB;
+      var stepW=usableW/n, stepH=usableH/n;
+      // 縦軸ラベル
+      ctx.fillStyle='#8794a5'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('今', padL, padT-2);
+      ctx.textAlign='right'; ctx.fillText('過去（底へ）', w-padR, h-4); ctx.textAlign='left';
+      // 各段（左上→右下へ降りる）
+      for(var i=0;i<n;i++){
+        var x=padL+i*stepW, y=padT+i*stepH;
+        var isCur=(i===cur), passed=(i<=cur);
+        // 踏み板
+        ctx.fillStyle = isCur ? '#2f4a6a' : (passed ? '#dbe4ee' : '#eef1f5');
+        ctx.strokeStyle = isCur ? '#22384f' : '#c3cdd9'; ctx.lineWidth=isCur?2:1;
+        ctx.beginPath(); ctx.rect(x, y, stepW+1, stepH+1); ctx.fill(); ctx.stroke();
+        // 立ち上がり（次の段へ降りる線）
+        // 段の中の短ラベル
+        ctx.fillStyle = isCur ? '#fff' : '#5a6472';
+        ctx.font = (isCur?'bold ':'')+'11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.textAlign='left';
+        var short = STEPS[i][2];
+        if(short.length>9) short = short.slice(0,9)+'…';
+        ctx.fillText(short, x+7, y+stepH*0.45);
+        ctx.fillStyle = isCur ? '#cdd8e6' : '#9aa5b3'; ctx.font='9.5px "SFMono-Regular",Consolas,monospace';
+        ctx.fillText(STEPS[i][1], x+7, y+stepH*0.82);
+      }
+      // 現在段のマーカー（降りていく人）
+      var mx=padL+cur*stepW+stepW+1, my=padT+cur*stepH;
+      ctx.fillStyle='#b0651e'; ctx.beginPath(); ctx.arc(mx-6, my-6, 5, 0, 2*Math.PI); ctx.fill();
+    }
+    function update(){
+      var cur=parseInt(sl.value,10), s=STEPS[cur];
+      vStep.textContent = s[0]+'：'+s[2]+(s[1]!=='—'&&s[1]!=='現在'?'（'+s[1]+'）':'');
+      rd.innerHTML = '<strong>'+s[2]+'</strong>'+(s[1]!=='—'&&s[1]!=='現在'?'（'+s[1]+'）':'')+' を作ったのは → <strong>'+s[3]+'</strong>　<span style="color:#8794a5;">〔'+s[4]+'〕</span>'+(cur===STEPS.length-1?'　── ここが底。輪を外から着火した“手”と“物理”。':'');
+      draw();
+    }
+    sl.addEventListener('input', update);
+    window.addEventListener('resize', draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

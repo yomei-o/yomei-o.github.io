@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>底 ── ハードウェアという本当の種 ｜ わかるUNIXの歴史 第10回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4f6f8; --paper-edge:#d7dee4;   /* 第10回：鉄の紙 */
+    --side:#9a4230; --side-bg:#f5e6e1;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#cbd4dc; --hair:#b3bfc9;
+    --acc:#3a4a5a;    /* 第10回アクセント＝鉄 */
+    --grid:#d3dbe2;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cdd8e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#e8edf1;border:1px solid #d7dee4;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#4a241a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafcfd;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#dde4ea;color:#3a4a5a;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e7ecf1;color:#2a3844;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfdfe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef2f5;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfdfe,#e4eaef);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e7ecf1;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#2a3844;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 10 回 ／ 底 ── ソフトではないもの</span></div>
+  <p class="eyebrow">手で入れた 6032 を「動作」に変えるのは、何か</p>
+  <h1>底 ── ハードウェアという本当の種
+    <span class="sub">第9回で、人間が手で <code>6032</code> という数値をメモリに入れました。でも数値は、それだけでは何も起きません。<em>「メモリを読め」という動作</em>に変えるのは何か ── それは論理ゲートで配線された<strong>命令デコーダ</strong>。そしてそれを設計したのも、人間です。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第9回（手で入れた数値）</span>
+    <span>種明かし：意味は「配線された真理値表」に宿る</span>
+  </div>
+
+  <p class="lead">私たちは長い階段を降りてきました ── Linux を <code>gcc</code> が、<code>gcc</code> を既存 <code>cc</code> が、C を B が、アセンブラをクロスが、そして最初の数語を人間の手が。第9回で「ソフトの底」に着いたはずでした。でも、まだ一段残っています。手で入れた <code>6032</code> は、ただのビットの並び。これを<strong>「メモリを読む」という現実の動作</strong>に変えているものが、必ず要る。それが今回の主役 ── <strong>ハードウェア</strong>です。ここから下は、もうプログラムではありません。<em>配線された物理</em>と、それを設計した人間の手だけ。鶏と卵の、いちばん底です。</p>
+
+  <h2><span class="n">01</span>6032 は、それだけでは何も意味しない</h2>
+
+  <p>第7回で見たとおり、機械語はただの数値です。<code>6032</code> という並びが「メモリを読め」を意味するのは、<em>そう解釈するように作られた機械の中でだけ</em>。同じビット列も、別の設計の機械に入れれば、まったく違う動作になる（あるいは何も起きない）。<strong>数値そのものに意味は無い。意味は、それを受け取る機械の側にある。</strong></p>
+
+  <h2><span class="n">02</span>意味を与えるもの ── 命令デコーダ</h2>
+
+  <p>CPU の中で、命令の数値（オペコード）を受け取り、「どの動作をせよ」という<strong>制御信号</strong>に変える部品を <strong>命令デコーダ（制御装置）</strong>と呼びます。オペコードのビットの並びに応じて、加算器を動かす線、メモリを読む線、レジスタに書く線…のどれを点灯させるかが決まる。下の図で、オペコードを変えて、<em>点灯する制御線＝実行される動作</em>が切り替わる様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：命令デコーダ。オペコード（数ビット）を選ぶと、配線された回路がそれに対応する制御線を1本点灯させる ── これが「数値→動作」の翻訳。意味は、この配線に宿る</div>
+    <canvas id="cvDec" width="680" height="300"></canvas>
+    <div class="controls">
+      <span style="font-size:12.5px;">オペコードを選ぶ：</span>
+      <button class="btnmini seg on" data-op="0">00</button>
+      <button class="btnmini seg" data-op="1">01</button>
+      <button class="btnmini seg" data-op="2">10</button>
+      <button class="btnmini seg" data-op="3">11</button>
+    </div>
+    <div class="readout" id="rdDec"></div>
+  </div>
+
+  <h2><span class="n">03</span>その下 ── 論理ゲートと、真理値表</h2>
+
+  <p>命令デコーダの中身は、<strong>論理ゲート（AND・OR・NOT）</strong>の集まりです。AND・OR・NOT を組み合わせれば、<em>どんな真理値表（入力の各パターンに、出力をこう割り当てる、という表）でも作れます</em>。デコーダとは、「このオペコードのときは、この制御線を点灯」という<strong>真理値表を、ゲートで物理的に実現したもの</strong>にほかなりません。そしてゲートは、トランジスタというスイッチの集まりです。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── ソフトの意味は「配線された表」で底を打つ</div>
+    <p style="margin:6px 0 0;">プログラムの意味をどこまでも下へたどると、最後は <strong>「オペコード → 制御線」という表を、論理ゲートで配線したもの</strong>に行き着きます。これはもう<em>プログラムではありません</em>。書き換え可能なソフトではなく、<strong>固定された物理</strong>。ソフトの鶏と卵は、ここで<em>ソフトでないもの</em>に受け止められて、止まります。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>寄り道 ── デコーダの中に、小さなプログラムがいることも</h2>
+
+  <p>ただし、一段だけ寄り道があります。CPU によっては、命令の解釈を<strong>マイクロコード</strong>という<em>CPU内部の小さなプログラム</em>で行います（Maurice Wilkes が1951年に提唱）。この場合、機械語はいったんマイクロコードという「小さなインタプリタ」に渡され、より細かいマイクロ命令の列に分解される。── まるでミニチュアの鶏と卵です。でも安心してください。そのマイクロコードを実行する土台は、結局<strong>ハードワイヤード（べた配線）な論理ゲート</strong>。下の図で、両方式を切り替えて、<em>どちらも最後は論理ゲートで底を打つ</em>ことを確かめてください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：ハードワイヤード vs マイクロプログラム。マイクロコード方式は「小さなプログラム」を挟むが、それを動かす土台は結局べた配線の論理ゲート。ここから下はソフトではない</div>
+    <canvas id="cvHw" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-m="hw">ハードワイヤード</button>
+      <button class="btnmini seg" data-m="mc">マイクロプログラム</button>
+    </div>
+    <div class="readout" id="rdHw"></div>
+  </div>
+
+  <h2><span class="n">05</span>その配線は、誰が作ったのか ── 人間</h2>
+
+  <p>では、その真理値表を決め、ゲートに落とし、チップに焼いたのは誰か。── <strong>人間です。</strong> どのビット列にどの動作を割り当てるか（命令セット）を設計し、それを論理回路にし、配線した。第9回で「最初の数語を手で彫った」のと、ここで「意味を与える配線を手で設計した」のは、<em>シリーズの二つの種</em>です。両方とも ── <strong>プログラムではなく、人間＋物理</strong>。鶏と卵をさかのぼる旅は、ソフトの外（人間の設計と、配線された物理）で、ちゃんと<em>底を打ちます</em>。</p>
+
+  <div class="calc">
+    <span class="tag">さらに下は、ソフトの問いではない</span>
+    <p style="margin-top:8px;">ゲートはトランジスタ、トランジスタはシリコン、シリコンは物理法則に従う電子 ── と、まだ下に世界は続きます。でもそれは<em>物理と製造</em>の話で、「何がコンパイルしたか」というソフトの鶏と卵ではありません。もちろんハードにも独自のブートストラップがあります（チップの設計に使う道具も、また別のチップ…）。でもそれは<strong>別の鎖</strong>。私たちのたどってきた<em>ソフトの鎖</em>は、ここ ── <strong>人間が設計し配線した論理ゲート</strong> ── で、確かに終わりました。</p>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 図は理想化、底は物理</span>
+    <p style="margin-top:0;">(1) 図1の「オペコード2ビット→4動作」は説明用の最小モデルで、実際の命令セットははるかに多く、複雑です。(2) 現代の CPU は、パイプライン・投機実行・マイクロオペレーションのキャッシュなど桁違いに込み入っていて、「デコーダ＝単純な真理値表」はあくまで骨格の話です。(3) マイクロコード（Wilkes, 1951）は実在の技術で、機械語をCPU内部の小プログラムで解釈しますが、その土台は最終的にハードワイヤードな論理に落ちます。</p>
+    <p style="margin-bottom:0;">(4) 「意味は配線に宿る／その設計者は人間」という言い方は、<em>ソフトの鶏と卵の終端</em>を指すためのものです。ハードウェアの製造にはハード自身のブートストラップ（道具が道具を作る連鎖）があり、それは本シリーズの射程外の別問題です。最下層の“物理”そのものは、人間が「作った」のではなく、<strong>設計して利用した</strong>と言うのが正確です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li><code>6032</code> という機械語の「意味」は、どこにあるか。
+        <details><summary>答えを見る</summary><div class="ans">数値そのものではなく、それを受け取る機械（命令デコーダ）の側にある。同じビット列も、別設計の機械では別の動作になる。意味は配線に宿る。</div></details>
+      </li>
+      <li>命令デコーダの中身を、真理値表という言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">「このオペコードのときは、この制御線を点灯」という真理値表を、AND・OR・NOT の論理ゲートで物理的に実現したもの。</div></details>
+      </li>
+      <li>マイクロコード方式でも、鶏と卵が“無限後退”しないのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">マイクロコードは小さなプログラムだが、それを実行する土台は結局ハードワイヤードな論理ゲート（べた配線）で、そこで底を打つから。</div></details>
+      </li>
+      <li>このシリーズの「二つの種」とは何か。共通点は。
+        <details><summary>答えを見る</summary><div class="ans">①第9回：人間が手で入れた最初の数語。②第10回：人間が設計・配線した、意味を与える論理ゲート。共通点は、どちらもプログラムではなく「人間＋物理」であること。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>ソフトの鎖は、配線された物理で底を打つ</h2>
+    <p>第9回で手で入れた <code>6032</code> は、ただのビット列。それを「メモリを読む」という<em>動作</em>に変えているのが <strong>命令デコーダ（制御装置）</strong>で、中身は <strong>論理ゲート（AND・OR・NOT）</strong>── 「オペコード→制御線」という<strong>真理値表を、物理的に配線したもの</strong>だ。数値に意味は無く、意味は<em>機械の配線の側</em>にある。ソフトの意味をどこまで下へたどっても、最後はこの<strong>プログラムでない、固定された物理</strong>に受け止められる。</p>
+    <p>マイクロコード（Wilkes, 1951）という「CPU内部の小さなプログラム」を挟む設計もあるが、その土台も結局ハードワイヤードな論理ゲート。そして、どのビット列にどの動作を割り当てるか（命令セット）を設計し配線したのは ── <strong>人間</strong>だ。第9回「最初の数語を手で彫った」と、この第10回「意味を与える配線を手で設計した」が、シリーズの<strong>二つの種</strong>。両方ともプログラムではなく、<em>人間＋物理</em>。鶏と卵をさかのぼる旅は、ソフトの外で、確かに底を打った。── 次回、最終回。降りきった底から見上げて、答えの全体像を組み立てます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 最終回</span>
+    「鶏と卵の答え ── 種は手で彫られ、あとはループが回る」。第0回の階段を、底から一気に見上げます。人間が最初の数語を彫り（第9回）、意味を与える機械を配線し（第10回）、その上でアセンブラ→C→gcc→Linux と<strong>ソフトがソフトを作るループ</strong>が回り始めた。<code>bootstrap</code> ── 靴ひもで自分を持ち上げるという不可能事は、最初の一度だけ、人間の手が代わりに持ち上げていた。合言葉の、完全な回収です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第10回です。史実・技術：CPU の制御装置（命令デコーダ）は命令のオペコードをデコードし、データパス（ALU・レジスタ・メモリ等）を動かす制御信号を生成する。ハードワイヤード制御では、制御信号は論理ゲート・フリップフロップ・デコーダから成る固定回路で生成され、各命令の動作が配線として物理的に作り込まれる。マイクロプログラム制御では、制御信号列（マイクロコード）を制御ストアに置き、小さなインタプリタのように命令を解釈する（Maurice Wilkes が1951年の論文「The Best Way to Design an Automatic Calculating Machine」で提唱）。いずれの方式も最終的にはハードワイヤードな論理ゲートに帰着する。論理ゲート（AND・OR・NOT、機能的完全性）は任意の真理値表を実現でき、デコーダは「オペコード→制御線」の対応表を回路化したものと言える。図は説明のための最小モデルで、実際の命令セットや現代 CPU（パイプライン、マイクロオペレーション等）は遥かに複雑。ハードウェアの製造・設計自体にも別のブートストラップ（EDA など道具の連鎖）があるが、本シリーズが追う「ソフトウェアの鶏と卵」とは別の問題である。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンでオペコードを変え、点灯する制御線（＝動作）の切り替わりを、図2で二つの制御方式の底が同じ論理ゲートであることを確かめられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：命令デコーダ ============ */
+  (function(){
+    var cv=document.getElementById('cvDec'), rd=document.getElementById('rdDec');
+    if(!cv) return;
+    var op=0;
+    var OUT=[
+      {code:'00', name:'LOAD',  act:'メモリ → レジスタ（読み込む）'},
+      {code:'01', name:'ADD',   act:'ALU で加算する'},
+      {code:'10', name:'STORE', act:'レジスタ → メモリ（書き込む）'},
+      {code:'11', name:'JMP',   act:'次に実行する番地を変える'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      // input opcode (2 bits)
+      var ix=30, iy=h*0.5;
+      var b1=(op>>1)&1, b0=op&1;
+      ctx.fillStyle='#3a4a5a'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('オペコード', ix, iy-40);
+      function bitbox(x,y,v){ ctx.fillStyle= v?'#3a4a5a':'#fff'; ctx.strokeStyle='#3a4a5a'; ctx.lineWidth=1.8;
+        rr(ctx,x,y,30,30,5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= v?'#fff':'#3a4a5a'; ctx.font='bold 15px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText(''+v, x+15, y+21); }
+      bitbox(ix, iy-16, b1); bitbox(ix+36, iy-16, b0);
+      // decoder trapezoid
+      var dx0=w*0.30, dx1=w*0.30+90, dyc=iy, dh=150;
+      ctx.fillStyle='#e7ecf1'; ctx.strokeStyle='#3a4a5a'; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(dx0, dyc-dh/2); ctx.lineTo(dx1, dyc-dh/2+24); ctx.lineTo(dx1, dyc+dh/2-24); ctx.lineTo(dx0, dyc+dh/2); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#3a4a5a'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('命令', (dx0+dx1)/2, dyc-4); ctx.fillText('デコーダ', (dx0+dx1)/2, dyc+12);
+      ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#6b7683';
+      ctx.fillText('(論理ゲート)', (dx0+dx1)/2, dyc+26);
+      // wire from opcode to decoder
+      ctx.strokeStyle='#8794a5'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(ix+72, iy-1); ctx.lineTo(dx0, iy-1); ctx.stroke();
+      // outputs (4 control lines)
+      var ox=dx1, oxe=w-150, n=OUT.length;
+      for(var i=0;i<n;i++){
+        var oy=dyc-dh/2+20 + (dh-40)*i/(n-1);
+        var active=(i===op);
+        ctx.strokeStyle= active? '#c0392b':'#c7d0d8'; ctx.lineWidth= active?3:1.6;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(oxe, oy); ctx.stroke();
+        // bulb
+        ctx.fillStyle= active? '#e74c3c':'#dfe4e8'; ctx.beginPath(); ctx.arc(oxe+10, oy, 6, 0, 2*Math.PI); ctx.fill();
+        ctx.strokeStyle= active? '#c0392b':'#c7d0d8'; ctx.lineWidth=1; ctx.stroke();
+        // label
+        ctx.fillStyle= active? '#c0392b':'#9aa5ad'; ctx.font=(active?'bold ':'')+'12px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='left';
+        ctx.fillText(OUT[i].name+' 線', oxe+24, oy+4);
+      }
+      ctx.textAlign='left';
+    }
+    function setReadout(){ var o=OUT[op];
+      rd.innerHTML='オペコード <strong>'+o.code+'</strong> → デコーダが <strong>'+o.name+' 線</strong>だけを点灯 → 動作：<strong>'+o.act+'</strong>。同じ配線が、ビットの並びを動作に翻訳している。'; }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-op]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      op=parseInt(b.getAttribute('data-op'),10);
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：ハードワイヤード vs マイクロプログラム ============ */
+  (function(){
+    var cv=document.getElementById('cvHw'), rd=document.getElementById('rdHw');
+    if(!cv) return;
+    var mode='hw';
+    function box(ctx,x,y,w,h,fill,stroke,lines){
+      ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.8; rr(ctx,x,y,w,h,8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=stroke; ctx.textAlign='center';
+      for(var i=0;i<lines.length;i++){ ctx.font=(i===0?'bold 12px':'10.5px')+' "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(lines[i], x+w/2, y+ (lines.length===1? h/2+4 : 20+i*15)); }
+    }
+    function arrow(ctx,x0,x1,y,col){ ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1-2,y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x1-9,y-5); ctx.lineTo(x1-9,y+5); ctx.closePath(); ctx.fill(); }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cy=h*0.36, bh=52;
+      if(mode==='hw'){
+        var xs=[w*0.04, w*0.30, w*0.62]; var bw=w*0.22;
+        box(ctx,xs[0],cy-bh/2,bw,bh,'#fff','#3a4a5a',['機械語','(オペコード)']);
+        box(ctx,xs[1],cy-bh/2,bw,bh,'#e7ecf1','#3a4a5a',['論理ゲートの回路','(べた配線)']);
+        box(ctx,xs[2],cy-bh/2,bw,bh,'#fff','#9a4230',['制御線','→ データパス']);
+        arrow(ctx,xs[0]+bw,xs[1],cy,'#8794a5'); arrow(ctx,xs[1]+bw,xs[2],cy,'#8794a5');
+      } else {
+        var xs=[w*0.02, w*0.235, w*0.47, w*0.71]; var bw=w*0.185;
+        box(ctx,xs[0],cy-bh/2,bw,bh,'#fff','#3a4a5a',['機械語','(オペコード)']);
+        box(ctx,xs[1],cy-bh/2,bw,bh,'#f5e6e1','#9a4230',['制御ストア','マイクロコード']);
+        box(ctx,xs[2],cy-bh/2,bw,bh,'#e7ecf1','#3a4a5a',['論理ゲート','(べた配線)']);
+        box(ctx,xs[3],cy-bh/2,bw,bh,'#fff','#9a4230',['制御線','→ データパス']);
+        arrow(ctx,xs[0]+bw,xs[1],cy,'#8794a5'); arrow(ctx,xs[1]+bw,xs[2],cy,'#9a4230'); arrow(ctx,xs[2]+bw,xs[3],cy,'#8794a5');
+        ctx.fillStyle='#9a4230'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('小さなプログラム（ミニ鶏と卵）', xs[1]+bw/2, cy-bh/2-8);
+      }
+      // bottom bar: ソフトでない
+      var by=h-46;
+      ctx.fillStyle='#3a4a5a'; rr(ctx,20,by,w-40,32,6); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('── ここから下はソフトではない：論理ゲート ＝ トランジスタ ＝ 物理 ＋ 人間の設計 ──', w/2, by+20);
+      // link from gate box down to bar
+      ctx.strokeStyle='#b3bfc9'; ctx.setLineDash([4,4]); ctx.lineWidth=1.6;
+      var gateCx = mode==='hw'? w*0.30+w*0.22/2 : w*0.47+w*0.185/2;
+      ctx.beginPath(); ctx.moveTo(gateCx, cy+bh/2); ctx.lineTo(gateCx, by); ctx.stroke(); ctx.setLineDash([]);
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='hw') rd.innerHTML='<strong>ハードワイヤード</strong>：オペコードを、べた配線の論理ゲートが直接 制御線に変える。速い。意味は完全に配線に固定されている。';
+      else rd.innerHTML='<strong>マイクロプログラム</strong>：機械語をいったん「マイクロコード」という小さなプログラムが解釈する（ミニ鶏と卵）。でもそれを動かす土台は、結局べた配線の論理ゲート ── <strong>底は同じ</strong>。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m');
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>

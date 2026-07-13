@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二本の木の続き ── BSD訴訟・System V・POSIX ｜ わかるUNIXの歴史 番外編④</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4f7fb; --paper-edge:#d9e2ee;
+    --side:#6a4a9c; --side-bg:#efe9f5;
+    --warn:#8a4b2f;
+    --calc:#1f6f5c; --calc-bg:#e8f2ee;
+    --rule:#ccd7e4; --hair:#b6c4d4;
+    --acc:#2166a0;
+    --grid:#d6e0eb;
+    --gene:#2166a0; --reimpl:#2f7d55;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:34px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe0ef 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#e9eff6;border:1px solid #d9e2ee;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a52;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbdfd7;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#dde6f0;color:#274a70;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e7eef6;color:#1e4576;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .lseg{width:26px;height:0;border-top:2.4px solid var(--gene);display:inline-block;}
+  .lseg.dash{border-top:2.4px dashed var(--reimpl);}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eff4fa;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfdff,#e5edf5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e7eef6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1e4576;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ④</span><span class="ep">血統の木を、法廷と標準まで</span></div>
+  <p class="eyebrow">第1回で分けた「血統の木」── その先の、所有権と互換性の物語</p>
+  <h1>二本の木の続き ── BSD訴訟・System V・POSIX
+    <span class="sub">第1回で「血統の木（コードの継承）」と「再実装の木（思想の継承）」を分けました。今回は血統の木を、<em>法廷（誰のコードか）</em>と<em>標準（Unixらしさを仕様で固定）</em>まで追います。所有権と互換性 ── 鶏と卵の“社会的な”側面です。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：第1回（二本の木）</span>
+    <span>種明かし：血統・思想・標準の三本柱</span>
+  </div>
+
+  <p class="lead">第1回で、UNIX 一族には<strong>血統の木</strong>（AT&amp;T のコードが実際に流れる：BSD・System V）と<strong>再実装の木</strong>（コードは継がず思想だけ：MINIX・GNU・Linux）がある、と見ました。その「血統の木」を掘り下げると、<em>コードの所有権をめぐる法廷闘争</em>と、<em>「Unix らしさ」を仕様として固定する標準化</em>という、二つの大きな物語に出会います。技術のブートストラップと並ぶ、<strong>制度のブートストラップ</strong>の話です。</p>
+
+  <h2><span class="n">01</span>血統の木、法廷へ ── USL v. BSDi</h2>
+
+  <p>血統の木が「本当にコードを継いでいる」ことは、第1回で<em>裁判になったこと</em>を証拠に挙げました。その顛末を追います。UC バークレー（CSRG）は AT&amp;T の<strong>ソースライセンス</strong>の下で BSD を育て、やがて AT&amp;T のコードを除去した部分を <code>Net/1</code>(1988)・<code>Net/2</code>(1991) として公開。BSDi はそれを補完し i386 へ移植して <code>BSD/386</code> を売り出します（電話番号は <em>1-800-ITS-UNIX</em>）。ここで AT&amp;T の <strong>USL</strong> が「我々の UNIX コードが入っている」と提訴（1992, ニュージャージー）。下の図で、その時系列を追ってください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：BSD をめぐる時系列。ライセンス取得 → Net/1・Net/2（AT&Tコード除去） → BSD/386 → 提訴(1992) → 和解(1994) → 4.4BSD-Lite → *BSD。和解のスコアに注目</div>
+    <canvas id="cvTL" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>時系列をたどる<span class="val" id="vTL">1974 ── AT&Tがソースをライセンス</span>
+        <input type="range" id="tl" min="0" max="6" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdTL"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">和解のスコア（1994）</span>
+    <p style="margin-top:8px;">Novell（USL を買収）と大学が和解。争点だった BSD の <strong>18,000 ファイル中、削除はわずか 3、修正は 70</strong>。ほぼ全てが<em>フリー</em>と確認され、proprietary UNIX コードを含まない <strong>4.4BSD-Lite</strong> が公開されました。</p>
+    <p style="margin:8px 0 14px;">意義は二つ。① <strong>コードの血統が、法廷で1行単位で争える</strong>ほど実在した（第1回「血統の木」の裏づけ）。② この訴訟の<em>不確実さ</em>が続いた数年が、ちょうど台頭してきた <strong>Linux</strong>（再実装の木・訴訟と無縁）に追い風を与えた、という見方もあります。</p>
+  </div>
+
+  <h2><span class="n">02</span>System V と Unix 戦争</h2>
+
+  <p>血統の木のもう一方の枝が、AT&amp;T の商用系です。<code>System III</code>（Xenix などの基盤）を継いで、1983年1月に <strong>System V</strong> が登場。AT&amp;T はこれを<em>Unix のデファクト標準</em>にしようとします。一方には BSD 系。両陣営が「どれが本物の Unix か」を競った80年代末〜90年代初頭が、いわゆる <strong>Unix 戦争（Unix wars）</strong>です。ベンダーごとに少しずつ違う Unix が乱立し ── <em>互換性</em>が、切実な問題になりました。</p>
+
+  <h2><span class="n">03</span>POSIX ── 「Unixらしさ」を仕様で固定する</h2>
+
+  <p>分裂への答えが <strong>POSIX</strong> です。IEEE は1984年に P1003 委員会を作り、<code>POSIX.1</code>（IEEE Std 1003.1-1988）として、<strong>100を超えるシステムコールとライブラリ関数を C の API で規定</strong>しました（System V と BSD の双方から採る形で）。名前 “POSIX”（Portable Operating System Interface）は、<em>Richard Stallman が考案</em>したとされます。</p>
+
+  <div class="keybox">
+    <div class="lbl">種明かし ── POSIX は、二本の木を「互換」で橋渡しする</div>
+    <p style="margin:6px 0 0;">POSIX のすごさは、<strong>コード（遺伝子）を共有しなくても、仕様に従えば同じように振る舞える</strong>ようにしたこと。これは第1回の「思想の継承（再実装の木）」を、<em>公式の仕様として固めた</em>ものです。MINIX も Linux も GNU も、AT&amp;T のコードを1行も継がずに「Unix らしく」振る舞える ── その<strong>根拠が POSIX</strong>。血統の木と再実装の木は、根では別々でも、POSIX という<em>水平な共通仕様</em>の上で握手できるようになりました。下の図で、POSIX 前後を切り替えてください。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図2：二本の木と POSIX。POSIX 前は各 OS が独自 API でバラバラ。POSIX 後は、血統の木も再実装の木も、共通仕様 POSIX に接続して同じ API で会話できる</div>
+    <canvas id="cvPosix" width="680" height="320"></canvas>
+    <div class="controls">
+      <button class="btnmini seg" data-m="before">POSIX 前（バラバラ）</button>
+      <button class="btnmini seg on" data-m="after">POSIX 後（互換）</button>
+    </div>
+    <div class="readout" id="rdPosix"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 三本目の継承</span>
+    第1回では継承を二つ（血統・思想）に分けました。この番外で、三本目が見えます ── <strong>標準（仕様による互換）</strong>。①コードを継ぐ（血統）②思想を継ぐ（再実装）③仕様に合わせる（標準）。Linux が「Unix ではない（血統になし）のに Unix として使える」のは、②思想と③標準の合わせ技です。所有権（訴訟）と互換性（POSIX）── コードそのものだけでなく、<em>それを取り巻く制度</em>もまた、Unix 一族を形づくってきました。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 制度は、コードより輪郭がぼやける</span>
+    <p style="margin-top:0;">(1) USL v. BSDi の和解内容には非公開部分があり、細部は資料により表現が異なります。「18,000 中 削除3・修正70」「4.4BSD-Lite」は広く引用される数字です。(2) UNIX™ という<em>商標</em>の所有権は AT&amp;T → Novell → X/Open → The Open Group と複雑に移り、「コードの血統」と「商標・認証の血統」はまた別の話です。</p>
+    <p style="margin-bottom:0;">(3) POSIX は最小公倍数的な取り決めで、現実の OS は独自拡張だらけです。Linux や各 BSD の POSIX 準拠も<em>程度問題</em>で、「POSIX に完全準拠」と「Unix 認証（The Open Group）を取得」はまた別。(4) 「Unix 戦争」は俗称で、実際は複数の標準化団体・連合（後の 単一UNIX仕様 など）が絡む複雑な経緯を、ざっくり一語で呼んだものです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>USL v. BSDi の和解（1994）は、第1回の「血統の木」の何を裏づけたか。
+        <details><summary>答えを見る</summary><div class="ans">BSD に AT&T の実コードが（法廷で1行単位で争えるほど）実在したこと。18,000ファイル中の削除3・修正70という具体的な線引きは、コードの血統が実物であることの証拠。</div></details>
+      </li>
+      <li>Unix 戦争は、なぜ POSIX のような標準を必要としたか。
+        <details><summary>答えを見る</summary><div class="ans">System V 系と BSD 系などベンダーごとに少しずつ違う Unix が乱立し、互換性（同じプログラムがどこでも動くこと）が問題になったから。共通の仕様が要った。</div></details>
+      </li>
+      <li>POSIX は、コードの血統が無い OS に何を可能にしたか。
+        <details><summary>答えを見る</summary><div class="ans">AT&T のコードを1行も継がなくても、仕様（システムコール・API）に従えば「Unix らしく」振る舞い、互換を保てること。再実装の木（MINIX・GNU・Linux）が Unix 互換になれる根拠。</div></details>
+      </li>
+      <li>UNIX 一族の「継承」の三本柱を挙げよ。
+        <details><summary>答えを見る</summary><div class="ans">①コードの継承（血統：BSD・System V）②思想の継承（再実装：MINIX・GNU・Linux）③仕様による互換（標準：POSIX）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>コードの所有権と、振る舞いの互換</h2>
+    <p>第1回の「血統の木」を掘ると、二つの物語に出会う。ひとつは<strong>所有権</strong> ── UC バークレーは AT&amp;T のソースライセンス下で BSD を育て、AT&amp;T コードを除いた <code>Net/1</code>(1988)・<code>Net/2</code>(1991) を公開、BSDi の <code>BSD/386</code> をめぐって AT&amp;T(USL) が提訴（1992）。1994年の和解で <strong>18,000 中 削除3・修正70</strong>、ほぼ全てがフリーと確認され <strong>4.4BSD-Lite</strong> が生まれた。コードの血統は、法廷で争えるほど実在した。</p>
+    <p>もうひとつは<strong>互換</strong> ── AT&amp;T の <code>System V</code>(1983) と BSD が競った <em>Unix 戦争</em>が乱立を生み、その答えが <strong>POSIX</strong>（IEEE 1003.1-1988、名は Stallman 考案）。100超のシステムコールを C の API で規定し、<em>コードを共有しなくても Unix らしく振る舞える</em>基準を作った。これで再実装の木（Linux ら）が堂々と Unix 互換になれた。継承は三本柱 ── ①血統 ②思想 ③標準。Unix 一族を形づくったのは、コードだけでなく、それを取り巻く<strong>制度</strong>でもあった。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編⑤</span>
+    「なぜGNUだったのか ── 自由なツールチェーンを持つために」。第2回で最初の Linux は GNU の <code>gcc</code>・<code>bash</code> で立ち上がりました。なぜ Stallman は、わざわざ Unix を白紙から作り直そうとしたのか。ツールチェーンが<em>自由</em>でなければ、種を自分で撒けない ── その思想と、本編との深いつながりを見ます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編④です。史実：AT&amp;T UNIX のソースは大学等にライセンスされ、UC バークレー CSRG は BSD を派生。AT&amp;T コードを除去した Net/1(1988)・Net/2(1991) を BSD ライセンスで公開し、BSDi が Net/2 を補完・i386 移植して BSD/386 を販売。AT&amp;T の USL が1992年にニュージャージーで BSDi を提訴、UC Regents も被告に加えられた。1994年、Novell（USL を買収）と大学が和解し、BSD 18,000 ファイル中、削除3・修正70に留まり、4.4BSD-Lite が proprietary UNIX コードを含まない版として公開された。System V は AT&amp;T の商用 Unix で System III を継ぎ1983年1月に登場、標準化を志向。80年代末〜90年代初頭のベンダー間標準化競争は Unix 戦争と呼ばれる。POSIX は IEEE の P1003 委員会（1984発足）による標準で、POSIX.1（IEEE Std 1003.1-1988）は100超のシステムコール・ライブラリ関数を C API として規定、System V と BSD の双方に由来。名称 POSIX は Richard Stallman の考案とされる。UNIX 商標の所有権は AT&amp;T → Novell → X/Open → The Open Group と変遷。和解内容の一部は非公開で、細部・数値は資料により幅がある。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで BSD 訴訟の時系列を、図2のボタンで POSIX 前後の互換性を切り替えられます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：BSD訴訟の時系列 ============ */
+  (function(){
+    var cv=document.getElementById('cvTL'), sl=document.getElementById('tl'),
+        vTL=document.getElementById('vTL'), rd=document.getElementById('rdTL');
+    if(!cv) return;
+    var E=[
+      {y:'1974-', t:'AT&T がソースをライセンス', note:'AT&T UNIX のソースが大学等へ。UCバークレー(CSRG)も取得し、改変・拡張を始める。'},
+      {y:'1978',  t:'BSD 始まる', note:'CSRG が AT&T Unix を土台に BSD を配布開始。血統の木の主要な枝。'},
+      {y:'1988',  t:'Net/1（AT&Tコード除去）', note:'TCP/IP 等から AT&T の知的財産を除去して BSD ライセンスで公開。'},
+      {y:'1991',  t:'Net/2', note:'さらに広く AT&T コードを除去した版を公開。'},
+      {y:'1992',  t:'BSD/386 → 提訴', note:'BSDi が Net/2 を補完・i386 移植して販売（1-800-ITS-UNIX）。AT&T(USL) が提訴、UC Regents も被告に。'},
+      {y:'1994',  t:'和解：18,000 中 削除3・修正70', note:'Novell と大学が和解。ほぼ全てがフリーと確認され、4.4BSD-Lite（proprietary コードなし）を公開。', score:true},
+      {y:'1993-',  t:'NetBSD / FreeBSD / OpenBSD', note:'4.4BSD-Lite を基に、血統の木の若葉が広がる。第1回の系統樹の右上。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=E.length;
+      var padL=34, padR=24, axisY=h*0.34, uW=w-padL-padR;
+      ctx.strokeStyle='#c6d2e0'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(padL,axisY); ctx.lineTo(w-padR,axisY); ctx.stroke();
+      for(var i=0;i<n;i++){
+        var x=padL+uW*i/(n-1), active=(i===cur), passed=(i<=cur);
+        if(i>0){ ctx.strokeStyle= passed?'#2166a0':'#dbe4ee'; ctx.lineWidth= passed?3:2;
+          ctx.beginPath(); ctx.moveTo(padL+uW*(i-1)/(n-1),axisY); ctx.lineTo(x,axisY); ctx.stroke(); }
+        ctx.fillStyle= active?'#2166a0':(passed?'#7c93ad':'#dbe4ee'); ctx.strokeStyle='#2166a0'; ctx.lineWidth= active?2.4:1.2;
+        ctx.beginPath(); ctx.arc(x,axisY, active?9:6,0,2*Math.PI); ctx.fill(); if(active)ctx.stroke();
+        ctx.fillStyle= active?'#1e4576':'#98a6b8'; ctx.font=(active?'bold ':'')+'10px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText(E[i].y, x, axisY-14);
+      }
+      // current title
+      var cx=padL+uW*cur/(n-1);
+      ctx.fillStyle='#1e4576'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      var tt=E[cur].t; if(cx< w*0.28) ctx.textAlign='left', cx=padL; else if(cx> w*0.72) ctx.textAlign='right', cx=w-padR;
+      ctx.fillText(tt, cx, axisY+26);
+      // score visual at settlement
+      if(E[cur].score){
+        var bx=w*0.16, by=h*0.52, bw=w*0.68, bh=30;
+        ctx.fillStyle='#e7f2ec'; ctx.strokeStyle='#2f8d5a'; ctx.lineWidth=1.6; rr(ctx,bx,by,bw,bh,6); ctx.fill(); ctx.stroke();
+        // tiny red slivers for removed/modified
+        ctx.fillStyle='#9a4230'; rr(ctx,bx,by,bw*0.018,bh,6); ctx.fill();
+        ctx.fillStyle='#1f6b45'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('BSD 18,000 ファイル ── フリーと確認（削除3・修正70はごく一部）', bx+bw/2, by+20);
+        ctx.fillStyle='#7c93ad'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('→ 4.4BSD-Lite（proprietary コードを含まない版）', w/2, by+bh+22);
+      }
+      ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), e=E[cur]; vTL.textContent=e.y+' ── '+e.t;
+      rd.innerHTML='<strong>'+e.y+'　'+e.t+'</strong>：'+e.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：二本の木 と POSIX ============ */
+  (function(){
+    var cv=document.getElementById('cvPosix'), rd=document.getElementById('rdPosix');
+    if(!cv) return;
+    var mode='after';
+    var GENE=[{l:'System V'},{l:'BSD / *BSD'}];
+    var REIMPL=[{l:'MINIX'},{l:'GNU'},{l:'Linux'}];
+    function node(ctx,x,y,l,col,api){
+      ctx.fillStyle='#fff'; ctx.strokeStyle=col; ctx.lineWidth=1.8; rr(ctx,x-52,y-16,104,32,7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=col; ctx.textAlign='center'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(l,x,y+4);
+      if(api){ ctx.fillStyle='#b06a45'; ctx.font='8.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('独自API', x, y-20); }
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var after=(mode==='after');
+      var topY=h*0.20, botY=h*0.80, barY=h*0.5;
+      // labels
+      ctx.fillStyle='#98a6b8'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('血統の木（AT&Tコード）', 14, topY-26);
+      ctx.fillText('再実装の木（コードなし）', 14, botY+28);
+      // POSIX bar
+      if(after){
+        ctx.fillStyle='#2166a0'; rr(ctx, w*0.10, barY-15, w*0.80, 30, 8); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('POSIX（共通仕様＝Unixらしさを固定した C の API）', w/2, barY+5);
+      } else {
+        ctx.strokeStyle='#d3ddea'; ctx.setLineDash([3,4]); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(w*0.10,barY); ctx.lineTo(w*0.90,barY); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#b6c4d4'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('（共通仕様なし ── みなバラバラの API）', w/2, barY+4);
+      }
+      // gene nodes (top)
+      var gx=[w*0.28,w*0.62];
+      for(var i=0;i<GENE.length;i++){ node(ctx,gx[i],topY,GENE[i].l,'#2166a0',!after);
+        if(after){ ctx.strokeStyle='#2166a0'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(gx[i],topY+16); ctx.lineTo(gx[i],barY-15); ctx.stroke(); } }
+      // reimpl nodes (bottom)
+      var rx=[w*0.24,w*0.5,w*0.76];
+      for(i=0;i<REIMPL.length;i++){ node(ctx,rx[i],botY,REIMPL[i].l,'#2f7d55',!after);
+        if(after){ ctx.strokeStyle='#2f7d55'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(rx[i],botY-16); ctx.lineTo(rx[i],barY+15); ctx.stroke(); } }
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='after') rd.innerHTML='<strong>POSIX 後</strong>：血統の木（System V・BSD）も再実装の木（MINIX・GNU・Linux）も、共通仕様 POSIX に接続。<strong>コードを共有せずとも、同じ API で会話＝互換</strong>になる。第1回の「思想の継承」を公式化したもの。';
+      else rd.innerHTML='<strong>POSIX 前</strong>：各 OS がそれぞれ独自の API を持ち、プログラムの互換が取りにくい。Unix 戦争の乱立状態。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>

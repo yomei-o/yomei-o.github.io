@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クロスコンパイル ── 鶏なしで卵を作る ｜ わかるUNIXの歴史 番外編③</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf7f0; --paper-edge:#e8dcc6;
+    --side:#6a4a9c; --side-bg:#efe9f5;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#e0d4bc; --hair:#cfbf9c;
+    --acc:#a8681a;
+    --grid:#e6dcc6;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0dfba 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f1ebdd;border:1px solid #e8dcc6;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a52;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf5;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#eee2c8;color:#7a5312;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f4ead4;color:#734810;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf7;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f8f1e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf7,#f0e6d0);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ead4;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#734810;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ③</span><span class="ep">よそで作って、運ぶ・現代版</span></div>
+  <p class="eyebrow">第8回「紙テープで運ぶ」の、いまの姿 ── 鶏なしで、卵を作る</p>
+  <h1>クロスコンパイル ── 鶏なしで、卵を作る
+    <span class="sub">まだ何も動いていない新しい CPU。そこには OS もコンパイラも無い（鶏がいない）。ではどうやって最初のプログラムを用意するか ── <em>すでに動く別の機械で、その CPU 向けの卵を焼く。</em> 第8回の GE-635→PDP-7 と、同じ骨格の現代版です。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：第8回（クロスアセンブル）・第3回（着火）</span>
+    <span>種明かし：build / host / target を、ずらす</span>
+  </div>
+
+  <p class="lead">第8回で、生まれる前の PDP-7 は自分ではプログラムを作れず、GE-635 で作って紙テープで運んだ、と見ました。<em>「よそで作って運ぶ」</em>── この技は、今も現役どころか、あらゆる新機種の立ち上げの土台です。新しい CPU、スマホ、組込みマイコン ── どれも最初は「鶏がいない」状態から、<strong>手元の別の機械（PC）で、その機種向けの卵を焼く</strong>ことで立ち上がります。これが<strong>クロスコンパイル</strong>。鶏と卵を、機械を<em>ずらして</em>解く技です。</p>
+
+  <h2><span class="n">01</span>三つの機械 ── build / host / target</h2>
+
+  <p>クロスを正確に語るには、三つの役割を分けます（GNU の用語）。</p>
+
+  <div class="calc">
+    <span class="tag">三つの役割</span>
+    <p style="margin-top:8px;"><strong>build</strong>：コンパイラ自体を<em>ビルドする</em>機械。</p>
+    <p style="margin:6px 0;"><strong>host</strong>：そのコンパイラが<em>動く</em>機械。</p>
+    <p style="margin:6px 0 14px;"><strong>target</strong>：そのコンパイラが<em>吐くコードが動く</em>機械（クロスコンパイラを作るときだけ問題になる）。</p>
+  </div>
+
+  <p>この三つがどう一致・相違するかで、名前が変わります。下の図で切り替えてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：build / host / target。同じ機械には同じ色。native は三つとも同じ。cross は target だけ違う。Canadian Cross は三つとも違う</div>
+    <canvas id="cvTriple" width="680" height="290"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-m="native">native（自前）</button>
+      <button class="btnmini seg" data-m="cross">cross（クロス）</button>
+      <button class="btnmini seg" data-m="canadian">Canadian Cross</button>
+    </div>
+    <div class="readout" id="rdTriple"></div>
+  </div>
+
+  <h2><span class="n">02</span>なぜクロスか ── target に鶏がいない</h2>
+
+  <p>新しい CPU を作ったとき、その <strong>target</strong> にはまだ何も動いていません。OS も、コンパイラも、アセンブラも無い。第8回の生まれる前の PDP-7 と同じ ── <em>native（target 上で target 向けを作る）は、そもそも不可能</em>。だから、<strong>すでに動く build 機（手元の PC）で、target 向けのコンパイラや OS を焼く</strong>。x86 の PC で ARM や RISC-V 向けを、あるいは OS すら載らない組込みマイコン向けを ── みなこの方式です。</p>
+
+  <div class="term">
+<span class="c"># 手元の x86 PC(build=host) で、ARM(target) 向けをクロスコンパイル</span>
+<span class="p">$</span> arm-linux-gnueabihf-gcc -o hello hello.c
+<span class="p">$</span> file hello
+   hello: <span class="o">ELF 32-bit ... ARM</span>   <span class="c"># x86 では動かない。ARM 機に運んで動かす</span>
+  </div>
+
+  <h2><span class="n">03</span>Canadian Cross ── 三つとも違う</h2>
+
+  <p>もう一段ひねると、<strong>build・host・target が三つとも違う</strong>こともあります。これを <em>Canadian Cross</em> と呼びます。たとえば ── <strong>速い Linux 機（build）で、Windows 上で動き（host）、ARM 向けコードを吐く（target）コンパイラ</strong>を作る。ユーザは Windows で使い、成果物は ARM で走る、という具合。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── なぜ「カナダ風」なのか</span>
+    奇妙な名前ですが、由来は政治のジョークです。この方式の整理が進んでいた当時、<strong>カナダに国政政党が三つあった</strong>ことにかけて「三者三様＝Canadian（Cross）」と名づけられました。技術用語にたまに紛れ込む、開発者たちの内輪ネタのひとつ。第8回の紙テープが「二つの機械（GE-635 と PDP-7）」だったのを、<em>三つ</em>に増やしたのがこれ、と思えば十分です。
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 鶏と卵を「ずらして」解く</div>
+    <p style="margin:6px 0 0;">クロスの本質は、第8回とまったく同じ ── <strong>「target で target を作らなくていい。すでに動く build 機を借りればいい」</strong>。鶏がいない新機種でも、<em>よその鶏</em>から卵を得る。これは第3回「既存 <code>cc</code> を借りて着火」、第6回「O-code を運ぶ」、第8回「紙テープで運ぶ」と一本の同じ骨格。役割（build/host/target）を<em>ずらす</em>ことで、この機械の中では解けない鶏と卵を、<strong>別の（既に動く）機械へ移して</strong>解くのです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>やがて自立 ── target が native になる</h2>
+
+  <p>クロスは立ち上げの手段であって、ゴールではありません。build 機で焼いたツールチェーンと OS を target に載せて起動できたら、<em>やがて target 自身が、target 向けをビルドできる</em>ようになる ── <strong>native な自己ホスティング</strong>。これは第2回の Linux <code>v0.11</code>（MINIX という産室を出て自立）や、第8回の PDP-7（GECOS を卒業）と、まったく同じ筋書きです。下の図で、新アーキが「鶏なし」から「自立」まで立ち上がる流れを追ってください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：新アーキの立ち上げ。target には最初なにも無い（鶏なし）。build 機でツールチェーンと OS をクロスコンパイルして載せ、起動し、やがて target が native に自己ホスティングする</div>
+    <canvas id="cvBringup" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>立ち上げのステップを進める<span class="val" id="vBu">① 新CPU（target）── 鶏なし</span>
+        <input type="range" id="bu" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdBu"></div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── クロスは魔法ではない</span>
+    <p style="margin-top:0;">(1) クロスは鶏と卵を<em>解決</em>しません。第8回と同じく、この機械の中で解くのをやめ<strong>別の（既に動く）機械へ移す</strong>だけ。連鎖は有限で、さかのぼれば最初の機械（第9・10回）に底を打ちます。(2) 実務のクロスは地味に大変です ── target 用のヘッダやライブラリ（sysroot）を揃える、libc をどう用意するか、実機が無ければ QEMU などのエミュレータでテストする、など。</p>
+    <p style="margin-bottom:0;">(3) build/host/target は GNU の用語で、他の文脈（例：Rust など）では呼び方や区分が少し違うことがあります。(4) 「Canadian Cross」の由来は広く語られる逸話で、細部には諸説あります。要点は「三つの機械が全部違いうる」という構造です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>build・host・target をそれぞれ一言で。
+        <details><summary>答えを見る</summary><div class="ans">build＝コンパイラをビルドする機械、host＝そのコンパイラが動く機械、target＝そのコンパイラが吐くコードが動く機械。</div></details>
+      </li>
+      <li>native・cross・Canadian Cross の違いを、三つ組の一致で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">native＝build=host=target（全部同じ）。cross＝build=host で target だけ違う。Canadian Cross＝build・host・target が三つとも違う。</div></details>
+      </li>
+      <li>新しい CPU の立ち上げで native が使えないのはなぜか。第8回の何と同じか。
+        <details><summary>答えを見る</summary><div class="ans">target にまだコンパイラも OS も無い（鶏がいない）ので、target 上で target 向けを作れないから。生まれる前の PDP-7（第8回）と同じ状況で、既存の build 機を借りるしかない。</div></details>
+      </li>
+      <li>クロスで立ち上げた target は、最終的にどうなるか。本編のどの回と同じ筋書きか。
+        <details><summary>答えを見る</summary><div class="ans">やがて target 自身が target 向けをビルドできる native な自己ホスティングに到達する。第2回の Linux v0.11（産室を出て自立）や第8回の PDP-7（GECOS 卒業）と同じ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>役割をずらせば、鶏なしでも卵は焼ける</h2>
+    <p>第8回「よそで作って運ぶ」の現代版がクロスコンパイル。三つの役割 ── <strong>build</strong>（ビルドする機械）・<strong>host</strong>（コンパイラが動く機械）・<strong>target</strong>（吐くコードが動く機械）── の一致/相違で、native（全部同じ）・cross（target だけ違う）・<strong>Canadian Cross</strong>（三つとも違う）が決まる。新しい CPU は最初 target に何も無い（鶏なし）ので native は不可能。だから既に動く build 機で、target 向けを焼く。</p>
+    <p>急所は第8回と同一 ── <strong>「target で target を作らなくていい、動く build 機を借りればいい」</strong>。第3回（既存 cc）・第6回（O-code 運搬）・第8回（紙テープ）と一本の骨格で、鶏と卵を<em>役割をずらして別の機械へ移して</em>解く。そして立ち上げた target は、やがて native な自己ホスティングへ ── 第2回 Linux <code>v0.11</code>、第8回 PDP-7 の GECOS 卒業と同じ筋書き。クロスは鶏と卵を消しはしないが、有限の連鎖で、いつも「既に動く機械」から新機種を産み落とす技だった。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編④</span>
+    「二本の木の続き ── BSD訴訟・System V・POSIX」。第1回で分けた「血統の木（コードの継承）」を、法廷まで深掘り。AT&T が BSD を訴えた USL v. BSDi、System V の商用系、そして「Unix らしさ」を仕様で固定した POSIX ── コードの血統をめぐる、所有権と互換性の物語です。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編③です。技術：GNU の用語で、build はコンパイル作業を実行する機械、host は生成されたバイナリ（コンパイラ）が動く機械、target はクロスコンパイラを作る場合にそのコンパイラが生成するコードが動く機械。build=host=target を native、build=host かつ target が異なるものを cross、build・host・target が（build≠host を含め）すべて異なるものを Canadian Cross と呼ぶ。Canadian Cross の名は、この整理が進んだ当時カナダに三つの国政政党があったことにちなむとされる（逸話）。新アーキテクチャの立ち上げでは、target に動作環境が無いため、既存の build 機で target 向けツールチェーン・カーネル・ユーザランドをクロスコンパイルし、target で起動後にやがて native な自己ホスティングへ移行する。クロスは鶏と卵を解決せず、既に動く別機械へ移すが連鎖は有限で最初の機械に底を打つ（第9・10回）。sysroot・libc・エミュレータ（QEMU 等）による検証など実務上の課題がある。呼称・区分は文脈により差がある。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンで native / cross / Canadian Cross を切り替え、図2のスライダーで新アーキの立ち上げを追えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：build/host/target ============ */
+  (function(){
+    var cv=document.getElementById('cvTriple'), rd=document.getElementById('rdTriple');
+    if(!cv) return;
+    var mode='native';
+    var COL=['#a8681a','#2166a0','#2f7d63']; // machine A,B,C
+    // machine index per role for each mode: [build,host,target]
+    var MAP={ native:[0,0,0], cross:[0,0,1], canadian:[0,1,2] };
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var m=MAP[mode], roles=['build','host','target'], desc=['ビルドする機械','コンパイラが動く機械','コードが動く機械'];
+      var n=3, pad=24, gap=(w-2*pad)/n, bw=gap*0.74, bh=70, cy=h*0.42;
+      var cxs=[];
+      for(var i=0;i<n;i++){
+        var cx=pad+gap*i+gap/2; cxs.push(cx);
+        var col=COL[m[i]];
+        ctx.fillStyle='#fff'; ctx.strokeStyle=col; ctx.lineWidth=2.2;
+        rr(ctx,cx-bw/2,cy-bh/2,bw,bh,9); ctx.fill(); ctx.stroke();
+        // colored header band = machine identity
+        ctx.fillStyle=col; rr(ctx,cx-bw/2,cy-bh/2,bw,18,9); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText(roles[i], cx, cy-bh/2+13);
+        ctx.fillStyle=col; ctx.font='bold 14px "SFMono-Regular",Consolas,monospace';
+        ctx.fillText('機械 '+String.fromCharCode(65+m[i]), cx, cy+2);
+        ctx.fillStyle='#7a6a52'; ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(desc[i], cx, cy+18);
+      }
+      // compiler chip sits on host
+      var hostCx=cxs[1];
+      ctx.fillStyle='#3a4a5a'; rr(ctx,hostCx-38,cy+bh/2+10,76,22,5); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 11px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      ctx.fillText('コンパイラ', hostCx, cy+bh/2+25);
+      // arrow build -> compiler (built on build, runs on host)
+      ctx.strokeStyle='#9aa5ad'; ctx.fillStyle='#9aa5ad'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(cxs[0], cy+bh/2+2); ctx.lineTo(hostCx-40, cy+bh/2+21); ctx.stroke();
+      ctx.fillStyle='#8a7a5a'; ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('build で作る', (cxs[0]+hostCx)/2-20, cy+bh/2+40);
+      // arrow compiler -> target (emits code for target)
+      ctx.strokeStyle='#9aa5ad'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(hostCx+40, cy+bh/2+21); ctx.lineTo(cxs[2], cy+bh/2+2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cxs[2], cy+bh/2+2); ctx.lineTo(cxs[2]-6,cy+bh/2+10); ctx.lineTo(cxs[2]+4,cy+bh/2+9); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#8a7a5a'; ctx.fillText('target 向けを吐く', (hostCx+cxs[2])/2+18, cy+bh/2+40);
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='native') rd.innerHTML='<strong>native</strong>：build=host=target（全部同じ機械 A）。ふつうの「自分の機械で自分向けをビルド」。';
+      else if(mode==='cross') rd.innerHTML='<strong>cross</strong>：build=host（機械 A）で動くコンパイラが、別の target（機械 B）向けを吐く。新CPUの立ち上げの基本。';
+      else rd.innerHTML='<strong>Canadian Cross</strong>：build（A）・host（B）・target（C）が三つとも違う。A で作り、B で動き、C 向けを吐くコンパイラ。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：新アーキの立ち上げ ============ */
+  (function(){
+    var cv=document.getElementById('cvBringup'), sl=document.getElementById('bu'),
+        vBu=document.getElementById('vBu'), rd=document.getElementById('rdBu');
+    if(!cv) return;
+    var ST=[
+      {h:'① 新CPU（target）── 鶏なし', note:'target には OS もコンパイラも無い。自分では何も作れない（第8回の生まれる前の PDP-7 と同じ）。'},
+      {h:'② build 機でツールチェーンをクロス', note:'既に動く build 機（PC）で、target 向けのクロスコンパイラを用意する。'},
+      {h:'③ OS・ユーザランドをクロスコンパイル', note:'build 機で、target 向けのカーネルとユーザランドを焼く。まだ target では動かしていない。'},
+      {h:'④ target に載せて起動', note:'焼いたものを target に載せ、初めて起動。新CPUの上でソフトが動いた。'},
+      {h:'⑤ native な自己ホスティング達成', note:'target 自身が target 向けをビルドできるように。build 機を卒業＝自立（第2回 v0.11・第8回 GECOS 卒業と同じ）。'}
+    ];
+    function machine(ctx,x,y,w,h,label,sub,col,active){
+      ctx.fillStyle= active?'#fff':'#f3f1ea'; ctx.strokeStyle=col; ctx.lineWidth= active?2.4:1.6;
+      rr(ctx,x,y,w,h,10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle= active?'#1b2330':'#c4c0b4'; rr(ctx,x+10,y+10,w-20,h*0.36,4); ctx.fill();
+      ctx.fillStyle=col; ctx.textAlign='center'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(label,x+w/2,y+h-22); ctx.fillStyle='#8a8175'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(sub,x+w/2,y+h-6);
+    }
+    function chip(ctx,x,y,label,col){
+      ctx.fillStyle=col; ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.lineWidth=1; rr(ctx,x-40,y-13,80,26,5); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#fff'; ctx.font='bold 10.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center'; ctx.fillText(label,x,y+4);
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var st=parseInt(sl.value,10);
+      var bx=w*0.05, tx=w*0.62, my=h*0.30, mw=w*0.30, mh=h*0.42;
+      machine(ctx,bx,my,mw,mh,'build 機（既存）','x86 PC など','#2166a0',true);
+      machine(ctx,tx,my,mw,mh,'target（新CPU）', st>=4?'native 自立':(st>=3?'起動！':'鶏なし'),'#a8681a', st>=3);
+      // chips crossing
+      var midY=my-2;
+      if(st===1){ chip(ctx,bx+mw/2,midY,'ツールチェーン','#3a4a5a'); }
+      else if(st===2){ chip(ctx,bx+mw/2,midY,'OS＋userland','#2f7d63'); }
+      else if(st===3){
+        chip(ctx,(bx+mw+tx)/2,midY,'載せて起動','#a8681a');
+        ctx.strokeStyle='#c1a969'; ctx.setLineDash([5,4]); ctx.lineWidth=1.8;
+        ctx.beginPath(); ctx.moveTo(bx+mw,midY); ctx.lineTo(tx,midY); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#8a5e10'; ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center'; ctx.fillText('運ぶ →', (bx+mw+tx)/2, midY-16);
+      } else if(st>=4){
+        // native self-loop on target
+        var lx=tx+mw/2, ly=my+8, R=17;
+        ctx.strokeStyle='#a8681a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(lx,ly,R,0.2*Math.PI,1.8*Math.PI); ctx.stroke();
+        var ea=1.8*Math.PI; ctx.fillStyle='#a8681a';
+        ctx.beginPath(); ctx.moveTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea)-6,ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)+6); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#734810'; ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center'; ctx.fillText('native 自己ホスティング', lx, ly-R-5);
+      }
+      // arrow between (dim baseline)
+      ctx.strokeStyle='#e0d4bc'; ctx.setLineDash([4,4]); ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(bx+mw,my+mh*0.5); ctx.lineTo(tx,my+mh*0.5); ctx.stroke(); ctx.setLineDash([]);
+      ctx.textAlign='left';
+    }
+    function update(){ var st=parseInt(sl.value,10), s=ST[st]; vBu.textContent=s.h; rd.innerHTML='<strong>'+s.h+'</strong>：'+s.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

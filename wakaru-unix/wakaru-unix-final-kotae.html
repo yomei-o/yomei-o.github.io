@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鶏と卵の答え ── 種は手で彫られた ｜ わかるUNIXの歴史 最終回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f6f6f4; --paper-edge:#dedcd4;   /* 最終回：スレートの紙 */
+    --side:#8a5e10; --side-bg:#f4ead2;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#d3d2ca; --hair:#c0bfb5;
+    --acc:#4a4f6a;    /* 最終回アクセント＝スレート */
+    --grid:#dcdbd4;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #d3d6e2 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#ecece7;border:1px solid #dedcd4;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#4a3410;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfbf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini.alt{background:#9a9cae;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e9eaef;color:#33384e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfdfb;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eeeef2;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfdfb,#e6e6ea);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .creed{margin:26px 0;padding:22px 26px;border:2px solid var(--acc);border-radius:4px;background:#fbfbf9;text-align:center;}
+  .creed .big{font-size:22px;font-weight:600;color:var(--acc);letter-spacing:.04em;line-height:1.6;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.creed,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} .creed .big{font-size:18px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">最終回 ／ 底から見上げる</span></div>
+  <p class="eyebrow">第0回で出した問い ── その答えの、全体像を組み立てる</p>
+  <h1>鶏と卵の答え ── 種は手で彫られた
+    <span class="sub">Linux は <code>gcc</code> が、<code>gcc</code> は既存 <code>cc</code> が、C は B が、アセンブラはクロスが、最初のバイトは人間の手が、その意味は配線が。── 降りきった底から見上げると、<em>鶏と卵の答え</em>が一枚の絵になります。</span>
+  </h1>
+  <div class="byline">
+    <span>これまでの全10回の合流点</span>
+    <span>合言葉：最初の卵は、手で彫った</span>
+  </div>
+
+  <p class="lead">第0回で、私たちは問いを立てました ── 「Linux は Linux 上の <code>gcc</code> でコンパイルする。では<em>最初の</em> Linux は、何がコンパイルしたのか?」。以来、その輪の外へ、下へ、一段ずつ降りてきました。MINIX 上の <code>gcc</code>、既存の <code>cc</code>、B から育った C、O-code、PDP-7 のアセンブリ、GE-635 のクロスアセンブラと紙テープ、トグルスイッチで手入力した数語、そして意味を与える配線されたデコーダ。長い階段でした。もう底です。今回は登り返して、<strong>鶏と卵の答え</strong>を、はっきり言葉にします。</p>
+
+  <h2><span class="n">01</span>降りてきた階段を、もう一度</h2>
+
+  <p>まず全体を一望します。第0回で予告した階段を、私たちは<em>実際に</em>降りきりました。下の図で、いちばん下の<strong>種</strong>に火を入れてください。火が下から上へ順に灯り、いちばん上で ── 第0回の<em>自己ホスティングの輪</em>が、回り始めます。</p>
+
+  <div class="fig">
+    <div class="cap">図1：点火。底の「種（人間の手＋配線）」から火が入り、機械語→アセンブラ→C→gcc→Linux と灯っていき、最上段で自己ホスティングの輪が回り出す ── これがシリーズ全体の一枚絵</div>
+    <canvas id="cvIgnite" width="680" height="420"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="igBtn">▶ 種に火を入れる</button>
+      <button class="btnmini alt" id="igReset">リセット</button>
+    </div>
+    <div class="readout" id="rdIg">いちばん下の種＝人間の手（第9回）＋配線された意味（第10回）。ここに火を入れると…</div>
+  </div>
+
+  <h2><span class="n">02</span>答え ── 無限後退ではなく、二つの種で底を打つ</h2>
+
+  <p>鶏と卵は、素朴には<em>無限に</em>さかのぼるように見えます。でも実際は違いました。<strong>連鎖は有限で、ソフトでない二つの種に受け止められて、止まる</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">シリーズの答え ── 二つの種</div>
+    <p style="margin:6px 0 0;">
+    <strong>種①：最初のバイト（第9回）</strong>── 人間が命令表を見て機械語を手で作り、トグルスイッチで入れた数語。<br>
+    <strong>種②：意味を与える機械（第10回）</strong>── そのバイトを動作に変える、人間が設計・配線した論理ゲート。<br>
+    どちらも<em>プログラムではありません</em>。<strong>人間＋物理</strong>です。鶏（動くソフト）と卵（そのソース）が互いを必要とする輪は、この二つの種によって<em>外から一度だけ</em>着火された。以後は ── soft が soft を作るループが、自分で回り続けています。</p>
+  </div>
+
+  <div class="calc">
+    <span class="tag">「その種は何が作った?」への答え方</span>
+    <p style="margin-top:8px;">種①②にも「では人間は? 物理は?」と問えます。でもそれは<strong>もう“何がコンパイルしたか”という問いではありません</strong>。人間の意図と、物理法則の話 ── <em>ソフトの鶏と卵とは別の鎖</em>です。私たちが追ってきた「何が何をコンパイルしたか」の鎖は、<strong>ソフトでないもの（手と配線）に着いた時点で、正しく終わっている</strong>。無限後退ではなく、着地でした。</p>
+  </div>
+
+  <h2><span class="n">03</span>種が撒かれたあと ── ループは、止まっていない</h2>
+
+  <p>そして、ここがいちばん美しいところ。<strong>種に火が入ったのは、一度きり</strong>でした。あとは自己ホスティングの輪が回り続けている ── C が C を、<code>gcc</code> が <code>gcc</code> を、Linux が Linux を作り、その上でまた次の <code>gcc</code> が…。だから<em>今のあなたは、もう手でスイッチを叩かなくていい</em>。半世紀前に一度撒かれた種から伸びたループが、一度も止まらずに、今あなたの手元まで回ってきているのです。下の年表で、その一本道をたどってください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：一本道の年表。Multics の反動から Unix、C、MINIX、Linux、そして今へ。スライダーで各節目の「役割」を確かめる ── どれも同じ一つのループの上にある</div>
+    <canvas id="cvTimeline" width="680" height="300"></canvas>
+    <div class="controls">
+      <label>年表をたどる<span class="val" id="vTl">1969 ── 最初のUnix</span>
+        <input type="range" id="tl" min="0" max="6" step="1" value="2">
+      </label>
+    </div>
+    <div class="readout" id="rdTl"></div>
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 二本の木も、同じ種の上（第1回の回収）</span>
+    第1回で「血統の木（BSD…）」と「再実装の木（MINIX・GNU・Linux）」を分けました。系譜としては別々の二本ですが、<strong>どちらの木も、根の下では同じ物理の種の上に立っています</strong>。遺伝子を継ごうと、思想だけを継ごうと、動くには「意味を与える配線された機械」と「最初にそれを起こした手」が要る。二本の木は地上で枝分かれしても、地面の下では同じ大地 ── 人間が設計し配線したハードウェア ── に支えられていました。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>bootstrap ── 靴ひもの謎、解ける</h2>
+
+  <p><code>bootstrap</code> は「自分の靴ひもを引っぱって自分を持ち上げる」という、物理的に不可能なほら話でした（第9回）。ソフトウェアは、まさにそれをやっているように見える ── <em>コンパイラがコンパイラを作り、OS が OS を作る</em>。でも謎は解けました。<strong>最初の一度だけ、外にいる人間の手が、代わりに持ち上げた</strong>のです。いったん少しでも持ち上がれば、あとは「1つ前の自分」を足場にして、自分で自分を持ち上げられる。自己ホスティングとは、<em>前の自分の肩に乗ること</em>。靴ひもの謎の答えは ── <strong>最初の一歩だけ、他人（人間）の手を借りた</strong>、でした。</p>
+
+  <div class="creed">
+    <p class="big">鶏が先か、卵が先か。<br>── 最初の卵は、手で彫った。</p>
+    <p style="margin:10px 0 0;font-family:'Hiragino Kaku Gothic ProN',sans-serif;font-size:13px;color:var(--ink-soft);">そして彫られた種のあとは、ソフトがソフトを作るループが、一度も止まらずに回り続けている。</p>
+  </div>
+
+  <h2><span class="n">05</span>いま <code>gcc</code> と打つとき</h2>
+
+  <p>あなたが端末で <code>gcc</code> と打ち、Linux をビルドするとき ── その一行は、<strong>切れ目のない鎖</strong>でつながっています。前の <code>gcc</code>、そのまた前の <code>gcc</code>、…、Ritchie が B から育てた C、Thompson が紙テープで運んだアセンブラ、誰かがコンソールでスイッチを叩いた数語、そして技術者たちが配線した論理ゲートへ。<em>その鎖は、一度も切れていない</em>。あなたのビルドは、半世紀前に手で撒かれた種から、今も伸び続けている枝の先端です。── これが「わかるUNIXの歴史」の、答えでした。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 最後に、ていねいに</span>
+    <p style="margin-top:0;">(1) 「二つの種で底を打つ」は<strong>ソフトウェアの鶏と卵</strong>（何が何をコンパイルしたか）に対する答えです。ハードウェアの製造・設計そのものには、別のブートストラップ（チップを設計する道具も、また別のチップやソフト…）があり、それはそれで豊かな別の物語です ── 本シリーズの射程の外に、まだ続いています。</p>
+    <p style="margin-bottom:0;">(2) 歴史の細部（年号・人物・経緯）は資料により幅があり、各回の脚注で出典の取れる範囲に留めました。(3) 「手で彫った」「種」「火」は理解のための言い回しですが、初期のハンドアセンブルとスイッチ入力（第9回）、命令セットの人手設計（第10回）という<em>事実</em>に裏打ちされています。(4) このシリーズは、コンパイラ・OS・自己ホスティングという枠組みが<strong>有効に働いている</strong>ことを前提に、その“出発点”だけを問い直したものです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">最後の練習問題（シリーズ全体で解けます）</div>
+    <ol>
+      <li>「Linux は何がコンパイルしたか」を無限にさかのぼると、どこで、何に着地するか。
+        <details><summary>答えを見る</summary><div class="ans">無限には続かず有限で着地する。ソフトでない二つの種 ──①人間が手で入れた最初のバイト、②人間が設計・配線した意味を与える機械（論理ゲート）── に受け止められて止まる。</div></details>
+      </li>
+      <li>「種が撒かれたあと」に起きていることを一文で。
+        <details><summary>答えを見る</summary><div class="ans">自己ホスティングのループ（ソフトがソフトを作る輪）が、一度も止まらずに回り続けている。だから今は手でスイッチを叩かなくてよい。</div></details>
+      </li>
+      <li>bootstrap（靴ひもで自分を持ち上げる）の謎の答えは。
+        <details><summary>答えを見る</summary><div class="ans">最初の一度だけ、外にいる人間の手が代わりに持ち上げた。少しでも持ち上がれば、以後は「1つ前の自分」を足場に自分で持ち上げられる（自己ホスティング）。</div></details>
+      </li>
+      <li>合言葉「最初の卵は、手で彫った」を、あなたの言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">（例）鶏も卵も無からは湧かず、いちばん最初だけ人間が手で機械語を作り機械を配線して起こした。その一度の“手彫りの種”のあとは、ソフトがソフトを作るループが自走している。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">結び</span>底に着いて、見えたもの</h2>
+    <p>「最初の Linux は何がコンパイルしたのか」から始めて、私たちは輪の外へ、下へ降り続けた ── MINIX 上の <code>gcc</code>、既存 <code>cc</code>、B から育った C、O-code、PDP-7 のアセンブリ、GE-635 のクロスアセンブラと紙テープ、手でトグルした数語、配線された命令デコーダ。鶏と卵は<strong>無限後退ではなく、ソフトでない二つの種</strong>── ①手で入れた最初のバイト、②手で配線した意味を与える機械 ── で底を打った。両方とも<em>人間＋物理</em>だった。</p>
+    <p>種に火が入ったのは一度きり。あとは<strong>自己ホスティングのループ</strong>が、半世紀、一度も止まらずに回り続け、今あなたの <code>gcc</code> まで届いている。<code>bootstrap</code>＝靴ひもで自分を持ち上げる不可能事の答えは、「最初の一歩だけ、人間の手が持ち上げた」。第1回の二本の木（血統と再実装）も、根の下では同じ物理の大地に立っていた。── <strong>鶏が先か、卵が先か。最初の卵は、手で彫った。</strong> 彫られた種のあとは、ソフトがソフトを作るループが回り続けている。これが、このシリーズの答えです。読んでくださって、ありがとう。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ最終回です。本シリーズは「最初の Linux は何がコンパイルしたのか」という問いから、ツールチェーンのブートストラップ（何が何をコンパイル／アセンブルしたか）を時代の逆順にたどり、Linux(1991, MINIX 上の gcc) → gcc(既存 cc・3段ブートストラップ) → C(B から連続進化, 1972-73) → B/BCPL(O-code) → 初代 Unix(1969, PDP-7 アセンブリ) → クロスアセンブラと紙テープ(GE-635/GECOS) → 手作業のブートストラップ(ハンドアセンブル・トグルスイッチ) → 命令デコーダ(論理ゲート) までを扱った。ソフトウェアの鶏と卵は有限で、ソフトでない二つの種（人手による初期ブートと、人手で設計・配線されたハードウェア）に帰着する。ハードウェアの製造・設計自体のブートストラップは別問題で、本シリーズの射程外。年号・人物・経緯は資料により幅があり、各回末尾の脚注で出典の取れる範囲に記した。「種」「火」「手で彫った」は理解のための言い回しだが、初期のハンドアセンブル・スイッチ入力・命令セットの人手設計という事実に基づく。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・アニメ・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1の「▶ 種に火を入れる」で全体の点火を、図2のスライダーで年表をたどれます。「答えを見る」で解答が開きます。目次に戻って、気になる回をもう一度どうぞ。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：点火 ── 種からループへ ============ */
+  (function(){
+    var cv=document.getElementById('cvIgnite'), btn=document.getElementById('igBtn'), reset=document.getElementById('igReset'),
+        rd=document.getElementById('rdIg');
+    if(!cv) return;
+    // bottom -> top
+    var LAY=[
+      {l:'種：人間の手 ＋ 配線', s:'第9・10回（ソフトでない）', col:'#8a5e10'},
+      {l:'機械語 / ハードウェア', s:'配線が数値を動作に', col:'#3a4a5a'},
+      {l:'アセンブラ', s:'第7・8回：クロス→自立', col:'#9a4230'},
+      {l:'C（B から育てた）', s:'第5・6回：自己ホスティング点火', col:'#6d4aa7'},
+      {l:'gcc / ツールチェーン', s:'第3・4回：3段ブートストラップ', col:'#2166a0'},
+      {l:'Linux / OS', s:'第2回：v0.11 で自立', col:'#b0651e'}
+    ];
+    var lit=0, playing=false, spin=0, spinning=false, announced=false, raf=null, t0=0, stepDur=520;
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var n=LAY.length, marginTop=54, marginBot=16, loopH=0;
+      var areaH=h-marginTop-marginBot;
+      var bh=Math.min((areaH)/(n+0.6), 46), gap=6;
+      var totalH=n*bh+(n-1)*gap;
+      var x=w*0.30, bw=w*0.42, baseY=h-marginBot;
+      for(var i=0;i<n;i++){ // i=0 bottom
+        var y=baseY-(i+1)*bh-i*gap;
+        var on=i<lit;
+        ctx.save(); ctx.globalAlpha= on?1:0.28;
+        ctx.fillStyle= on? LAY[i].col : '#ecebe6'; ctx.strokeStyle=LAY[i].col; ctx.lineWidth= (i===lit-1&&on)?2.6:1.6;
+        rr(ctx,x,y,bw,bh,7); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= on? '#fff':'#9a988f'; ctx.textAlign='left'; ctx.font='bold 12.5px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(LAY[i].l, x+12, y+bh*0.42);
+        ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.globalAlpha= on?0.9:0.28;
+        ctx.fillText(LAY[i].s, x+12, y+bh*0.78);
+        ctx.restore();
+        // flame marker on the newly lit
+        if(on && i===lit-1 && !spinning){
+          ctx.fillStyle='#e2b565'; ctx.beginPath(); ctx.arc(x-14,y+bh/2,6,0,2*Math.PI); ctx.fill();
+          ctx.globalAlpha=0.3; ctx.beginPath(); ctx.arc(x-14,y+bh/2,11,0,2*Math.PI); ctx.fill(); ctx.globalAlpha=1;
+        }
+      }
+      // seed hand label at bottom-left
+      ctx.fillStyle='#8a5e10'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='right';
+      ctx.fillText('火', x-26, baseY-bh/2+4);
+      // top loop
+      var topY = baseY-totalH-30;
+      if(spinning){
+        var lx=x+bw*0.5, ly=topY-2, R=22;
+        ctx.strokeStyle='#4a4f6a'; ctx.lineWidth=2.6;
+        ctx.beginPath(); ctx.arc(lx,ly,R,0.15*Math.PI,1.8*Math.PI); ctx.stroke();
+        var ea=1.8*Math.PI; ctx.fillStyle='#4a4f6a';
+        ctx.beginPath(); ctx.moveTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea)-8,ly+R*Math.sin(ea)-1); ctx.lineTo(lx+R*Math.cos(ea)-1,ly+R*Math.sin(ea)+8); ctx.closePath(); ctx.fill();
+        var pa=0.15*Math.PI + spin*1.65*Math.PI; var px=lx+R*Math.cos(pa), py=ly+R*Math.sin(pa);
+        ctx.fillStyle='#2f8d5a'; ctx.beginPath(); ctx.arc(px,py,4.5,0,2*Math.PI); ctx.fill();
+        ctx.fillStyle='#33384e'; ctx.textAlign='center'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('自己ホスティングの輪（回り続ける）', lx, ly-R-8);
+      } else {
+        ctx.fillStyle='#b3b2ab'; ctx.textAlign='center'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('↑ 火が上まで届くと、輪が回り出す', x+bw/2, topY+6);
+      }
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!t0)t0=t; var e=t-t0;
+      if(!spinning){ lit=Math.min(Math.floor(e/stepDur)+1, LAY.length); if(lit>=LAY.length){ spinning=true; t0=t; } }
+      else {
+        spin=((t-t0)/1600)%1;
+        if(!announced){ announced=true; btn.textContent='▶ もう一度';
+          rd.innerHTML='最上段で <strong>自己ホスティングの輪</strong>が回り出した。火が入ったのは一度きり ── あとはソフトがソフトを作り、止まらない。今あなたの <code>gcc</code> まで、この輪は途切れず回っている。'; }
+      }
+      draw();
+      if(playing) raf=requestAnimationFrame(loop);
+    }
+    btn.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); playing=true; t0=0; lit=0; spinning=false; spin=0; announced=false;
+      btn.textContent='… 点火中';
+      rd.innerHTML='火が下から上へ ── 手で彫った種が、機械語→アセンブラ→C→gcc→Linux を灯していきます…';
+      raf=requestAnimationFrame(loop);
+    });
+    reset.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); playing=false; lit=0; spinning=false; spin=0; t0=0; announced=false; btn.textContent='▶ 種に火を入れる';
+      rd.innerHTML='いちばん下の種＝人間の手（第9回）＋配線された意味（第10回）。ここに火を入れると…'; draw(); });
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：一本道の年表 ============ */
+  (function(){
+    var cv=document.getElementById('cvTimeline'), sl=document.getElementById('tl'),
+        vTl=document.getElementById('vTl'), rd=document.getElementById('rdTl');
+    if(!cv) return;
+    var M=[
+      {y:'~1965', t:'Multics（反動の源）', col:'#7d3b8f', note:'ベル研が撤退した巨大OS。その反動から、小さく簡潔な Unix が生まれる（第7回・番外）。'},
+      {y:'1967',  t:'BCPL / O-code',      col:'#7d3b8f', note:'Martin Richards。中間コードで移植を身軽に。C の祖先であり、ブートストラップの定番言語（第6回）。'},
+      {y:'1969',  t:'最初のUnix（PDP-7）',  col:'#9a4230', note:'Thompson がアセンブリで記述。B もこの頃。別マシンでクロスアセンブルし紙テープで運んだ（第7・8回）。'},
+      {y:'1972-73',t:'C / Unix を C で',    col:'#6d4aa7', note:'Ritchie が B から C を育て、自己ホスティング成立。Unix カーネルを C で書き直す（第5回）。ここが輪の原点。'},
+      {y:'1987',  t:'MINIX / ACK',         col:'#1f7a6e', note:'Tanenbaum の教育用 Unix。EM 中間コードの ACK。のちに Linux の産室になる（第4回）。'},
+      {y:'1991',  t:'Linux',               col:'#b0651e', note:'Torvalds。MINIX 上の gcc で生まれ、v0.11 で自立。GPLv2 で世界へ（第2・3回）。'},
+      {y:'今',    t:'自己ホスティングの輪',  col:'#4a4f6a', note:'gcc/clang が過去の自分に作られ回り続ける。半世紀前に手で撒かれた種の、途切れない続き（第0回）。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=M.length;
+      var padL=40, padR=30, axisY=h*0.5, uW=w-padL-padR;
+      // axis
+      ctx.strokeStyle='#cbcabf'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(padL,axisY); ctx.lineTo(w-padR,axisY); ctx.stroke();
+      ctx.fillStyle='#b3b2ab'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='right';
+      ctx.fillText('時間 →', w-padR, axisY-8);
+      for(var i=0;i<n;i++){
+        var x=padL+uW*i/(n-1), active=(i===cur), passed=(i<=cur);
+        // connector highlight up to current
+        if(i>0){ ctx.strokeStyle= passed? '#4a4f6a':'#e0dfd6'; ctx.lineWidth= passed?3:2;
+          ctx.beginPath(); ctx.moveTo(padL+uW*(i-1)/(n-1),axisY); ctx.lineTo(x,axisY); ctx.stroke(); }
+        // node
+        ctx.fillStyle= active? M[i].col : (passed? '#8a8f9e':'#dfe0da'); ctx.strokeStyle=M[i].col; ctx.lineWidth=active?2.4:1.4;
+        ctx.beginPath(); ctx.arc(x,axisY, active?9:6, 0,2*Math.PI); ctx.fill(); if(active)ctx.stroke();
+        // year
+        ctx.fillStyle= active? M[i].col:'#9a998f'; ctx.font=(active?'bold ':'')+'10.5px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText(M[i].y, x, axisY+ (i%2? 26:-16));
+        // title on alternating side
+        if(active){ ctx.fillStyle=M[i].col; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText(M[i].t, x, axisY+(i%2? 42:-32)); }
+      }
+      ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), m=M[cur];
+      vTl.textContent=m.y+' ── '+m.t; rd.innerHTML='<strong>'+m.y+'　'+m.t+'</strong>：'+m.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

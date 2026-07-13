@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最初のLinux ── MINIX上のgccで生まれた ｜ わかるUNIXの歴史 第2回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f9f7f2; --paper-edge:#e7ddca;   /* 第2回：琥珀の紙 */
+    --side:#2f6f55; --side-bg:#eaf2ee;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#ddd2bd; --hair:#cabfa6;
+    --acc:#a85f18;    /* 第2回アクセント＝琥珀 */
+    --grid:#e6ddca;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0dcb8 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f1ece1;border:1px solid #e6ddca;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#20342b;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfbf6;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 16px;}
+  .btnmini:hover{opacity:.92;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f4ead9;color:#6f420f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdf8;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#faf4ea;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdf8,#f1e7d5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4ead9;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6f420f;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 2 回 ／ 輪の着火</span></div>
+  <p class="eyebrow">再実装の木の若葉・Linux が、どうやって産声をあげたか ── 1991年に密着</p>
+  <h1>最初のLinux ── MINIX上のgccで生まれた
+    <span class="sub">第0回で「輪は1991年に MINIX 上の <code>gcc</code> で着火した」と言いました。今回はその瞬間を、<em>バージョン番号の解像度</em>で見ます。単体では動けなかった赤ちゃん <code>v0.01</code> から、Linux が Linux 自身をコンパイルできた <code>v0.11</code> ── <strong>産室(MINIX)から巣立つ</strong>までの4か月。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第0回（輪）・第1回（再実装の木）</span>
+    <span>種明かし：自立とは、輪を自分で回せること</span>
+  </div>
+
+  <p class="lead">1991年、フィンランドの学生 Linus Torvalds は、買ったばかりの386 PCで、MINIX を開発環境（第1回でいう<em>産室</em>）として使っていました。そこには GNU の道具 ── C コンパイラ <code>gcc</code> と シェル <code>bash</code> ── が移植されていた。この <code>gcc</code> こそ、最初の Linux をコンパイルした「親」です。でも生まれたての Linux は、まだ自分では自分をコンパイルできない。<strong>輪(第0回)は、まだ MINIX におんぶしている</strong>状態でした。その赤ちゃんが、どうやって自分の足で立つのか。まずは、いちばん最初の“心臓の鼓動”から。</p>
+
+  <h2><span class="n">01</span>種火 ── AAAA と BBBB</h2>
+
+  <p>Linux は「OSを作るぞ」と設計図から始まったわけではありません。最初にあったのは、386の機能を試す<strong>2つの小さなプログラム</strong>でした。片方はひたすら <code>A</code> を、もう片方はひたすら <code>B</code> を画面に打ち続ける。この2つを、CPUが<em>すばやく切り替えて交互に走らせる</em>ことに成功したとき ── それが、OSの心臓（タスク切り替え）の最初の鼓動でした。</p>
+
+  <div class="fig">
+    <div class="cap">図1：Linuxの“最初の鼓動”。2つのプロセスA・Bを、カーネルが交互に走らせる（タスク切り替え）。この切り替えが、のちのマルチタスクOSの核になる</div>
+    <canvas id="cvBirth" width="680" height="260"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="birthBtn">▶ 走らせる</button>
+      <label style="min-width:200px;">切り替えの速さ<span class="val" id="vSw">ふつう</span>
+        <input type="range" id="sw" min="0.3" max="2.4" step="0.1" value="1">
+      </label>
+    </div>
+    <div class="readout" id="rdBirth">プロセスA（AAAA…）とプロセスB（BBBB…）を、CPUが交互に。これがOSの心臓＝タスク切り替え。</div>
+  </div>
+
+  <p>ここに端末ドライバを足して、自宅から大学のコンピュータへダイヤルアップできるようにし ── と、機能が雪だるま式に増えていく。「OSを作ろう」ではなく「386で遊んでいたら、いつのまにかOSになっていた」。そして1991年8月25日、あの有名な投稿が <code>comp.os.minix</code> に流れます。</p>
+
+  <div class="term">
+<span class="c">From: torvalds@klaava.Helsinki.FI  （1991年8月25日, comp.os.minix）</span>
+Hello everybody out there using minix -
+I'm doing a <span class="o">(free) operating system</span>
+  <span class="q">(just a hobby, won't be big and professional like gnu)</span>
+  for 386(486) AT clones ...
+  </div>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── “won't be big like gnu”</span>
+    「GNU みたいに大きく立派にはならない」── この一文が、第1回の<strong>再実装の木</strong>の位置関係をそのまま映しています。Torvalds が作るのはカーネル。ユーザーランド（<code>gcc</code>・<code>bash</code>）はすでに GNU が作っていた。だから最初の Linux は、<em>GNU の道具で</em>コンパイルされ、のちに <em>GNU の道具と合体</em>して1つのOSになります（“GNU/Linux”）。謙遜のジョークが、実は系譜の正確な自己紹介でした。
+  </div>
+
+  <h2><span class="n">02</span>v0.01（1991年9月）── 単体では立てない赤ちゃん</h2>
+
+  <p>最初に公開された <code>v0.01</code> は、<strong>約10,239行</strong>。ですがこれは、電源を入れれば動く完成品ではありません。<em>コンパイルするにも、セットアップするにも、MINIX が要る</em>。輪はまだ着火しておらず、産室に完全におんぶした状態です。</p>
+
+  <div class="calc">
+    <span class="tag">v0.01 の“おんぶ”の中身</span>
+    <p style="margin-top:8px;">・<strong>コンパイル</strong>：MINIX 上の <code>gcc</code> がやる（Linux 自身にはまだコンパイラが乗らない）。</p>
+    <p style="margin:6px 0;">・<strong>準備</strong>：MINIX のファイルシステムやツールを使ってディスクを整える。</p>
+    <p style="margin:6px 0 14px;">・つまり <strong>Linux を用意するために、まず MINIX が動いていないといけない</strong>。第0回の言葉でいえば「輪の外の何か（＝MINIX＋gcc）が、まだ持ち上げ続けている」段階。</p>
+  </div>
+
+  <h2><span class="n">03</span>巣立ちの4か月 ── v0.01 → v0.11</h2>
+
+  <p>ここからが今回の主役です。下のスライダーで <code>v0.01 → 0.02 → 0.11 → 0.12</code> と進めてください。<strong>MINIX への依存が減り、ある一点で「自分で自分をコンパイルできる」自己ホスティングに切り替わる</strong>のが見えます。その瞬間が、産室からの巣立ちです。</p>
+
+  <div class="fig">
+    <div class="cap">図2：産室からの巣立ち。左は開発環境（386→MINIX→gcc/bash）。スライダーを進めると、Linuxをコンパイルする矢印が「MINIX上のgcc」から「Linux自身（自己ホスティングの輪）」へ切り替わる</div>
+    <canvas id="cvGrow" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>バージョンを進める<span class="val" id="vVer">v0.01（1991年9月）</span>
+        <input type="range" id="ver" min="0" max="3" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdGrow"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">巣立ちの4か月（1991）</span>
+    <p class="lbl">v0.01（9月）</p>
+    <p style="margin:4px 0;">MINIX上のgccでコンパイル。単体では実用にならない。<em>おんぶ</em>。</p>
+    <p class="lbl">v0.02（10月5日）</p>
+    <p style="margin:4px 0;">Linux 上で <code>bash</code> と <code>gcc</code> が動きだす。道具を自分の上で動かせ始めた。</p>
+    <p class="lbl">v0.11（12月19日）── 巣立ち</p>
+    <p style="margin:4px 0 14px;"><strong>自己ホスティング達成。Linux 上で Linux をコンパイルできた。</strong>輪が回り始めた瞬間。<code>mkfs</code>・<code>fdisk</code> など自前ツールも揃う。</p>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 「自立」＝依存ゼロ、ではない</div>
+    <p style="margin:6px 0 0;">v0.11 の自己ホスティングは、「もう何にも頼らない」という意味<em>ではありません</em>。正しくは ── <strong>Linux を作るのに、もう MINIX を持ち出さなくてよくなった（輪を自分で回せるようになった）</strong>ということ。コンパイラ自体はいまも GNU の <code>gcc</code>。第0回で見たとおり、自己ホスティングとは「外の着火装置(MINIX)を外せる」ことであって、「1人で無から立つ」ことではありません。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>v0.12（1992年1月）── ライセンスという二段目のロケット</h2>
+
+  <p>技術的な巣立ちは v0.11 でした。でも Linux を<em>世界</em>に広げたのは、次の <code>v0.12</code>（1992年1月5日、約2万行未満）での一手 ── <strong>ライセンスを GPLv2 に変えた</strong>ことです。それ以前は Torvalds 自作の制限付きライセンスで、商用の再配布を禁じていました。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── なぜGPLが効いたか</span>
+    GPLは「誰でも自由に使い・改変・再配布してよい。ただし派生物も同じ自由を保て」というルール。これで世界中の人が安心して手を入れ、改良を持ち寄れるようになりました。Torvalds はのちに「GPLv2 にしたのは<em>人生で最良の判断</em>だった」と語っています。第1回の<strong>GNUの思想（自由なソフト）</strong>が、Linux を再実装の木の“ただの一枚の葉”から、森全体を育てる幹へ変えた。ライセンスは、コードと同じくらい歴史を動かします。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── どこまでが「自立」か、言葉をていねいに</span>
+    <p style="margin-top:0;">(1) v0.11 の「自己ホスティング」は<strong>カーネルとビルドがLinux上で完結する</strong>という意味で、コンパイラは今も GNU の <code>gcc</code>（または <code>clang</code>）です。私たちが日常使う“Linux”は、Linuxカーネル＋GNUユーザーランドの合作 ── だから “GNU/Linux” とも呼ばれます（第1回「こずえで葉を交換」）。完全な単独自立ではありません。</p>
+    <p style="margin:0;">(2) v0.01 が「動かない」は言い過ぎで、正確には<em>最小限は動くが、準備も改造も MINIX 前提で実用にならない</em>という意味です。(3) 日付は資料により幅があります（v0.01 は1991年9月中旬、通説では9月17日公開）。(4) 「AAAA/BBBB」の逸話は Torvalds 自伝『Just for Fun』などで広く語られる有名なエピソードで、細部の脚色はあり得ます。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>最初の Linux(v0.01) は、何の上の何でコンパイルされたか。
+        <details><summary>答えを見る</summary><div class="ans">MINIX（開発環境＝産室）上に移植された GNU の gcc。Linux 自身にはまだコンパイラが乗っていない。</div></details>
+      </li>
+      <li>「自己ホスティング達成（v0.11）」を、第0回の“輪”の言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">Linux を作るのに外の着火装置（MINIX）が要らなくなり、Linux 上の gcc で Linux をコンパイルできる＝輪を自分で回せるようになった状態。依存ゼロという意味ではない。</div></details>
+      </li>
+      <li>v0.11 が「技術的な巣立ち」なら、v0.12 は何の巣立ちか。
+        <details><summary>答えを見る</summary><div class="ans">社会的・普及の巣立ち。GPLv2 採用で誰でも自由に使い改良を持ち寄れるようになり、世界的な共同開発が始まった。</div></details>
+      </li>
+      <li>Torvalds の「won't be big like gnu」は、系譜的にどう正しかったか。
+        <details><summary>答えを見る</summary><div class="ans">彼が作ったのはカーネルで、ユーザーランドは既に GNU が作っていた。最初の Linux は GNU の道具でコンパイルされ、のちに GNU と合体して1つのOS（GNU/Linux）になった。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>4か月で、赤ちゃんは輪を自分で回し始めた</h2>
+    <p>Linux は設計図ではなく、386上の<strong>タスク切り替え（AAAA/BBBB）</strong>という心臓の鼓動から始まった。開発環境は MINIX（産室）で、そこに移植された GNU の <code>gcc</code> が最初の Linux をコンパイルした。<code>v0.01</code>（1991年9月・約1万行）はコンパイルもセットアップも MINIX が要る“おんぶ”状態 ── 輪はまだ外(MINIX)が回していた。</p>
+    <p><code>v0.02</code>(10月)で Linux 上でも <code>bash</code>・<code>gcc</code> が動きだし、<code>v0.11</code>(12月19日)で<strong>自己ホスティング達成</strong>＝Linux が Linux をコンパイルし、産室から巣立った。ここでいう自立は「依存ゼロ」ではなく「外の着火装置を外せた（輪を自分で回せる）」こと。翌月の <code>v0.12</code> は <strong>GPLv2</strong> という二段目のロケットで、Linux を世界の共同開発へ押し上げた。── では、その最初の親 <code>gcc</code> は、いったい何がコンパイルしたのか? 階段を、もう一段下へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第3回</span>
+    「GCCは、何がコンパイルした?」。Linux を生んだ親 <code>gcc</code> ── その <code>gcc</code> 自身も C で書かれたプログラムです。ではコンパイラがまだ無い所で、最初の <code>gcc</code> は何が作ったのか。答えは「そのマシンの既存の <code>cc</code> で1回だけ持ち上げ、あとは自分で自分を作る」。<strong>3段ブートストラップ</strong>という、輪の“正しい回し方”を見ます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第2回です。史実：Linus Torvalds は1991年、386 PC上の MINIX を開発環境とし、移植された GNU の gcc・bash を用いて Linux を開発した。1991年8月25日の comp.os.minix 投稿「just a hobby, won't be big and professional like gnu」は有名。v0.01 は1991年9月（通説9月17日）公開で約10,239行、コンパイル・セットアップに MINIX を要した。v0.02 は1991年10月5日で bash・gcc が動作。v0.11 は1991年12月（19日ごろ）で初めて自己ホスティング（Linux上でコンパイル可能）を達成し、mkfs・fdisk 等を備えた。v0.12 は1992年1月5日で、Torvalds 自作の制限的ライセンスから GNU GPLv2 へ移行（発効1992年2月1日）、規模は2万行未満。ここでの「自己ホスティング」はビルドが Linux 上で完結する意で、コンパイラ（gcc）とユーザーランドは GNU に依存し、通称 GNU/Linux。AAAA/BBBB のタスク切り替えの逸話は Torvalds の回想（自伝『Just for Fun』ほか）で広く知られる。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作とアニメ・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1の「▶ 走らせる」でタスク切り替えを、図2のスライダーで v0.01→0.12 の巣立ちを追えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：AAAA / BBBB タスク切り替え ============ */
+  (function(){
+    var cv=document.getElementById('cvBirth'), btn=document.getElementById('birthBtn'),
+        sw=document.getElementById('sw'), vSw=document.getElementById('vSw'), rd=document.getElementById('rdBirth');
+    if(!cv) return;
+    var running=false, raf=null, last=0, acc=0, cur=0 /*0:A,1:B*/, buf='', switches=0, sinceChar=0;
+    function speedText(v){ return v<0.7?'ゆっくり':(v>1.7?'はやい':'ふつう'); }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      // 2つのプロセス箱
+      var boxW=120, boxH=52, ay=40, by=40;
+      var ax=w*0.16, bx=w*0.16+0, cxA=ax, cxB=ax;
+      // left: process A, right: process B
+      var pAx=w*0.13, pBx=w*0.13, topA=34, topB=112;
+      function pbox(x,y,label,letter,active,color){
+        ctx.fillStyle= active? color : '#fff';
+        ctx.strokeStyle=color; ctx.lineWidth= active?2.4:1.6;
+        rr(ctx,x,y,150,52,8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= active? '#fff':color; ctx.textAlign='left';
+        ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText(label, x+14, y+22);
+        ctx.font='bold 15px "SFMono-Regular",Consolas,monospace'; ctx.fillText('print "'+letter+'"', x+14, y+42);
+        if(active){ ctx.fillStyle='#fff'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='right';
+          ctx.fillText('◀ CPU実行中', x+150-12, y+16); ctx.textAlign='left'; }
+      }
+      pbox(pAx, topA, 'プロセスA', 'A', cur===0, '#a85f18');
+      pbox(pBx, topB, 'プロセスB', 'B', cur===1, '#2166a0');
+      // CPU 切り替えの矢印
+      ctx.fillStyle='#8794a5'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('カーネルが', pAx+195, 84); ctx.fillText('交互に切替', pAx+195, 100);
+      ctx.strokeStyle='#c3ad86'; ctx.lineWidth=1.8; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(pAx+150, topA+26); ctx.quadraticCurveTo(pAx+205, 84, pAx+150, topB+26); ctx.stroke();
+      ctx.setLineDash([]);
+      // 端末（出力バッファ）
+      var tx=w*0.44, ty=28, tw=w*0.50, th=h-56;
+      ctx.fillStyle='#1b2330'; rr(ctx,tx,ty,tw,th,6); ctx.fill();
+      ctx.fillStyle='#7fd6a0'; ctx.font='11px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='left';
+      ctx.fillText('$ 出力', tx+14, ty+20);
+      // wrap buffer
+      var s=buf.slice(-300); var perLine=Math.floor((tw-28)/8.4); if(perLine<4)perLine=4;
+      var lines=[]; for(var i=0;i<s.length;i+=perLine) lines.push(s.slice(i,i+perLine));
+      lines=lines.slice(-Math.floor((th-46)/16));
+      ctx.font='13px "SFMono-Regular",Consolas,monospace';
+      lines.forEach(function(ln,idx){
+        for(var j=0;j<ln.length;j++){
+          ctx.fillStyle = ln[j]==='A' ? '#e2b565' : '#8ab6e8';
+          ctx.fillText(ln[j], tx+14+j*8.4, ty+40+idx*16);
+        }
+      });
+      ctx.textAlign='left';
+    }
+    function tick(t){
+      if(!last) last=t; var dt=(t-last)/1000; last=t;
+      var rate=parseFloat(sw.value);
+      acc += dt; sinceChar += dt;
+      // 文字を打つ間隔
+      if(sinceChar > 0.045/rate){ buf += (cur===0?'A':'B'); sinceChar=0; if(buf.length>1200) buf=buf.slice(-600); }
+      // 切り替え間隔
+      if(acc > 0.6/rate){ cur=1-cur; switches++; acc=0; }
+      draw();
+      if(running) raf=requestAnimationFrame(tick);
+    }
+    btn.addEventListener('click', function(){
+      running=!running;
+      if(running){ btn.textContent='⏸ 一時停止'; last=0; rd.innerHTML='CPUが A と B を高速で切り替え、<strong>同時に動いているように見える</strong>。これがマルチタスクOSの心臓＝タスク切り替え。Linux はここから始まった。'; raf=requestAnimationFrame(tick); }
+      else { btn.textContent='▶ 走らせる'; if(raf)cancelAnimationFrame(raf); }
+    });
+    sw.addEventListener('input', function(){ vSw.textContent=speedText(parseFloat(sw.value)); });
+    window.addEventListener('resize', draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：産室からの巣立ち ============ */
+  (function(){
+    var cv=document.getElementById('cvGrow'), sl=document.getElementById('ver'),
+        vVer=document.getElementById('vVer'), rd=document.getElementById('rdGrow');
+    if(!cv) return;
+    var V=[
+      {v:'v0.01', d:'1991年9月',  self:false, gpl:false, gauge:0.15,
+       note:'MINIX上のgccでコンパイル。準備も要MINIX。単体では実用にならない＝<strong>おんぶ</strong>。輪はまだ外(MINIX)が回す。'},
+      {v:'v0.02', d:'1991年10月', self:false, gpl:false, gauge:0.42,
+       note:'Linux上で <code>bash</code>・<code>gcc</code> が動きだす。道具を自分の上で動かせ始めた。まだコンパイルの主役はMINIX側。'},
+      {v:'v0.11', d:'1991年12月', self:true,  gpl:false, gauge:0.90,
+       note:'<strong>自己ホスティング達成</strong>。Linux上でLinuxをコンパイル。産室から巣立ち、輪を自分で回し始めた。'},
+      {v:'v0.12', d:'1992年1月',  self:true,  gpl:true,  gauge:0.96,
+       note:'<strong>GPLv2採用</strong>。自作の制限ライセンスから転換。世界中が改良を持ち寄れる＝普及の巣立ち。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), st=V[cur];
+      // 左：開発環境タワー（386→MINIX→gcc/bash）
+      var tx=w*0.06, tw=w*0.30, baseY=h-40, layerH=44;
+      var towerDim = st.self ? 0.4 : 1.0;
+      ctx.save(); ctx.globalAlpha=towerDim;
+      var layers=[['386 ハードウェア','#e6ddca','#8a7a52'],['MINIX（産室）','#eae0cd','#7a6a45'],['gcc / bash（GNUの道具）','#f4ead9','#a85f18']];
+      layers.forEach(function(L,i){
+        var y=baseY-(i+1)*layerH+6;
+        ctx.fillStyle=L[1]; ctx.strokeStyle=L[2]; ctx.lineWidth=1.6;
+        rr(ctx,tx,y,tw,layerH-6,5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle=L[2]; ctx.font='bold 11.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText(L[0], tx+tw/2, y+(layerH-6)/2+4);
+      });
+      ctx.restore();
+      ctx.fillStyle='#9a8a62'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('開発環境'+(st.self?'（もう不要）':'（産室）'), tx+tw/2, baseY+16);
+      // 右：Linux
+      var lx=w*0.66, lw=w*0.28, lh=layerH*1.6, ly=baseY-lh;
+      var grow = 0.7+0.3*st.gauge;
+      ctx.fillStyle= st.self? '#f4ead9':'#fff'; ctx.strokeStyle='#a85f18'; ctx.lineWidth= st.self?2.6:1.8;
+      rr(ctx, lx+ (lw*(1-grow))/2, ly + lh*(1-grow), lw*grow, lh*grow, 8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#a85f18'; ctx.font='bold 14px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('Linux '+st.v, lx+lw/2, ly+lh*0.5);
+      ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#7a4a10';
+      ctx.fillText(st.self? '自分でコンパイルできる':'まだ自分では作れない', lx+lw/2, ly+lh*0.5+18);
+      // コンパイル矢印
+      ctx.lineWidth=2.6;
+      if(!st.self){
+        // gcc(MINIX) → Linux
+        ctx.strokeStyle='#8a7a52'; ctx.fillStyle='#8a7a52';
+        var sxp=tx+tw, syp=baseY-2*layerH-6+ (layerH-6)/2, exp=lx+ (lw*(1-grow))/2, eyp=ly+lh*grow*0.5;
+        ctx.beginPath(); ctx.moveTo(sxp, syp); ctx.bezierCurveTo(sxp+70, syp, exp-70, eyp, exp, eyp); ctx.stroke();
+        var ang=Math.atan2(eyp-eyp,exp-(exp-70));
+        ctx.beginPath(); ctx.moveTo(exp,eyp); ctx.lineTo(exp-10,eyp-5); ctx.lineTo(exp-10,eyp+5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#6f5a2c'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('MINIX上のgccが', (sxp+exp)/2, syp-18); ctx.fillText('コンパイル', (sxp+exp)/2, syp-3);
+      } else {
+        // Linux 自己ループ
+        ctx.strokeStyle='#2f8d5a'; ctx.fillStyle='#2f8d5a';
+        var ccx=lx+lw/2, ccy=ly-6, R=26;
+        ctx.beginPath(); ctx.arc(ccx,ccy,R, Math.PI*0.15, Math.PI*1.75); ctx.stroke();
+        var ea=Math.PI*1.75, ex=ccx+R*Math.cos(ea), ey=ccy+R*Math.sin(ea);
+        ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-8,ey-2); ctx.lineTo(ex-1,ey+7); ctx.closePath(); ctx.fill();
+        ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('自己ホスティングの輪', ccx, ccy-R-6);
+      }
+      // 自立ゲージ
+      var gx=tx, gy=24, gw=w-tx*2, gh=12;
+      ctx.fillStyle='#eee6d6'; rr(ctx,gx,gy,gw,gh,6); ctx.fill();
+      ctx.fillStyle='#a85f18'; rr(ctx,gx,gy,gw*st.gauge,gh,6); ctx.fill();
+      ctx.fillStyle='#7a4a10'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('自立度（輪を自分で回せる度）', gx, gy-4);
+      // GPLバッジ
+      if(st.gpl){
+        ctx.fillStyle='#2f8d5a'; rr(ctx,lx+lw-6,ly-2,54,20,4); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.font='bold 11px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText('GPLv2', lx+lw-6+27, ly+12);
+      }
+      ctx.textAlign='left';
+    }
+    function update(){
+      var cur=parseInt(sl.value,10), st=V[cur];
+      vVer.textContent = st.v+'（'+st.d+'）';
+      rd.innerHTML='<strong>'+st.v+'</strong>（'+st.d+'）：'+st.note;
+      draw();
+    }
+    sl.addEventListener('input', update);
+    window.addEventListener('resize', draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

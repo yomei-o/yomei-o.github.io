@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最初のUnix ── アセンブリで書かれたOS ｜ わかるUNIXの歴史 第7回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#faf6f4; --paper-edge:#e9d9d3;   /* 第7回：赤錆の紙 */
+    --side:#1f7a6e; --side-bg:#e7f2ef;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#e3cec6; --hair:#d3b3a8;
+    --acc:#9a4230;    /* 第7回アクセント＝赤錆 */
+    --grid:#e8d6cf;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f0d5cb 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#f2e7e3;border:1px solid #e9d9d3;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#173e37;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf9;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;} .btnmini.alt{background:#b58a7e;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#f4e4df;color:#6f2d1e;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fffdfc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9efec;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fffdfc,#f0e0da);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f4e4df;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6f2d1e;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 7 回 ／ 梯子を、全部外す</span></div>
+  <p class="eyebrow">C も B も無かった1969年 ── Unix は、機械語のすぐ上の言葉で書かれた</p>
+  <h1>最初のUnix ── アセンブリで書かれたOS
+    <span class="sub">これまで降りてきた C・B・BCPL・中間コードは、みな「機械を直接触らずに済ませる<em>梯子</em>」でした。1969年、その梯子はまだ1本もありません。Ken Thompson は、<strong>PDP-7 のアセンブリ言語</strong>で最初の Unix を書いた ── 機械語のすぐ上の、いちばん薄い言葉で。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第5・6回（言語の梯子）</span>
+    <span>種明かし：アセンブリは機械語の薄い皮</span>
+  </div>
+
+  <p class="lead">第6回の終わりで「逃げ道（中間コード）の下には、結局アセンブリと機械がある」と言いました。いよいよそこへ降ります。舞台は1969年のベル研。C も B（第5・6回）も、まだ十分には無い時代です。Ken Thompson は、遊休状態の小さなコンピュータ <strong>PDP-7</strong> を見つけ、その<strong>アセンブリ言語</strong>だけで、カーネルもシェルもエディタも書き上げました。高級言語という梯子を1本も使わずに ── これが Unix の、剥き出しの出発点です。</p>
+
+  <h2><span class="n">01</span>なぜ1969年・PDP-7だったのか</h2>
+
+  <p>直接のきっかけは、大きな失敗でした。ベル研は MIT・GE と組んで壮大なOS <strong>Multics</strong> を作っていましたが、進みが遅く、1960年代末に<strong>撤退</strong>します（この Multics 自体は番外編・系譜の最上流で扱います）。手持ちぶさたになった Thompson は、Multics 上で作った宇宙旅行ゲーム <em>Space Travel</em> を、遊んでいた PDP-7 へ移植しようとし ── そのついでにファイルシステムを作り、プロセスを作り、気づけば<strong>OSになっていました</strong>。当初はベル研の公式な予算も付いていません。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 名前は「去勢された Multics」</span>
+    この小さなOSに、同僚の <strong>Brian Kernighan</strong> が1970年、<strong>UNICS</strong> という名を付けました。巨大だった Multics（Multiplexed…）のもじりで、Uniplexed…、発音は「ユーニクス（eunuchs＝宦官）」。<em>大きく野心的だった Multics への、小さく簡潔な当てこすり</em>です。「小さいことは正しい」という Unix の設計思想は、名前からしてそうでした。のち綴りは UNIX に。
+  </div>
+
+  <h2><span class="n">02</span>何もかもが、アセンブリだった</h2>
+
+  <p>PDP-7 の上で、Thompson（のち Ritchie も）はアセンブリ言語で次々に書きました ── <strong>カーネル、コマンドインタプリタ（シェル）、エディタ、アセンブラ自身、そして小さなユーティリティ群</strong>。ここで<em>階層ファイルシステム</em>、<em>プロセス</em>、<em>デバイスファイル</em>といった、いまも Unix/Linux の背骨である概念が生まれています。すべて、機械語のすぐ上の言葉で。</p>
+
+  <h2><span class="n">03</span>アセンブリとは何か ── 機械語の、薄い皮</h2>
+
+  <p>「アセンブリで書いた」の意味を、はっきりさせます。機械が実際に実行するのは <strong>機械語</strong> ── ただの数値の列（オペコードとアドレス）で、人間にはまず読めません。<strong>アセンブリ言語</strong>は、その数値に<em>人が読める名前</em>を付けただけのもの。命令に <code>lac</code>（ロード）・<code>add</code>（加算）のような<strong>ニーモニック</strong>を、番地に <code>start:</code>・<code>n:</code> のような<strong>ラベル</strong>を与える。両者はほぼ1対1に対応します。</p>
+
+  <p>そして、その名前を数値へ機械的に置き換えるプログラムが <strong>アセンブラ</strong>です。下の図で、アセンブリが機械語へ翻訳される様子を1行ずつ見てください。翻訳後の数字だけを見ると、意味がまるで読めなくなる ── それが「機械が見ている世界」です。</p>
+
+  <div class="fig">
+    <div class="cap">図1：アセンブル。人が読めるアセンブリ（左）を、アセンブラがニーモニック→オペコード、ラベル→番地に置き換えて機械語（右・8進）にする。右だけ見ると、もう意味は読めない</div>
+    <canvas id="cvAsm" width="680" height="360"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="asmBtn">▶ アセンブルする</button>
+      <button class="btnmini alt" id="asmReset">最初に戻す</button>
+    </div>
+    <div class="readout" id="rdAsm">左のアセンブリは人が読める。「▶ アセンブルする」で、機械語（右）へ1行ずつ翻訳される。</div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 梯子は、ここでほぼ尽きる</div>
+    <p style="margin:6px 0 0;">C・B・BCPL・中間コードは、どれも「<em>もっと楽な言葉で書いて、翻訳してもらう</em>」梯子でした。アセンブリは、その梯子の<strong>いちばん下の段</strong>。機械の命令そのものに名前を貼っただけで、もう「別のもっと楽な言語」に逃げる余地はほとんどありません。ここから下は、<strong>素の機械</strong> ── 数値としての機械語と、それを動かす物理だけです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">04</span>ここにも、鶏と卵 ── アセンブラは何が作った?</h2>
+
+  <p>梯子は尽きても、鶏と卵は消えません。<strong>アセンブリを機械語にするには、アセンブラが要る。ではその最初のアセンブラは、何が組んだのか?</strong> しかもPDP-7 Unix には、アセンブラ自身がアセンブリで書かれて<em>含まれて</em>いました。やがて Unix は自分のアセンブラで自分を組み直せる（self-supporting）ようになります ── アセンブリ層での、最小の自己ホスティングです。でも「いちばん最初の1個」は、その輪の中では作れない（第0回）。下の図で、その輪と、輪の外に残る問いを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：PDP-7 Unix の最下層。アセンブラ(as)が、カーネルやシェル、そして自分自身を組む（アセンブリ層の自己ホスティング）。でも「最初の as は何が組んだか」は、この輪の外にある ── 第8回へ</div>
+    <canvas id="cvUnix" width="680" height="320"></canvas>
+    <div class="controls">
+      <button class="btnmini" id="unixBtn">▶ as が全部を組む</button>
+      <button class="btnmini alt" id="unixReset">リセット</button>
+    </div>
+    <div class="readout" id="rdUnix">PDP-7 Unix は丸ごとアセンブリで書かれている。中心の as（アセンブラ）が、他の部品と自分自身を機械語へ組む。</div>
+  </div>
+
+  <h2><span class="n">05</span>この先 ── PDP-11、そしてCへ（環をひとつ）</h2>
+
+  <p>PDP-7 Unix はやがて1970年に <strong>PDP-11</strong> へ移り（やはりアセンブリ）、そして第5回で見たとおり、1972〜73年に <strong>C で書き直され</strong>ます。ここでシリーズの環がひとつ閉じます ── 第5回「C は B から育った」と、この第7回「最初の Unix はアセンブリ」が、<em>1973年の C 化</em>という同じ結び目でつながる。私たちは今、その結び目の<strong>さらに下</strong>、いちばん最初のアセンブラの出どころへ向かっています。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 図の命令は“それらしく”作った例です</span>
+    <p style="margin-top:0;">(1) 図1の命令・8進コードは、アセンブリと機械語の<strong>対応の感じ</strong>を伝えるための<em>簡略化した例</em>で、実在の PDP-7 の命令表を厳密に再現したものではありません（PDP-7 は18ビット語の小さな機械で、<code>lac</code>/<code>dac</code>/<code>tad</code>/<code>jmp</code> などのニーモニックは実在します）。(2) 「アセンブリ→機械語はほぼ1対1」は基本的に正しいですが、疑似命令・マクロ・複数語命令など例外もあります。</p>
+    <p style="margin-bottom:0;">(3) Unix 誕生の経緯（Multics 撤退→Space Travel→ファイルシステム→OS）は語り継がれる有名な流れですが、細部は資料により差があります。(4) 「梯子がここで尽きる」は言い回しで、実際にはアセンブリより下にも、マイクロコードなど機械内部の層が続くことがあります（第10回で扱います）。(5) 初期はアセンブル自体を別マシンで行っていました ── その話がまさに第8回です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>最初の Unix(1969) は、どの機械の何という言語で書かれたか。
+        <details><summary>答えを見る</summary><div class="ans">PDP-7 の（PDP-7 の）アセンブリ言語。C も B もまだ十分に無く、機械語のすぐ上の言葉で書かれた。</div></details>
+      </li>
+      <li>アセンブリ言語とアセンブラの違いを一文で。
+        <details><summary>答えを見る</summary><div class="ans">アセンブリ言語は機械語（数値）に人が読める名前（ニーモニック・ラベル）を付けた表記で、アセンブラはその名前を数値へ機械的に置き換えて機械語を作るプログラム。</div></details>
+      </li>
+      <li>C・B・BCPL・中間コードと、アセンブリの決定的な違いは何か。
+        <details><summary>答えを見る</summary><div class="ans">前者は「もっと楽な言葉で書いて翻訳してもらう梯子」。アセンブリは機械の命令そのものに名前を貼っただけで、より楽な言語に逃げる余地がほとんど無い＝梯子の最下段。</div></details>
+      </li>
+      <li>この回で新たに残った「鶏と卵」は何か。
+        <details><summary>答えを見る</summary><div class="ans">アセンブリを機械語にするアセンブラが要るが、その最初のアセンブラは何が組んだのか、という問い。自己ホスティングの輪の外にある最初の1個の出どころ（第8回）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>梯子を全部外すと、機械語の薄い皮が残った</h2>
+    <p>1969年、Multics から撤退したベル研で、Thompson は遊休の <strong>PDP-7</strong> に Space Travel を移植するついでにファイルシステムを作り、それが最初の <strong>Unix</strong> になった（名は Kernighan の UNICS）。C も B もまだ無く、カーネル・シェル・エディタ・アセンブラ・ユーティリティは、すべて<strong>PDP-7 のアセンブリ言語</strong>で書かれた。ここで階層ファイルシステムやプロセスといった Unix の背骨が生まれている。</p>
+    <p>アセンブリは、機械語（人に読めない数値）に<em>人が読める名前</em>（ニーモニック・ラベル）を貼っただけの、いちばん薄い皮。それを数値へ置き換えるのがアセンブラだ。C・B・BCPL・中間コードという「楽をする梯子」は、ここで<strong>最下段まで降り切った</strong>。だが鶏と卵は残る ── <strong>最初のアセンブラは、何が組んだのか?</strong> PDP-7 Unix はアセンブラ自身を含み、アセンブリ層で自己ホスティングするが、最初の1個は輪の外にある。次回、その答え ── <em>別のマシンでアセンブルし、紙テープで運んだ</em>クロス方式へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第8回</span>
+    「アセンブラは、何が作った? ── クロスアセンブルと紙テープ」。最初の PDP-7 Unix は、じつは PDP-7 <em>だけ</em>では作れませんでした。別の大型機（GE-635/GECOS）でアセンブルし、その結果を<strong>紙テープに穴で刻んで、物理的に PDP-7 まで運んだ</strong>のです。第6回の O-code と同じ「よそで作って運ぶ」クロス方式の、いちばん泥くさい実物を見ます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第7回です。史実：1960年代末、ベル研は MIT・GE との Multics 開発から撤退した。Ken Thompson は Multics 上で作ったゲーム Space Travel を GECOS(GE-635)経由で PDP-7 に移し、その過程でファイルシステム等を実装、最初の Unix となった。最初の Unix は PDP-7 のアセンブリ言語で書かれ（カーネル、シェル、エディタ、アセンブラ、各種ユーティリティ）、階層ファイルシステム・プロセス・デバイスファイル・コマンドインタプリタといった概念が生まれた。名称 UNICS は1970年に Brian Kernighan が Multics のもじりとして考案（Uniplexed…、後に UNIX）。Unix は1970年に PDP-11 へ、1972〜73年に C へ書き直された（第5回）。図1の命令列と8進コードは、アセンブリと機械語の対応を説明するための簡略化した例で、PDP-7 の命令表の厳密な再現ではない（lac/dac/tad/jmp 等のニーモニックは実在）。アセンブリと機械語の対応は概ね1対1だが疑似命令・マクロ等の例外がある。PDP-7 は18ビット語の小型機。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1の「▶ アセンブルする」でアセンブリ→機械語の翻訳を、図2で PDP-7 Unix の最下層の自己ホスティングを追えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：アセンブル ============ */
+  (function(){
+    var cv=document.getElementById('cvAsm'), btn=document.getElementById('asmBtn'), reset=document.getElementById('asmReset'),
+        rd=document.getElementById('rdAsm');
+    if(!cv) return;
+    // [label, mnem, operand, comment, addr(oct), word(oct)]
+    var L=[
+      ['start:','lac','n',   'A ← n（変数nを読む）', '100','200110'],
+      ['',      'tad','one', 'A ← A + 1（1を足す）',  '101','340111'],
+      ['',      'dac','n',   'n ← A（書き戻す）',     '102','040110'],
+      ['',      'jmp','start','くり返す',             '103','600103'],
+      ['n:',    '0','',      '変数 n（初期値0）',      '110','000000'],
+      ['one:',  '1','',      '定数 1',                '111','000001']
+    ];
+    var SYM=[['start','100'],['n','110'],['one','111']];
+    var reveal=0, playing=false, raf=null, t0=0;
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var lx=18, rx=w*0.53, topY=40, rowH=30;
+      // headers
+      ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillStyle='#9a4230'; ctx.fillText('アセンブリ（人が読める）', lx, 22);
+      ctx.fillStyle='#274a70'; ctx.fillText('機械語（8進・機械が読む）', rx, 22);
+      // divider
+      ctx.strokeStyle='#e3cec6'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(rx-14,30); ctx.lineTo(rx-14,topY+rowH*L.length+6); ctx.stroke();
+      for(var i=0;i<L.length;i++){
+        var y=topY+rowH*i+16;
+        // 左：アセンブリ
+        ctx.font='13px "SFMono-Regular",Consolas,monospace';
+        ctx.fillStyle='#9a4230'; ctx.fillText(L[i][0], lx, y);
+        ctx.fillStyle='#1a1c22';
+        var op = L[i][1]==='0'||L[i][1]==='1' ? L[i][1] : (L[i][1]+'  '+L[i][2]);
+        ctx.fillText(op, lx+52, y);
+        ctx.fillStyle='#a08a82'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('; '+L[i][3], lx+150, y);
+        // 右：機械語
+        if(i<reveal){
+          ctx.font='13px "SFMono-Regular",Consolas,monospace'; ctx.fillStyle='#274a70';
+          ctx.fillText(L[i][4]+':', rx, y);
+          ctx.fillStyle='#1a1c22'; ctx.fillText(L[i][5], rx+46, y);
+        } else {
+          ctx.font='13px "SFMono-Regular",Consolas,monospace'; ctx.fillStyle='#c9c0bb';
+          ctx.fillText('· · · · · ·', rx+46, y);
+        }
+        // 変換中の行ハイライト
+        if(i===reveal-1){
+          ctx.strokeStyle='#9a4230'; ctx.lineWidth=1.4;
+          rr(ctx, rx-6, y-16, w-rx-8, 22, 4); ctx.stroke();
+        }
+      }
+      // 記号表
+      var syY=topY+rowH*L.length+18;
+      ctx.font='bold 11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#6f2d1e'; ctx.textAlign='left';
+      ctx.fillText('記号表（ラベル→番地）：', lx, syY);
+      ctx.font='12px "SFMono-Regular",Consolas,monospace';
+      var shown = SYM.filter(function(s){ // reveal symbol once its defining line passed
+        return true; });
+      var xx=lx+150;
+      for(var k=0;k<SYM.length;k++){
+        var defLine = SYM[k][0]==='start'?0:(SYM[k][0]==='n'?4:5);
+        var vis = reveal>defLine;
+        ctx.fillStyle = vis? '#274a70' : '#c9c0bb';
+        ctx.fillText(SYM[k][0]+'='+(vis?SYM[k][1]:'?'), xx, syY);
+        xx += 92;
+      }
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!t0)t0=t; var idx=Math.floor((t-t0)/650); reveal=Math.min(idx, L.length);
+      draw();
+      if(playing){ if(reveal>=L.length){ playing=false; btn.textContent='▶ アセンブルする';
+        rd.innerHTML='翻訳完了。右の機械語だけ見ると <strong>ただの8進数の列</strong>で、意味は読めない ── これが「機械が見ている世界」。人はアセンブリ（左）を書き、アセンブラが右へ変換する。'; return; }
+        raf=requestAnimationFrame(loop); } }
+    btn.addEventListener('click', function(){
+      if(playing) return;
+      if(reveal>=L.length){ reveal=0; }
+      playing=true; t0=0; btn.textContent='… 変換中'; rd.innerHTML='アセンブラが1行ずつ、ニーモニック→オペコード、ラベル→番地に置き換えています…';
+      raf=requestAnimationFrame(loop);
+    });
+    reset.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); playing=false; reveal=0; btn.textContent='▶ アセンブルする';
+      rd.innerHTML='左のアセンブリは人が読める。「▶ アセンブルする」で、機械語（右）へ1行ずつ翻訳される。'; draw(); });
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：PDP-7 Unix の最下層 ============ */
+  (function(){
+    var cv=document.getElementById('cvUnix'), btn=document.getElementById('unixBtn'), reset=document.getElementById('unixReset'),
+        rd=document.getElementById('rdUnix');
+    if(!cv) return;
+    var parts=[{l:'カーネル'},{l:'シェル'},{l:'エディタ ed'},{l:'ユーティリティ'}];
+    var built=[false,false,false,false], selfBuilt=false, revealQ=false;
+    var playing=false, raf=null, t0=0, stepDur=520;
+    function draw(t){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cx=w*0.40, cy=h*0.52;
+      // container (PDP-7 Unix)
+      ctx.strokeStyle='#d3b3a8'; ctx.setLineDash([6,4]); ctx.lineWidth=1.6;
+      rr(ctx, 14, 30, w*0.70, h-56, 12); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#a08a82'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('PDP-7 Unix（丸ごとアセンブリで記述）', 22, 46);
+      // part positions around as
+      var pos=[{x:cx-118,y:cy-70},{x:cx+92,y:cy-70},{x:cx-118,y:cy+64},{x:cx+92,y:cy+64}];
+      // arrows as->part
+      for(var i=0;i<parts.length;i++){
+        var p=pos[i];
+        ctx.strokeStyle= built[i]? '#9a4230':'#d8c4bd'; ctx.lineWidth=1.8; ctx.setLineDash(built[i]?[]:[4,4]);
+        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(p.x+30,p.y+14); ctx.stroke(); ctx.setLineDash([]);
+        // part box
+        ctx.fillStyle= built[i]? '#f4e4df':'#f6f0ee'; ctx.strokeStyle= built[i]? '#9a4230':'#cbb8b1'; ctx.lineWidth=1.6;
+        rr(ctx,p.x,p.y,86,28,6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= built[i]? '#6f2d1e':'#9a8a84'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText(parts[i].l, p.x+43, p.y+18);
+      }
+      // as (center)
+      ctx.fillStyle='#9a4230'; ctx.strokeStyle='#6f2d1e'; ctx.lineWidth=2.4;
+      rr(ctx,cx-42,cy-20,84,40,9); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font='bold 15px "SFMono-Regular",Consolas,monospace';
+      ctx.fillText('as', cx, cy-1); ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('アセンブラ', cx, cy+13);
+      // self loop
+      if(selfBuilt){
+        var R=22, lx=cx, ly=cy-20-4;
+        ctx.strokeStyle='#9a4230'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(lx,ly,R, Math.PI*0.2, Math.PI*1.8); ctx.stroke();
+        var ea=Math.PI*1.8; ctx.fillStyle='#9a4230';
+        ctx.beginPath(); ctx.moveTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea)-7,ly+R*Math.sin(ea)); ctx.lineTo(lx+R*Math.cos(ea),ly+R*Math.sin(ea)+7); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#6f2d1e'; ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('自分も組む', lx, ly-R-4);
+      }
+      // dangling question (outside)
+      var qx=w*0.90, qy=cy;
+      ctx.fillStyle= revealQ? '#efe9f0':'#f2efec'; ctx.strokeStyle= revealQ? '#7d3b8f':'#d8c4bd'; ctx.lineWidth=1.8; ctx.setLineDash(revealQ?[]:[4,4]);
+      rr(ctx,qx-40,qy-24,74,48,8); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle= revealQ? '#7d3b8f':'#b0a09a'; ctx.font='bold 20px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+      ctx.fillText('?', qx-3, qy+2);
+      // arrow from ? into as
+      ctx.strokeStyle= revealQ? '#7d3b8f':'#d8c4bd'; ctx.lineWidth=1.8; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(qx-40,qy); ctx.lineTo(cx+42+4,cy); ctx.stroke(); ctx.setLineDash([]);
+      if(revealQ){
+        ctx.fillStyle='#7d3b8f'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('最初の as は', qx-3, qy-32); ctx.fillText('何が組んだ？', qx-3, qy+40);
+        ctx.fillText('→ 第8回', qx-3, qy+54);
+      }
+      ctx.textAlign='left';
+    }
+    function loop(t){ if(!t0)t0=t; var e=t-t0; var k=Math.floor(e/stepDur);
+      for(var i=0;i<parts.length;i++){ built[i] = k>i; }
+      selfBuilt = k>=parts.length;
+      draw(t);
+      if(playing){ if(k>=parts.length+1){ playing=false; revealQ=true; draw(t);
+        rd.innerHTML='as は他の部品も、そして<strong>自分自身も</strong>組む＝アセンブリ層の自己ホスティング。でも <strong>「最初の as」だけは、この輪の中では作れない</strong>（第0回）。その1個の出どころが第8回。'; return; }
+        raf=requestAnimationFrame(loop); } }
+    btn.addEventListener('click', function(){ if(playing) return;
+      built=[false,false,false,false]; selfBuilt=false; revealQ=false; playing=true; t0=0;
+      rd.innerHTML='as が、カーネル→シェル→エディタ→ユーティリティ、そして自分自身を機械語へ組んでいきます…';
+      raf=requestAnimationFrame(loop); });
+    reset.addEventListener('click', function(){ if(raf)cancelAnimationFrame(raf); playing=false;
+      built=[false,false,false,false]; selfBuilt=false; revealQ=false;
+      rd.innerHTML='PDP-7 Unix は丸ごとアセンブリで書かれている。中心の as（アセンブラ）が、他の部品と自分自身を機械語へ組む。'; draw(0); });
+    window.addEventListener('resize',function(){ draw(0); });
+    setTimeout(function(){draw(0);},60); window.addEventListener('load',function(){draw(0);});
+  })();
+})();
+</script>
+</body>
+</html>

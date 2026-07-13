@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multics → Unix ── 何への反動だったか ｜ わかるUNIXの歴史 番外編⑥</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f8f6fb; --paper-edge:#e2dbee;
+    --side:#8a5e10; --side-bg:#f4ead2;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#d5cce6; --hair:#c2b5da;
+    --acc:#6a4a9c;
+    --grid:#ded5ee;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #ddd0f0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#efeaf6;border:1px solid #e2dbee;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#4a3410;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fcfaff;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#e6ddf0;color:#4c3570;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#eee6f5;color:#4c2e78;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfcff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f4eff9;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfcff,#e7ddf2);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .creed{margin:26px 0;padding:22px 26px;border:2px solid var(--acc);border-radius:4px;background:#fcfaff;text-align:center;}
+  .creed .big{font-size:21px;font-weight:600;color:var(--acc);letter-spacing:.04em;line-height:1.6;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#eee6f5;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#4c2e78;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.creed,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} .creed .big{font-size:18px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ⑥</span><span class="ep">系譜の最上流 ── シリーズの締め</span></div>
+  <p class="eyebrow">底（手・ハードウェア）から始めた旅を、最上流で閉じる</p>
+  <h1>Multics → Unix ── 何への反動だったか
+    <span class="sub">最終回の年表は「~1965 Multics」から始まりました。ここが系譜の最上流。巨大で野心的だった <strong>Multics</strong> から降りた Thompson と Ritchie が、なぜ<em>小さく簡潔な</em> Unix を作ったのか。「大きいことは正しい」への異議申し立て ── その精神は、この旅で何度も出会った“小ささ”と、深く響き合います。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：第7回（初代Unix）・最終回（年表）</span>
+    <span>締め：小さく始めて、積み上げる</span>
+  </div>
+
+  <p class="lead">本シリーズは、いちばん<em>下</em>（手で彫った種・配線されたハードウェア）から旅を始め、Linux まで登ってきました。最後に、いちばん<em>上</em>── 系譜の最上流へ行きます。Unix が生まれる直前、そこには <strong>Multics</strong> という巨大な OS がありました。Unix は、ある意味で<strong>その反動</strong>として生まれた。今回は「Unix とは何への反動だったのか」を通して、この一族を貫く<em>設計思想</em>に触れ、シリーズを閉じます。それは、鶏と卵をさかのぼる旅でくり返し現れた“小さな種”の思想と、ひとつのものでした。</p>
+
+  <h2><span class="n">01</span>Multics の野望 ── 計算を、電気のように</h2>
+
+  <p>1964年、MIT・GE・ベル研が手を組み、時分割 OS <strong>Multics</strong>（Multiplexed Information and Computing Service）の開発を始めます。舞台は <strong>GE-645</strong>。目標は当時として息をのむものでした ── <em>数百人が同時に使え、計算を電気や水道のような公共サービスにする</em>。しかも <strong>PL/I という高級言語</strong>で書かれた、OS 記述の先駆でもありました。革新の塊です。ただ ── <strong>当時の技術には、野心的すぎた。</strong></p>
+
+  <h2><span class="n">02</span>撤退、そして「小さく作り直す」</h2>
+
+  <p>ベル研は、Multics の<strong>サイズと複雑さ</strong>に次第に嫌気し、1960年代末に撤退します（第7回）。残された研究者たち ── <strong>Ken Thompson、Dennis Ritchie、Doug McIlroy、Joe Ossanna</strong> ── は、Multics で味わった時分割の<em>良さ</em>は手放したくなかった。そこで彼らは決めます ── <strong>同じ良さを、うんと小さく作り直そう。</strong> 遊休の PDP-7 の上で（第7回）。それが Unix でした。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 名前からして反動</span>
+    第7回で見たとおり、名前 <strong>UNICS</strong> は Multics（Multiplexed…）のもじりで、「Uniplexed…」＝<em>去勢された Multics</em>、発音は「ユーニクス（eunuchs）」。巨大な Multics への、皮肉のきいた小さな当てこすり。<strong>設計思想が、名前に刻まれていた</strong>のです。</p>
+  </div>
+
+  <h2><span class="n">03</span>反動としての設計 ── 小さく、簡潔に</h2>
+
+  <p>Multics と Unix は、設計哲学が正反対でした。下の図で、二つを切り替えてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：設計哲学の対比。Multics は「全機能を一つの巨大システムに」。Unix は「小さな道具を、パイプで繋ぐ ── 一つのことをうまくやる」</div>
+    <canvas id="cvPhil" width="680" height="300"></canvas>
+    <div class="controls">
+      <button class="btnmini seg" data-m="multics">Multics（大きく・全部入り）</button>
+      <button class="btnmini seg on" data-m="unix">Unix（小さく・繋ぐ）</button>
+    </div>
+    <div class="readout" id="rdPhil"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">Unix の哲学（McIlroy らのまとめ）</span>
+    <p style="margin-top:8px;">・<strong>各プログラムは、一つのことをうまくやる</strong>。</p>
+    <p style="margin:6px 0;">・新しい仕事には、古いプログラムを新機能で<em>肥大させず</em>、新しく作り直す。</p>
+    <p style="margin:6px 0 14px;">・プログラムを<strong>パイプ</strong>で繋ぎ、小道具の組み合わせで大きな仕事をする（<code>ls | grep | wc</code>）。── 「大きな完全システム」ではなく「小さな部品と、その組み合わせ」。</p>
+  </div>
+
+  <h2><span class="n">04</span>それでも、Multics から受け継いだもの</h2>
+
+  <p>Unix は Multics の<em>反面教師</em>でしたが、同時に<em>師</em>でもありました。第1回の言葉でいえば ── <strong>コードは1行も継がず、思想を継いだ</strong>。階層ファイルシステム、シェルを（カーネルでなく）ただのユーザプログラムにする発想、そして何より「時分割で対話的に使う」体験そのもの。<strong>Multics の良い部分の思想と、大きすぎた部分への反省</strong>を、両方受け継いで Unix は生まれました。反動とは、否定であると同時に、深い学習でもあります。</p>
+
+  <div class="keybox">
+    <div class="lbl">締めの急所 ── 「小ささ」は、このシリーズを貫く赤い糸</div>
+    <p style="margin:6px 0 0;">Unix の「小さく始めて、組み合わせで積み上げる」は、じつは<strong>この旅で何度も出会った思想</strong>です ── 中間コードの<em>小さな核</em>（第4回）、<em>357バイトの種</em>（番外②）、手で彫った<em>数語</em>（第9回）。大きな塔を、小さな土台から積み上げる。<strong>ブートストラップの原理は、Unix の設計思想そのものだった</strong>。鶏と卵を下までさかのぼって見えた“小さな種”は、Unix が最初から大切にしてきたものと、同じでした。下の図で、その赤い糸をたどってください。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図2：「小ささ」の系譜。Multics への反動から Unix、パイプ哲学、中間コードの小さな核、357バイトの種、手で彫った数語まで ── シリーズを貫く一本の糸</div>
+    <canvas id="cvThread" width="680" height="290"></canvas>
+    <div class="controls">
+      <label>赤い糸をたどる<span class="val" id="vTh">① Multics ── 大きすぎた</span>
+        <input type="range" id="th" min="0" max="5" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdTh"></div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── Multics は失敗ではない</span>
+    <p style="margin-top:0;">(1) Multics は「失敗作」ではありません。セキュリティのリング保護、動的リンク、単一レベル記憶など多くの革新を残し、後世に大きな影響を与えました。1969年のベル研撤退後も開発は続き、実運用は2000年まで続いています。「大きすぎた」は当時の技術との相対的な話です。(2) 「Unix 哲学」の箇条書きは McIlroy らによる<em>後年の整理</em>で、理想化された面があります。実際の Unix/Linux も、歴史の中で相当に肥大しました。</p>
+    <p style="margin-bottom:0;">(3) 「反動」は物語的な単純化で、Multics から Unix への連続的な<em>影響</em>（受け継ぎ）も同じくらい大きい。(4) 名前 UNICS の由来（第7回）には諸説あります。── これらの但し書きも含めて、歴史は一本の直線ではなく、影響と反発の織物です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>Multics の野望を一言で。なぜ当時「大きすぎた」のか。
+        <details><summary>答えを見る</summary><div class="ans">計算を電気のような公共サービスにし、数百人が同時に使える時分割 OS。PL/I で書いた先駆だが、機能と規模が当時のハードウェアの能力に対して野心的すぎ、サイズと複雑さが重荷になった。</div></details>
+      </li>
+      <li>Unix の設計哲学を、Multics と対比して述べよ。
+        <details><summary>答えを見る</summary><div class="ans">Multics＝全機能を一つの巨大システムに。Unix＝各プログラムは一つのことをうまくやり、肥大させず作り直し、パイプで小道具を繋いで大きな仕事をする（小さく・簡潔に）。</div></details>
+      </li>
+      <li>Unix が Multics から「継いだもの」と「継がなかったもの」は。
+        <details><summary>答えを見る</summary><div class="ans">継いだ＝思想（階層ファイルシステム、シェルをユーザプログラムに、時分割の対話体験）。継がなかった＝コード（1行も。第1回の再実装の木）と、大きすぎる完全主義。</div></details>
+      </li>
+      <li>Unix の「小ささ」は、本シリーズのどの“小さな種”と響き合うか。
+        <details><summary>答えを見る</summary><div class="ans">中間コードの小さな核（第4回）、357バイトの種（番外②）、手で彫った数語（第9回）。「小さく始めて積み上げる」＝ブートストラップの原理＝Unix の設計思想。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">シリーズの締め</span>小さな種から、世界は積み上がった</h2>
+    <p>系譜の最上流に、巨大で野心的な <strong>Multics</strong>（1964, MIT・GE・ベル研, GE-645, PL/I, 「計算を公共サービスに」）があった。ベル研はそのサイズと複雑さに嫌気して撤退し、残った Thompson・Ritchie・McIlroy・Ossanna は「同じ良さを、うんと小さく」作り直した ── それが <strong>Unix</strong>。名前からして Multics への反動（UNICS）。哲学は「<em>各プログラムは一つのことをうまくやり、パイプで繋ぐ</em>」。ただし Multics のコードは継がず<em>思想</em>を継ぎ、良さと反省の両方を受け取った（第1回の再実装の木）。</p>
+    <p>そしてこの「<strong>小さく始めて、組み合わせで積み上げる</strong>」は、私たちが鶏と卵をさかのぼる旅で何度も出会ったものだった ── 中間コードの小さな核（第4回）、357バイトの種（番外②）、手で彫った数語（第9回）。<em>ブートストラップの原理は、Unix の設計思想そのもの</em>。底（手・ハードウェア）から始めた旅は、最上流（Multics への反動）で、同じ一つの真実に還ってきた ── <strong>大きなものは、いつも小さな種から積み上がる。</strong></p>
+  </div>
+
+  <div class="creed">
+    <p class="big">鶏が先か、卵が先か。<br>── 最初の卵は、手で彫った。<br>そして小さな種は、世界になった。</p>
+    <p style="margin:10px 0 0;font-family:'Hiragino Kaku Gothic ProN',sans-serif;font-size:13px;color:var(--ink-soft);">「わかるUNIXの歴史」本編11話＋番外6話、これにて完結。最後まで、ありがとうございました。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">読み終えたあなたへ</span>
+    目次に戻れば、いつでも好きな回をもう一度たどれます。次に <code>gcc</code> と打つとき、あるいは PC の電源（<em>ブート</em>）を入れるとき ── そのボタンの向こうに、紙テープを運んだ人、スイッチを叩いた指、ゲートを配線した技術者、そして「小さく作ろう」と決めた研究者たちが、途切れず並んでいることを、思い出してください。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編⑥（最終）です。史実：Multics（Multiplexed Information and Computing Service）は1964年に MIT・General Electric・Bell 研の共同で開始された時分割 OS で、GE-645 上で数百ユーザの同時利用と「計算のユーティリティ化」を目指し、高級言語 PL/I で記述された先駆でもあった。規模と複雑さが当時の技術に対して野心的で、Bell 研は1960年代末に撤退。残った Ken Thompson・Dennis Ritchie・Doug McIlroy・Joe Ossanna らが、より小規模に作り直したのが Unix。設計は「各プログラムは一つのことをうまくやる」「新機能で肥大させず作り直す」「パイプで小道具を組み合わせる」といった原則（McIlroy らのまとめ）に特徴づけられる。Unix は Multics のコードを継承せず、階層ファイルシステムやシェルをユーザプログラムとする等の思想的影響を受けた（第1回の再実装の木）。Multics は多くの技術革新を残し、撤退後も開発が続き2000年まで運用された。「Unix 哲学」は後年の整理で理想化を含む。名称 UNICS の由来には諸説がある（第7回）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。この目次と各話 HTML は同じフォルダに置いてください（リンクが相対パスのため）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のボタンで Multics / Unix の設計哲学を、図2のスライダーで「小ささ」の系譜をたどれます。「答えを見る」で解答が開きます。全17話、おつかれさまでした。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：設計哲学の対比 ============ */
+  (function(){
+    var cv=document.getElementById('cvPhil'), rd=document.getElementById('rdPhil');
+    if(!cv) return;
+    var mode='unix';
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      if(mode==='multics'){
+        // one giant monolith
+        var bw=w*0.5, bh=h*0.66, x=w*0.5-bw/2, y=h*0.16;
+        ctx.fillStyle='#efe4f2'; ctx.strokeStyle='#6a4a9c'; ctx.lineWidth=2.6; rr(ctx,x,y,bw,bh,10); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#4c2e78'; ctx.textAlign='center'; ctx.font='bold 15px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('Multics', w/2, y+26);
+        ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#6a4a9c';
+        var feats=['時分割','ファイル','セキュリティ','ネットワーク','動的リンク','課金','入出力','…すべて内蔵'];
+        for(var i=0;i<feats.length;i++){ ctx.fillText(feats[i], w/2, y+50+i*20); }
+        ctx.fillStyle='#8a5e10'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('全機能を、一つの巨大システムに（PL/I・GE-645）', w/2, h-14);
+      } else {
+        // small tools + pipes
+        var tools=['ls','grep','sort','wc'];
+        var n=tools.length, y=h*0.4, tw=80, gap=(w-40-tw*n)/(n-1), x0=20;
+        for(var i=0;i<n;i++){
+          var x=x0+i*(tw+gap);
+          ctx.fillStyle='#efe4f2'; ctx.strokeStyle='#6a4a9c'; ctx.lineWidth=2; rr(ctx,x,y-24,tw,48,8); ctx.fill(); ctx.stroke();
+          ctx.fillStyle='#4c2e78'; ctx.textAlign='center'; ctx.font='bold 14px "SFMono-Regular",Consolas,monospace';
+          ctx.fillText(tools[i], x+tw/2, y-2); ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText('一つのこと', x+tw/2, y+14);
+          if(i>0){ // pipe
+            var px=x-gap/2; ctx.fillStyle='#8a5e10'; ctx.font='bold 20px "SFMono-Regular",Consolas,monospace';
+            ctx.fillText('|', px, y+6);
+            ctx.strokeStyle='#c1a969'; ctx.lineWidth=2;
+            ctx.beginPath(); ctx.moveTo(x-gap,y); ctx.lineTo(x,y); ctx.stroke();
+          }
+        }
+        ctx.fillStyle='#8a5e10'; ctx.font='12px "SFMono-Regular",Consolas,monospace'; ctx.textAlign='center';
+        ctx.fillText('ls | grep foo | sort | wc', w/2, y+62);
+        ctx.fillStyle='#4c2e78'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('小さな道具を、パイプで繋いで大きな仕事をする', w/2, h-14);
+      }
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='multics') rd.innerHTML='<strong>Multics</strong>：あらゆる機能を一つの巨大で完全なシステムに作り込む。革新的だが、当時の技術には大きく複雑すぎた。';
+      else rd.innerHTML='<strong>Unix</strong>：各プログラムは一つのことをうまくやり、肥大させず作り直し、<strong>パイプ</strong>で小道具を繋ぐ。小さく・簡潔に。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw(); }); });
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+
+  /* ============ 図2：「小ささ」の系譜（赤い糸） ============ */
+  (function(){
+    var cv=document.getElementById('cvThread'), sl=document.getElementById('th'),
+        vTh=document.getElementById('vTh'), rd=document.getElementById('rdTh');
+    if(!cv) return;
+    var N=[
+      {t:'Multics', s:'大きすぎた（反動の起点）', big:true, note:'全部入りの巨大 OS。ここへの反動として Unix が生まれた。'},
+      {t:'Unix', s:'小さく作り直す', note:'同じ良さを、うんと小さく。設計思想の転回点。'},
+      {t:'パイプ哲学', s:'一つのことをうまく・繋ぐ', note:'小さな道具の組み合わせで大きな仕事。小ささを積む文化。'},
+      {t:'中間コードの小さな核', s:'第4回', note:'新機種は小さな核を一つ移植すれば全部動く。小さな土台で大きな塔を支える。'},
+      {t:'357バイトの種', s:'番外②', note:'信用する種を人間可読サイズに極小化し、そこから全ツールチェーンを積み上げる。'},
+      {t:'手で彫った数語', s:'第9回', note:'いちばん最初の種。ここから全てが始まった。小ささの極点。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=N.length;
+      var padL=30, padR=24, uW=w-padL-padR, axisY=h*0.44;
+      // red thread
+      ctx.strokeStyle='#c0392b'; ctx.lineWidth=2.4;
+      ctx.beginPath(); ctx.moveTo(padL, axisY); ctx.lineTo(w-padR, axisY); ctx.stroke();
+      for(var i=0;i<n;i++){
+        var x=padL+uW*i/(n-1), active=(i===cur);
+        // node size shrinks left→right (big→small) to show "小ささ"
+        var R= (i===0? 15 : Math.max(14 - i*1.6, 6));
+        ctx.fillStyle= active? '#6a4a9c' : '#d8cced'; ctx.strokeStyle='#6a4a9c'; ctx.lineWidth= active?2.4:1.4;
+        ctx.beginPath(); ctx.arc(x,axisY,R,0,2*Math.PI); ctx.fill(); if(active)ctx.stroke();
+        // knot on thread
+        ctx.fillStyle='#c0392b'; ctx.beginPath(); ctx.arc(x,axisY,3,0,2*Math.PI); ctx.fill();
+        // label
+        ctx.fillStyle= active?'#4c2e78':'#9a8bbd'; ctx.font=(active?'bold ':'')+'11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        var ty= i%2? axisY+R+18 : axisY-R-10;
+        ctx.fillText(N[i].t, x, ty);
+        if(active){ ctx.fillStyle='#9a8bbd'; ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText(N[i].s, x, i%2? ty+14 : ty-13); }
+      }
+      ctx.fillStyle='#c0392b'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('大', padL-14, axisY+4); ctx.textAlign='right'; ctx.fillText('小', w-padR+14, axisY+4);
+      ctx.textAlign='center'; ctx.fillStyle='#8a7a9c';
+      ctx.fillText('赤い糸＝「小さく始めて積み上げる」', w/2, h-10);
+      ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), s=N[cur]; vTh.textContent=(cur+1)+' ── '+s.t+'（'+s.s+'）';
+      rd.innerHTML='<strong>'+s.t+'</strong>（'+s.s+'）：'+s.note+(cur===N.length-1?'　── この“小さな種”の思想が、Unix の設計思想と同じものだった。':''); draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+})();
+</script>
+</body>
+</html>

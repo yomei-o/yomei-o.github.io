@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCCは、何がコンパイルした？ ｜ わかるUNIXの歴史 第3回</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5f8fb; --paper-edge:#dbe4ee;   /* 第3回：青の紙 */
+    --side:#2f6f55; --side-bg:#eaf2ee;
+    --warn:#8a4b2f;
+    --calc:#3a4f6a; --calc-bg:#e9edf3;
+    --rule:#ccd8e4; --hair:#b7c5d4;
+    --acc:#2166a0;    /* 第3回アクセント＝青 */
+    --grid:#d5e0eb;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe0ef 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#eaf0f6;border:1px solid #dbe4ee;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#20342b;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd3df;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fafcfe;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 15px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#e3ebf3;color:#33506e;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e7eef6;color:#1e4576;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfdff;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eff5fb;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfdff,#e6edf5);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e7eef6;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1e4576;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史</span><span class="ep">第 3 回 ／ 輪の正しい回し方</span></div>
+  <p class="eyebrow">Linux を生んだ親 gcc ── その gcc は、何が作ったのか</p>
+  <h1>GCCは、何がコンパイルした？
+    <span class="sub">第2回で、最初の Linux は <code>gcc</code> がコンパイルしたと分かりました。でも <code>gcc</code> 自身も C で書かれたプログラム。<em>コンパイラがまだ無い所で、最初の <code>gcc</code> は何が作ったのか。</em> 答えは「既存の <code>cc</code> で1回だけ持ち上げ、あとは自分で自分を作る」── <strong>3段ブートストラップ</strong>。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第0回（自己ホスティングの輪）</span>
+    <span>種明かし：stage2 == stage3 が検算になる</span>
+  </div>
+
+  <p class="lead">Linux を生んだ親は <code>gcc</code> でした。では <code>gcc</code> という親は誰が生んだのか。<code>gcc</code> は C 言語で書かれた、ただのプログラムです。ということは、<code>gcc</code> を動く形にするには <em>C コンパイラが必要</em>。── また輪です。<code>gcc</code> は <code>gcc</code> が作り、その <code>gcc</code> も <code>gcc</code> が…。今回は、この輪を<strong>正しく着火し、正しく回す</strong>手順を見ます。じつは <code>gcc</code> のビルドには「3回もビルドする」奇妙な儀式があり、その3回目が、コンパイラの正しさを<em>自分で検算</em>する仕掛けになっています。</p>
+
+  <h2><span class="n">01</span>gcc は、C で書かれた「ただのプログラム」</h2>
+
+  <p>まず出発点を確かめます。<code>gcc</code> はC言語のソースコードとして書かれています（現代の <code>gcc</code> は C++。これは正直な線で後述）。だから <code>gcc</code> を実行ファイルにするには、それをコンパイルする別の C コンパイラが要る。<strong>コンパイラを作るのにコンパイラが要る</strong> ── 第0回の輪が、道具そのものの中にも埋まっています。</p>
+
+  <div class="term">
+<span class="p">$</span> gcc -o linux ...      <span class="c"># Linux を gcc がビルド（第2回）</span>
+<span class="p">$</span> cc  -o gcc  gcc.c      <span class="c"># では gcc は？ ← C で書かれている</span>
+   <span class="q">↑ この "cc" が無いと、最初の gcc は生まれない</span>
+  </div>
+
+  <h2><span class="n">02</span>最初のgccは、既存の cc で「1回だけ」着火した</h2>
+
+  <p>1987年、Richard Stallman が最初の <code>gcc</code>（GNU C Compiler, 1.0 は1987年5月23日）を公開したとき、それは <strong>そのマシンにあった既存の C コンパイラ ── Unix 純正の <code>cc</code> ── でビルド</strong>されました。輪の外にあった“よそのコンパイラ”を、着火装置として1回だけ借りたのです。いったん <code>gcc</code> が動けば、次からは <code>gcc</code> が <code>gcc</code> を作れる（自己ホスティング）。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── Pastel という寄り道</span>
+    Stallman は当初、リバモア研の <em>Pastel</em>（Pascal 系の言語）のコンパイラを流用しようとし、C のフロントエンドを書き足しました。ところがそれは数メガバイトのスタックを食い、当時の 68000 Unix（スタック上限64KB）では動かない。結局 <strong>C で一から書き直す</strong>ことに。Pastel のコードは <code>gcc</code> に1行も残っていません（書いた C フロントエンドだけ再利用）。──「借りものでは動かず、結局は書き下ろした」。ブートストラップの現場らしい逸話です。
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── gcc は鶏と卵から“逃げていない”</div>
+    <p style="margin:6px 0 0;"><code>gcc</code> の主張はこうです ── <strong>「動く C コンパイラを一つだけ貸してくれ。あとは自分で回す」</strong>。これは鶏と卵の<em>解決</em>ではなく、<em>先送り</em>です。問いは「では、その最初の <code>cc</code> はどこから?」へと、階段の下段へ送られる。その <code>cc</code> こそ Unix 純正の C コンパイラ＝<strong>Ritchie の最初の C コンパイラの子孫</strong>（第5回）。輪の外の着火装置を、さらにさかのぼる旅は続きます。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>3段ブートストラップ ── なぜ3回もビルドするのか</h2>
+
+  <p>ここが今回の白眉です。<code>gcc</code> を正しくビルドする標準手順（<code>make bootstrap</code>）は、<strong>gcc を3回ビルド</strong>します。下の図で、段を一つずつ進めてください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：3段ブートストラップ。既存cc（よそ者）→ stage1 → stage2 → stage3。各段が次をビルドし、最後に stage2 と stage3 を比較して一致を確かめる</div>
+    <canvas id="cvBoot" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>手順を進める<span class="val" id="vStep">① 既存の cc（着火装置）だけ</span>
+        <input type="range" id="step" min="0" max="4" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdBoot"></div>
+  </div>
+
+  <div class="calc">
+    <span class="tag">3段の役割</span>
+    <p class="lbl">stage 1 ── 既存の cc がビルド</p>
+    <p style="margin:4px 0;">まず“よそのコンパイラ”で <code>gcc</code> を1個作る。これは動くが、<em>よそ者の癖（最適化やコード生成）</em>が混じった足場。</p>
+    <p class="lbl">stage 2 ── stage1 がビルド</p>
+    <p style="margin:4px 0;">その <code>gcc</code>(stage1) で <code>gcc</code> をもう一度作る。これが初めての「<strong>gcc が作った gcc</strong>」。</p>
+    <p class="lbl">stage 3 ── stage2 がビルド</p>
+    <p style="margin:4px 0 14px;">さらに <code>gcc</code>(stage2) で <code>gcc</code> を作る。stage2 も stage3 も「<em>同じソースを gcc でビルドした</em>」もの同士。</p>
+  </div>
+
+  <h2><span class="n">04</span>種明かし ── stage2 == stage3 が“自分で採点”になる</h2>
+
+  <p>正しいコンパイラなら、<strong>「何でビルドされたか」に関係なく、同じソースからは同じ出力を出す</strong>はずです。だから <code>gcc</code>(stage2) と <code>gcc</code>(stage3) は ── どちらも「gcc が gcc をビルドした結果」── <em>バイト単位で一致するはず</em>。実際 <code>make compare</code> がこの2つを比較します。一致すれば、コンパイラは自分自身を安定に再現できている＝正しく動いている、という<strong>自己採点</strong>になる。ずれたら、コンパイラのバグか、ビルドの非決定性を疑う。</p>
+
+  <div class="keybox">
+    <div class="lbl">なぜ stage1 を捨ててよいか ── 不動点</div>
+    <p style="margin:6px 0 0;">stage1 は“よそ者cc”が作ったので、最適化やコードにその癖が残るかもしれない。でも <code>gcc</code> でビルドし直すたびに、結果は「<strong>gcc が作った gcc</strong>」という<em>一点（不動点）</em>へ収束します。stage2 でその点に到達し、stage3 で「もう変わらない」ことを確認する。だから<strong>最終製品は stage3</strong>で、stage1 は用ずみの足場。下の図で、どんな種（着火装置）から始めても同じ <code>gcc</code> に落ち着くことを見てください。</p>
+  </div>
+
+  <div class="fig">
+    <div class="cap">図2：不動点への収束。着火に使う“種コンパイラ”が違っても、gcc でビルドし直すと stage3 は同じ gcc に落ち着く。だから stage1 は捨ててよく、stage3 が本番</div>
+    <canvas id="cvFix" width="680" height="250"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-s="0">種：最適化なしの cc</button>
+      <button class="btnmini seg" data-s="1">種：クセのある cc</button>
+      <button class="btnmini seg" data-s="2">種：別バージョンの gcc</button>
+    </div>
+    <div class="readout" id="rdFix"></div>
+  </div>
+
+  <h2><span class="n">05</span>それでも、鶏と卵からは逃げていない</h2>
+
+  <p>3段ブートストラップは輪の<em>正しい回し方</em>ですが、<strong>stage1 にはやはり「既存の C コンパイラ」が要る</strong>。まっさらな新品マシン（コンパイラが1つも無い）では、これができません。ではどうするか ── <strong>別のマシンの <code>gcc</code> で、その新しいCPU向けの <code>gcc</code> を焼く</strong>。これが<em>クロスコンパイル</em>で、第8回の「紙テープを別マシンから運ぶ」話の、現代版です（番外編でも深掘り）。</p>
+
+  <p>いずれにせよ、着火装置の <code>cc</code> は<em>どこかからもらってくる</em>しかない。その出どころをたどると、Unix 純正の C コンパイラ、そして <strong>Ritchie が最初に書いた C コンパイラ</strong>へ着きます。輪の外の手を、もう一段さかのぼる番です。</p>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ていねいに直しておくこと</span>
+    <p style="margin-top:0;">(1) <strong>現代の gcc は C++ で書かれ</strong>、ビルドには C++ コンパイラが要ります（2012年の GCC 4.8 以降）。「C で書かれている」は歴史的な話。鶏と卵の構造は同じです（コンパイラを作るのにコンパイラが要る）。</p>
+    <p style="margin:0;">(2) stage3 は<em>正しさのためには技術的には不要</em>で、機能的な完成品は stage2 です。3段目は「gcc 自身の最適化を最終バイナリに行き渡らせる」ことと「stage2 と比較して検算する」ための段。(3) 「stage2 == stage3 で一致」は<strong>決定的ビルド</strong>を前提にします（タイムスタンプ等の混入を除けば一致する、という理想）。ビルドの再現性そのものは番外編②「Bootstrappable Builds」で扱います。(4) そして最大の但し書き ── <strong>その“借りてきた cc”は、そもそも信用できるのか?</strong> この不気味な問いは、番外編①「Trusting Trust」へ。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>「gcc を動かすには C コンパイラが要る」のはなぜか。一文で。
+        <details><summary>答えを見る</summary><div class="ans">gcc 自身が C（現代は C++）で書かれたプログラムなので、実行ファイルにするには別の（あるいは過去の）C コンパイラでコンパイルする必要があるから。</div></details>
+      </li>
+      <li>最初の gcc(1987) は、何を着火装置にしたか。
+        <details><summary>答えを見る</summary><div class="ans">そのマシンにあった既存の C コンパイラ（Unix 純正の cc）。それで1回ビルドすれば、以後は gcc が gcc を作れる（自己ホスティング）。</div></details>
+      </li>
+      <li>3段ブートストラップで、stage2 と stage3 が一致すると何が言えるか。
+        <details><summary>答えを見る</summary><div class="ans">コンパイラが「何でビルドされたか」に依らず同じ出力を出せている＝自分自身を安定に再現できている＝正しく動いている、という自己検算になる。ずれればバグや非決定性を疑う。</div></details>
+      </li>
+      <li>なぜ stage1 は捨ててよく、stage3 を最終製品にするのか。
+        <details><summary>答えを見る</summary><div class="ans">stage1 はよそ者ccが作った足場で、その癖が残りうる。gcc でビルドし直すと「gcc が作った gcc」という不動点に収束するので、そこに到達した stage2/3 を採用し、収束を確認した stage3 を最終品とする。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>輪は、1回借りて着火し、3回回して検算する</h2>
+    <p>Linux を生んだ <code>gcc</code> 自身も C で書かれたプログラムで、動かすには C コンパイラが要る ── 道具の中にも鶏と卵の輪がある。最初の <code>gcc</code>(1987, Stallman)は、そのマシンの<strong>既存の <code>cc</code> で1回だけ着火</strong>し、以後は自己ホスティングに入った。これは鶏と卵の解決ではなく<em>先送り</em>で、問いは「その <code>cc</code> はどこから?」へ下段へ送られる。</p>
+    <p>輪の正しい回し方が<strong>3段ブートストラップ</strong>。既存cc→stage1→stage2→stage3 と3回ビルドし、<code>make compare</code> で <strong>stage2 と stage3 のバイト一致</strong>を確かめる。正しいコンパイラは何でビルドされても同じ出力を出すはずだから、一致は<em>自分で自分を採点</em>した証拠になる。どんな種から始めても結果は「gcc が作った gcc」という<strong>不動点</strong>へ収束するので、stage1 は用ずみの足場、stage3 が本番。── では、その着火装置 <code>cc</code> の祖先へ。まずは寄り道して、もう一つの教育用OS・MINIX のコンパイラ ACK を見に行きます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第4回</span>
+    「MINIXとACK ── 教育用Unixのコンパイラ」。第2回で Linux の産室だった MINIX。その MINIX 自身は、Tanenbaum 製の <strong>ACK（Amsterdam Compiler Kit）</strong>でコンパイルされていました。<code>gcc</code> とは別の思想 ── <em>EM という中間バイトコード</em>を挟んで、多言語・多機種に対応する設計。「中間コードを挟む」という、第6回の BCPL/O-code につながる大発明の、いい予行演習です。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」シリーズ第3回です。史実：GCC は Richard Stallman により開発され、最初のベータ 0.9 が1987年3月22日、1.0 が1987年5月23日に公開された（当初は C 専用で GNU C Compiler）。Stallman は当初リバモア研の Pastel 言語コンパイラの再利用を試み C フロントエンドを書いたが、スタック消費が大きく（68000 Unix のスタック上限64KB では不可）、C で新規に書き直した。Pastel のコードは GCC に含まれない。GCC の <code>make bootstrap</code> は native 構成で3段ビルドを行い、stage1 を host（既存）コンパイラで、stage2 を stage1 で、stage3 を stage2 でビルドする。<code>make compare</code> は stage2 と stage3 を比較し、正しいコンパイラなら（何でビルドされたかに依らず）同一の出力になることを利用して健全性を検査する。stage3 は正しさのためには技術的に不要で、GCC 自身の最適化を最終バイナリに反映し比較検算するための段。現代の GCC は C++ で記述され（GCC 4.8, 2012 以降）ビルドに C++ コンパイラを要する。着火に用いる既存 cc は Unix 由来の C コンパイラで、その系譜は Ritchie の C コンパイラに遡る（第5回）。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作と解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで3段ブートストラップを進め、図2のボタンで“種コンパイラ”を変えて不動点への収束を見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：3段ブートストラップ ============ */
+  (function(){
+    var cv=document.getElementById('cvBoot'), sl=document.getElementById('step'),
+        vStep=document.getElementById('vStep'), rd=document.getElementById('rdBoot');
+    if(!cv) return;
+    // boxes: seed, s1, s2, s3
+    var BOX=[
+      {k:'seed', t:'既存の cc', s:'よそ者／着火装置', col:'#8794a5', fill:'#eef1f5'},
+      {k:'s1',   t:'gcc stage1', s:'よその癖が残る', col:'#b0651e', fill:'#f6efe3'},
+      {k:'s2',   t:'gcc stage2', s:'gccが作ったgcc', col:'#2166a0', fill:'#e7eef6'},
+      {k:'s3',   t:'gcc stage3', s:'本番（最終品）', col:'#2166a0', fill:'#e7eef6'}
+    ];
+    var LABELS=['① 既存の cc（着火装置）だけ','② stage1：既存ccがgccをビルド','③ stage2：stage1がgccをビルド','④ stage3：stage2がgccをビルド','⑤ 比較：stage2 == stage3 で検算'];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var step=parseInt(sl.value,10);
+      var n=4, padL=20, gap=(w-padL*2)/n, bw=gap*0.72, bh=64, cy=h*0.40;
+      var cx=[]; for(var i=0;i<n;i++){ cx.push(padL+gap*i+gap/2); }
+      // arrows (built-by) between i-1 -> i, shown if step>=i
+      for(i=1;i<n;i++){
+        var shown = step>=i;
+        ctx.save(); ctx.globalAlpha= shown?1:0.12;
+        ctx.strokeStyle='#9aa5b3'; ctx.fillStyle='#9aa5b3'; ctx.lineWidth=2.2;
+        var x0=cx[i-1]+bw/2, x1=cx[i]-bw/2, yy=cy;
+        ctx.beginPath(); ctx.moveTo(x0,yy); ctx.lineTo(x1-2,yy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x1,yy); ctx.lineTo(x1-9,yy-5); ctx.lineTo(x1-9,yy+5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#6b7683'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('ビルド', (x0+x1)/2, yy-8);
+        ctx.restore();
+      }
+      // boxes
+      for(i=0;i<n;i++){
+        var b=BOX[i], shown = step>=i;
+        ctx.save(); ctx.globalAlpha= shown?1:0.14;
+        ctx.fillStyle=b.fill; ctx.strokeStyle=b.col; ctx.lineWidth= (i===3&&step>=3)?2.6:1.8;
+        rr(ctx,cx[i]-bw/2,cy-bh/2,bw,bh,8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle=b.col; ctx.textAlign='center';
+        ctx.font='bold 13px "SFMono-Regular",Consolas,monospace'; ctx.fillText(b.t, cx[i], cy-6);
+        ctx.font='10.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText(b.s, cx[i], cy+14);
+        ctx.restore();
+      }
+      // comparison bracket stage2 vs stage3 at step 4
+      if(step>=4){
+        var x2=cx[2], x3=cx[3], by=cy+bh/2+26;
+        ctx.strokeStyle='#2f8d5a'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(x2, cy+bh/2+6); ctx.lineTo(x2, by); ctx.lineTo(x3, by); ctx.lineTo(x3, cy+bh/2+6); ctx.stroke();
+        ctx.fillStyle='#2f8d5a'; ctx.font='bold 14px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('== 一致 → 検算OK ✓', (x2+x3)/2, by+22);
+        ctx.font='10.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillStyle='#3c7a58';
+        ctx.fillText('同じソースを gcc でビルドしたので、バイト一致するはず', (x2+x3)/2, by+40);
+      }
+      ctx.textAlign='left';
+    }
+    function update(){
+      var step=parseInt(sl.value,10);
+      vStep.textContent=LABELS[step];
+      var msg=[
+        '着火装置＝そのマシンにあった既存の C コンパイラ。まだ gcc は無い。',
+        'stage1：既存cc が gcc をビルド。動くが、よそ者の癖が混じった<strong>足場</strong>。',
+        'stage2：その gcc(stage1) が gcc をビルド。初の<strong>「gcc が作った gcc」</strong>。',
+        'stage3：gcc(stage2) が gcc をビルド。stage2 と同じ「gcc 製の gcc」。',
+        '<strong>make compare</strong>：stage2 と stage3 が一致すれば、コンパイラは自分を安定に再現＝正しく動作。stage3 が最終製品。'
+      ][step];
+      rd.innerHTML=msg; draw();
+    }
+    sl.addEventListener('input', update);
+    window.addEventListener('resize', draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：不動点への収束 ============ */
+  (function(){
+    var cv=document.getElementById('cvFix'), rd=document.getElementById('rdFix');
+    if(!cv) return;
+    var sel=0;
+    var SEEDS=[
+      {l:'最適化なしの cc', tint:'#c98a6a'},
+      {l:'クセのある cc',   tint:'#7bb08a'},
+      {l:'別バージョンの gcc', tint:'#8a8fc0'}
+    ];
+    var CANON='#2166a0';
+    function mix(a,b,t){
+      function h2(s){return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];}
+      var A=h2(a),B=h2(b); var r=Math.round(A[0]+(B[0]-A[0])*t),g=Math.round(A[1]+(B[1]-A[1])*t),bl=Math.round(A[2]+(B[2]-A[2])*t);
+      return 'rgb('+r+','+g+','+bl+')';
+    }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var seed=SEEDS[sel];
+      var cols=[
+        {t:'stage1', tint:seed.tint,          sub:'よその癖が残る'},
+        {t:'stage2', tint:mix(seed.tint,CANON,0.75), sub:'gccが作ったgcc'},
+        {t:'stage3', tint:CANON,              sub:'不動点：どの種でも同じ'}
+      ];
+      var n=3, padL=40, gap=(w-padL*2)/n, bw=gap*0.6, bh=76, cy=h*0.42;
+      var cx=[]; for(var i=0;i<n;i++){ cx.push(padL+gap*i+gap/2); }
+      for(i=1;i<n;i++){
+        ctx.strokeStyle='#b7c5d4'; ctx.fillStyle='#b7c5d4'; ctx.lineWidth=2;
+        var x0=cx[i-1]+bw/2, x1=cx[i]-bw/2;
+        ctx.beginPath(); ctx.moveTo(x0,cy); ctx.lineTo(x1-2,cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x1,cy); ctx.lineTo(x1-8,cy-4); ctx.lineTo(x1-8,cy+4); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#6b7683'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+        ctx.fillText('gccで再ビルド', (x0+x1)/2, cy-8);
+      }
+      for(i=0;i<n;i++){
+        var c=cols[i];
+        ctx.fillStyle=c.tint; ctx.strokeStyle='rgba(0,0,0,.18)'; ctx.lineWidth=1.5;
+        rr(ctx,cx[i]-bw/2,cy-bh/2,bw,bh,8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#fff'; ctx.textAlign='center';
+        ctx.font='bold 13px "SFMono-Regular",Consolas,monospace'; ctx.fillText(c.t, cx[i], cy-4);
+        ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif';
+        // wrap sub
+        ctx.fillText(c.sub, cx[i], cy+16);
+      }
+      // 収束の注記
+      ctx.fillStyle='#8794a5'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('色＝コンパイラの“癖”。段を追うごとに、標準の gcc（青）へ収束する', w/2, h-14);
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      rd.innerHTML='種（stage1 の土台）＝<strong>'+SEEDS[sel].l+'</strong>。どの種でも、gcc で2回ビルドし直すと <strong>stage3 は同じ標準 gcc（青）へ収束</strong>。だから stage1 は捨ててよい足場、stage3 が本番。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-s]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      sel=parseInt(b.getAttribute('data-s'),10);
+      btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize', draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>

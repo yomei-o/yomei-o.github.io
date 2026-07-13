@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜGNUだったのか ── 自由なツールチェーン ｜ わかるUNIXの歴史 番外編⑤</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f5faf6; --paper-edge:#d9e8dd;
+    --side:#6a4a9c; --side-bg:#efe9f5;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#c8ddce; --hair:#aecdb8;
+    --acc:#2f7d55;
+    --grid:#d6e8dd;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #cfe6d6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#e7f2ec;border:1px solid #d9e8dd;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a52;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fbfdfb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#dcece2;color:#2a5d43;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e3f1ea;color:#1c5a3c;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfffc;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef7f1;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfffc,#e5f1e9);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e3f1ea;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1c5a3c;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ⑤</span><span class="ep">道具が自由でなければ、種は撒けない</span></div>
+  <p class="eyebrow">第2回の問い ── なぜ Linux が使える gcc・bash が、あらかじめ存在したのか</p>
+  <h1>なぜGNUだったのか ── 自由なツールチェーン
+    <span class="sub">第2回で、最初の Linux は GNU の <code>gcc</code>・<code>bash</code> で立ち上がりました。ではなぜ、その自由な道具が Torvalds の手元に<em>すでに</em>あったのか。Stallman が1980年代を丸ごと使って、<strong>自由なツールチェーン</strong>を作り続けていたからです。道具が自由でなければ ── 種を、自分で撒けない。</span>
+  </h1>
+  <div class="byline">
+    <span>前提：第2回（Linuxの産声）・第3回（gcc）</span>
+    <span>種明かし：輪を回す道具そのものが、自由であること</span>
+  </div>
+
+  <p class="lead">第2回で、Linux は MINIX 上の <code>gcc</code> で生まれ、GNU の道具（<code>gcc</code>・<code>bash</code>）と合体して1つの OS になった、と見ました。ここで自然な疑問 ── <em>なぜ1991年の時点で、自由に使える C コンパイラやシェルが、ちょうど揃っていたのか?</em> 偶然ではありません。<strong>Richard Stallman が1983年から、Unix を白紙から作り直す「GNU プロジェクト」で、自由なツールチェーンを黙々と積み上げていた</strong>からです。今回は、その動機 ── なぜ<em>自由</em>でなければならなかったか ── を、本編の鶏と卵とつなげて読みます。</p>
+
+  <h2><span class="n">01</span>1983年の宣言 ── GNU's Not Unix</h2>
+
+  <p>1983年9月27日、Stallman は「Unix 互換の、しかし<strong>完全に自由な</strong> OS を作る」と宣言します。名前は <strong>GNU</strong> ── “GNU's Not Unix!”（GNU は Unix にあらず）という<em>再帰的頭字語</em>。設計は Unix に倣うが、コードは白紙から（第1回の<strong>再実装の木</strong>そのもの）。1985年の <em>GNU 宣言</em>で、その哲学 ── ソフトは<strong>使い・調べ・改変し・再配布する自由</strong>を持つべきだ ── を掲げました。</p>
+
+  <div class="term">
+<span class="c">// 1983-09-27, Stallman の最初のアナウンス（要旨）</span>
+   <span class="o">"Free Unix!"</span>
+   I am going to write a complete Unix-compatible software system
+   called <span class="o">GNU</span> (for Gnu's Not Unix), and give it away free ...
+   <span class="q">"free" は無料ではなく「自由」の意</span>
+  </div>
+
+  <h2><span class="n">02</span>なぜ、まず「道具」から作ったのか</h2>
+
+  <p>OS を白紙から作るなら、まず何が要るか ── <strong>道具（ツールチェーン）</strong>です。コンパイラが無ければ、何も書けない。だから GNU は、エディタ <strong>Emacs</strong>（1984頃）から始め、<strong>GCC</strong>（1987, 第3回）、そして <code>bash</code>・<code>ls</code>・<code>grep</code>・<code>make</code>・<code>ld</code> といった Unix ユーティリティ群を、次々に自由なソフトとして作りました。1987年ごろには、アセンブラ・ほぼ完成した GCC・Emacs・各種ユーティリティが揃っていた。</p>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所 ── 道具が自由でなければ、種を自分で撒けない</div>
+    <p style="margin:6px 0 0;">本編の合言葉「最初の卵は、手で彫った」。でも<em>誰が</em>彫れるのか。第0回の輪を回す道具（<code>gcc</code>）や、第9回の種を用意する自由が、<strong>特定の会社に握られていたら</strong>? あなたのソフトの起源は、他人の許可と料金に依存します。GNU がやったのは ── <strong>鶏と卵の連鎖を、誰でも自由に回せるようにする</strong>こと。輪を回す道具そのものを自由にした。だから1991年、一人の学生が、誰の許可もなく <code>gcc</code> で自分の OS を立ち上げられたのです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">03</span>欠けていた、最後の一枚 ── カーネル</h2>
+
+  <p>1992年ごろには、GNU は OS のほぼ全部品を自由に揃えていました。エディタ、コンパイラ、シェル、ユーティリティ ── でも、<strong>一枚だけ欠けていた</strong>。心臓部の<em>カーネル</em>です。GNU 自身のカーネル <strong>GNU Hurd</strong>（1990〜、Mach マイクロカーネル上）は、なかなか完成に至らなかった。GNU システムは、<em>あと一枚のピース</em>で完成しない状態が続きます。下の図で、GNU の部品が埋まっていき、最後にカーネルの穴が残る様子を見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図1：GNU システムのジグソー。Emacs→GCC→bash…と自由な部品が埋まるが、最後の「カーネル」の一枚が空いたまま。そこへ、別の木の若葉 Linux がはまる</div>
+    <canvas id="cvJig" width="680" height="330"></canvas>
+    <div class="controls">
+      <label>年を進める<span class="val" id="vJig">1984 ── Emacs</span>
+        <input type="range" id="jig" min="0" max="5" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdJig"></div>
+  </div>
+
+  <h2><span class="n">04</span>Linux が、その穴を埋めた ── GNU/Linux</h2>
+
+  <p>1991年、Torvalds のカーネル（第2回）が登場し、1992年の <code>v0.12</code> で <strong>GPLv2</strong> になります。Linux は GNU プロジェクトの一部ではありません。でも <code>gcc</code> など GNU の道具で作られ、同じ GPL で公開された ── だから、<strong>GNU のユーザランド ＋ Linux のカーネル</strong>で、初めて<em>完全に自由な OS</em> が動きました。これが “<strong>GNU/Linux</strong>” と呼ばれる所以です。第1回「二本の木は、こずえで葉を交換する」の、いちばん大きな実例。</p>
+
+  <div class="calc">
+    <span class="tag">二つの木の若葉が、合わさる（第1回の回収）</span>
+    <p style="margin-top:8px;">GNU（再実装の木）は<em>ユーザランド</em>を持ち、カーネルを欠いていた。Linux（同じ再実装の木の別の若葉）は<em>カーネル</em>だけを持っていた。二つが GPL の下で合わさって、一枚の完全な自由 OS になった。<strong>どちらも AT&amp;T のコードを継がず、思想（自由・Unix互換）だけを共有していた</strong> ── だから摩擦なく噛み合ったのです。</p>
+  </div>
+
+  <h2><span class="n">05</span>種明かし ── 自由は、鶏と卵の“誰でも”を保証する</h2>
+
+  <p>本編は「鶏と卵の連鎖が、種から回り始める」話でした。GNU が足したのは、その連鎖に <strong>“誰でも”</strong> を書き込むこと。下の図で、輪を回す道具が独占か自由かで、<em>誰が</em>ソフトを立ち上げられるかが変わることを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：輪を回す権利。ツールチェーンが独占なら、輪を回す（ソフトを作る）には門番の許可が要る。自由なら、誰でも回せる ── だから一人の学生が Linux を生めた</div>
+    <canvas id="cvGate" width="680" height="280"></canvas>
+    <div class="controls">
+      <button class="btnmini seg" data-m="prop">独占コンパイラ</button>
+      <button class="btnmini seg on" data-m="free">自由な gcc</button>
+    </div>
+    <div class="readout" id="rdGate"></div>
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 呼び名も、動機も、ていねいに</span>
+    <p style="margin-top:0;">(1) 「<strong>GNU/Linux か Linux か</strong>」は長年の呼称論争です。Stallman らは GNU の貢献を反映して “GNU/Linux” を求め、慣用では単に “Linux” と呼ばれます。技術的な事実は「Linux カーネル＋（多くの場合）GNU ユーザランド」で、本稿はどちらの立場も断定しません。(2) GNU の “free” は<strong>自由（freedom）</strong>であって無料（gratis）ではありません。「自由に使い・調べ・改変・再配布できる」の意です。</p>
+    <p style="margin-bottom:0;">(3) GNU Hurd は「失敗」ではなく、今も開発が続くプロジェクトです。「カーネルが未完だった」は当時の状況の話。(4) 自由な Unix 系は GNU だけではありません ── BSD 系も（別のライセンスで）自由を提供しました（番外④）。(5) Torvalds 自身は自由の哲学より実用を重んじた面があり、GPL 採用（第2回）も実利的判断を含みます。「自由の思想」と「実用」は、歴史では絡み合っています。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>なぜ1991年に、Linux が使える自由な gcc・bash が既に存在したのか。
+        <details><summary>答えを見る</summary><div class="ans">Stallman が1983年からの GNU プロジェクトで、自由なツールチェーン（gcc・bash・各種ユーティリティ）を積み上げていたから。Torvalds はそれを使って立ち上げられた。</div></details>
+      </li>
+      <li>GNU が「まず道具から」作ったのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">OS を白紙から作るには、まずコンパイラ等の道具（ツールチェーン）が要るから。道具が無ければ何も書けない。</div></details>
+      </li>
+      <li>1992年ごろの GNU に欠けていた一枚は何か。それを何が埋めたか。
+        <details><summary>答えを見る</summary><div class="ans">カーネル（GNU Hurd が未完だった）。Linux カーネルが埋め、GNU ユーザランド＋Linux＝GNU/Linux として完全に自由な OS が動いた。</div></details>
+      </li>
+      <li>「道具が自由であること」は、本編の鶏と卵に何を足すか。
+        <details><summary>答えを見る</summary><div class="ans">連鎖に「“誰でも”回せる」を足す。輪を回す道具が独占なら起源は他人の許可に依存するが、自由なら誰でもソフトを立ち上げられる。GNU はそれを保証した。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>道具を自由にした人が、いたから</h2>
+    <p>第2回で Linux が <code>gcc</code>・<code>bash</code> で立ち上がれたのは偶然ではない。<strong>Stallman が1983年から GNU プロジェクト</strong>（“GNU's Not Unix”、Unix 互換だが白紙から・完全に自由）で、自由なツールチェーンを積み上げていたからだ。まず Emacs、次に <strong>GCC</strong>(1987)、そして <code>bash</code>・coreutils・<code>make</code>・<code>ld</code>…。OS を作るにはまず道具が要る ── その道具を、GNU は<em>自由に</em>用意した。</p>
+    <p>1992年ごろ GNU は部品をほぼ揃えたが、<strong>カーネルだけが欠けていた</strong>（GNU Hurd は未完）。そこへ Linux（同じ再実装の木の別の若葉）がはまり、GPL の下で <strong>GNU/Linux</strong>＝完全に自由な OS が成立した（第1回「こずえで葉を交換」の最大の実例）。本編の鶏と卵に GNU が足したのは <strong>“誰でも”</strong> ── 輪を回す道具そのものを自由にしたから、一人の学生が誰の許可もなく OS を生めた。<em>種は手で彫れる。ただし、彫る道具が自由であれば。</em></p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編⑥（最終）</span>
+    「Multics → Unix ── 何への反動だったか」。系譜のいちばん上流へ。巨大で野心的だった Multics から降りた Thompson と Ritchie が、なぜ小さく簡潔な Unix を作ったのか。「大きいことは正しい」への異議申し立て ── Unix の設計思想の源流に触れ、シリーズを閉じます。</p>
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編⑤です。史実：GNU プロジェクトは Richard Stallman が1983年9月27日に発表した、Unix 互換で完全に自由なオペレーティングシステムを作る計画。GNU は “GNU's Not Unix” の再帰的頭字語。1985年に GNU 宣言。1984年ごろから GNU Emacs、1987年に GCC（第3回）、以降 bash・coreutils・make・binutils(ld) などを自由ソフトとして開発。1990年から Mach マイクロカーネル上で GNU Hurd を開発したがカーネルは長く未完のままだった。Linus Torvalds の Linux カーネル（1991、v0.12/1992 で GPLv2）が GCC 等 GNU のツールで開発され、GNU のユーザランドと組み合わさって完全に自由な OS（GNU/Linux と呼ばれる）が成立した。Linux 自体は GNU プロジェクトの一部ではない。「free」は自由（freedom）の意で無料（gratis）ではない。「GNU/Linux」対「Linux」の呼称、Hurd の評価、GNU 以外の自由な Unix 系（BSD 等）については立場・見解が分かれる。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで GNU の部品が揃い最後にカーネルの穴に Linux がはまる様子を、図2のボタンで「独占/自由」で輪を回せる人が変わることを見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：GNU システムのジグソー ============ */
+  (function(){
+    var cv=document.getElementById('cvJig'), sl=document.getElementById('jig'),
+        vJig=document.getElementById('vJig'), rd=document.getElementById('rdJig');
+    if(!cv) return;
+    // tiles: 8 pieces; last is カーネル
+    var TILES=['Emacs','GCC','bash','coreutils','make','ld / binutils','grep / awk','カーネル'];
+    // arrival step for each tile (kernel special)
+    var arrive=[0,1,2,2,2,2,2,99]; // kernel arrives at step 4(Linux)/5
+    var STEPS=[
+      {y:'1984', l:'Emacs', note:'GNU 最初の主要部品。エディタ（Lisp 拡張つき）。'},
+      {y:'1987', l:'GCC', note:'自由な C コンパイラ（第3回）。OS を作る道具の要。'},
+      {y:'1988頃', l:'ユーザランドがほぼ揃う', note:'bash・coreutils・make・ld・grep… 自由なユーティリティが出そろう。残るはカーネル。'},
+      {y:'1990', l:'GNU Hurd 着手（未完）', note:'Mach 上で GNU 独自カーネルに挑むが、なかなか完成しない ── カーネルの穴が空いたまま。'},
+      {y:'1991', l:'Linux カーネル登場', note:'別の木の若葉・Linux（第2回）が現れる。GNU の空いた穴にちょうどはまる形。'},
+      {y:'1992', l:'GPLv2 で合体＝GNU/Linux', note:'Linux が GPLv2 に。GNU ユーザランド＋Linux で、完全に自由な OS が完成。'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var step=parseInt(sl.value,10);
+      var cols=4, rows=2, padL=24, padT=30, gapx=12, gapy=12;
+      var tw=(w-padL*2-gapx*(cols-1))/cols, th=(h-padT-70-gapy*(rows-1))/rows;
+      for(var i=0;i<TILES.length;i++){
+        var r0=Math.floor(i/cols), c0=i%cols;
+        var x=padL+c0*(tw+gapx), y=padT+r0*(th+gapy);
+        var isKernel=(i===TILES.length-1);
+        var filled, col;
+        if(isKernel){
+          if(step>=5){ filled=true; col='#2f7d55'; } // completed
+          else if(step>=4){ filled=true; col='#2166a0'; } // Linux fills (blue = other tree)
+          else { filled=false; col='#a83a22'; } // empty hole
+        } else {
+          filled = step>=arrive[i]; col='#2f7d55';
+        }
+        if(filled){
+          ctx.fillStyle= col==='#2166a0'? '#e7eef6' : '#e7f2ec'; ctx.strokeStyle=col; ctx.lineWidth=2;
+          rr(ctx,x,y,tw,th,7); ctx.fill(); ctx.stroke();
+          ctx.fillStyle=col; ctx.textAlign='center'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText(isKernel? (step>=5?'カーネル':'Linux'):TILES[i], x+tw/2, y+th/2+4);
+          if(isKernel && step===4){ ctx.fillStyle='#2166a0'; ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('（別の木の若葉）', x+tw/2, y+th/2+18); }
+        } else if(isKernel){
+          ctx.strokeStyle='#a83a22'; ctx.setLineDash([5,4]); ctx.lineWidth=2; rr(ctx,x,y,tw,th,7); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle='#a83a22'; ctx.textAlign='center'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText('カーネル', x+tw/2, y+th/2); ctx.font='9px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText('（欠けている）', x+tw/2, y+th/2+16);
+        } else {
+          ctx.strokeStyle='#cbd9d0'; ctx.setLineDash([4,4]); ctx.lineWidth=1.2; rr(ctx,x,y,tw,th,7); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle='#b7c9bf'; ctx.textAlign='center'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+          ctx.fillText(TILES[i], x+tw/2, y+th/2+4);
+        }
+      }
+      // banner
+      ctx.textAlign='center';
+      if(step>=5){ ctx.fillStyle='#2f7d55'; ctx.font='bold 14px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('完全に自由な OS が完成 ── GNU/Linux', w/2, h-16); }
+      else if(step===4){ ctx.fillStyle='#2166a0'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('Linux が、GNU の空いた穴にはまる', w/2, h-16); }
+      else { ctx.fillStyle='#9aab9f'; ctx.font='12px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText('自由な部品が揃っていく（でもカーネルが空いたまま）', w/2, h-16); }
+      ctx.textAlign='left';
+    }
+    function update(){ var step=parseInt(sl.value,10), s=STEPS[step]; vJig.textContent=s.y+' ── '+s.l;
+      rd.innerHTML='<strong>'+s.y+'　'+s.l+'</strong>：'+s.note; draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：輪を回す権利（独占 vs 自由） ============ */
+  (function(){
+    var cv=document.getElementById('cvGate'), rd=document.getElementById('rdGate');
+    if(!cv) return;
+    var mode='free', phase=0, raf=null, last=0;
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var free=(mode==='free');
+      var cx=w*0.42, cy=h*0.5, R=Math.min(w,h)*0.26;
+      // the loop ring
+      ctx.strokeStyle= free? '#2f7d55':'#9aa5b3'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(cx,cy,R, 0, 2*Math.PI); ctx.stroke();
+      // pulse
+      var pa=phase*2*Math.PI, px=cx+R*Math.cos(pa), py=cy+R*Math.sin(pa);
+      ctx.fillStyle= free? '#2f7d55':'#b7c0c9'; ctx.beginPath(); ctx.arc(px,py,6,0,2*Math.PI); ctx.fill();
+      // center
+      ctx.fillStyle= free?'#2f7d55':'#8794a5'; ctx.textAlign='center'; ctx.font='bold 13px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('自己ホスティング', cx, cy-4); ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText('の輪（gcc）', cx, cy+13);
+      // compiler tool label on ring
+      ctx.fillStyle= free? '#1c5a3c':'#6b7683'; ctx.font='11px "SFMono-Regular",Consolas,monospace';
+      ctx.fillText(free?'自由な gcc':'独占コンパイラ', cx, cy-R-10);
+      // gate (proprietary) or open door (free)
+      var gx=cx+R+30, gy=cy;
+      if(!free){
+        // lock/gate blocking people
+        ctx.fillStyle='#9a4230'; rr(ctx,gx-14,gy-24,28,48,5); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.font='16px sans-serif'; ctx.textAlign='center'; ctx.fillText('🔒', gx, gy+6);
+        ctx.fillStyle='#9a4230'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.fillText('門番', gx, gy+34);
+      } else {
+        ctx.strokeStyle='#2f7d55'; ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(gx-14,gy-24); ctx.lineTo(gx-14,gy+24); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle='#2f7d55'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center'; ctx.fillText('門なし', gx, gy+34);
+      }
+      // people
+      var people=['👤','👤','👤'];
+      for(var i=0;i<people.length;i++){
+        var pxp=w-70, pyp=cy-40+i*40;
+        ctx.font='20px sans-serif'; ctx.textAlign='center'; ctx.fillText('👤', pxp, pyp+6);
+        // arrow from person toward loop
+        ctx.strokeStyle= free? '#2f7d55':'#c9b6ac'; ctx.lineWidth=1.8; ctx.setLineDash(free?[]:[4,3]);
+        ctx.beginPath(); ctx.moveTo(pxp-16, pyp); ctx.lineTo(gx+18, gy-20+i*20); ctx.stroke(); ctx.setLineDash([]);
+        if(!free && i===1){ ctx.fillStyle='#9a4230'; ctx.font='16px sans-serif'; ctx.fillText('✕', (pxp-16+gx+18)/2, pyp); }
+      }
+      ctx.textAlign='left';
+      ctx.fillStyle= free? '#1c5a3c':'#7a2513'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText(free? '誰でも輪を回せる → Linux が生まれた' : '許可・料金が要る → 起源が他人に握られる', w*0.5, h-12);
+      ctx.textAlign='left';
+    }
+    function tick(t){ if(!last)last=t; var dt=(t-last)/1000; last=t;
+      if(mode==='free'){ phase+=dt*0.25; if(phase>1)phase-=1; }
+      draw(); raf=requestAnimationFrame(tick); }
+    function setReadout(){
+      if(mode==='free') rd.innerHTML='<strong>自由な gcc</strong>：輪を回す道具が自由なので、<strong>誰でも許可なくソフトを立ち上げられる</strong>。だから一人の学生（Torvalds）が Linux を生めた。GNU が用意した“誰でも”。';
+      else rd.innerHTML='<strong>独占コンパイラ</strong>：唯一の道具を会社が握ると、輪を回す（ソフトを作る）のに許可・料金が要り、中身も検められない（番外①の信頼問題）。ソフトの起源が他人に依存する。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-m]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-m'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); }); });
+    setReadout(); last=0; raf=requestAnimationFrame(tick);
+    window.addEventListener('resize',draw);
+    setTimeout(draw,60);
+  })();
+})();
+</script>
+</body>
+</html>

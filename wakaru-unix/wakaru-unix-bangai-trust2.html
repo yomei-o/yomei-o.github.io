@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bootstrappable Builds ── 種を極小化する ｜ わかるUNIXの歴史 番外編②</title>
+<style>
+  :root{
+    --ink:#1a1c22; --ink-soft:#4a4e5a;
+    --paper:#f4faf7; --paper-edge:#d6e8df;   /* 番外②：ティール緑の紙 */
+    --side:#6a4a9c; --side-bg:#efe9f5;
+    --warn:#8a4b2f;
+    --calc:#274a70; --calc-bg:#e9eef4;
+    --rule:#c6ddd0; --hair:#aecfc0;
+    --acc:#2f7d63;    /* 番外②アクセント＝ティール緑（希望） */
+    --grid:#d3e7dd;
+    --term-bg:#1b2330; --term-ink:#d7dee7; --term-green:#7fd6a0; --term-amber:#e2b565; --term-dim:#8794a5; --term-q:#e88;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:760px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:36px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17.5px;color:var(--ink-soft);font-weight:400;margin-top:13px;
+    letter-spacing:.04em;line-height:1.75;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:24px;padding-top:16px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:22px;font-weight:600;margin:52px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  h3{font-size:17px;font-weight:600;margin:28px 0 2px;letter-spacing:.02em;color:#25272e;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #c6e6d6 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    font-size:.88em;background:#e7f2ec;border:1px solid #d6e8df;border-radius:3px;padding:.05em .35em;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2a52;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #cbd6e2;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .term{margin:24px 0;background:var(--term-bg);border-radius:6px;padding:16px 20px;overflow-x:auto;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;line-height:1.75;color:var(--term-ink);
+    box-shadow:0 8px 24px rgba(20,28,40,.22);}
+  .term .p{color:var(--term-green);} .term .c{color:var(--term-dim);} .term .o{color:var(--term-amber);} .term .q{color:var(--term-q);}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#f8fdfb;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:260px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btnmini{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;cursor:pointer;background:var(--acc);color:#fff;border:none;border-radius:4px;padding:8px 14px;}
+  .btnmini:hover{opacity:.92;}
+  .seg{background:#dcece5;color:#2a5d4a;} .seg.on{background:var(--acc);color:#fff;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:12px;padding:10px 14px;border-radius:3px;font-weight:600;line-height:1.65;
+    background:#e3f2ea;color:#1c5a44;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:12px;border-radius:2px;display:inline-block;}
+
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fbfffe;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#eef7f2;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#22354a;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fbfffe,#e5f1eb);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#e3f2ea;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#1c5a44;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;} h3{font-size:12.5pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,.term{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .term{color:#1a1c22;background:#f2f4f7;box-shadow:none;border:1px solid #ccc;}
+    .term .p{color:#2f6f55;} .term .o{color:#8a5a12;} .term .c{color:#777;} .term .q{color:#b33;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:26px;} body{font-size:16px;} }
+  .hint{max-width:760px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#6b6f60;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかるUNIXの歴史 ／ 番外編 ②</span><span class="ep">信頼のブートストラップ ②</span></div>
+  <p class="eyebrow">番外①の脅威への、現代の答え ── 種を極小化し、多様性で検める</p>
+  <h1>Bootstrappable Builds ── 種を極小化する
+    <span class="sub">Trusting Trust（番外①）は言いました ── 「自分が作っていないバイナリを、信用するしかない」。現代の答えは二つ ── <em>信用する種を、人間が手で読める大きさ（357バイト）まで小さくする。そして、別系統のコンパイラで二重に検算する。</em></span>
+  </h1>
+  <div class="byline">
+    <span>前提：番外①（Trusting Trust）・第9回（種）</span>
+    <span>希望：小さく信用し、多様性で確かめる</span>
+  </div>
+
+  <p class="lead">番外①で、Thompson の暗い双子を見ました ── コンパイラのソースがクリーンでも、汚染バイナリの子孫でビルドする限りトロイは生き延び、信頼は「自分が作っていないもの」で底を打つ、と。では手も足も出ないのか。いいえ。本編の<em>希望</em>（自己ホスティングの輪・手で彫った種）に現代の答えがあったように、この<em>脅威</em>にも、二つの強力な対抗策があります ── <strong>①種を人間可読なサイズまで極小化する（Bootstrappable / Full-Source Bootstrap）</strong>、<strong>②別系統のコンパイラで二重コンパイルして検算する（DDC）</strong>。鶏と卵の“希望”の、総仕上げです。</p>
+
+  <h2><span class="n">01</span>戦略① ── 信用する種を、手で読める大きさに</h2>
+
+  <p>番外①の問題の核心は、「<em>信用せざるを得ない最初のバイナリ</em>が、大きすぎて中身を検められない」ことでした。ならば ── <strong>その種を、ぎりぎりまで小さくすればいい。</strong> Bootstrappable Builds プロジェクトは、信用が必要なバイナリの<em>数と大きさ</em>を最小化します。到達点が見事です ── <strong>わずか 357 バイトの <code>hex0</code> という種</strong>から、GNU システム全体を<em>ソースだけ</em>で組み上げる（Full-Source Bootstrap）。</p>
+
+  <div class="term">
+<span class="c">// hex0 ── 357バイトの種。空白区切りの16進を読み、バイトを吐くだけ</span>
+<span class="p">$</span> cat hello.hex0
+   <span class="o">7C 00 00 00</span>   <span class="c"># これはただの16進の並び。人間が目で追える</span>
+<span class="p">$</span> ./hex0 hello.hex0 > hello   <span class="c"># 16進 → バイト（極小アセンブラ）</span>
+   <span class="q">この 357 バイトだけを信用すればいい。あとは全部ソースから積み上がる</span>
+  </div>
+
+  <p>この 357 バイトの上に、少しずつ大きな道具が<em>ソースから</em>積み上がります。下の図で、種から <code>gcc</code>、そして GNU システムまで登ってください。第4回「小さな核から全部」・第9回「ブートストラップの階段」の、まっすぐな子孫です。</p>
+
+  <div class="fig">
+    <div class="cap">図1：Full-Source Bootstrap。357バイトの hex0 の種から、hex→M2→Mes→TinyCC→gcc と、各段が次のより大きな道具をソースからビルドし、GNU システム全体まで登る</div>
+    <canvas id="cvBoot" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>種から積み上げる<span class="val" id="vBoot">① hex0 の種（357バイト）</span>
+        <input type="range" id="boot" min="0" max="6" step="1" value="0">
+      </label>
+    </div>
+    <div class="readout" id="rdBoot"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所その1 ── 「手で彫った種」が、現代に蘇る</div>
+    <p style="margin:6px 0 0;">第9回で、最初のバイトは<strong>人間が手で彫った</strong>と見ました。Full-Source Bootstrap は、それを現代に取り戻します ── <em>信用しなければならない種を 357 バイトまで小さくすれば、人間が実際に全部を目で読める</em>。番外①の「信用せざるを得ない、検められないバイナリ」が、<strong>監査できる大きさ</strong>になる。合言葉「最初の卵は、手で彫った」が、セキュリティの実務として生き返るのです。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">02</span>戦略② ── 別系統のコンパイラで、二重に検める（DDC）</h2>
+
+  <p>もう一つの答えは、種を小さくするのとは別方向 ── <strong>すでにある怪しいコンパイラを、そのまま検証する</strong>方法です。David A. Wheeler の <strong>Diverse Double-Compiling（DDC, 多様な二重コンパイル）</strong>。アイデアはこう ── <em>疑わしいコンパイラ X とは<strong>別系統</strong>の、信用できるコンパイラ A を用意し、同じソースを二重にコンパイルして、結果を X のバイナリとビット単位で比べる。</em></p>
+
+  <p>ここが鮮やか。Thompson の毒は、<strong>ソースにも、別系統の A にも入っていない</strong>（毒は X のバイナリの系譜だけに潜む）。だから A を経由して作り直したバイナリはクリーンで、── もし X が汚染されていれば、<strong>作り直した結果と X が食い違い、毒が露見する</strong>。下の図で、X を「正直」と「汚染」で切り替えて、汚染のときだけ照合が失敗するのを見てください。</p>
+
+  <div class="fig">
+    <div class="cap">図2：Diverse Double-Compiling。同じソースを、疑わしい X と、別系統の信用できる A で（二重に）コンパイルし、結果を X のバイナリとビット比較。X が汚染されているときだけ食い違う</div>
+    <canvas id="cvDDC" width="680" height="320"></canvas>
+    <div class="controls">
+      <button class="btnmini seg on" data-x="honest">X は正直</button>
+      <button class="btnmini seg" data-x="trojan">X は汚染（Thompson の毒）</button>
+    </div>
+    <div class="readout" id="rdDDC"></div>
+  </div>
+
+  <div class="keybox">
+    <div class="lbl">今回の急所その2 ── ビット同一という審判（第3回の再来）</div>
+    <p style="margin:6px 0 0;">DDC が成り立つには、<strong>同じソースからは同じバイナリが出る</strong>こと ── <em>再現ビルド（Reproducible Builds）</em>── が要ります。これは第3回「<code>stage2 == stage3</code> のビット一致で検算」と、まったく同じ発想。あのとき「正しいコンパイラは何でビルドされても同じ出力」と言いました。DDC はそれを<em>多様性</em>と組み合わせ、<strong>「別系統で作り直して一致するなら、バイナリはソースどおり」</strong>という審判にしたのです。</p>
+  </div>
+
+  <h2><span class="n">03</span>種明かし ── 「全部は作れない」を、こう乗り越える</h2>
+
+  <p>番外①の教訓は「自分で完全に作ったのでないコードは信用できない」。現実には誰も全部は作れません。でも二つの戦略は、それを実務的に乗り越えます ── <strong>信用する範囲を 357 バイトまで<em>小さく</em>して人間が読み切り、さらに<em>多様な</em>第二コンパイラで相互に検算する。</strong> 「全部を作る」の代わりに、「小さく信用し、独立に確かめ合う」。Thompson が「原理的に見破れない」と示した毒は、<strong>もはや原理的に見破れる</strong>ものになりました。</p>
+
+  <div class="aside">
+    <span class="tag">つなぐ声 ── 本編との三重の握手</span>
+    この番外は、本編と三つで握手します。<strong>第3回</strong>（stage2==stage3 のビット一致＝再現ビルドの祖先）、<strong>第4回</strong>（小さな核から全部＝種の極小化）、<strong>第9回</strong>（手で彫った種＝357バイトの監査可能な種）。鶏と卵をさかのぼる旅で拾った道具立てが、そのままセキュリティの答えになっている ── ブートストラップの構造を深く理解することは、それを<em>守る</em>ことに直結していました。
+  </div>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 万能薬ではない、でも確かな前進</span>
+    <p style="margin-top:0;">(1) 357バイトの種でも、その <code>hex0</code> を<em>動かすカーネルと CPU</em> は信用しています（第10回のハードウェア・マイクロコード）。Full-Source Bootstrap は<strong>ソフトの種</strong>を極小化しますが、ハードの信頼は別問題として残ります。(2) DDC は「別系統の A が独立に汚染されていない（X と共謀しない）」ことを前提にします。完全に独立な A をどう確保するかは、実務上の要です。</p>
+    <p style="margin-bottom:0;">(3) 再現ビルド（Reproducible Builds）は大規模な現在進行形の取り組みで、まだ全ソフトが到達しているわけではありません。(4) Guix の Full-Source Bootstrap、GNU Mes、stage0、live-bootstrap は発展途上のプロジェクトで、構成や数値は版により変わります（357バイトは代表的な hex0-seed の例）。要点は「<em>信用する種を小さく・検証可能にし、多様性で確かめる</em>」という<strong>方向</strong>です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の話だけで解けます）</div>
+    <ol>
+      <li>Full-Source Bootstrap は、番外①のどの問題を、どう和らげるか。
+        <details><summary>答えを見る</summary><div class="ans">「信用せざるを得ない最初のバイナリが大きすぎて検められない」問題を、種を357バイトまで極小化して人間が全部読める＝監査可能にすることで和らげる。</div></details>
+      </li>
+      <li>DDC が Thompson の毒を見破れるのはなぜか。
+        <details><summary>答えを見る</summary><div class="ans">毒はソースにも別系統の信用できるコンパイラ A にも無く、疑わしい X のバイナリ系譜にだけ潜む。だから A で二重コンパイルし直した結果はクリーンで、汚染された X とビット単位で食い違い、露見する。</div></details>
+      </li>
+      <li>DDC が前提とする、第3回と同じ性質は何か。
+        <details><summary>答えを見る</summary><div class="ans">再現ビルド（同じソースからビット同一のバイナリが出ること）。第3回の stage2==stage3 のビット一致検算と同じ発想。</div></details>
+      </li>
+      <li>二つの戦略を一言ずつで。共通する考え方は。
+        <details><summary>答えを見る</summary><div class="ans">①種を人間可読サイズに極小化（監査可能に）②別系統で二重コンパイルして照合（DDC）。共通するのは「全部を自分で作る」代わりに「小さく信用し、独立に確かめ合う」。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">まとめ</span>小さく信用し、多様性で確かめる</h2>
+    <p>番外①の脅威（クリーンなソースでも汚染バイナリの子孫なら毒が残る／信頼は作っていないもので底を打つ）に、現代は二つで応える。<strong>①Bootstrappable / Full-Source Bootstrap</strong>：信用する種を <code>hex0</code> の<strong>357バイト</strong>まで極小化し、そこから hex→M2→Mes→TinyCC→gcc→GNU システムを<em>ソースだけ</em>で積み上げる。種が人間可読なら、番外①の「検められないバイナリ」は<strong>監査できる</strong>。<strong>②Diverse Double-Compiling（DDC, Wheeler）</strong>：別系統の信用できるコンパイラで二重コンパイルし、結果を疑わしいバイナリとビット比較。毒はソースにも別系統にも無いので、汚染だけが食い違って露見する。</p>
+    <p>DDC の土台は<strong>再現ビルド</strong>＝第3回「stage2==stage3 のビット一致」の子孫だ。この番外は本編と三重に握手する ── 第3回（ビット一致）、第4回（小さな核から全部）、第9回（手で彫った種）。ブートストラップの構造を深く知ることが、そのまま<em>守る</em>力になった。Thompson が「原理的に見破れない」と示した毒は、<strong>小さく信用し、多様性で確かめる</strong>ことで、見破れるものになった。── 鶏と卵の希望は、脅威にも耐える。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 番外編③</span>
+    「クロスコンパイル ── 鶏なしで、卵を作る」。第8回で見た「よそのマシンで作って運ぶ」の現代版。まだ何も動いていない新しい CPU 向けの卵を、手元の PC で焼く。組込み機器、新アーキテクチャの立ち上げ、そして host・target・build の三つがすべて違う <em>Canadian Cross</em> まで。鶏と卵を“ずらして”解く技を見ます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかるUNIXの歴史」番外編②です。史実・技術：Bootstrappable Builds プロジェクトは、信用が必要なバイナリ（種）の数と大きさの最小化を目指す。GNU Guix の Full-Source Bootstrap（2023）では、約357バイトの hex0-seed バイナリから stage0-posix が hex0→hex1→catm→hex2→M0→cc_x86→M1→M2→get_machine（mescc-tools）→M2-Planet を構築し、続いて GNU Mes（Scheme インタプリタ＋C コンパイラ MesCC）を経て、軽微なパッチを当てた自己ホスティングの TinyCC、さらに従来型の C ベースのブートストラップ（gcc など）へと積み上げる。hex0 は空白区切りの16進を読みバイトを出力する極小アセンブラ。Diverse Double-Compiling（DDC）は David A. Wheeler による技法で、コンパイラのソースを別系統の信用できるコンパイラで二重にコンパイルし、その結果を検査対象のバイナリとビット単位で比較して、一致すればバイナリがソースに対応することを（一定の前提の下で）示す。2005年 ACSAC 論文（非形式的）、2009年博士論文（形式的証明）。DDC の前提として再現ビルド（Reproducible Builds、同一ソースからビット同一のバイナリ）が重要。数値・構成はプロジェクトの版により変化しうる。ハードウェア／マイクロコード（第10回）の信頼、独立な第二コンパイラの確保などは別途の課題。本稿は防御・教育目的の解説。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版では図の操作・解答は静止／非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では図1のスライダーで357バイトの種から GNU システムまでの積み上げを、図2のボタンで DDC（X が汚染のときだけ照合失敗）を試せます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  /* ============ 図1：Full-Source Bootstrap の階段 ============ */
+  (function(){
+    var cv=document.getElementById('cvBoot'), sl=document.getElementById('boot'),
+        vBoot=document.getElementById('vBoot'), rd=document.getElementById('rdBoot');
+    if(!cv) return;
+    var ST=[
+      {l:'hex0 の種', s:'357バイト・手で読める16進', size:0.12, col:'#2f7d63', seed:true},
+      {l:'hex0 / hex1 / hex2', s:'16進→バイト（極小アセンブラ）', size:0.24, col:'#2f7d63'},
+      {l:'M0 / M1 / M2', s:'マクロアセンブラ', size:0.38, col:'#1f7a6e'},
+      {l:'M2-Planet', s:'C サブセットのコンパイラ', size:0.54, col:'#2166a0'},
+      {l:'GNU Mes / MesCC', s:'Scheme ＋ C コンパイラ', size:0.70, col:'#6d4aa7'},
+      {l:'TinyCC', s:'自己ホスティングの C', size:0.85, col:'#b0651e'},
+      {l:'gcc → GNU システム', s:'従来の C ブートストラップへ', size:1.0, col:'#9a4230'}
+    ];
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var cur=parseInt(sl.value,10), n=ST.length;
+      var padT=22, padB=40, baseY=h-padB, uH=h-padT-padB;
+      var bh=Math.min(uH/(n+0.4), 40), gap=5;
+      var cx=w*0.5, maxBW=w*0.78;
+      for(var i=0;i<n;i++){
+        var y=baseY-(i+1)*bh-i*gap;
+        var on=i<=cur;
+        var bw=maxBW*(0.22+0.78*ST[i].size);
+        // arrow from prev
+        if(i>0 && on){
+          ctx.strokeStyle=ST[i].col; ctx.fillStyle=ST[i].col; ctx.lineWidth=1.8;
+          ctx.beginPath(); ctx.moveTo(cx, y+bh+gap); ctx.lineTo(cx, y+bh+1); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx,y+bh); ctx.lineTo(cx-4,y+bh+7); ctx.lineTo(cx+4,y+bh+7); ctx.closePath(); ctx.fill();
+        }
+        ctx.save(); ctx.globalAlpha= on?1:0.24;
+        ctx.fillStyle= i===cur? ST[i].col : (on? '#eef7f2':'#f0f3f1');
+        ctx.strokeStyle=ST[i].col; ctx.lineWidth= i===cur?2.6:1.5;
+        rr(ctx,cx-bw/2,y,bw,bh,6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle= i===cur? '#fff':ST[i].col; ctx.textAlign='center'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(ST[i].l, cx, y+bh*0.45+1);
+        ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.globalAlpha= on?0.92:0.24;
+        ctx.fillText(ST[i].s, cx, y+bh*0.82);
+        ctx.restore();
+        if(ST[i].seed){ ctx.fillStyle='#2f7d63'; ctx.font='16px sans-serif'; ctx.textAlign='right'; ctx.fillText('🌱', cx-bw/2-6, y+bh*0.7); }
+      }
+      // seed annotation
+      ctx.fillStyle='#1c5a44'; ctx.font='11px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('信用する種＝この 357 バイトだけ（人間が全部読める）', cx, baseY+16);
+      ctx.fillStyle='#8aa79b'; ctx.font='10px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='left';
+      ctx.fillText('大きく（gcc・GNUシステム）', 8, padT); ctx.textAlign='right'; ctx.fillText('小さく（種）', w-8, baseY+16); ctx.textAlign='left';
+    }
+    function update(){ var cur=parseInt(sl.value,10), st=ST[cur];
+      vBoot.textContent=(cur+1)+' ── '+st.l+(st.seed?'（357バイト）':'');
+      rd.innerHTML='<strong>'+st.l+'</strong>：'+st.s+(cur===0?'　── ここだけを信用すればいい。' : '　── 一つ下の段が<strong>ソースから</strong>ビルドした。')+(cur===ST.length-1?' これで GNU システム全体が、357バイトの種だけを信用して組み上がった。':''); draw(); }
+    sl.addEventListener('input',update);
+    window.addEventListener('resize',draw);
+    setTimeout(update,60); window.addEventListener('load',update);
+  })();
+
+  /* ============ 図2：Diverse Double-Compiling ============ */
+  (function(){
+    var cv=document.getElementById('cvDDC'), rd=document.getElementById('rdDDC');
+    if(!cv) return;
+    var mode='honest';
+    function box(ctx,x,y,w,h,fill,stroke,lines,lw){
+      ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=lw||1.8; rr(ctx,x,y,w,h,8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=stroke; ctx.textAlign='center';
+      for(var i=0;i<lines.length;i++){ ctx.font=(i===0?'bold 12px':'10px')+' "Hiragino Kaku Gothic ProN",sans-serif';
+        ctx.fillText(lines[i], x+w/2, y+(lines.length===1?h/2+4:19+i*15)); }
+    }
+    function arrow(ctx,x0,y0,x1,y1,col){ ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      var a=Math.atan2(y1-y0,x1-x0);
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1-9*Math.cos(a-0.4),y1-9*Math.sin(a-0.4)); ctx.lineTo(x1-9*Math.cos(a+0.4),y1-9*Math.sin(a+0.4)); ctx.closePath(); ctx.fill(); }
+    function draw(){
+      var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+      ctx.clearRect(0,0,w,h);
+      var trojan = mode==='trojan';
+      // source box (center-left)
+      var sx=20, sy=h*0.42, sw=110, sh=44;
+      box(ctx,sx,sy,sw,sh,'#e7f2ec','#2f8d5a',['コンパイラの','ソース（クリーン）']);
+      // X (untrusted) top path, A (diverse trusted) bottom path
+      var midx=w*0.42, topy=h*0.18, boty=h*0.72, bw=120, bh=40;
+      box(ctx,midx,topy-bh/2,bw,bh, trojan?'#f3e1dc':'#eef7f2', trojan?'#9a4230':'#2f7d63',
+        [ trojan?'X：汚染コンパイラ':'X：コンパイラ', trojan?'（毒入り）':'（検査対象）']);
+      box(ctx,midx,boty-bh/2,bw,bh,'#eef7f2','#2f7d63',['A：別系統の','信用できるコンパイラ']);
+      arrow(ctx,sx+sw,sy+4,midx,topy,'#9aa5ad');
+      arrow(ctx,sx+sw,sy+sh-4,midx,boty,'#9aa5ad');
+      // results
+      var rx=w*0.72, rbw=118;
+      // X binary (its own output / the executable under test)
+      box(ctx,rx,topy-bh/2,rbw,bh, trojan?'#f3e1dc':'#eef7f2', trojan?'#9a4230':'#2f7d63',
+        [ 'X のバイナリ', trojan?'☠ 毒入り':'クリーン']);
+      arrow(ctx,midx+bw,topy,rx,topy,'#9aa5ad');
+      // A -> cA -> recompile source -> R (clean)
+      box(ctx,rx,boty-bh/2,rbw,bh,'#eef7f2','#2f7d63',['DDC の結果 R', 'クリーン']);
+      arrow(ctx,midx+bw,boty,rx,boty,'#9aa5ad');
+      ctx.fillStyle='#6b7683'; ctx.font='9.5px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText('A で二重コンパイル', (midx+bw+rx)/2, boty-bh/2-6);
+      // compare
+      var cmx=rx+rbw/2, cy=(topy+boty)/2;
+      ctx.strokeStyle='#3a4a5a'; ctx.setLineDash([4,3]); ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(cmx, topy+bh/2); ctx.lineTo(cmx, boty-bh/2); ctx.stroke(); ctx.setLineDash([]);
+      var ok=!trojan;
+      ctx.fillStyle= ok? '#2f8d5a':'#a83a22'; ctx.font='bold 22px "Hiragino Kaku Gothic ProN",sans-serif'; ctx.textAlign='center';
+      ctx.fillText(ok?'＝':'≠', cmx+2, cy+8);
+      // verdict banner
+      ctx.fillStyle= ok? '#2f8d5a':'#a83a22'; rr(ctx, w*0.28, h-34, w*0.44, 24, 6); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='bold 12px "Hiragino Kaku Gothic ProN",sans-serif';
+      ctx.fillText(ok? 'ビット一致 → バイナリはソースどおり ✓' : 'ビット不一致 → 毒を検出！ ✗', w*0.5, h-18);
+      ctx.textAlign='left';
+    }
+    function setReadout(){
+      if(mode==='honest') rd.innerHTML='<strong>X は正直</strong>：X のバイナリも、A で二重コンパイルした結果 R も、同じクリーンなソースから作られたのでビット一致。<strong>バイナリがソースどおりだと確認できた</strong>。';
+      else rd.innerHTML='<strong>X は汚染</strong>：毒はソースにも別系統の A にも無く、X のバイナリだけに潜む。だから A 経由の R はクリーンで、X と<strong>ビット不一致</strong> ── 毒が露見する。Thompson の「見破れない」毒が、見破れた。';
+    }
+    var btns=cv.parentNode.querySelectorAll('.seg[data-x]');
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      mode=b.getAttribute('data-x'); btns.forEach(function(x){ x.classList.toggle('on', x===b); });
+      setReadout(); draw();
+    });});
+    window.addEventListener('resize',draw);
+    setReadout(); setTimeout(draw,60); window.addEventListener('load',draw);
+  })();
+})();
+</script>
+</body>
+</html>
