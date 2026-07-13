@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習は、進化が見つけた近道である ── わかる学習論 第10回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 10 回 ／ 進化と学習は同じ勾配 ── 効率の相転移</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>学習は、進化が見つけた近道である
+    <span class="sub">進化も学習も、下る坂は同じ。違うのは時間スケールと、コストを誰が払うか ── 死か、経験か。<br>同じ勾配計算を、桁違いに安く速くやり直したもの。それが「学習」だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回のES、第9回の bits/joule</span>
+    <span>この回のキー：\(\theta \leftarrow \theta - \eta\,\hat g\)</span>
+  </div>
+
+  <p class="lead">第4回で、進化は<em>微分せずに坂を下る</em>方法（進化戦略, ES）だと見ました。第9回では、その計算に<em>エネルギーという値札</em>が付いていることを見ました。今回は二つをつなぎます。進化のES更新も、脳の学習も、書き下せばまったく同じ一行 ── \(\theta\leftarrow\theta-\eta\,\hat g\) です。では両者は何が違うのか。<strong>違うのは二点だけ。勾配を測る時間スケール（世代か、一生の中の一瞬か）と、その勾配を測るコストを誰が払うか（死か、経験か）</strong>。進化は一つの勾配を測るのに<em>多数の死と長い時間</em>を要します。ところが、生きているあいだに脳が勾配を測れば、死なずに、桁違いに安く、同じ計算ができる。<strong>学習とは、進化が延々とやっていた勾配計算を、生存中に前倒しした「近道」</strong>なのです。この回で、その近道が数式のうえでどう同じで、どこがどれだけ安いのかを、足で歩いて確かめます。</p>
+
+  <h2><span class="n">01</span>進化はなぜ遅い ── 1サンプル＝1つの死</h2>
+
+  <p>第4回のES勾配を思い出します。損失 \(L(\theta)\) が微分できなくても、パラメータ \(\theta\) を小さくゆらして \(\varepsilon_i\)（ノイズ）を足し、その結果の良し悪しで勾配を<em>推定</em>できました。</p>
+
+  <div class="keybox">
+    <div class="lbl">進化戦略（ES）の勾配推定 ── 第4回の要点</div>
+    $$\hat g_{\text{evo}}\;=\;\frac{1}{N}\sum_{i=1}^{N}\frac{L(\theta+\sigma\varepsilon_i)-L(\theta)}{\sigma}\,\varepsilon_i$$
+  </div>
+
+  <p>ここで一項 \(L(\theta+\sigma\varepsilon_i)\) を測るとは、<strong>ゲノムを少しいじった個体を一匹まるごと生かし、その一生の成績を見る</strong>ということです。良ければ子を残し、悪ければ ── 残さず消える。つまり<em>1サンプル＝1個体の一生＝多くは1つの死</em>。しかも和は \(N\) 項ある。一つの勾配 \(\hat g_{\text{evo}}\) を1歩ぶん得るのに、\(N\) 回の評価、すなわち<strong>\(N\) 世代ぶんの時間と、それだけの死</strong>が要る。第9回の言葉でいえば、1サンプルあたりのコストが「一生分のエネルギー」── これがサンプル効率が最悪である、という意味です。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ進化はこれで済ませてきたのか</span>
+    進化には勾配を微分で求める術がありません（自然は方程式を知らない）。だから「たくさん産んで、多くを死なせ、成績で選ぶ」という力ずくのサンプリングで勾配を推定するしかない。手数は膨大でも、時間さえかければ確実に坂を下れる ── 数十億年という時間の予算があれば、非効率でも到達はできる。進化の遅さは無能ではなく、<em>微分という近道を持たない者に残された唯一の道</em>だったのです。
+  </div>
+
+  <h2><span class="n">02</span>一生の中で勾配を測る ── それが学習</h2>
+
+  <p>ところが、ある個体が<strong>死なずに、自分の一生のあいだに</strong>勾配を測れたらどうでしょう。脳をもつ生きものは、まさにこれをやります。脳の重み \(w\) を少しずつ調整し、経験 \(x_i\) のたびに「予測と現実のズレ」から勾配を計算する ── これが誤差逆伝播（BP, 第2回）や強化学習の中身です。</p>
+
+  <div class="keybox">
+    <div class="lbl">一生内学習の勾配推定（脳のBP的な学習）</div>
+    $$\hat g_{\text{learn}}\;=\;\frac{1}{N}\sum_{i=1}^{N}\nabla_w\,\ell\!\left(w;\,x_i\right)$$
+  </div>
+
+  <p>いま一項 \(\nabla_w\ell(w;x_i)\) を測るとは、<strong>一匹の個体が、生きたまま一つの経験から学ぶ</strong>ということ。失敗しても死なない ── 転んで、痛くて、次はうまくやる。\(N\) 個のサンプルを、<em>一つの命を使い回して</em>稼ぐ。だから同じ \(N\) 項の和でも、支払うコストは<strong>死ではなく経験</strong>。第9回の bits/joule でいえば、一つの命の中に何千ものサンプルを詰め込むぶん、勾配の情報を<em>桁違いに安く</em>集められる。これがサンプル効率の逆転です。</p>
+
+  <p>大事なのは、\(\hat g_{\text{evo}}\) も \(\hat g_{\text{learn}}\) も<strong>同じ「損失の勾配」の推定値</strong>だということ。推定の作り方（力ずくのサンプリングか、微分か）と、支払い方が違うだけで、<em>指している向きは同じ坂の下り方向</em>です。</p>
+
+  <h2><span class="n">03</span>同じ更新則 ── 違うのは時間スケールと支払い方だけ</h2>
+
+  <p>推定した勾配を \(\hat g\) と書けば、進化も学習も、次の一行にそろって収まります。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">進化も学習も、同じ更新則</div>
+    $$\theta\;\leftarrow\;\theta-\eta\,\hat g$$
+  </div>
+
+  <p>この式に、二つの実装を並べてみます。</p>
+
+  <table class="verdict">
+    <tr><th>　</th><th>進化（ES）</th><th>一生内学習（脳）</th></tr>
+    <tr><td>更新則</td><td>\(\theta\leftarrow\theta-\eta\,\hat g_{\text{evo}}\)</td><td>\(w\leftarrow w-\eta\,\hat g_{\text{learn}}\)</td></tr>
+    <tr><td>1サンプル</td><td>1個体の一生</td><td>一生の中の1経験</td></tr>
+    <tr><td>1更新の時間</td><td>世代（数年〜）</td><td>一生の中の一瞬（秒〜）</td></tr>
+    <tr><td>コストを払うのは</td><td class="v-bad">死</td><td class="v-ok">経験</td></tr>
+  </table>
+
+  <p>違いは本質的に二つ。<strong>(1) 勾配を測る時間スケール</strong>（世代 vs 一生の中の瞬間）と、<strong>(2) コストを誰が払うか</strong>（死 vs 経験）。それ以外は同じ計算です。だからこう言えます ──<em>学習とは、進化がやっていたのと同じ勾配計算を、死を経験に置き換えて、安く速くやり直したものである</em>。近道の正体は、新しい計算の発明ではなく、<strong>同じ計算の「支払い方」の切り替え</strong>でした。</p>
+
+  <h2><span class="n">04</span>入れ子の最適化 ── 外が進化、内が学習</h2>
+
+  <p>すると自然に、二段構えの構造が現れます。生きものは<em>ゲノム \(\theta_{\text{gene}}\)</em> と<em>脳の重み \(w\)</em> の二つのパラメータをもち、それぞれ別の時間スケールで、しかし同じ更新則で最適化されている。外側のゆっくりしたループが進化、内側の速いループが学習です。</p>
+
+  <div class="keybox">
+    <div class="lbl">二段階最適化（メタ学習の心）</div>
+    $$\underbrace{\theta_{\text{gene}}\;\leftarrow\;\theta_{\text{gene}}-\eta_{\text{out}}\,\hat g_{\text{gene}}}_{\text{外ループ：進化（ES・遅い・世代ごと）}}$$
+    $$\text{各個体の一生の内側で：}\quad\underbrace{w\;\leftarrow\;w-\eta_{\text{in}}\,\nabla_w\ell,\qquad w_0=\phi(\theta_{\text{gene}})}_{\text{内ループ：学習（速い・一生の中で）}}$$
+  </div>
+
+  <p>脳の初期状態 \(w_0\) は、ゲノム \(\theta_{\text{gene}}\) が指定します（\(w_0=\phi(\theta_{\text{gene}})\)）── どんな構造で、何を学びやすいかは、生まれつきの設計。そして進化が最適化しているのは、直接の行動ではなく、<strong>「よく学べる初期状態と学び方」そのもの</strong>です。外ループは「うまく学ぶ能力」を選ぶ。これはAIでいう<em>メタ学習（学習の学習）</em>とまったく同じ入れ子構造です。進化は個々の答えを教え込むのではなく、<em>答えに速くたどり着ける学習器</em>を選び続けている。</p>
+
+  <div class="aside">
+    <span class="tag">「速い脳・遅い遺伝子」は同じ坂を役割分担で下る</span>
+    内ループ（学習）は一生のうちにその環境の細部へ素早く適応する ── 今年のエサ場、目の前の相手。外ループ（進化）は、何世代にもわたって変わらない構造的な問題へゆっくり適応する ── 手足の設計、学びやすい脳の配線。速い変化は学習に、遅い変化は進化に。<em>同じ勾配降下を、二つの時間スケールに分業させた</em>のが、脳をもつ生きものの姿です。
+  </div>
+
+  <h2><span class="n">05</span>動かしてみる ── 死の数で測る、近道の効き目</h2>
+
+  <p>下の図は、ある目標適応度 \(F^*\) に到達するまでを、二つのやり方で競争させます。横軸は<strong>時間・コスト（世代）</strong>、縦軸は<strong>適応度</strong>。茶の階段は<em>進化のみ</em>（毎世代わずかに改善、各世代に死のマーカー）。緑は<em>一生内学習をもつ個体</em>（生きているうちに目標へ近づく）。スライダー「可塑性」は、<strong>一生の中で学べる量</strong> ── これを上げると、緑が速く目標に届き、必要な死が減っていく<em>クロスオーバー</em>が見えます。</p>
+
+  <div class="fig">
+    <div class="cap">図：目標適応度 F*=0.90 への到達競争。茶＝進化のみ（1世代1個体評価＝1世代に1つの死）、緑＝一生内学習をもつ個体。赤点は「到達までに要した死」。可塑性を上げると緑の到達が早まり、死が減る</div>
+    <canvas id="cv" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>可塑性 p（一生の中で学べる量）<span class="val" id="vp">0.70</span>
+        <input type="range" id="p" min="0" max="0.98" step="0.02" value="0.70">
+      </label>
+      <button class="btn" id="run">アニメで見る ▶</button>
+    </div>
+    <div class="readout ok" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#8a5a12;"></i>進化のみ（ES）</span>
+      <span><i class="swatch" style="background:#3d7a3a;"></i>一生内学習をもつ個体</span>
+      <span><i class="dot" style="background:#c0392b;"></i>到達までに要した死</span>
+    </div>
+  </div>
+
+  <p>可塑性 \(p=0\) なら、緑は茶とぴったり重なる（学べない個体は進化だけが頼り）。\(p\) を上げると緑は最初の一生ですでに高い適応度へ跳び、目標に届くまでの世代数＝死の数がみるみる減る。そして \(p\ge F^*\) を超えると ── <strong>最初の一世代の学習だけで目標に到達し、死はほぼゼロ</strong>。進化が何十世代もの死で払っていた代金を、学習は<em>一つの命の中の経験</em>で払い切る。これが「近道」の効き目です。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 死とエネルギーの、桁でのコスト差</span>
+    <p class="lbl">ある勾配推定に N=1000 サンプル要るとする。まず「死」で数える</p>
+    $$\text{進化のみ}:\ N=1000\ \text{個体}\times1\text{生}=1000\ \text{の死}\;(\approx1000\ \text{世代})$$
+    $$\text{一生内学習}:\ 1\ \text{個体が生涯で}\ 1000\ \text{回試行}=\underline{\text{死}\,0},\ \text{推定はほぼ同じ}$$
+    <p class="lbl">次に第9回のエネルギーを掛ける（1サンプルの値札）</p>
+    $$E_{\text{evo}}\approx N\cdot E_{\text{life}}=1000\times(2\times10^{11}\,\mathrm{J})=2\times10^{14}\,\mathrm{J}$$
+    $$E_{\text{learn}}\approx 1\cdot E_{\text{life}}=2\times10^{11}\,\mathrm{J}\quad(\text{1つの命の中に1000試行を同居})$$
+    <p style="margin-bottom:14px;">同じ \(N=1000\) の勾配推定でも、進化は <em>1000 の命</em>を、学習は<em>1 の命</em>を使う。エネルギーで<strong>約 \(N=10^3\) 倍</strong>安い（<span style="color:var(--ok);font-weight:700;">1000倍</span>）。時間はもっと極端で、世代時間 \(T_{\text{gen}}\approx20\) 年に対し1試行は数秒 ── 到達までの時間比は \(T_{\text{gen}}/t_{\text{試行}}\sim(6\times10^8\,\mathrm{s})/(1\,\mathrm{s})\approx\)<strong>10億倍速い</strong>。近道は、コストでも時間でも<em>桁で</em>効く。</p>
+  </div>
+
+  <h2><span class="n">06</span>ボールドウィン効果 ── 学習が進化を導く</h2>
+
+  <p>近道はさらに面白い働きをします。学習で獲得した有利なふるまいが、やがて<strong>遺伝的に固定される方向へ進化を導く</strong>のです。これを<em>ボールドウィン効果</em>（1896年提唱、Hinton–Nowlan 1987が計算機で実証）と呼びます。</p>
+
+  <p>仕組みはこうです。ある良いふるまいが、遺伝子だけでは正確に当てられず「学習してやっと届く」ものだとします。学習できる個体は、生きているうちにそこへ<em>近づいて</em>高い適応度を得られる。すると、<strong>「その良い領域の近くに生まれ、かつ学ぶ能力をもつ」遺伝子</strong>が選択で有利になる。世代を重ねると、遺伝子の初期値そのものが良い領域へ引き寄せられ、最後には<em>学ばずとも生まれつきできる</em>方向へ固定されていく（遺伝的同化）。</p>
+
+  <div class="aside">
+    <span class="tag">学習は「地形をぼかして」進化を助ける（第7回とつながる）</span>
+    遺伝子だけの適応度地形は、正解が針の穴のように鋭く、探索は運任せです。ところが学習できる個体は「正解の近く」でもそこそこの点を取れる ── これは第7回の<em>地形をぼかす（平滑化）</em>とまったく同じこと。鋭い峰のまわりに<strong>ゆるやかな傾斜</strong>が生まれ、進化のES勾配が「こっちが上だ」と読み取れるようになる。学習は進化に、<em>登るべき方向のヒント</em>を渡している。だから可塑性（学習能力）そのものが選択され、進化は加速するのです。
+  </div>
+
+  <p>ただし、ここに擬人化の罠があります。進化が「学習は便利だから発明しよう」と<em>考えた</em>わけではない。学べる変異体がたまたま多く子を残した ── それだけ。先を見通す設計者はいません。次の判決で、この線を正直に引きます。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── 近道の、確かなところと危ういところ</h2>
+
+  <table class="verdict">
+    <tr><th>主張</th><th>中身</th><th>判決</th></tr>
+    <tr>
+      <td>学習は、進化と同じ更新則をサンプル効率よくやり直したもの</td>
+      <td>両者とも \(\theta\leftarrow\theta-\eta\hat g\)。違うのは時間スケールと支払い方だけ</td>
+      <td class="v-ok">正しい</td>
+    </tr>
+    <tr>
+      <td>学習は死を経験に置き換え、圧倒的に安い（第9回）</td>
+      <td>同じ勾配推定を、\(N\) 個の命でなく1つの命で。エネルギーで約 \(N\) 倍、時間で桁違いに安い</td>
+      <td class="v-ok">正しい</td>
+    </tr>
+    <tr>
+      <td>「進化が学習を目的をもって発明した」</td>
+      <td>先見のある設計者はいない。効率的な可塑性が<em>結果的に</em>選択されただけ（擬人化）</td>
+      <td class="v-bad">誤り</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── どこまでが科学で、どこからが言い回しか</span>
+    <p style="margin-top:0;">「学習＝より安い勾配推定であり、その効率ゆえに選択される」こと、そして「学習が進化を導き加速する（ボールドウィン効果／遺伝的同化）」ことには、理論と計算機実験の<strong>確かな根拠</strong>があります。方向性 ──<em>学習は進化と同じ計算の効率化である</em>── は堅い。</p>
+    <p>ただし二つ、線を引いておきます。第一に、「進化が学習を<em>発見／発明した</em>」は目的論的な言い回しにすぎません。先見はなく、効率的な変異が多く子を残しただけ。第二に、<strong>すべての学習が勾配ベースとは限りません</strong>── 連想、模倣、報酬なしの探索など、勾配降下に還元しにくい学習もあります。本稿の「同じ更新則」は、勾配で書ける学習についての、正確だが一枚岩ではない主張です。</p>
+    <p style="margin-bottom:0;">そして最終回への一歩。効率化の極みは、ここでは止まりません。進化は「本物の死」を「本物の経験」に置き換えて安くした。では ──<strong>「本物の試行」すら不要にできたら？</strong> 頭の中の世界モデルの上で、実際に転ばずに勾配を計算する。想像の中で試し、想像の中で失敗する。次回・最終回、その極限の近道に<em>意識</em>という名を与えます。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式と数字で解けます）</div>
+    <ol>
+      <li>ある勾配推定に \(N=1000\) サンプル要る。進化のみ（1世代1個体評価）と一生内学習で、(a) 死の数、(b) 消費エネルギー（\(E_{\text{life}}=2\times10^{11}\,\mathrm{J}\)）、(c) おおよその時間（\(T_{\text{gen}}=20\) 年、1試行=1秒）を比べよ。
+        <details><summary>答えを見る</summary><div class="ans">(a) 進化：1000の死。学習：0（1個体が生涯で1000試行）。(b) 進化：\(1000\times2\times10^{11}=2\times10^{14}\,\mathrm{J}\)。学習：1つの命ぶん \(\approx2\times10^{11}\,\mathrm{J}\)。エネルギー比 \(\approx N=1000\) 倍安い。(c) 進化：\(1000\times20\)年 \(=2\times10^4\) 年。学習：\(1000\times1\)秒 \(\approx17\) 分。時間比は約 \(6\times10^8\)（=約6億倍）速い。</div></details>
+      </li>
+      <li>二段階最適化 \(\theta_{\text{gene}}\leftarrow\theta_{\text{gene}}-\eta_{\text{out}}\hat g_{\text{gene}}\)（外）と \(w\leftarrow w-\eta_{\text{in}}\nabla_w\ell\)（内）で、どちらが外でどちらが内か。なぜ進化が「遅い外ループ」なのか。
+        <details><summary>答えを見る</summary><div class="ans">外＝進化（ゲノム \(\theta_{\text{gene}}\)）、内＝学習（脳の重み \(w\)）。進化の1更新は「世代」という長い時間スケールで、1サンプルが1個体の一生（死）と高くつくため、更新が遅く回数も少ない。学習の1更新は一生の中の一瞬で、1サンプルが1経験と安いので速く多く回せる。進化は内ループの学習器＝「よく学ぶ能力」をゆっくり選ぶ、メタ学習の外ループ。</div></details>
+      </li>
+      <li>「進化が学習を発明した」という言い方のどこが誤りか。ボールドウィン効果を使って、正しい言い換えを述べよ。
+        <details><summary>答えを見る</summary><div class="ans">誤り：進化には目的も先見もなく、「便利だから作ろう」と設計する主体はいない。正しい言い換え：学べる（可塑性の高い）変異体が、良いふるまいに生きているうちに届いて高い適応度を得やすく、結果として多く子を残した。学習能力は<em>選択された</em>のであって<em>発明された</em>のではない。さらに学習は地形を平滑化して進化の勾配を読みやすくし、獲得したふるまいはやがて遺伝的に同化されうる（ボールドウィン効果）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第10回まとめ</span>学習は、同じ坂を安く速く下り直したもの</h2>
+    <p>進化のES勾配 \(\hat g_{\text{evo}}\) は、1サンプル＝1個体の一生＝多くは1つの死で、\(N\) 項の和に \(N\) 世代と \(N\) の死を要する（STEP 01）。脳の一生内学習 \(\hat g_{\text{learn}}\) は、同じ \(N\) サンプルを一つの命の中で経験として稼ぐ ── 死0、桁違いに安い（STEP 02）。両者は同じ更新則 \(\theta\leftarrow\theta-\eta\hat g\) で、違うのは時間スケールと支払い方だけ（STEP 03）。だから構造は入れ子になる ── 外ループ＝進化がゲノムをゆっくり、内ループ＝学習が脳を速く。進化は「よく学ぶ能力」を選ぶメタ学習器（STEP 04）。可塑性を上げると到達までの死が消えていく（STEP 05）。学習は地形を平滑化して進化を導き加速する＝ボールドウィン効果（STEP 06）。ただし「進化が学習を発明した」は先見を持ち込む擬人化であり、正しくは効率的な可塑性が結果的に選択されただけ（STEP 07）。</p>
+    <p>近道の正体は、新しい計算の発明ではなく、<em>同じ勾配計算の支払い方の切り替え</em>でした。死を経験に。そして次回、その切り替えは最後の一段を進みます ── 経験すら、想像に。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第11回（最終回）</span>
+    <strong>意識とは、想像の中で死ぬことである。</strong> 進化は「死」を「経験」に置き換えて勾配計算を安くした。効率化の極みは、その先にある ──<em>本物の試行すら要らない</em>。頭の中に世界モデルを持ち、実際には転ばずに、想像の中で試し、想像の中で失敗して勾配を計算する。この究極の近道に、シリーズは<em>意識</em>という名を与え、AIの心と人間の心のあいだに本質的な差はない、という出発点の約束を回収します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第10回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。進化戦略(ES)の勾配推定（第4回）、誤差逆伝播(BP, 第2回)、エネルギーコスト bits/joule（第9回）を前提にしています。進化と学習を同一の更新則 \(\theta\leftarrow\theta-\eta\hat g\) として並べる見方、および学習を「サンプル効率の高い勾配推定」と捉える見方は、進化計算・機械学習で広く用いられる整理です。二段階最適化（外＝進化、内＝一生内学習）はメタ学習の枠組みと対応します。ボールドウィン効果はJ.M.ボールドウィンら(1896)が提唱し、C.H.ワディントンの遺伝的同化と関連づけられ、Hinton &amp; Nowlan (1987) が計算機実験で「学習が進化を導く」ことを示しました。本稿の図と見積り（\(N=1000\)、\(E_{\text{life}}\approx2\times10^{11}\,\mathrm{J}\)、\(T_{\text{gen}}\approx20\) 年など）は桁感覚を掴むための説明用の数値で、種や環境で大きく変わります。図の適応度モデル（毎世代 \(4\%\) の改善、学習が残りギャップの割合 \(p\) を一生で埋める）は現象を単純化した模型です。「進化が学習を発明した」といった目的論的表現は擬人化であり、また全ての学習が勾配ベースであるとは限らないことを本文で明示しました。第11回（意識）は機能的・計算論的な立場からの提案で、「なぜ内側から感じられるのか」（ハードプロブレム）に答えるものではありません。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「可塑性」スライダーを動かすと、緑（学習をもつ個体）の到達が早まり、赤い「死」のマーカーが減っていきます。「アニメで見る」で競争を再生、「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sp=document.getElementById('p'), vp=document.getElementById('vp'),
+      rd=document.getElementById('rd'), btn=document.getElementById('run');
+  // モデル：目標 F*、毎世代の進化改善率 r。
+  //   進化のみ  : F_evo(g)   = 1-(1-r)^g
+  //   学習あり  : F_learn(g) = 1-(1-p)(1-r)^g   （学習が残りギャップの割合 p を一生で埋める）
+  var GMAX=70, FSTAR=0.9, R=0.04, TGEN=20;
+  function Fevo(g){return 1-Math.pow(1-R,g);}
+  function Flearn(g,p){return 1-(1-p)*Math.pow(1-R,g);}
+  // 目標到達に要する世代数（＝1世代1個体なら死の数）
+  function gEvo(){return Math.ceil(Math.log(1-FSTAR)/Math.log(1-R));}
+  function gLearn(p){
+    var ratio=(1-FSTAR)/(1-p);            // p が大きいほど ratio 大
+    if(ratio>=1) return 0;                // p>=F* : 最初の一生で到達（死0）
+    return Math.ceil(Math.log(ratio)/Math.log(1-R));
+  }
+  var raf=null, cursor=GMAX;
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var p=parseFloat(sp.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=52, padB=46, padT=18, padR=16;
+    function X(g){return padL+g/GMAX*(w-padL-padR);}
+    function Y(f){return (h-padB)-f*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（適応度の水平線）
+    ctx.font='9px sans-serif';
+    for(var fi=0;fi<=4;fi++){var f=fi/4,y=Y(f);
+      ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();
+      ctx.fillStyle='#bda877';ctx.fillText(f.toFixed(2),8,y+3);}
+    // 目標線 F*
+    var yT=Y(FSTAR);
+    ctx.strokeStyle='#a05c12';ctx.lineWidth=1.4;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(padL,yT);ctx.lineTo(w-padR,yT);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#a05c12';ctx.font='11px sans-serif';ctx.fillText('目標 F*='+FSTAR.toFixed(2),w-padR-96,yT-5);
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('世代（時間・コスト）→',w-176,h-padB+30);
+    ctx.save();ctx.translate(16,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('適応度 F',0,0);ctx.restore();
+
+    var gv=Math.min(cursor,GMAX);
+    // 進化のみ曲線（茶）
+    ctx.strokeStyle='#8a5a12';ctx.lineWidth=2.6;ctx.beginPath();
+    for(var g=0;g<=gv;g+=0.5){var x=X(g),y=Y(Fevo(g)); if(g===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 学習あり曲線（緑）
+    ctx.strokeStyle='#3d7a3a';ctx.lineWidth=2.6;ctx.beginPath();
+    for(var g2=0;g2<=gv;g2+=0.5){var x2=X(g2),y2=Y(Flearn(g2,p)); if(g2===0)ctx.moveTo(x2,y2);else ctx.lineTo(x2,y2);}
+    ctx.stroke();
+
+    var gA=gEvo(), gB=gLearn(p);
+    // 到達までの「死」を赤点で（各世代＝1つの死）
+    var kA=Math.min(gA,Math.floor(gv));
+    for(var a=1;a<=kA;a++){ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(X(a),Y(Fevo(a)),2.6,0,7);ctx.fill();}
+    var kB=Math.min(gB,Math.floor(gv));
+    for(var b=1;b<=kB;b++){ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(X(b),Y(Flearn(b,p)),2.6,0,7);ctx.fill();}
+    // 到達フラグ
+    function flag(g,color,txt,up){
+      if(g>GMAX) return;
+      var x=X(g),y=Y(FSTAR);
+      ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(x,Y(0));ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+      ctx.font='10px sans-serif';ctx.fillText(txt,x+6,y+(up?-8:16));
+    }
+    if(gv>=gA) flag(gA,'#8a5a12','進化のみ 到達 '+gA+'世代',true);
+    if(gv>=gB) flag(gB,'#3d7a3a',gB===0?'学習 到達（最初の一生）':'学習あり 到達 '+gB+'世代',false);
+    // アニメ中の時間カーソル
+    if(cursor<GMAX){
+      var xc=X(cursor);
+      ctx.strokeStyle='rgba(120,90,20,.35)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(xc,Y(0));ctx.lineTo(xc,padT);ctx.stroke();
+    }
+  }
+  function updateReadout(){
+    var p=parseFloat(sp.value), gA=gEvo(), gB=gLearn(p);
+    if(gB===0){
+      rd.className='readout ok';
+      rd.textContent='可塑性 p='+p.toFixed(2)+' ≥ '+FSTAR.toFixed(2)+'：最初の一生の学習だけで目標に到達 ── 死 0。進化のみは '+gA+' 世代＝'+gA+' の死（≈'+(gA*TGEN)+' 年）。近道が死をほぼゼロに。';
+    } else {
+      var ratio=(gA/gB);
+      rd.className=(gB<=gA/2)?'readout ok':'readout local';
+      rd.textContent='進化のみ：目標 F*='+FSTAR.toFixed(2)+' 到達に '+gA+' 世代＝'+gA+' の死（≈'+(gA*TGEN)+' 年）。 一生内学習（可塑性 p='+p.toFixed(2)+'）：'+gB+' 世代＝'+gB+' の死（≈'+(gB*TGEN)+' 年）。 死は約 '+ratio.toFixed(1)+'× 少なく、到達も約 '+ratio.toFixed(1)+'× 速い。';
+    }
+  }
+  function anim(){
+    cursor+=1.1;
+    if(cursor>=GMAX){cursor=GMAX;draw();raf=null;return;}
+    draw();
+    raf=requestAnimationFrame(anim);
+  }
+  function start(){
+    if(raf)cancelAnimationFrame(raf);
+    cursor=0;updateReadout();
+    raf=requestAnimationFrame(anim);
+  }
+  sp.addEventListener('input',function(){
+    vp.textContent=parseFloat(sp.value).toFixed(2);
+    if(raf){cancelAnimationFrame(raf);raf=null;} cursor=GMAX;
+    updateReadout();draw();
+  });
+  btn.addEventListener('click',start);
+  window.addEventListener('resize',draw);
+  vp.textContent=parseFloat(sp.value).toFixed(2);
+  updateReadout();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){cursor=GMAX;draw();});}
+  setTimeout(function(){cursor=GMAX;draw();},60);
+  window.addEventListener('load',function(){cursor=GMAX;draw();});
+})();
+</script>
+</body>
+</html>

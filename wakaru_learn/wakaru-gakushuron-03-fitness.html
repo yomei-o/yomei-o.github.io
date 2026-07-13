@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>適応度地形 ── 生物学と機械学習は、同じ絵を描いていた ── わかる学習論 第3回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 3 回 ／ 適応度地形 ── 理論生物学の基礎</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>適応度地形
+    <span class="sub">生物学と機械学習は、同じ絵を描いていた。<br>シューアル・ライトが1932年に描いた「峰」の地形は、第1回の損失地形を上下ひっくり返しただけ。<br>自然選択とは、その地形を登る勾配上昇 ── 学習の谷下りと、寸分たがわぬ同じ操作だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の勾配、平均と分散、簡単な微分</span>
+    <span>この回のキー：\(\dot x_i = x_i\,(f_i-\bar f)\)</span>
+  </div>
+
+  <p class="lead">機械が「学習」し、生きものが「進化」する。私たちはこの二つを、まるで別の世界のできごとのように語ります。片方は数学とコンピュータの話、もう片方は太古からの生命の話。ところが第1回で描いた<strong>損失地形</strong> ── パラメータ \(\theta\) を横軸に、まずさ \(L(\theta)\) を高さにとったあの風景 ── は、じつは機械学習の発明ではありませんでした。集団遺伝学者シューアル・ライトが<em>1932年</em>に、進化を説明するために描いた<strong>適応度地形(adaptive landscape)</strong>と、上下をひっくり返しただけの同じ絵なのです。生物学は「高い峰＝よく適応した遺伝子型」を、機械学習は「低い谷＝損失の小さい重み」を目指す。呼び名と向きが違うだけ。この回では、自然選択が数式のうえで<strong>地形を登る勾配上昇</strong>そのものであること、そして第1回で出会った「局所最小の罠」が、ここでは<em>局所的な峰への貼りつき</em>として、そっくり同じ顔で戻ってくることを見ます。80年の時をこえて、進化と学習は同じ地形の上に立っていました。</p>
+
+  <h2><span class="n">01</span>学習と進化は、別物か</h2>
+
+  <p>第1回で、学習を一行で定義しました ── <strong>パラメータ \(\theta\) を動かして損失 \(L(\theta)\) を下げること</strong>。更新則は \(\theta\leftarrow\theta-\eta\nabla L\)。第2回では、ニューラルネットがその勾配 \(\nabla L\) を連鎖律で自動計算する仕組み（誤差逆伝播, BP）を見ました。ここまでは「機械が学ぶ」話です。</p>
+
+  <p>では、生きものの進化はどうでしょう。DNA を微分してくれる神さまはいません。それでも生命は、何十億年ものあいだ環境に適応し続けてきた。もし進化が学習と<em>まったく別の原理</em>なら、このシリーズの背骨は折れます。逆に、もし同じ地形の上で同じ操作をしているなら ── 「学ぶ機械」と「進化する生命」は地続きだと言えます。答えを先に置きましょう。<strong>同じです。</strong>それを見るために、まずライトの地形を、第1回の地形の隣に並べます。</p>
+
+  <h2><span class="n">02</span>ライトの適応度地形 ── 損失地形の、上下反転</h2>
+
+  <p>ライトは、遺伝子型あるいは形質 \(\theta\) を横軸に、その \(\theta\) を持つ個体がどれだけうまく生き延びて子を残すかを高さにとりました。この高さを<strong>適応度(fitness)</strong> \(F(\theta)\) と呼びます。高い峰ほど「よく適応した \(\theta\)」、低い谷ほど「生き延びにくい \(\theta\)」。進化とは、集団がこの地形の<em>峰へ向かって登っていく</em>営みだ ── これがライトの絵です。</p>
+
+  <p>第1回の損失地形と見くらべてください。あちらは「低い谷ほど良い」、こちらは「高い峰ほど良い」。上下が逆なだけで、地形の起伏そのものは同じものです。数式で言えば、両者はたった一本の等式で結ばれています。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">損失と適応度は、符号が逆なだけ</div>
+    $$L(\theta)\;=\;-\,F(\theta)$$
+  </div>
+
+  <p>損失を下げること（谷下り）は、適応度を上げること（山登り）と、完全に同じ操作です。第1回で \(-\nabla L\) の向きへ進んだのは<em>最急降下</em>でしたが、\(L=-F\) なら \(-\nabla L=+\nabla F\)。つまり<strong>適応度の勾配 \(\nabla F\) の向きへ進む勾配上昇(gradient ascent)</strong>にほかなりません。方向が逆さまになっただけで、同じ坂を、片方は下り、片方は登っている。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ80年前の生物学者が「地形」を描けたのか</span>
+    ライトが地形を描いた1932年、コンピュータも機械学習もありません。彼が相手にしていたのは、集団の中で遺伝子の頻度がどう移り変わるか、という純粋な生物学の問いでした。それでも「調整できる中身 \(\theta\)」と「その良し悪しを測る一つの数 \(F\)」があれば、風景は必ず立ち上がる ── これは特定の分野の道具ではなく、<strong>最適化という営みそのものの幾何学</strong>だからです。機械学習が後から同じ絵にたどり着いたのは、偶然ではありません。
+  </div>
+
+  <h2><span class="n">03</span>選択とは何か ── レプリケーター方程式</h2>
+
+  <p>「集団が峰を登る」を、きちんと数式にしましょう。集団の中に型（遺伝子型・戦略）が \(i=1,2,\dots,n\) あり、型 \(i\) が集団に占める<strong>頻度</strong>を \(x_i\) とします（\(x_i\ge0,\ \sum_i x_i=1\)）。型 \(i\) の適応度を \(f_i\)（一個体あたりの平均的な繁殖成功）とすると、集団全体の<strong>平均適応度</strong>は</p>
+
+  <div class="keybox">
+    <div class="lbl">平均適応度（頻度で重みづけた適応度の平均）</div>
+    $$\bar f\;=\;\sum_{j} x_j\, f_j$$
+  </div>
+
+  <p>自然選択とは何か。<em>平均より優秀な型は増え、平均より劣る型は減る</em> ── それだけです。この一文をそのまま微分方程式にしたものが、<strong>レプリケーター方程式(replicator equation)</strong>です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">レプリケーター方程式（自然選択の心臓）</div>
+    $$\dot x_i\;=\;x_i\,\bigl(f_i-\bar f\bigr)$$
+  </div>
+
+  <p>読み方はやさしい。カッコの中 \(f_i-\bar f\) が、型 \(i\) の「平均からの上振れ」です。これが正（平均超）なら \(\dot x_i>0\) で頻度は増え、負（平均未満）なら減る。前についた \(x_i\) は、<em>いまその型がどれだけいるか</em>による増幅率 ── だから、いま集団にいない型（\(x_i=0\)）は、どれだけ優秀でも \(\dot x_i=0\) のまま、勝手には湧いてきません。この一点が、のちの「局所の峰の罠」の伏線になります。</p>
+
+  <p>まず、この式が頻度の総和を保つことを確かめましょう（確率分布であり続ける、という健全性チェックです）。</p>
+
+  <div class="calc">
+    <span class="tag">確かめ ── 総和は動かない</span>
+    $$\sum_i \dot x_i=\sum_i x_i(f_i-\bar f)=\sum_i x_i f_i-\bar f\sum_i x_i=\bar f-\bar f\cdot 1=0$$
+    <p style="margin-bottom:14px;">\(\sum_i x_i f_i=\bar f\) と \(\sum_i x_i=1\) を使うだけ。総和の変化率が \(0\) なので、\(\sum_i x_i\) は永遠に \(1\) のまま。選択は<span style="color:var(--calc);font-weight:700;">パイの取り分を配り替えるだけ</span>で、パイ自体は増減しません。</p>
+  </div>
+
+  <h2><span class="n">04</span>なぜ平均適応度は、上がり続けるのか</h2>
+
+  <p>レプリケーター方程式のいちばん美しい帰結はこれです ── <strong>適応度が固定されているかぎり、集団の平均適応度 \(\bar f\) は決して下がらない</strong>。しかも、上がる量は集団の中の<em>ばらつき（分散）</em>にちょうど等しい。手を動かして導きましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 平均適応度の変化率を出す</span>
+    <p class="lbl">f_i は定数なので、平均 \(\bar f=\sum_j x_j f_j\) を時間で微分すると</p>
+    $$\frac{d\bar f}{dt}=\sum_i \dot x_i\,f_i=\sum_i x_i(f_i-\bar f)\,f_i$$
+    <p class="lbl">カッコを展開して、Σx_i f_i = f̄ を使う</p>
+    $$=\sum_i x_i f_i^2-\bar f\sum_i x_i f_i=\langle f^2\rangle-\bar f^{\,2}$$
+    <p class="lbl">これは分散の定義そのもの</p>
+    $$\frac{d\bar f}{dt}=\mathrm{Var}_x(f)=\sum_i x_i\,(f_i-\bar f)^2\;\ge\;0$$
+    <p style="margin-bottom:14px;">分散は二乗の和なので、<span style="color:var(--ok);font-weight:700;">つねに \(0\) 以上</span>。ゆえに \(\bar f\) は単調に増え続け、全員が同じ適応度になった（分散 \(=0\)）ときに止まります。これが<strong>フィッシャーの自然選択の基本定理</strong>の核心 ── <em>平均は、ばらつきの分だけ上がる</em>。多様性こそが、進化を進める燃料だったのです。</p>
+  </div>
+
+  <p>この関係は、離散的な一歩でもきれいに成り立ちます。次の小さな数値実験で、\(\bar f\) が実際に上がること、そしてその上がり幅が分散にぴったり一致することを、電卓で確かめてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 3つの型で1世代まわす</span>
+    <p style="margin-top:2px;">型が3つ、適応度は \(f=(1.0,\ 1.2,\ 0.9)\)。初期頻度はどれも同じ \(x=(\tfrac13,\tfrac13,\tfrac13)\)。離散版の更新則 \(x_i\leftarrow x_i\bigl(1+(f_i-\bar f)\bigr)\) を1回だけ回します。</p>
+    <p class="lbl">まず平均適応度</p>
+    $$\bar f=\tfrac13(1.0+1.2+0.9)=\tfrac{3.1}{3}=1.0333$$
+    <p class="lbl">各型を更新（f_i−f̄ を掛ける）</p>
+    $$x_1'=\tfrac13(1-0.0333)=0.3222,\quad x_2'=\tfrac13(1+0.1667)=0.3889,\quad x_3'=\tfrac13(1-0.1333)=0.2889$$
+    <p style="margin:10px 0 -2px;">和は \(0.3222+0.3889+0.2889=1.0000\) ── 総和はぴたり保たれます（STEP 03 の確認どおり、規格化し直す必要すらありません）。優秀な型2が増え、劣る型3が減りました。新しい平均は</p>
+    $$\bar f'=0.3222\times1.0+0.3889\times1.2+0.2889\times0.9=1.0489$$
+    <p class="lbl">上がり幅を、分散と見くらべる</p>
+    $$\Delta\bar f=1.0489-1.0333=0.0156,\qquad \mathrm{Var}_x(f)=\tfrac13\bigl[(-0.0333)^2+(0.1667)^2+(-0.1333)^2\bigr]=0.0156$$
+    <p style="margin-bottom:14px;">ぴたり一致。<span style="color:var(--ok);font-weight:700;">\(\Delta\bar f=\mathrm{Var}_x(f)\)</span> ── 平均は、ばらつきの分だけ上がる。理屈どおりに数字が動きました。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">形質の平均は、適応度の勾配に沿って動く（プライス／ランデの心）</span>
+    型ではなく連続的な形質 \(\theta\)（体の大きさなど）で見ると、集団の<strong>平均形質 \(\bar\theta\)</strong> の動きは \(\dfrac{d\bar\theta}{dt}\propto \mathrm{Cov}(\theta,\,f)\) と書けます ── 適応度が高い側と相関する形質ほど、平均がそちらへ引かれる。適応度が \(\theta\) の関数 \(f=F(\theta)\) なら、この共分散は<em>適応度の勾配 \(\nabla F\)</em> に沿った向きを指します（プライス方程式・ランデ方程式が言うこと）。厳密な証明は割愛しますが、方向だけ掴めば十分 ── <strong>集団の平均は、地形を登る向きに動く</strong>。これが「選択＝勾配上昇」の連続版の姿です。
+  </div>
+
+  <p>まとめると、自然選択は第1回の勾配降下の<em>符号を反転した双子</em>です。片方は \(L\) の谷を \(-\nabla L\) で下り、片方は \(F\) の峰を \(+\nabla F\) で登る。集団は、地形の峰へ向かって這い上がっていきます。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 集団が峰を登る</h2>
+
+  <p>下の地形は適応度 \(F(\theta)\) で、峰が二つあります。左が<strong>低い峰（局所的な最適）</strong>、右が<strong>高い峰（大域的な最適）</strong>。あいだには深い谷があります。オレンジの点群が<em>集団の個体たち</em>、赤い印がその<strong>平均 \(\bar\theta\)</strong> です。集団は最初、左の低い峰のふもとにいます。「世代を進める」を押すと、毎世代 ①適応度に応じた選択（優秀な個体ほど多く子を残す）と ②突然変異（子の形質にゆらぎが乗る）が繰り返され、集団が坂を登ります。</p>
+
+  <div class="fig">
+    <div class="cap">図：適応度地形 F(θ) 上の自然選択。選択が集団を近くの峰へ押し上げ、突然変異が探索の幅を与える ── 変異が小さいと低い峰に貼りつき、大きくすると谷を越えて高い峰へ移れる</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>選択圧 β（選択の強さ）<span class="val" id="vbeta">3.0</span>
+        <input type="range" id="beta" min="0.2" max="8.0" step="0.1" value="3.0">
+      </label>
+      <label>突然変異の幅 σ（探索の広さ）<span class="val" id="vsig">0.08</span>
+        <input type="range" id="sig" min="0.02" max="0.60" step="0.01" value="0.08">
+      </label>
+      <button class="btn" id="run">世代を進める ▶</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>適応度地形 F(θ)</span>
+      <span><i class="dot" style="background:rgba(160,92,18,.55);"></i>個体（集団）</span>
+      <span><i class="dot" style="background:#c0392b;"></i>集団の平均 θ̄</span>
+      <span><i class="dot" style="background:#3d7a3a;"></i>高い峰（大域）</span>
+    </div>
+  </div>
+
+  <p>まず初期設定（変異 \(\sigma=0.08\)）のまま回してください。集団はすいすい<em>左の低い峰</em>へ登り、そこに貼りついて動かなくなります。平均適応度は上がったのに、隣にもっと高い峰があるのに、届かない。次に「世代を進める」をもう一度押す前に、<strong>突然変異の幅 \(\sigma\) を \(0.35\) あたりまで上げて</strong>回してみてください。個体のばらつきが谷を越えて右斜面に届き、そこで選択が働くと、集団はやがて<em>高い峰へ乗り移り</em>ます。選択圧 \(\beta\) を上げると登りは速いが視野が狭くなり、下げると登りは遅いが探索的になります。</p>
+
+  <h2><span class="n">06</span>局所的な峰の罠 ── 第1回の弱点が、そのまま還ってくる</h2>
+
+  <p>いま見た「低い峰に貼りつく」現象は、第1回の<strong>局所最小の罠</strong>と、まったく同じものです。あちらではボールが浅い谷にはまって出られなかった。こちらでは集団が低い峰に登りきって降りられない。\(L=-F\) で上下をひっくり返せば、局所最小はそのまま局所最大（局所的な峰）になります。同じ地形の、同じ弱点です。</p>
+
+  <p>レプリケーター方程式が \(\dot x_i=x_i(f_i-\bar f)\) だったことを思い出してください。頭に \(x_i\) がついている ── <em>いない型は増えない</em>。だから純粋な選択だけでは、集団はいま立っている峰から一歩も動けません。谷を越えて別の峰へ移るには、<strong>いまいない場所を試す仕掛け</strong>、すなわち突然変異（＝地形の探索）が要る。シミュレーションで \(\sigma\) を上げたとき集団が谷を越えられたのは、変異が「隣を試す」役目を果たしたからです。多様性は平均を上げる燃料であると同時に、局所の峰から脱け出す<em>命綱</em>でもあったのです。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── 選択は、第1回の勾配降下と同じものか</h2>
+
+  <p>このシリーズは毎回、道具の力と限界を正直に裁きます。適応度地形と自然選択について、三つの問いに答えを出しましょう。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>適応度地形＋自然選択の答え</th><th>判決</th></tr>
+    <tr>
+      <td>自然選択は、第1回の勾配降下と同じ操作か</td>
+      <td>同じ。\(L=-F\) のもとで、選択＝適応度地形の勾配上昇＝損失地形の勾配降下。符号が逆なだけの同型</td>
+      <td class="v-ok">同型</td>
+    </tr>
+    <tr>
+      <td>集団の平均適応度は、必ず上がるか</td>
+      <td>下がらない。\(d\bar f/dt=\mathrm{Var}_x(f)\ge0\)（適応度が固定なら単調非減少）</td>
+      <td class="v-ok">非減少</td>
+    </tr>
+    <tr>
+      <td>いつも一番高い峰（大域最適）に届くか</td>
+      <td>届くとは限らない。近くの局所的な峰に貼りつく ── 第1回とまったく同じ弱点</td>
+      <td class="v-bad">保証なし</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 地形は強力だが、理想化でもある</span>
+    <p style="margin-top:0;">適応度地形は進化を見晴らす最高の絵ですが、いくつも理想化を含みます。第一に、<strong>実際の地形は静止していません</strong> ── 捕食者と獲物の共進化や、頻度依存選択（ある型が増えると得か損かが変わる）のもとでは、集団が動くと地形そのものが波打ちます。「登っている足場が動く」世界では、峰の比喩は素朴すぎます。第二に、ここで見た絵は形質が1次元でしたが、<strong>高次元では直観が大きく変わり</strong>、局所の峰は思ったより「抜け道」を持ちます。第三に、レプリケーター方程式は<strong>無限集団・ノイズなし</strong>の近似で、有限集団では偶然の揺らぎ（遺伝的浮動）が効きます。</p>
+    <p style="margin-bottom:0;">それでも ── <strong>「選択＝地形上の最適化」という構造的な同一性は本物</strong>です。学習と進化は、同じ地形の上で、符号だけ違う同じ計算をしている。ここで一つ、鋭い問いが残ります。第1回の勾配降下も第2回のBPも、\(\nabla L\) を<em>計算できる</em>ことを前提にしていました。ところが自然には微分の神さまがいない。DNA を微分することはできない。<strong>では、微分できない自然は、どうやって坂の勾配を知るのか？</strong>次回、その答え ── 進化戦略(ES)へ。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>型が2つ、適応度 \(f=(2,\ 1)\)、頻度 \(x=(0.5,\ 0.5)\)。離散更新 \(x_i\leftarrow x_i(1+(f_i-\bar f))\) を1回行い、\(\bar f\) が上がることと、その上がり幅が \(\mathrm{Var}_x(f)\) に一致することを確かめよ。
+        <details><summary>答えを見る</summary><div class="ans">\(\bar f=0.5\cdot2+0.5\cdot1=1.5\)。更新：\(x_1'=0.5(1+0.5)=0.75,\ x_2'=0.5(1-0.5)=0.25\)（和は1）。新平均 \(\bar f'=0.75\cdot2+0.25\cdot1=1.75\)。\(\Delta\bar f=0.25\)。分散 \(\mathrm{Var}=0.5(0.5)^2+0.5(-0.5)^2=0.25\)。ぴたり一致 ── 平均はばらつきの分だけ上がる。</div></details>
+      </li>
+      <li>適応度がすべて等しい（\(f_1=f_2=\dots=f_n\)）とき、レプリケーター方程式のもとで頻度 \(x_i\) はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">全員が平均に等しいので \(f_i-\bar f=0\)、ゆえに \(\dot x_i=0\)。頻度は一切動かない。分散が \(0\) なら \(d\bar f/dt=\mathrm{Var}_x(f)=0\) で平均も動かない ── 選択に差をつける「ばらつき」がなければ、進化は止まる。多様性が燃料である、の裏返し。</div></details>
+      </li>
+      <li>純粋な選択（レプリケーター方程式だけ）では、集団はいま立っている峰から別の高い峰へ移れない。なぜか。第1回の局所最小と対応づけて答えよ。
+        <details><summary>答えを見る</summary><div class="ans">\(\dot x_i=x_i(f_i-\bar f)\) の頭に \(x_i\) があるため、いま頻度 \(0\) の型は増えず（\(\dot x_i=0\)）、集団は<em>いまある型の範囲</em>でしか登れない。近くの峰で分散が尽きれば \(d\bar f/dt=0\) で停止する。これは足もとの傾きだけを見て局所最小で止まる勾配降下と同じ罠（\(L=-F\) で局所最小↔局所最大）。谷を越えるには、いない場所を試す突然変異＝探索が要る（次回のES、第7回の「地形をぼかす」につながる）。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第3回まとめ</span>選択とは、地形を登ることである</h2>
+    <p>ライトの適応度地形 \(F(\theta)\) は、第1回の損失地形と \(L(\theta)=-F(\theta)\) で結ばれた同じ絵（STEP 02）。自然選択はレプリケーター方程式 \(\dot x_i=x_i(f_i-\bar f)\) ── 平均より優秀な型が増え、劣る型が減る（STEP 03）。適応度が固定なら平均適応度は単調に非減少で、その上がり幅は集団の分散に等しい \(d\bar f/dt=\mathrm{Var}_x(f)\ge0\)（STEP 04、フィッシャーの基本定理）。つまり選択は、損失地形の勾配降下と符号だけ違う<em>勾配上昇</em>。だが第1回の局所最小はここで局所的な峰の罠として還り、純粋な選択では谷を越えられない ── 変異という探索が命綱（STEP 06）。</p>
+    <p>学習と進化は、同じ地形の上で同じ計算をしていました。残る問いはただ一つ ── <strong>微分できない自然は、どうやってその勾配を知るのか。</strong>次回、微分を一切使わずに坂を下る方法へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第4回</span>
+    <strong>進化とは、微分せずに坂を下ることである。</strong> 第1回のBPも今回の勾配上昇も、勾配 \(\nabla F\) を計算できる前提でした。だが自然に微分はできない。ではどうするか ── ばらまいて、良かった方向を平均する。ランダムに試した点の適応度で重みづけて「勾配のようなもの」を推定する、進化戦略(ES)。微分なしで坂の向きを掴むこの手品が、じつは勾配とどれほど近いのかを解剖します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第3回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。適応度地形(adaptive/fitness landscape)はS.ライトが1932年に導入した概念で、機械学習の損失地形と \(L=-F\) の上下反転の関係にあります。レプリケーター方程式 \(\dot x_i=x_i(f_i-\bar f)\)、および適応度が時間に依らないもとでの \(d\bar f/dt=\mathrm{Var}_x(f)\ge0\)（フィッシャーの自然選択の基本定理の連続時間・一遺伝子座版に対応する核）は確立した数学です。平均形質の変化を共分散で表すプライス方程式・ランデ方程式は方向性のみ紹介し、厳密な導出は割愛しました。本稿の図の地形 \(F(\theta)=\exp\!\bigl(-\tfrac{(\theta+1.2)^2}{2\cdot0.35^2}\bigr)+1.6\,\exp\!\bigl(-\tfrac{(\theta-1.0)^2}{2\cdot0.45^2}\bigr)+0.05\) は説明用の模型で、左右の峰の高さや位置は数値的な目安です。シミュレーションは有限個体・突然変異つきの粒子近似（進化戦略に近い）で、レプリケーター方程式の無限集団・無ノイズの理想化とは厳密には異なります。共進化・頻度依存選択のもとで地形が動的に変わる点、高次元での直観の変化、進化戦略(ES)とBPの数学的一致（後続回）は、それぞれの回で扱います。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「選択圧」と「突然変異の幅」を変えて「世代を進める」を押すと、集団が峰を登ります。変異が小さいと低い峰に貼りつき、大きくすると高い峰へ移る様子を試してみてください。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sb=document.getElementById('beta'), vb=document.getElementById('vbeta'),
+      ss=document.getElementById('sig'), vs=document.getElementById('vsig'),
+      rd=document.getElementById('rd'), btn=document.getElementById('run');
+  // 適応度地形 F(θ)=局所の峰(θ=-1.2,高さ1.0)＋大域の峰(θ=1.0,高さ1.6)＋下駄0.05
+  var PK_L=-1.2, PK_G=1.0;
+  function F(t){
+    var a=t-PK_L, b=t-PK_G;
+    return 1.0*Math.exp(-a*a/(2*0.35*0.35)) + 1.6*Math.exp(-b*b/(2*0.45*0.45)) + 0.05;
+  }
+  var TH_LO=-2.6, TH_HI=2.6, F_LO=0.0, F_HI=1.8;
+  var N=140;
+  var pop=[], gen=0, raf=null, frameCt=0, running=false;
+
+  function randn(){ var u=1-Math.random(), v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function initPop(){
+    pop=[]; for(var i=0;i<N;i++){ pop.push(PK_L+0.15*randn()); } gen=0;
+  }
+  function clamp(t){ if(t<TH_LO) return TH_LO; if(t>TH_HI) return TH_HI; return t; }
+
+  function stats(){
+    var mth=0, mf=0, i;
+    for(i=0;i<N;i++){ mth+=pop[i]; mf+=F(pop[i]); }
+    mth/=N; mf/=N;
+    var vth=0; for(i=0;i<N;i++){ var d=pop[i]-mth; vth+=d*d; } vth/=N;
+    return {mth:mth, mf:mf, sd:Math.sqrt(vth)};
+  }
+
+  // 1世代：選択（適応度比例リサンプル）＋突然変異
+  function stepGen(){
+    var beta=parseFloat(sb.value), sigma=parseFloat(ss.value), i;
+    var f=[], fmax=-1e9;
+    for(i=0;i<N;i++){ f[i]=F(pop[i]); if(f[i]>fmax) fmax=f[i]; }
+    var w=[], sum=0;
+    for(i=0;i<N;i++){ w[i]=Math.exp(beta*(f[i]-fmax)); sum+=w[i]; }
+    var cum=[], c=0;
+    for(i=0;i<N;i++){ c+=w[i]/sum; cum[i]=c; }
+    var np=[];
+    for(var k=0;k<N;k++){
+      var r=Math.random(), idx=N-1;
+      for(i=0;i<N;i++){ if(cum[i]>=r){ idx=i; break; } }
+      np.push(clamp(pop[idx]+sigma*randn()));
+    }
+    pop=np; gen++;
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=44, padB=42, padT=16;
+    function X(t){return padL+(t-TH_LO)/(TH_HI-TH_LO)*(w-padL-14);}
+    function Y(fv){return (h-padB)-(fv-F_LO)/(F_HI-F_LO)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（F の水平線）
+    ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.fillStyle='#bda877';ctx.font='9px sans-serif';
+    for(var l=0;l<=1;l+=0.5){var y=Y(l);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('F='+l.toFixed(1),4,y-3);}
+    var y15=Y(1.5);ctx.beginPath();ctx.moveTo(padL,y15);ctx.lineTo(w-8,y15);ctx.stroke();ctx.fillText('F=1.5',4,y15-3);
+    // 地形曲線
+    ctx.strokeStyle='#b06a10';ctx.lineWidth=2.6;ctx.beginPath();var first=true;
+    for(var i=0;i<=260;i++){var t=TH_LO+(TH_HI-TH_LO)*i/260; var x=X(t),y=Y(F(t)); if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 峰マーカー
+    function peak(t,label,color){var x=X(t),y=Y(F(t));
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,3.5,0,7);ctx.fill();
+      ctx.fillStyle='#8a7a5a';ctx.font='11px sans-serif';ctx.fillText(label,x-20,y-9);}
+    peak(PK_L,'低い峰','#a86518'); peak(PK_G,'高い峰','#3d7a3a');
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('θ（形質）→', w-118, h-padB+26);
+    ctx.save();ctx.translate(14,h/2+34);ctx.rotate(-Math.PI/2);ctx.fillText('F（適応度＝高さ）',0,0);ctx.restore();
+    // 個体（点群）
+    for(var k=0;k<N;k++){var tt=pop[k];
+      ctx.fillStyle='rgba(160,92,18,0.42)';
+      ctx.beginPath();ctx.arc(X(tt),Y(F(tt)),3.0,0,7);ctx.fill();}
+    // 集団の平均
+    var st=stats(), mx=X(st.mth), my=Y(F(st.mth));
+    if(isFinite(mx)){
+      ctx.strokeStyle='rgba(192,57,43,0.35)';ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(mx,Y(F_LO));ctx.lineTo(mx,my);ctx.stroke();
+      ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(mx,my,6.5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    }
+    return st;
+  }
+
+  function report(st, mode){
+    var msg='第 '+gen+' 世代 ｜ 平均適応度 f̄='+st.mf.toFixed(3)+' ｜ 平均形質 θ̄='+st.mth.toFixed(2)+'。';
+    if(mode==='running'){
+      rd.className='readout local';
+      rd.textContent='進化中… '+msg+' 選択が集団を峰へ押し上げています。';
+      return;
+    }
+    if(st.sd>0.55){
+      rd.className='readout bad';
+      rd.textContent=msg+' 変異 σ が大きすぎて集団が広く散らばり、峰に集まりきれません（ばらつき大＝平均適応度が伸びない）。σ を少し下げてみてください。';
+    } else if(st.mth>0.3){
+      rd.className='readout ok';
+      rd.textContent=msg+' 高い峰（大域的な最適）に到達 ── 谷を越えて一番高い峰へ乗り移りました。大当たり。';
+    } else if(st.mth<-0.3){
+      rd.className='readout local';
+      rd.textContent=msg+' 低い峰（局所的な最適）に貼りつきました。平均は上がったが、隣にもっと高い峰がある。突然変異の幅 σ を 0.35 あたりまで上げて、もう一度回してみてください。';
+    } else {
+      rd.className='readout local';
+      rd.textContent=msg+' 谷の途中です。選択圧や変異幅を変えて、もう一度「世代を進める」を押してみてください。';
+    }
+  }
+
+  function loop(){
+    frameCt++;
+    if(frameCt%3===0){ stepGen(); }
+    var st=draw();
+    if(gen>=180){ running=false; raf=null; report(st,'done'); btn.textContent='もう一度 ▶'; return; }
+    report(st,'running');
+    raf=requestAnimationFrame(loop);
+  }
+  function start(){
+    if(running){ return; }
+    if(raf) cancelAnimationFrame(raf);
+    if(gen>=180 || gen===0){ initPop(); }
+    running=true; frameCt=0; btn.textContent='進化中…';
+    raf=requestAnimationFrame(loop);
+  }
+
+  function syncLabels(){ vb.textContent=parseFloat(sb.value).toFixed(1); vs.textContent=parseFloat(ss.value).toFixed(2); }
+  sb.addEventListener('input',syncLabels);
+  ss.addEventListener('input',syncLabels);
+  btn.addEventListener('click',start);
+  window.addEventListener('resize',draw);
+  syncLabels();
+  initPop();
+  function firstDraw(){ var st=draw();
+    rd.className='readout local';
+    rd.textContent='初期集団は低い峰のふもと（θ̄='+st.mth.toFixed(2)+'）にいます。「世代を進める」を押すと選択と突然変異が始まります。';
+  }
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){initPop();firstDraw();});}
+  setTimeout(function(){initPop();firstDraw();},60);
+  window.addEventListener('load',function(){initPop();firstDraw();});
+})();
+</script>
+</body>
+</html>

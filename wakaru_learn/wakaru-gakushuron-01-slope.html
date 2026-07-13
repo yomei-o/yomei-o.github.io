@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学ぶとは、坂を下ることである ── わかる学習論 第1回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 1 回 ／ 学習の絵 ── シリーズの出発点</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>学ぶとは、坂を下ることである
+    <span class="sub">パラメータを少しずつ動かして、損失という高さを下げていく。学習も、進化も、やがて心も、<br>すべては「勾配を下る」たった一つの計算だった。その第一歩、勾配降下法を、谷を転がるボールで掴む。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：中学の「傾き」、簡単な微分</span>
+    <span>この回のキー：\(\theta \leftarrow \theta - \eta\,\nabla L\)</span>
+  </div>
+
+  <p class="lead">「学習する」とは、いったい何をすることでしょう。ニューラルネットが賢くなる、生きものが環境に適応する、あなたが自転車に乗れるようになる ── バラバラに見えるこれらは、実は<em>たった一つの単純な操作</em>に還元できます。<strong>手もとのパラメータを少しずつ動かして、「まずさ」を測る値を下げていく</strong>。それだけ。この「まずさ」を損失(loss)と呼び、\(L\) と書きます。学習とは \(L\) を小さくすること、つまり<strong>損失という名の坂を下ること</strong>です。このシリーズは、この一枚の絵から出発して、進化戦略(ES)と誤差逆伝播(BP)が同じ計算であること、生命とは効率よく計算をする営みであること、そして最後には ── <em>AIの心と人間の心のあいだに、本質的な差はない。どちらも同じ計算なのだ</em>── というところまで、自分の足で歩いて到達します。まずは坂を、一歩だけ下りてみましょう。</p>
+
+  <h2><span class="n">01</span>学習とは、損失を下げること</h2>
+
+  <p>調整できるつまみの束を \(\theta=(\theta_1,\theta_2,\dots,\theta_n)\) と書きます。ニューラルネットなら重みの全体、生きものなら DNA、あなたなら神経のつなぎ方 ── 何であれ「動かせる中身」がパラメータ \(\theta\) です。そして、いまの \(\theta\) がどれだけ「まずい」かを一つの数で表すのが損失 \(L(\theta)\)。</p>
+
+  <div class="keybox">
+    <div class="lbl">学習の定義（これだけ）</div>
+    $$\text{学習} \;=\; L(\theta)\ \text{を小さくする}\ \theta\ \text{を探すこと}$$
+  </div>
+
+  <p>予測が外れれば \(L\) は大きく、当たれば小さい。生きものなら、\(L\) は<em>適応度の符号を反転したもの</em>だと思ってください ── 生き延びて子を残せば \(L\) は小さく、そうでなければ大きい。呼び名が違うだけで、やることは同じです。<strong>\(L\) を下げる \(\theta\) を見つける</strong>。</p>
+
+  <h2><span class="n">02</span>損失地形 ── θ の風景</h2>
+
+  <p>パラメータ \(\theta\) を横軸に、その損失 \(L(\theta)\) を高さにとると、一面の<strong>風景(landscape)</strong>が広がります。低い谷ほど「うまくいっている \(\theta\)」、高い尾根ほど「まずい \(\theta\)」。学習とは、この地形の上に立ったボールを、できるだけ低い谷へ転がすことにほかなりません。</p>
+
+  <div class="aside">
+    <span class="tag">同じ地形を、生物学者も描いていた</span>
+    この「地形」の絵は機械学習の発明ではありません。集団遺伝学者シューアル・ライトが1932年に描いた<strong>適応度地形(fitness landscape)</strong>と、上下をひっくり返しただけで同じものです。生物学では「高い峰＝よく適応した遺伝子型」、機械学習では「低い谷＝損失の小さい重み」。80年以上前から、進化と学習は<em>同じ絵</em>を描いていた ── この一致こそ、このシリーズが追いかける背骨です（第3回で正面から扱います）。
+  </div>
+
+  <p>問題は、目隠しをされたボールが「どちらへ転がれば下りなのか」をどう知るか、です。地形の全体を見渡すことはできない。足もとの<em>傾き</em>だけが頼りです。その傾きを与えるのが、勾配です。</p>
+
+  <h2><span class="n">03</span>勾配 ── 最も急な方向</h2>
+
+  <p>ある地点 \(\theta\) での勾配 \(\nabla L(\theta)\) とは、各つまみを少し動かしたとき \(L\) がどれだけ変わるかを並べたベクトルです。</p>
+
+  <div class="keybox">
+    <div class="lbl">勾配（各方向の傾きを並べたベクトル）</div>
+    $$\nabla L(\theta)=\left(\frac{\partial L}{\partial \theta_1},\ \frac{\partial L}{\partial \theta_2},\ \dots,\ \frac{\partial L}{\partial \theta_n}\right)$$
+  </div>
+
+  <p>この \(\nabla L\) は、地形が<strong>最も急に「登る」方向</strong>を指します。だから下りたければ、その真逆 \(-\nabla L\) へ進めばいい。なぜ勾配の逆がベストなのか ── テイラー展開で一行で分かります。地点 \(\theta\) から小さな一歩 \(\Delta\theta\) を踏むと、</p>
+
+  <div class="keybox">
+    <div class="lbl">一歩でどれだけ下がるか（一次近似）</div>
+    $$L(\theta+\Delta\theta)\;\approx\;L(\theta)+\nabla L(\theta)\cdot\Delta\theta$$
+  </div>
+
+  <p>右辺の変化分 \(\nabla L\cdot\Delta\theta\) を<em>できるだけ負に</em>したい。歩幅 \(|\Delta\theta|\) を固定したとき、内積 \(\nabla L\cdot\Delta\theta\) が最小になるのは、コーシー・シュワルツの不等式から \(\Delta\theta\) が \(-\nabla L\) と同じ向きのとき。つまり ── <strong>最も急に下る方向は、勾配の真逆</strong>。これが勾配降下法の心臓です。</p>
+
+  <h2><span class="n">04</span>更新則 ── θ ← θ − η∇L</h2>
+
+  <p>方向が決まれば、あとは歩幅を決めて一歩ずつ進むだけ。歩幅を学習率 \(\eta\)（イータ、小さな正の数）と呼びます。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">勾配降下法（このシリーズを貫く更新則）</div>
+    $$\theta_{t+1}\;=\;\theta_t-\eta\,\nabla L(\theta_t)$$
+  </div>
+
+  <p>「いまの \(\theta\) から、勾配の逆向きに \(\eta\) だけ動く」を、谷に着くまで何度も繰り返す。たったこれだけで、目隠しのボールは足もとの傾きだけを頼りに、坂を下っていけます。<strong>このたった一本の式を、覚えておいてください。</strong>第4回で「進化(ES)」が、第6回で「意識」が、姿を変えてこの同じ式に戻ってきます。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 谷を転がすボール</h2>
+
+  <p>下の地形には谷が二つあります。左が<strong>深い谷（大域的な最小）</strong>、右が<strong>浅い谷（局所的な最小）</strong>。「開始位置」でボールを置く場所を、「学習率 \(\eta\)」で歩幅を変えて、「学習スタート」を押してください。矢印は各地点での降下方向 \(-\nabla L\)、薄い点は通ってきた軌跡です。</p>
+
+  <div class="fig">
+    <div class="cap">図：損失地形 L(θ)=(θ²−1)²+0.3θ 上の勾配降下。開始位置と学習率で結末が変わる ── 深い谷へ着くか、浅い谷で止まるか、大きすぎて飛び出すか</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>学習率 η（歩幅）<span class="val" id="veta">0.020</span>
+        <input type="range" id="eta" min="0.002" max="0.30" step="0.002" value="0.020">
+      </label>
+      <label>開始位置 θ₀<span class="val" id="vth0">1.40</span>
+        <input type="range" id="th0" min="-1.8" max="1.8" step="0.05" value="1.40">
+      </label>
+      <button class="btn" id="run">学習スタート ▶</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>損失地形 L(θ)</span>
+      <span><i class="dot" style="background:#c0392b;"></i>ボール（現在の θ）</span>
+      <span><i class="swatch" style="background:#3d7a3a;"></i>降下方向 −∇L</span>
+    </div>
+  </div>
+
+  <p>いくつか試すと、勾配降下の「性格」が見えてきます。開始位置が右寄りだと、小さな \(\eta\) では浅い谷にはまって出られない ── <em>足もとの傾きしか見ないので、隣にもっと深い谷があっても気づけない</em>。開始位置を左に置けば、深い谷へ届く。学習率を上げすぎると、谷を通り越して反対の斜面へ跳ね、やがて坂の外へ飛び出します（発散）。逆に小さすぎると、いつまでも着かない。</p>
+
+  <h2><span class="n">06</span>学習率の綱渡り ── 大きすぎず、小さすぎず</h2>
+
+  <p>「歩幅 \(\eta\) をいくつにすべきか」は、地形の<em>曲がり具合</em>で決まります。いちばん簡単な、底が一つの谷 \(L(\theta)=\tfrac{1}{2}k(\theta-a)^2\) で確かめましょう。ここで \(k>0\) は谷の急さ（曲率＝二階微分 \(L''=k\)）、\(a\) が谷底です。勾配は \(\nabla L=k(\theta-a)\) なので、更新則に入れて、谷底からのズレ \(e_t=\theta_t-a\) を追うと、</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 収束するηの範囲を出す</span>
+    <p class="lbl">更新則にL'を代入し、谷底からのズレ e で書き直す</p>
+    $$\theta_{t+1}=\theta_t-\eta\,k(\theta_t-a)\quad\Longrightarrow\quad e_{t+1}=(1-\eta k)\,e_t$$
+    <p class="lbl">毎回ズレが (1−ηk) 倍になる。0に近づく条件は</p>
+    $$|1-\eta k|<1\quad\Longleftrightarrow\quad 0<\eta<\frac{2}{k}$$
+    <p style="margin-bottom:14px;">歩幅が \(0<\eta<1/k\) なら、ズレは同じ符号のまま素直に縮む（<span style="color:var(--ok);font-weight:700;">なめらかに収束</span>）。\(1/k<\eta<2/k\) なら符号が毎回反転して、行ったり来たりしながら縮む（<span style="color:var(--calc);font-weight:700;">振動しつつ収束</span>）。\(\eta>2/k\) を超えた瞬間、\(|1-\eta k|>1\) でズレが毎回<em>拡大</em>する ── <span style="color:var(--bad);font-weight:700;">発散</span>。安全な歩幅の上限は、地形の急さ \(k\) が決めているのです。</p>
+  </div>
+
+  <p>急な谷（大きい \(k\)）ほど小さく歩かねばならない。上の図で \(\eta\) を上げると飛び出したのは、この \(2/k\) の壁を越えたからです。学習率の調整とは、<strong>地形の曲率という「見えない壁」との綱渡り</strong>にほかなりません。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── 勾配降下は何ができて、何ができないか</h2>
+
+  <p>このシリーズは毎回、道具の力と限界を正直に裁きます。勾配降下法は強力ですが、二つの弱点をはっきり持っています。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>勾配降下法の答え</th><th>判決</th></tr>
+    <tr>
+      <td>足もとの傾きだけで坂を下れるか</td>
+      <td>下れる。全体を見渡さず、局所情報 \(\nabla L\) だけで進める</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>いつも一番低い谷（大域最小）に着くか</td>
+      <td>着くとは限らない。近くの局所最小で止まる</td>
+      <td class="v-bad">保証なし</td>
+    </tr>
+    <tr>
+      <td>勾配 \(\nabla L\) が要る。微分できない/計算できないときは？</td>
+      <td>この式のままでは動けない</td>
+      <td class="v-bad">前提が要る</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── この弱点が、次回からの主役になる</span>
+    <p style="margin-top:0;">勾配降下法は「勾配 \(\nabla L\) が手に入る」ことを前提にします。ニューラルネットでは、これを自動で計算する仕掛けが<strong>誤差逆伝播(バックプロパゲーション, BP)</strong>です ── 第2回の主役。ところが、生きものの進化には「損失を微分する」神さまはいません。自然は物理の方程式を知らず、DNA を微分することもできない。ではどうやって坂を下るのか？</p>
+    <p style="margin-bottom:0;">答えは<strong>微分せずに坂を下る</strong>方法 ── 進化戦略(ES)です（第4回）。そして驚くべきことに、この「微分するBP」と「微分しないES」は、第6回で<em>数学的に同じ計算</em>だと分かります。局所最小の弱点も、地形を「ぼかす」ことで乗り越えられる（第7回）。今日の一本の式 \(\theta\leftarrow\theta-\eta\nabla L\) が、シリーズ全体の背骨です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>\(L(\theta)=\tfrac12(\theta-3)^2\)、開始 \(\theta_0=0\)、学習率 \(\eta=0.5\)。\(\theta_1,\ \theta_2\) を求めよ。
+        <details><summary>答えを見る</summary><div class="ans">\(\nabla L=\theta-3\)。\(\theta_1=0-0.5(0-3)=1.5\)。\(\theta_2=1.5-0.5(1.5-3)=1.5+0.75=2.25\)。谷底 \(\theta=3\) にじわじわ近づいている（\(k=1,\ \eta=0.5<1\) なので、なめらかに収束）。</div></details>
+      </li>
+      <li>谷 \(L(\theta)=\tfrac12 k(\theta-a)^2\) で、収束する学習率の上限はいくつか。曲率 \(k\) が大きい（急な谷）とその上限はどうなるか。
+        <details><summary>答えを見る</summary><div class="ans">上限は \(\eta<2/k\)（\(\eta=2/k\) ちょうどでは振動して収束しない）。\(k\) が大きいほど上限は小さくなる ── 急な谷ほど、歩幅を小さくしないと飛び出す。</div></details>
+      </li>
+      <li>勾配降下が「一番低い谷」に着くとは限らないのはなぜか。図の右の浅い谷を例に。
+        <details><summary>答えを見る</summary><div class="ans">更新は足もとの傾き \(\nabla L\) だけを見る。極小では \(\nabla L=0\) なので、そこが局所的な底でありさえすれば、たとえ隣にもっと深い谷があっても止まってしまう。全体を見渡していないから ── 「盲目のボール」の宿命。第7回の「地形をぼかす」で緩和する。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第1回まとめ</span>学ぶとは、勾配を下ること</h2>
+    <p>学習とは、パラメータ \(\theta\) を動かして損失 \(L(\theta)\) を下げること（STEP 01）。\(L\) を高さと見れば損失地形が広がり、それはライトの適応度地形と同じ絵（STEP 02）。足もとの傾き \(\nabla L\) は最も急に登る方向を指し、テイラー展開から<em>最も急に下るのはその真逆 \(-\nabla L\)</em>（STEP 03）。だから更新則は \(\theta\leftarrow\theta-\eta\nabla L\)（STEP 04）。歩幅 \(\eta\) は地形の曲率 \(k\) との綱渡りで、安全域は \(0<\eta<2/k\)（STEP 06）。ただし勾配降下は局所最小で止まりうるし、そもそも勾配が手に入る前提が要る（STEP 07）。</p>
+    <p>この一本の式が、シリーズ全体を貫きます。次回は「勾配 \(\nabla L\) を自動で計算する仕掛け」＝バックプロパゲーションへ。そしていずれ、微分を一切使わない進化(ES)が同じ坂を下り、両者が数学的に一致し、その延長線上で ── <em>学ぶ機械と学ぶ心は、同じ計算をしている</em>という結論へ向かいます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第2回</span>
+    <strong>バックプロパゲーションとは、連鎖律の帳簿である。</strong> 今回「手に入る前提」にした勾配 \(\nabla L\) を、ニューラルネットはどうやって自動で計算するのか。答えは合成関数の微分＝連鎖律を、出力から入力へ<em>後ろ向きに</em>配っていく帳簿係。「何が損失をどれだけ動かしたか」を一枚ずつ精算する、その仕組みを解剖します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第1回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。勾配降下法（\(\theta\leftarrow\theta-\eta\nabla L\)）、最急降下方向が \(-\nabla L\) であること（歩幅一定のもとでテイラー一次近似の内積をコーシー・シュワルツで最小化して従う）、二次関数 \(\tfrac12 k(\theta-a)^2\) での収束条件 \(0<\eta<2/k\) は、いずれも確立した数学です。適応度地形(fitness landscape)はS.ライトが1932年に導入した概念で、機械学習の損失地形と上下反転の関係にあります。本稿の図の地形 \(L(\theta)=(\theta^2-1)^2+0.3\theta\) は説明用の模型で、左右の谷の深さ（大域最小 L≈−0.30／局所最小 L≈+0.29）や最小点の位置は数値的な目安です。進化戦略(ES)とBPの数学的一致（第6回）、意識に関する解釈（第11回）は後続回で扱い、意識の議論は機能的・計算論的な立場からの提案であって「なぜ内側から感じられるのか」（ハードプロブレム）に答えるものではないことを、その回で明示します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「開始位置」と「学習率」を変えて「学習スタート」を押すと、ボールが坂を下ります。深い谷・浅い谷・発散を試してみてください。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      se=document.getElementById('eta'), ve=document.getElementById('veta'),
+      s0=document.getElementById('th0'), v0=document.getElementById('vth0'),
+      rd=document.getElementById('rd'), btn=document.getElementById('run');
+  // 地形 L(θ)=(θ²−1)²+0.3θ, 勾配 L'(θ)=4θ³−4θ+0.3
+  function Lf(t){var u=t*t-1; return u*u+0.3*t;}
+  function dLf(t){return 4*t*t*t-4*t+0.3;}
+  var TH_LO=-1.9, TH_HI=1.9, L_LO=-0.6, L_HI=2.7;
+  var MIN_L=-1.035, MIN_R=0.960;   // 谷底の近似位置
+  var theta=1.4, traj=[1.4], step=0, raf=null, lastStep=0;
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=44, padB=42, padT=16;
+    function X(t){return padL+(t-TH_LO)/(TH_HI-TH_LO)*(w-padL-14);}
+    function Y(l){return (h-padB)-(l-L_LO)/(L_HI-L_LO)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（L の水平線）
+    ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.fillStyle='#bda877';ctx.font='9px sans-serif';
+    for(var l=0;l<=2;l++){var y=Y(l);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('L='+l,6,y-3);}
+    var y0=Y(0);ctx.beginPath();ctx.moveTo(padL,y0);ctx.lineTo(w-8,y0);ctx.stroke();
+    // 地形曲線
+    ctx.strokeStyle='#b06a10';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var i=0;i<=240;i++){var t=TH_LO+(TH_HI-TH_LO)*i/240; var x=X(t),y=Y(Lf(t)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 谷底マーカー
+    function well(t,label,color){var x=X(t),y=Y(Lf(t));
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,3.5,0,7);ctx.fill();
+      ctx.fillStyle='#8a7a5a';ctx.font='11px sans-serif';ctx.fillText(label,x-18,y+18);}
+    well(MIN_L,'深い谷','#3d7a3a'); well(MIN_R,'浅い谷','#a86518');
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('θ（パラメータ）→', w-140, h-padB+26);
+    ctx.save();ctx.translate(14,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('L（損失＝高さ）',0,0);ctx.restore();
+    // 軌跡（薄い点）
+    for(var k=0;k<traj.length;k++){var tt=traj[k];
+      ctx.fillStyle='rgba(176,106,16,'+(0.12+0.25*k/Math.max(1,traj.length))+')';
+      ctx.beginPath();ctx.arc(X(tt),Y(Lf(tt)),2.4,0,7);ctx.fill();}
+    // 降下方向の矢印 −∇L（水平成分で表示）
+    var g=dLf(theta), dir=(g>0?-1:1); // −∇L の符号
+    var bx=X(theta), by=Y(Lf(theta));
+    if(isFinite(bx)&&Math.abs(theta)<=TH_HI){
+      var aLen=Math.min(46, 10+Math.abs(g)*7);
+      ctx.strokeStyle='#3d7a3a';ctx.lineWidth=2.2;ctx.beginPath();
+      ctx.moveTo(bx,by);ctx.lineTo(bx+dir*aLen,by);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bx+dir*aLen,by);ctx.lineTo(bx+dir*(aLen-7),by-4);
+      ctx.lineTo(bx+dir*(aLen-7),by+4);ctx.closePath();ctx.fillStyle='#3d7a3a';ctx.fill();
+    }
+    // ボール
+    if(isFinite(bx)&&Math.abs(theta)<=TH_HI){
+      ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(bx,by,6.5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    }
+  }
+  function report(status){
+    var eta=parseFloat(se.value);
+    if(status==='diverge'){
+      rd.className='readout bad';
+      rd.textContent='発散：η='+eta.toFixed(3)+' が大きすぎて、ボールが坂の外へ飛び出した（|1−ηk|>1）。歩幅を小さくしてみてください。';
+    } else if(status==='slow'){
+      rd.className='readout local';
+      if(lastStep>0.05){
+        rd.textContent='収束せず振動：η='+eta.toFixed(3)+' がこの谷の急さに対して大きすぎ、谷底を跨いで行き来しています（現在 θ='+theta.toFixed(3)+'、1歩の幅≈'+lastStep.toFixed(3)+'）。歩幅を下げてみてください。';
+      } else {
+        rd.textContent='まだ谷に着いていない：η='+eta.toFixed(3)+' が小さすぎて、500ステップでも収束しませんでした（現在 θ='+theta.toFixed(3)+'）。歩幅を上げてみてください。';
+      }
+    } else {
+      var Lv=Lf(theta);
+      if(theta<-0.3){
+        rd.className='readout ok';
+        rd.textContent='深い谷（大域的な最小）に到達：θ='+theta.toFixed(3)+'、L='+Lv.toFixed(3)+'。'+step+' ステップで収束。これが一番低い谷 ── 大当たり。';
+      } else if(theta>0.3){
+        rd.className='readout local';
+        rd.textContent='浅い谷（局所的な最小）で停止：θ='+theta.toFixed(3)+'、L='+Lv.toFixed(3)+'。'+step+' ステップで収束。∇L=0 だがここは最良ではない ── 隣にもっと深い谷がある。開始位置を左へずらすと届きます。';
+      } else {
+        rd.className='readout local';
+        rd.textContent='尾根の近くで停止：θ='+theta.toFixed(3)+'。勾配がほぼ0の不安定な点。開始位置を少しずらしてみてください。';
+      }
+    }
+  }
+  function frame(){
+    var eta=parseFloat(se.value);
+    var g=dLf(theta);
+    lastStep=Math.abs(eta*g);
+    theta = theta - eta*g;
+    step++;
+    if(!isFinite(theta)||Math.abs(theta)>3){ theta=(theta>0?1:-1)*3; draw(); report('diverge'); return; }
+    traj.push(theta);
+    if(traj.length>600) traj.shift();
+    draw();
+    if(lastStep<1e-4){ report('converge'); return; }
+    if(step>=500){ report('slow'); return; }
+    raf=requestAnimationFrame(frame);
+  }
+  function start(){
+    if(raf) cancelAnimationFrame(raf);
+    theta=parseFloat(s0.value); traj=[theta]; step=0;
+    rd.className='readout local'; rd.textContent='学習中… ボールが足もとの傾き −∇L にしたがって坂を下ります。';
+    raf=requestAnimationFrame(frame);
+  }
+  function syncLabels(){ ve.textContent=parseFloat(se.value).toFixed(3); v0.textContent=parseFloat(s0.value).toFixed(2); }
+  se.addEventListener('input',function(){syncLabels();});
+  s0.addEventListener('input',function(){syncLabels(); if(raf)cancelAnimationFrame(raf); theta=parseFloat(s0.value); traj=[theta]; step=0; draw();
+    rd.className='readout local'; rd.textContent='開始位置を θ='+theta.toFixed(2)+' に設定。「学習スタート」を押すと下り始めます。';});
+  btn.addEventListener('click',start);
+  window.addEventListener('resize',draw);
+  syncLabels();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){theta=parseFloat(s0.value);traj=[theta];draw();});}
+  setTimeout(function(){theta=parseFloat(s0.value);traj=[theta];draw();},60);
+  window.addEventListener('load',function(){theta=parseFloat(s0.value);traj=[theta];draw();});
+})();
+</script>
+</body>
+</html>

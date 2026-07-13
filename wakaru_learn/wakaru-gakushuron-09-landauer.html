@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命は、効率よく計算する競争である ── わかる学習論 第9回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 9 回 ／ ランダウアー原理と bits per joule</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>生命は、効率よく計算する競争である
+    <span class="sub">情報を1ビット消すだけで、宇宙は最低 \(k_BT\ln 2\) の熱を払わされる。評価も、選択も、神経の発火も計算であり、<br>計算にはエネルギーが要る。ならば生命とは ── <em>1ジュールから何ビットの適応を絞り出せるか</em>を競う営みだ。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：対数・指数、熱力学のさわり（\(k_BT\)）</span>
+    <span>この回のキー：\(E_{\min}=k_BT\ln 2\)</span>
+  </div>
+
+  <p class="lead">前回、私たちは生物圏をひとつの巨大な計算機 ── 数十億年まわり続ける GPU ── として眺めました。では、その計算機は<em>タダで</em>動いているのでしょうか。いいえ。物理はもっと厳しい。<strong>情報を処理するには、必ずエネルギーが要る</strong>。そしてこの「要る」には、宇宙が定めた<em>最低額</em>があります ── ランダウアー原理。1ビットの情報を消すのに、最低でも \(k_BT\ln 2\) のエネルギーが熱として捨てられる。常温ならわずか \(2.9\times10^{-21}\) ジュール、しかしゼロではない。すると生命の姿が一変します。餌をどこで探すか、どの遺伝子を残すか、次の一歩をどう踏み出すか ── そのすべてが「勾配を測る計算」であり、計算である以上、必ず熱力学のコストを負う。だからこそ、自然選択は静かにもう一つの軸で個体を裁いてきました。<strong>同じ1ジュールから、より多くの「適応に効く情報」を絞り出せる者</strong>が勝ち残る。今回は、この <em>bits per joule</em> ── 1ジュールあたりの情報 ── という物差しで、生命を計算効率の競争として読み直します。</p>
+
+  <h2><span class="n">01</span>計算はタダではない</h2>
+
+  <p>私たちはつい、計算を「頭のなか」の抽象的な出来事だと思いがちです。数式は紙の上で完結し、思考は物理法則の外にある、と。ところが20世紀半ば、物理学者たちは奇妙な問いに突き当たりました ── <em>計算は、物理的にいくら「かかる」のか</em>。スイッチを切り替え、ビットを書き換え、いらない情報を忘れる。これらはすべて、この宇宙のなかの物理過程です。原子が動き、電子が流れ、熱が生まれる。ならば、そこには必ず値札がついているはずだ。</p>
+
+  <p>答えを出したのが、1961年、IBM のロルフ・ランダウアーでした。彼が見つけたのは、計算の値札のうち<strong>ゼロにはできない最低額</strong>です。どんなに賢く設計しても、どんなに未来の技術を使っても、これ以上は安くできないという床(ゆか)。その正体は、意外にも「消す」という操作に潜んでいました。</p>
+
+  <h2><span class="n">02</span>ランダウアー原理 ── 忘却には熱が要る</h2>
+
+  <p>ランダウアーの洞察はこうです。計算のなかで本当にエネルギーを避けられないのは、<em>論理的に非可逆な操作</em> ── とりわけ<strong>情報の消去</strong>だ、と。0か1か分からなかったビットを「必ず0にする」ように潰す。この操作は、2通りだった状態を1通りに畳み込む。情報が1ビット減る。すると熱力学第二法則が、その減った分のエントロピーをどこかへ吐き出せと要求します。行き場は周囲の熱浴 ── つまり<strong>熱として捨てるしかない</strong>。その最低額が次の式です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">ランダウアー原理（1ビット消去の最低エネルギー）</div>
+    $$E_{\min}\;=\;k_B\,T\,\ln 2$$
+  </div>
+
+  <p>ここで \(k_B=1.38\times10^{-23}\ \mathrm{J/K}\) はボルツマン定数、\(T\) は絶対温度、\(\ln 2\approx0.693\) は「2通り→1通り」という2倍の場合の数を情報に翻訳した係数です。温度が高いほど、また消す情報が多いほど、払う熱は増える。常温 \(T=300\,\mathrm{K}\) で数値を入れてみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 常温で1ビットいくらか</span>
+    <p class="lbl">(1) k_B T ln2 を T=300 K で数値計算する</p>
+    $$E_{\min}=(1.38\times10^{-23})\times 300 \times 0.693 \;\approx\; 2.9\times10^{-21}\ \mathrm{J}$$
+    <p class="lbl">電子ボルトに直すと（1 eV = 1.602×10⁻¹⁹ J）</p>
+    $$2.9\times10^{-21}\ \mathrm{J}\;\div\;1.602\times10^{-19}\ \mathrm{J/eV}\;\approx\;0.018\ \mathrm{eV/bit}$$
+    <p style="margin-bottom:14px;">1ビット忘れるのに、常温でおよそ \(2.9\times10^{-21}\) ジュール ── 気の遠くなるほど小さい。だが<span style="color:var(--calc);font-weight:700;">決してゼロではない</span>。これが「計算の床」です。逆に言えば、\(10^{21}\) ビットも消せば、ようやく数ジュール ── コップの水をほんの少し温める程度の熱になる。塵も積もれば、です。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">姉妹シリーズへの橋 ── わかる宇宙論 第10回</span>
+    まったく同じ \(k_BT\ln 2\) という式が、姉妹シリーズ<strong>「わかる宇宙論」第10回</strong>にも登場します。あちらの主題は「なぜブラックホールや宇宙全体を情報で語れるのか」── その出発点が、この<em>「1ビット消去 ＝ \(k_BT\ln 2\)」</em>でした。情報と熱力学が地続きだという、20世紀物理最大の発見の一つです。宇宙論では<strong>宇宙のスケール</strong>でこの式を使い、学習論では<strong>生命のスケール</strong>で使う。同じ一本の橋を、両側から渡っている ── 情報を消せば必ず熱が出る、という宇宙の掟は、星にも細胞にも等しく効いています。
+  </div>
+
+  <h2><span class="n">03</span>生命は情報を処理している ── だからコストを払う</h2>
+
+  <p>ここで、このシリーズを貫く見方に接続します。第1回から私たちは、学習も進化も「損失という坂を下る＝勾配を測って動く」計算だと見てきました。ならば、<strong>その計算を実行する生命は、ランダウアーの値札から逃れられない</strong>ということになります。抽象的な話ではありません。生きものが日々おこなう営みは、そのまま物理的な情報処理です。</p>
+
+  <ul>
+    <li><strong>評価する</strong> ── この餌は安全か、この相手は強いか。感覚入力を「良い／悪い」に畳み込むのは、情報の圧縮＝消去を含む計算です。</li>
+    <li><strong>選択する</strong> ── 自然選択そのものが、多様な個体という「候補の束」から生き残りを絞り込む巨大な情報処理。個体の死は、集団のもつ情報を書き換える操作です。</li>
+    <li><strong>神経で計算する</strong> ── ニューロンの発火、シナプスの重みづけは、文字どおり電気化学的な計算。ここには実測できるエネルギー消費が伴います。</li>
+  </ul>
+
+  <p>そしてこのコストは机上の空論ではなく、生きものの設計に痕跡を残しています。<strong>DNA複製の校正(こうせい)機構</strong>は、写し間違いを検出して消し、正しい塩基に置き換える ── まさに情報を消去し書き直す装置で、正確さのためにエネルギー(ATP)を余分に燃やしています。<strong>神経スパイクの省エネ設計</strong>もそうです。脳は情報を運ぶのに、必要最小限のイオンだけを動かすよう、進化のなかで研ぎ澄まされてきた。計算にコストがかかるからこそ、<em>安く計算する工夫</em>が選ばれてきたのです。</p>
+
+  <h2><span class="n">04</span>淘汰される計算効率 ── bits per joule</h2>
+
+  <p>ここまで来れば、自然選択の物差しをもう一本、書き足せます。生き延びるには、環境について「どう動けば適応度が上がるか」という<em>勾配情報</em>を手に入れねばならない。だが情報の取得と処理にはエネルギーが要る。エネルギーは有限です ── 食べられる量には限りがある。すると勝負を分けるのは、こう表せます。</p>
+
+  <div class="keybox">
+    <div class="lbl">効率の物差し ── 1ジュールあたりの情報</div>
+    $$\eta_{\text{情報}}\;=\;\frac{\text{獲得した適応に効く情報 [bit]}}{\text{費やしたエネルギー [J]}}\quad(\text{bits per joule})$$
+  </div>
+
+  <p>同じ餌の量（同じジュール）から、より多くの「適応に効く情報」を絞り出せる個体は、少ない資源で正しく動ける。その差は、世代をまたいで積もります。だから自然選択は、適応度の高さだけでなく、<strong>その適応度を「いくらで」計算したか</strong>まで静かに裁いている。速く走る個体ではなく、<em>同じ距離を少ないカロリーで走る</em>個体が選ばれる。同じ判断を、少ない神経活動で下せる脳が選ばれる。<strong>計算効率もまた、淘汰の対象なのです。</strong></p>
+
+  <p>この視点は、前々回までに見た進化戦略(ES)の弱点を思い出させます。ES は「1サンプル＝1個体を実際に生きさせて、その適応度を測る」ことでしか勾配を推定できませんでした。1サンプルのコストは、<em>一つの個体の一生分のエネルギー、そして一つの死</em>です。勾配を1ビット得るために、生命は途方もない量のジュールを燃やしている。この「高すぎる計算」こそ、次回への伏線になります。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 到達コストを比べる</h2>
+
+  <p>下の図は、ある適応の目標（横軸の「到達度」）に近づくために、戦略が<strong>累積で何ジュール燃やすか</strong>を描いたものです。縦軸は累積エネルギーを \(k_BT\) 単位の<em>対数</em>で取っています（生物のコストとランダウアー限界は何桁も離れるため、対数でないと同じ図に収まりません）。到達度 \(p\) まで進むのに必要な「適応情報」を \(I(p)=-\log_2(1-p)\) ビットとし、1ビットあたりのコストが戦略ごとに違う、という単純な模型です。</p>
+
+  <div class="fig">
+    <div class="cap">図：目標（到達度90%）に届くまでの累積エネルギー。緑＝効率的な戦略（脳的な計算、~10⁶ k_BT/bit）、琥珀＝サンプル効率の悪いES（スライダーで変わる）。灰の破線＝ランダウアー限界（k_BT ln2/bit、物理の床）。効率的な戦略ほど、同じ到達を下（少ないエネルギー）で達成する</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>ES の非効率さ（1ビットあたりコスト）<span class="val" id="vc">1.0×10¹² k_BT/bit</span>
+        <input type="range" id="cES" min="8" max="18" step="0.1" value="12">
+      </label>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#3d7a3a;"></i>効率的な戦略（学習的）</span>
+      <span><i class="swatch" style="background:var(--acc);"></i>ES（進化・サンプル非効率）</span>
+      <span><i class="swatch" style="background:#9a8a66;"></i>ランダウアー限界（床）</span>
+    </div>
+  </div>
+
+  <p>スライダーで ES の非効率さ（1ビットあたりコスト）を動かすと、琥珀の曲線が上下します。どんなに効率化しても、<em>どの曲線も灰色の床（ランダウアー限界）にはるか届かない</em> ── これが今回の判決の核心です。同時に、緑（効率的な戦略）は琥珀（ES）より<strong>ずっと下</strong>を通る。同じ到達度に、桁違いに少ないエネルギーで届く。この「緑と琥珀の差」こそ、自然選択が狙い撃つ余地であり、次回のテーマ ── <em>学習という安い近道</em> ── の正体です。</p>
+
+  <h2><span class="n">06</span>脳という驚異 ── 限界からは遠く、しかし桁違いに賢い</h2>
+
+  <p>では、実在する最高の計算機 ── ヒトの脳は、この床からどれくらい離れた場所で動いているのでしょう。脳の消費電力はおよそ \(20\ \mathrm{W}\)、つまり毎秒20ジュールです。もしこの全エネルギーを、ランダウアー限界ぎりぎりの「ビット消去」だけに使えたら、1秒あたり最大で何ビット消せるかを見積もってみます。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 脳のランダウアー上限と、限界からの距離</span>
+    <p class="lbl">(2) 20 W をすべて消去計算に使ったときの、1秒あたりのビット数の上限</p>
+    $$\frac{20\ \mathrm{J/s}}{2.9\times10^{-21}\ \mathrm{J/bit}}\;\approx\;6.9\times10^{21}\ \mathrm{bit/s}$$
+    <p class="lbl">実際の脳の演算数（おおよそ ~10¹⁶ 演算/秒）と比べる</p>
+    $$\frac{20\ \mathrm{J/s}}{10^{16}\ \text{演算/s}}\;=\;2\times10^{-15}\ \mathrm{J/演算}\;=\;\frac{2\times10^{-15}}{4.14\times10^{-21}}\,k_BT\;\approx\;5\times10^{5}\,k_BT/\text{演算}$$
+    <p style="margin-bottom:14px;">物理の床が許す上限は毎秒 \(6.9\times10^{21}\) ビット。ところが脳は実際には毎秒 \(\sim10^{16}\) 回ほどの演算しかしていません ── <span style="color:var(--calc);font-weight:700;">上限の百万分の一以下</span>。裏を返せば、脳は1演算あたり \(k_BT\ln 2\)（＝1ビット分の床）ではなく、その \(10^4\)〜\(10^6\) 倍ものエネルギーを使っている。<span style="color:var(--bad);font-weight:700;">ランダウアー限界からは、何桁も上にいる</span>のです。矛盾はありません ── 上限が \(6.9\times10^{21}\) bit/s なのに実演算が \(10^{16}\)/s に留まるのは、まさに「1演算に大量の \(k_BT\) を使っている＝限界から遠い」ことの別表現です。</p>
+  </div>
+
+  <p>それでも、脳は驚異です。1演算 \(\sim10^5\,k_BT\) というのは、現行のデジタル計算機が同種の演算に費やすエネルギーより、しばしば<strong>桁で有利</strong>だからです。生物としては信じがたく省エネで、物理の床から見れば信じがたく浪費している ── この二つは両立します。生命は限界を<em>飽和(ひたか)</em>してはいない。だが、限界へ向かう方向に、たしかに研かれてきた。校正機構も、省エネな神経も、その研磨の跡です。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── どこまでが物理で、どこからが物語か</h2>
+
+  <p>今回は物理の確立した部分と、そこに乗せた解釈とを、はっきり分けて裁きます。混ぜてしまうと、美しい話が嘘になる。</p>
+
+  <table class="verdict">
+    <tr><th>主張</th><th>中身</th><th>判決</th></tr>
+    <tr>
+      <td>ランダウアー原理は正しいか</td>
+      <td>1ビットの論理的に非可逆な消去には最低 \(k_BT\ln 2\) のエネルギーが要る。理論的にも実験的にも確立した物理</td>
+      <td class="v-ok">◯ 確立</td>
+    </tr>
+    <tr>
+      <td>計算効率は選択圧を受けるか</td>
+      <td>代謝コストは実在し、校正機構・省エネ神経など効率が研かれた痕跡がある。「効率も淘汰される」という方向性は妥当</td>
+      <td class="v-ok">◯ 妥当</td>
+    </tr>
+    <tr>
+      <td>生命はランダウアー限界の近傍で動くか</td>
+      <td>動かない。脳ですら1演算に \(10^4\)〜\(10^6\,k_BT\) を使い、限界から何桁も遠い。「限界を飽和する」は成り立たない</td>
+      <td class="v-bad">× 成り立たない</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「効率が選ばれる」と「限界を飽和する」は別物</span>
+    <p style="margin-top:0;">ランダウアー原理は確かな物理です。そして「計算効率が淘汰される」という<em>方向性</em>の主張も妥当 ── 代謝コストは実在し、DNA校正や省エネな神経といった、効率が選ばれてきた具体例があります。ここまでは胸を張って言える。</p>
+    <p style="margin-bottom:0;">しかし、そこから一歩踏み込んで<strong>「生命は計算論的・熱力学的な最適の近傍で動いている」</strong>と言い切るのは、まだ未確立です ── むしろ本文で見たとおり、生物はランダウアー限界から<em>何桁も</em>離れている。だから正直に線を引きます。面白く、そして支持できる主張は<strong>「効率が選択される（限界へ向かう方向に研かれる）」</strong>であって、<strong>「限界を飽和する」</strong>ではありません。この二つを取り違えないことが、誠実さの分かれ目です。 ── そして、その「効率」の話は次回へ繋がります。ES（進化）は勾配1ビットに、一つの一生と一つの死を払う。もっと安く同じ勾配を計算する発明はないのか。あります。それが<em>学習</em>です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式と数値だけで解けます）</div>
+    <ol>
+      <li>温度を \(T=310\ \mathrm{K}\)（ヒトの体温にほぼ相当）にすると、1ビット消去の最低エネルギー \(k_BT\ln 2\) はいくらか。常温 \(300\ \mathrm{K}\) の \(2.9\times10^{-21}\ \mathrm{J}\) と比べてどう変わるか。
+        <details><summary>答えを見る</summary><div class="ans">\(E_{\min}=1.38\times10^{-23}\times310\times0.693\approx2.97\times10^{-21}\ \mathrm{J}\)。約 \(3.0\times10^{-21}\ \mathrm{J}\) で、\(300\ \mathrm{K}\) のときより \(310/300\approx1.03\) 倍、およそ3%大きい。温度に比例するので、暖かいほど1ビットを消す最低コストは上がる。</div></details>
+      </li>
+      <li>1グラムの水の温度を1度上げるのに約 \(4.2\ \mathrm{J}\) 要る。この \(4.2\ \mathrm{J}\) の熱を「ビット消去だけ」で発生させるとしたら、常温で最低何ビット消す必要があるか。
+        <details><summary>答えを見る</summary><div class="ans">\(4.2\ \mathrm{J}\div 2.9\times10^{-21}\ \mathrm{J/bit}\approx1.4\times10^{21}\ \mathrm{bit}\)。1ビットの床が極小でも、\(10^{21}\) ビットも積もれば日常のエネルギーになる ── 情報消去が確かに物理的な熱であることの実感。第5回の脳の上限 \(6.9\times10^{21}\ \mathrm{bit/s}\) とも桁が近いことに注意。</div></details>
+      </li>
+      <li>脳が1演算に約 \(5\times10^{5}\,k_BT\) を使うとする。これはランダウアー限界（1ビット消去 \(=\ln 2\,k_BT\approx0.69\,k_BT\)）の何倍か。この数字は「生命が限界の近傍で動く」という主張を支持するか、否定するか。
+        <details><summary>答えを見る</summary><div class="ans">\(5\times10^{5}/0.69\approx7\times10^{5}\)、すなわち約70万倍。限界より5〜6桁も上。したがって「限界の近傍で動く」という強い主張は<em>否定</em>される。支持できるのは「限界へ向かう方向に効率が研かれてきた」という、より弱い（そして正しい）方向性の主張のほう。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第9回まとめ</span>生命とは、1ジュールから情報を絞り出す競争</h2>
+    <p>計算はタダではない（STEP 01）。ランダウアー原理により、1ビットの消去には最低 \(E_{\min}=k_BT\ln 2\) が要り、常温では \(2.9\times10^{-21}\ \mathrm{J}\approx0.018\ \mathrm{eV}\)（STEP 02、姉妹シリーズ「わかる宇宙論」第10回と同じ橋）。評価・選択・神経計算はすべて情報処理であり、生命はこのコストを負う ── DNA校正や省エネ神経はその痕跡（STEP 03）。だから選択は <em>bits per joule</em> という効率の軸でも個体を裁く（STEP 04）。図で見たとおり、効率的な戦略は同じ到達を少ないエネルギーで達成する(STEP 05)。脳は \(20\ \mathrm{W}\)、ランダウアー上限なら毎秒 \(6.9\times10^{21}\) ビット消せるはずが、実際は1演算に \(10^4\)〜\(10^6\,k_BT\) ── 限界から何桁も遠い(STEP 06)。ゆえに判決は、限界は確立(◯)、効率が選ばれる方向性は妥当(◯)、しかし限界の飽和は成り立たない(×)（STEP 07）。</p>
+    <p>生命は物理の床には届かない。だが、床へ向かう斜面を、確かに下ってきた。次回は、その斜面をいちばん安く下る発明の話です ── 進化は勾配1ビットに一生と死を払う。それより桁違いに安い計算方法が、この宇宙には存在します。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第10回</span>
+    <strong>学習は、進化が見つけた近道である。</strong> 進化戦略(ES)は勾配を1ビット得るために、1個体の一生分のエネルギーと、一つの死を払う ── あまりに高い計算です。もし、実際に死なずに、頭のなかのモデルで「もし失敗したら」を試せたら？ もし、一つの経験から大量の勾配情報を絞り出せたら？ それが<em>学習</em>という発明。進化が数十億年かけて到達した、圧倒的に安い勾配計算の近道を解剖します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第9回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。ランダウアー原理（1ビットの論理的に非可逆な消去に最低 \(E_{\min}=k_BT\ln 2\) のエネルギーが要り熱として散逸する）はR.ランダウアーが1961年に導いた確立した物理で、常温 \(T=300\ \mathrm{K}\) では \(k_BT\ln 2=(1.38\times10^{-23})\times300\times0.693\approx2.9\times10^{-21}\ \mathrm{J}\approx0.018\ \mathrm{eV/bit}\) となります（\(k_B\) はボルツマン定数、1 eV = 1.602×10⁻¹⁹ J）。脳の消費電力 \(\approx20\ \mathrm{W}\) と演算数 \(\sim10^{16}\)/秒、1演算あたり \(10^4\)〜\(10^6\,k_BT\) 程度という見積り、およびランダウアー上限 \(20/2.9\times10^{-21}\approx6.9\times10^{21}\ \mathrm{bit/s}\) は、いずれもオーダー（桁）の目安であり、脳の「演算」の定義や消費電力の取り方によって数字は前後します。本稿の図は説明用の模型で、到達度 \(p\) までの必要情報を \(I(p)=-\log_2(1-p)\) ビット、戦略のコストを「1ビットあたり一定の \(k_BT\) 数」とした単純化であり、効率的戦略 ~10⁶ k_BT/bit・ES 10⁸〜10¹⁸ k_BT/bit といった値は概念を示すための例示です。「計算効率が選択圧を受ける（限界へ向かう方向に研かれる）」という方向性の主張は妥当ですが、「生命が計算論的・熱力学的最適の近傍で動く（限界を飽和する）」という強い主張は未確立であり、実際に生物はランダウアー限界から何桁も離れています。この線引きは本文の判決表・「正直な線」で明示しました。姉妹シリーズ「わかる宇宙論」第10回は同じ \(k_BT\ln 2\) を宇宙のスケールで扱います。進化戦略(ES)と学習の関係は次回（第10回）で正面から扱います。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「ES の非効率さ」のスライダーを動かすと、琥珀の曲線（ES の累積エネルギー）が上下します。どこまで効率化しても灰色の床（ランダウアー限界）には届かないこと、緑（効率的な戦略）が常に下を通ることを確かめてください。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sc=document.getElementById('cES'), vc=document.getElementById('vc'),
+      rd=document.getElementById('rd');
+  // 定数
+  var kT=4.14e-21;          // k_B T at 300K [J]
+  var cFloor=Math.LN2;      // ランダウアー限界 = ln2 [k_BT/bit] ≈0.693
+  var cEff=1e6;             // 効率的な戦略（脳的） [k_BT/bit]
+  var P_TGT=0.9;            // 目標到達度
+  // 到達度 p までに要する適応情報 [bit]
+  function Ip(p){ return -Math.log(1-p)/Math.LN2; }
+  // 描画範囲（縦は log10(累積エネルギー / k_BT)）
+  var P_LO=0.03, P_HI=0.955, Y_LO=-2, Y_HI=19;
+
+  function cES(){ return Math.pow(10, parseFloat(sc.value)); }
+
+  // 上付き数字
+  function sup(n){
+    var s=''+Math.abs(Math.round(n)), map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+    var out=''; for(var i=0;i<s.length;i++) out+=map[s[i]];
+    return (n<0?'⁻':'')+out;
+  }
+  // 科学表記 m×10^e
+  function sci(x,dig){
+    if(!isFinite(x)||x<=0) return '0';
+    var e=Math.floor(Math.log10(x)), m=x/Math.pow(10,e);
+    if(m>=9.9995){m/=10;e++;}
+    return m.toFixed(dig)+'×10'+sup(e);
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=54, padB=42, padT=16;
+    function X(p){return padL+(p-P_LO)/(P_HI-P_LO)*(w-padL-14);}
+    function Y(lv){return (h-padB)-(lv-Y_LO)/(Y_HI-Y_LO)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // 横グリッド（10のべき）
+    ctx.font='9px sans-serif';
+    var ticks=[0,3,6,9,12,15,18];
+    for(var t=0;t<ticks.length;t++){
+      var y=Y(ticks[t]);
+      ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-8,y);ctx.stroke();
+      ctx.fillStyle='#bda877';ctx.fillText('10'+sup(ticks[t]),6,y+3);
+    }
+    // 曲線を描く共通関数
+    function curve(c,color,width,dash){
+      ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash||[]);
+      ctx.beginPath();var f=true;
+      for(var i=0;i<=220;i++){
+        var p=P_LO+(P_HI-P_LO)*i/220;
+        var e=c*Ip(p); if(e<=0) continue;
+        var lv=Math.log10(e); if(lv<Y_LO) lv=Y_LO;
+        var x=X(p),y=Y(lv);
+        if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);
+      }
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    // ランダウアーの床（灰・破線）／効率的戦略（緑）／ES（琥珀）
+    curve(cFloor,'#9a8a66',2.0,[6,4]);
+    curve(cEff,'#3d7a3a',2.4);
+    curve(cES(),'#b06a10',2.8);
+    // 目標到達度の縦線
+    var xt=X(P_TGT);
+    ctx.strokeStyle='#c9b48a';ctx.lineWidth=1.2;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xt,padT);ctx.lineTo(xt,h-padB);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8a7a5a';ctx.font='10px sans-serif';ctx.fillText('目標 90%',xt-26,padT+10);
+    // 目標での到達点マーカー
+    function mark(c,color){var e=c*Ip(P_TGT);var lv=Math.log10(e);var x=X(P_TGT),y=Y(lv);
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+    mark(cFloor,'#9a8a66');mark(cEff,'#3d7a3a');mark(cES(),'#b06a10');
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('到達度 p（適応の目標へ）→', w-210, h-padB+26);
+    ctx.save();ctx.translate(16,h/2+70);ctx.rotate(-Math.PI/2);ctx.fillText('累積エネルギー（k_BT, 対数）',0,0);ctx.restore();
+  }
+
+  function report(){
+    var It=Ip(P_TGT);                    // ≈3.322 bit
+    var c=cES();
+    var E_ES_kT=c*It,      E_ES_J=E_ES_kT*kT;
+    var E_ef_kT=cEff*It,   E_ef_J=E_ef_kT*kT;
+    var E_fl_kT=cFloor*It, E_fl_J=E_fl_kT*kT;
+    var ratioES=c/cFloor, ratioEf=cEff/cFloor;
+    rd.className='readout local';
+    rd.innerHTML='到達度90%までの必要情報 ≈ 3.32 bit。'+
+      '<br>ES：約 '+sci(E_ES_J,1)+' J（'+sci(E_ES_kT,1)+' k_BT）＝ランダウアー限界の約 '+sci(ratioES,1)+' 倍。'+
+      '<br>効率的な戦略：約 '+sci(E_ef_J,1)+' J（限界の約 '+sci(ratioEf,1)+' 倍）で同じ到達 ── ES より桁違いに安い。'+
+      '<br>物理の床（ランダウアー限界）：約 '+sci(E_fl_J,1)+' J。生命はどの戦略でも床から何桁も上にいる。';
+  }
+
+  function syncLabel(){ vc.textContent=sci(cES(),1)+' k_BT/bit'; }
+
+  sc.addEventListener('input',function(){ syncLabel(); draw(); report(); });
+  window.addEventListener('resize',draw);
+  syncLabel(); report();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){draw();});}
+  setTimeout(draw,60);
+  window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

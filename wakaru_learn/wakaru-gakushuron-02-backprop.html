@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バックプロパゲーションとは、連鎖律の帳簿である ── わかる学習論 第2回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 2 回 ／ 誤差逆伝播 ── 勾配を自動で作る帳簿</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>バックプロパゲーションとは、<br>連鎖律の帳簿である
+    <span class="sub">第1回で「手に入る前提」にした勾配 \(\nabla L\) を、ニューラルネットはどう自動計算するのか。<br>答えは合成関数の微分＝連鎖律を、出力から入力へ<em>後ろ向き</em>に配って回る帳簿係だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の勾配降下、合成関数の微分（連鎖律）</span>
+    <span>この回のキー：\(\dfrac{dL}{d\theta}=\dfrac{dL}{dh}\dfrac{dh}{d\theta}\)</span>
+  </div>
+
+  <p class="lead">前回、学習を一本の式に凝縮しました ── \(\theta\leftarrow\theta-\eta\,\nabla L\)。パラメータを、勾配の逆向きに少しだけ動かす。坂を下る。ただしあの式には、こっそり置いた<em>前提</em>がありました。<strong>勾配 \(\nabla L\) は、もう手もとにあるものとする</strong>。では、その \(\nabla L\) は誰が計算するのか。重みが一億本あるニューラルネットで、「各重みを動かすと損失がどれだけ変わるか」を一億個、どうやって手に入れるのか。素朴にやれば絶望的に高くつくこの計算を、<em>順伝播とほぼ同じ手間で丸ごと</em>片づけてしまう仕掛け ── それが<strong>誤差逆伝播（バックプロパゲーション, BP）</strong>です。その正体は魔法ではなく、高校で習う合成関数の微分＝<strong>連鎖律</strong>を、出力から入力へ後ろ向きに配って回る、几帳面な帳簿係にすぎません。今日はその帳簿を一枚ずつ開いて、\(\nabla L\) が生まれる瞬間を自分の手で見ます。</p>
+
+  <h2><span class="n">01</span>前回の宿題 ── ∇L はどこから来るのか</h2>
+
+  <p>更新則 \(\theta\leftarrow\theta-\eta\,\nabla L\) を動かすには、勾配 \(\nabla L=\big(\partial L/\partial\theta_1,\dots,\partial L/\partial\theta_n\big)\) の全成分が要ります。いちばん素朴な手は、定義どおり各つまみを少しだけ突いてみることです。パラメータ \(\theta_i\) を \(\varepsilon\) だけ動かし、損失の変化を割り算する ── いわゆる<strong>有限差分</strong>。</p>
+
+  <div class="keybox">
+    <div class="lbl">素朴な方法（有限差分）── 正しいが、高い</div>
+    $$\frac{\partial L}{\partial \theta_i}\;\approx\;\frac{L(\theta+\varepsilon e_i)-L(\theta)}{\varepsilon}$$
+  </div>
+
+  <p>この式は正しい。けれど \(\partial L/\partial\theta_i\) を<em>ひとつ</em>得るのに、\(\theta_i\) だけずらした損失 \(L(\theta+\varepsilon e_i)\) を計算する ── つまりネットワーク全体を一度走らせる（順伝播を一回）必要があります。勾配は成分が \(n\) 個。だから素朴には<strong>順伝播 \(n\) 回</strong>。重みが百万本なら、一歩下るたびに百万回ネットを走らせる。これでは学習が終わりません。バックプロパゲーションは、この \(n\) 回を<em>実質1回</em>に畳みます。その鍵が、次の連鎖律です。</p>
+
+  <h2><span class="n">02</span>連鎖律 ── 合成関数の微分は、掛け算で連なる</h2>
+
+  <p>ニューラルネットは、単純な関数を何段も重ねた<strong>合成関数</strong>です。「重みを掛ける」「非線形をかける」「また重みを掛ける」…を積み上げ、最後に損失 \(L\) を出す。合成関数の微分には、たった一つの規則しかありません ── 連鎖律です。損失が \(L=g(h(\theta))\) という二段重ねなら、</p>
+
+  <div class="keybox">
+    <div class="lbl">連鎖律（合成関数の微分）</div>
+    $$\frac{dL}{d\theta}\;=\;\frac{dL}{dh}\cdot\frac{dh}{d\theta}$$
+  </div>
+
+  <p>「\(\theta\) が動くと \(h\) がどれだけ動くか（\(dh/d\theta\)）」に、「\(h\) が動くと \(L\) がどれだけ動くか（\(dL/dh\)）」を掛ける。途中の感度を<em>掛け合わせて</em>いくのです。段が増えても同じで、\(L=f_3(f_2(f_1(\theta)))\) なら因子が一つずつ増えるだけ ── </p>
+
+  <div class="keybox">
+    <div class="lbl">多段でも、ただ積で連なる</div>
+    $$\frac{dL}{d\theta}\;=\;\frac{dL}{df_2}\cdot\frac{df_2}{df_1}\cdot\frac{df_1}{d\theta}$$
+  </div>
+
+  <p>ここに、後で効いてくる非対称があります。この積は<em>どちらの端から掛けても答えは同じ</em>ですが、掛ける<strong>順序</strong>で計算量が変わる。入力側から掛けるのが前進、<strong>出力側（\(L\) の側）から掛けていくのが逆伝播</strong>です。なぜ後ろからだと得なのかは第6セクションで精算します。まずは、この連鎖を具体的な二層ネットで走らせてみましょう。</p>
+
+  <h2><span class="n">03</span>順伝播 ── まず、値を前へ流す</h2>
+
+  <p>入力ひとつ、重みふたつの、いちばん小さなネットを考えます。入力 \(x\)、重み \(w_1,w_2\)、正解 \(y\)。途中でシグモイド \(\sigma(z)=1/(1+e^{-z})\) を一枚はさみます。左から右へ、値を順に計算していく ── これが<strong>順伝播（forward pass）</strong>です。</p>
+
+  <div class="keybox">
+    <div class="lbl">順伝播 ── 入力から損失まで、値を前へ</div>
+    $$z_1=w_1 x,\quad a_1=\sigma(z_1),\quad \hat y=w_2 a_1,\quad L=\tfrac12(\hat y-y)^2$$
+  </div>
+
+  <p>まず線形に混ぜて \(z_1\)、非線形で曲げて \(a_1\)、もう一度重みを掛けて予測 \(\hat y\)、正解とのズレを二乗して損失 \(L\)。<strong>ここが肝心</strong> ── 順伝播では、答え \(L\) だけでなく、<em>途中で出た \(z_1,\,a_1,\,\hat y\) をすべて覚えておきます</em>。この控えが、逆伝播という帳簿の元帳になるからです。シグモイドの微分だけ、先に控えておきましょう。素性のよい形をしています。</p>
+
+  <div class="aside">
+    <span class="tag">シグモイドの微分は、自分自身で書ける</span>
+    \(\sigma(z)=\dfrac{1}{1+e^{-z}}\) を微分すると \(\sigma'(z)=\sigma(z)\big(1-\sigma(z)\big)\)。つまり<strong>順伝播で計算済みの \(a_1=\sigma(z_1)\) さえあれば、微分 \(\sigma'(z_1)=a_1(1-a_1)\) は掛け算ひとつで出る</strong>。改めて \(z_1\) に \(e^{-z}\) を計算し直す必要すらない ── これも「途中値を控えておく」ことの配当です。
+  </div>
+
+  <h2><span class="n">04</span>逆伝播 ── 誤差 δ を後ろへ配る帳簿</h2>
+
+  <p>順伝播で \(L\) まで着いたら、今度は連鎖律を<strong>出力側から</strong>逆に辿ります。まず「予測 \(\hat y\) が動くと \(L\) がどれだけ動くか」から始め、その感度を一段ずつ後ろへ受け渡していく。この受け渡される量を、伝統的に \(\delta\)（デルタ）と呼びます ── <em>各ノードに割り当てられた「損失への責任額」</em>です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">逆伝播 ── 連鎖律を後ろから。δ を配って各勾配を精算する</div>
+    $$\delta_{\text{out}}=\frac{\partial L}{\partial \hat y}=\hat y-y$$
+    $$\frac{\partial L}{\partial w_2}=\delta_{\text{out}}\cdot a_1,\qquad
+      \frac{\partial L}{\partial a_1}=\delta_{\text{out}}\cdot w_2$$
+    $$\frac{\partial L}{\partial z_1}=\frac{\partial L}{\partial a_1}\cdot \sigma'(z_1),\qquad
+      \frac{\partial L}{\partial w_1}=\frac{\partial L}{\partial z_1}\cdot x$$
+  </div>
+
+  <p>一行ずつが連鎖律の一段です。出力の責任 \(\delta_{\text{out}}=\hat y-y\)（外れた分そのもの）を起点に、<strong>右の項が左へ流れ込む</strong>。\(\hat y=w_2 a_1\) だから \(w_2\) への感度は \(a_1\) 倍、\(a_1\) への感度は \(w_2\) 倍。次に \(a_1=\sigma(z_1)\) を通すので \(\sigma'(z_1)\) を掛けて \(z_1\) の責任に、最後に \(z_1=w_1 x\) だから \(x\) を掛けて \(w_1\) の勾配になる。<em>一度後ろへ流した \(\delta\) を、各層でそのつど使い回している</em>のが見えるでしょうか。これが「帳簿」の妙で、\(\partial L/\partial a_1\) は \(\partial L/\partial z_1\) の計算にそのまま再利用され、\(\partial L/\partial z_1\) はさらに \(\partial L/\partial w_1\) に流れ込みます。実際の数で、最後まで精算してみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 2層ネットで ∇L を最後まで出す</span>
+    <p class="lbl">設定：x=1, y=0, w₁=0.5, w₂=0.8（σ(0.5)=0.6225 を使う）</p>
+    <p class="lbl">① 順伝播（値を前へ）</p>
+    $$z_1=w_1 x=0.5,\quad a_1=\sigma(0.5)=0.6225,\quad \hat y=w_2 a_1=0.8\times0.6225=0.4980$$
+    $$L=\tfrac12(\hat y-y)^2=\tfrac12(0.4980)^2=0.1240$$
+    <p class="lbl">② 逆伝播（誤差 δ を後ろへ）</p>
+    $$\delta_{\text{out}}=\hat y-y=0.4980$$
+    $$\frac{\partial L}{\partial w_2}=\delta_{\text{out}}\cdot a_1=0.4980\times0.6225=0.3100$$
+    $$\frac{\partial L}{\partial a_1}=\delta_{\text{out}}\cdot w_2=0.4980\times0.8=0.3984$$
+    $$\sigma'(z_1)=\sigma(0.5)\big(1-\sigma(0.5)\big)=0.6225\times0.3775=0.2350$$
+    $$\frac{\partial L}{\partial z_1}=\frac{\partial L}{\partial a_1}\cdot\sigma'(z_1)=0.3984\times0.2350=0.0936$$
+    $$\frac{\partial L}{\partial w_1}=\frac{\partial L}{\partial z_1}\cdot x=0.0936\times1=0.0936$$
+    <p style="margin-bottom:14px;">逆伝播を<span style="color:var(--ok);font-weight:700;">たった一往復</span>させただけで、全パラメータの勾配 \(\nabla L=\big(\partial L/\partial w_1,\ \partial L/\partial w_2\big)=(0.0936,\ 0.3100)\) がそろいました。あとは第1回の更新則 \(w\leftarrow w-\eta\,\nabla L\) に入れるだけ。責任額の大きい \(w_2\) の方が大きく動く ── 損失をより強く動かした重みを、より強く直すのです。</p>
+  </div>
+
+  <h2><span class="n">05</span>動かしてみる ── 計算グラフに δ を流す</h2>
+
+  <p>下は、上のネットを一枚の<strong>計算グラフ</strong>にしたものです。上段（琥珀）は順伝播＝左から右へ流れる値、下段（緑）は逆伝播＝右から左へ流れる勾配 \(\delta\)。囲みのついた \(\partial L/\partial w_1,\ \partial L/\partial w_2\) が、更新にそのまま使う勾配です。\(x=1,\ y=0\) は固定、重み \(w_1,\ w_2\) のつまみを動かすと、順伝播の各値と逆伝播の各勾配が同時に組み替わります。</p>
+
+  <div class="fig">
+    <div class="cap">図：2層ネットの計算グラフ。上＝順伝播（値を前へ）／下＝逆伝播（勾配 δ を後ろへ）。w₁,w₂ を動かすと ∇L が即座に再計算される。読み取り欄に「この勾配で1歩下ると L がどう変わるか」を表示</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>重み w₁<span class="val" id="vw1">0.50</span>
+        <input type="range" id="w1" min="-2" max="2" step="0.05" value="0.5">
+      </label>
+      <label>重み w₂<span class="val" id="vw2">0.80</span>
+        <input type="range" id="w2" min="-2" max="2" step="0.05" value="0.8">
+      </label>
+      <button class="btn" id="reset">初期値に戻す ↺</button>
+    </div>
+    <div class="readout ok" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#c08a2a;"></i>順伝播（値を前へ）</span>
+      <span><i class="swatch" style="background:#3d7a3a;"></i>逆伝播（勾配 δ を後ろへ）</span>
+      <span><i class="dot" style="background:#eaf2e4;border:1px solid #3d7a3a;"></i>更新に使う勾配 ∂L/∂w</span>
+    </div>
+  </div>
+
+  <p>いくつか動かすと、帳簿の呼吸が見えてきます。\(y=0\) を狙っているので、\(\hat y\) が \(0\) に近いほど \(L\) も勾配も小さくなる ── \(w_2\) を \(0\) 付近にすると \(\hat y\to0\) で損失がほとんど消える。逆に \(w_1\) を大きくすると \(a_1\) がシグモイドの平らな肩（\(\sigma'\approx0\)）へ押し上げられ、\(\partial L/\partial w_1\) がやせ細ります ── これが後の回で出会う「勾配消失」の芽です。どの重みをいじっても、下段の勾配が<em>一度の逆流</em>で全部いっぺんに更新されることを確かめてください。</p>
+
+  <h2><span class="n">06</span>なぜ速いか ── O(n) 対 O(1) の帳簿術</h2>
+
+  <p>ここで第1セクションの宿題に戻ります。有限差分は勾配1成分ごとに順伝播1回、合計 \(n\) 回。パラメータ数に正比例する \(O(n)\) の重さでした。ところが逆伝播は、<strong>順伝播を1回、逆伝播を1回</strong>流すだけで、\(n\) 個の勾配を<em>まとめて</em>吐き出します。パラメータが何本あろうと往復の回数は変わらない ── 順伝播1回分を基準にすれば、追加コストは本質的に \(O(1)\)。</p>
+
+  <div class="keybox">
+    <div class="lbl">同じ ∇L を得るコスト（順伝播1回を単位として）</div>
+    $$\text{有限差分：}\ \underbrace{O(n)\ \text{回}}_{\text{パラメータ数に比例}}\qquad\text{vs}\qquad \text{逆伝播：}\ \underbrace{O(1)}_{\text{往復1回で全勾配}}$$
+  </div>
+
+  <p>種明かしは、連鎖律を掛ける<em>向き</em>です（第2セクションの非対称）。出力側の共通因子 \(\delta\) を一度だけ計算し、それを各層で<strong>使い回す</strong>。\(\partial L/\partial z_1\) はいったん求めれば \(\partial L/\partial w_1\) にそのまま流用できる ── もし入力側から前向きに掛けていたら、パラメータごとに感度の連鎖を頭から作り直す羽目になり、\(O(n)\) に逆戻りします。後ろから流すからこそ、途中の \(\delta\) が全パラメータの共有財産になる。これが<strong>リバースモード自動微分</strong>の核心で、バックプロパゲーションはその機械学習における呼び名にほかなりません。</p>
+
+  <div class="aside">
+    <span class="tag">「帳簿」という比喩の正体</span>
+    順伝播で途中値（\(z_1,a_1,\hat y\)）を<em>元帳</em>に記帳し、逆伝播でそれを参照しながら各ノードの<em>責任額 \(\delta\)</em> を出力から順に転記・精算していく ── 会計そのものです。だから「一度計算した数字を二度と作り直さない」。損失に効いた分をきっちり一円単位で各重みへ配賦する几帳面さが、\(O(1)\) の速さを生みます。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── バックプロパゲーションは何ができて、何ができないか</h2>
+
+  <p>強力な帳簿係にも、成り立つための約束事があります。正直に裁きましょう。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>バックプロパゲーションの答え</th><th>判決</th></tr>
+    <tr>
+      <td>勾配 \(\nabla L\) を厳密に、しかも安価に出せるか</td>
+      <td>出せる。有限差分の近似と違い連鎖律による<em>厳密値</em>を、往復1回＝\(O(1)\) で全パラメータ分</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>どんな損失・どんなネットでも使えるか</td>
+      <td>\(L\) が微分可能で、順伝播の途中値を保持できることが要る（記憶と滑らかさが前提）</td>
+      <td class="v-bad">前提が要る</td>
+    </tr>
+    <tr>
+      <td>自然界の進化にも使えるか</td>
+      <td>使えない。生物には損失を微分してくれる神がいない ── 微分の連鎖を後ろへ流す仕組みそのものが無い</td>
+      <td class="v-bad">使えない</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 微分できる世界の外へ</span>
+    <p style="margin-top:0;">バックプロパゲーションは、リバースモード自動微分として<strong>厳密な勾配を安価に与える確立した技術</strong>です。今日の深層学習はほぼ全てこの上に立っています。ただし線を二本、正直に引いておきます ── （1）<strong>微分可能性と計算グラフの保持</strong>が要る。\(L\) が滑らかで、順伝播の途中値を控えておける場合にしか回りません。（2）<strong>生物の進化はこれを持たない</strong>。DNA を微分する装置も、途中値を記帳する元帳も、自然界には無い。</p>
+    <p style="margin-bottom:0;">では、微分できない世界では、どうやって坂を下るのか。答えは<strong>微分せずに下る</strong>方法 ── 進化戦略(ES)です（第4回）。そしてその前に、この損失地形と生物の適応度地形が同じ絵だったこと（第3回）を確かめます。さらに驚くべきことに、「微分するBP」と「微分しないES」は、第6回で<em>数学的に同じ計算</em>だと分かります。今日組み上げた帳簿は、そのとき比較の一方の主役として、もう一度この舞台に立ちます。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>同じ2層ネットで \(x=1,\ y=0,\ w_1=1,\ w_2=1\) とする。\(\sigma(1)=0.7311\) を使い、\(L,\ \delta_{\text{out}},\ \partial L/\partial w_2\) を求めよ。
+        <details><summary>答えを見る</summary><div class="ans">\(z_1=1,\ a_1=\sigma(1)=0.7311,\ \hat y=1\times0.7311=0.7311\)。\(L=\tfrac12(0.7311)^2=0.2673\)。\(\delta_{\text{out}}=\hat y-y=0.7311\)。\(\partial L/\partial w_2=\delta_{\text{out}}\cdot a_1=0.7311\times0.7311=0.5345\)。</div></details>
+      </li>
+      <li>逆伝播で \(\partial L/\partial z_1=\partial L/\partial a_1\cdot\sigma'(z_1)\) と、途中に \(\sigma'(z_1)\) が掛かるのはなぜか。連鎖律の言葉で説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">\(z_1\) は \(a_1=\sigma(z_1)\) を<em>通してのみ</em> \(L\) に影響する合成関数だから。連鎖律 \(\dfrac{\partial L}{\partial z_1}=\dfrac{\partial L}{\partial a_1}\dfrac{\partial a_1}{\partial z_1}\) で、局所の感度 \(\partial a_1/\partial z_1=\sigma'(z_1)\) が一段分の因子として掛かる。\(\sigma\) の肩（\(\sigma'\approx0\)）では勾配がほぼ消えるのはこのため。</div></details>
+      </li>
+      <li>パラメータ数 \(n=1{,}000{,}000\) のネットで、勾配 \(\nabla L\) を1回得るのに、有限差分と逆伝播はそれぞれ順伝播およそ何回分の手間か。
+        <details><summary>答えを見る</summary><div class="ans">有限差分は成分ごとに順伝播1回で、基準点を含め約 \(1{,}000{,}001\) 回＝\(O(n)\)。逆伝播は順伝播1回＋逆伝播1回で、順伝播およそ2回分＝パラメータ数によらない \(O(1)\)。百万倍の差。学習が現実的になる理由がここにある。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第2回まとめ</span>∇L は、後ろ向きの帳簿から生まれる</h2>
+    <p>更新則 \(\theta\leftarrow\theta-\eta\nabla L\) が要求する \(\nabla L\) を、素朴な有限差分は \(O(n)\) 回の順伝播で近似する（STEP 01）。ニューラルネットは合成関数だから、微分は連鎖律で掛け算に連なる（STEP 02）。順伝播で値と途中値を前へ流して控え（STEP 03）、逆伝播で誤差 \(\delta\) を出力から後ろへ配り、\(\delta_{\text{out}}=\hat y-y\) を起点に各層の勾配を精算する（STEP 04・具体例では \(\nabla L=(0.0936,\,0.3100)\)）。連鎖を<em>後ろから</em>掛け、途中の \(\delta\) を使い回すことで、全勾配が厳密に、往復1回＝\(O(1)\) で得られる ── これがリバースモード自動微分の核心（STEP 06）。ただし微分可能性と途中値の保持が前提で、進化には使えない（STEP 07）。</p>
+    <p>第1回の「前提」だった \(\nabla L\) に、今回はきちんと供給元をつなぎました。次回はいったん機械を離れ、この損失地形が<em>生物学の適応度地形</em>と同じ絵であることを確かめます。そしてその地形を、微分せずに下る方法へ ── やがて今日の帳簿と、第6回で再会します。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第3回</span>
+    <strong>適応度地形 ── 生物学と機械学習は、同じ絵を描いていた。</strong> 私たちが下ってきた損失地形は、集団遺伝学者ライトが80年以上前に描いた適応度地形を、上下ひっくり返しただけのものだった。峰と谷、山脈と鞍部 ── 進化と学習が共有する一枚の風景を広げ、「微分する神のいない世界で、生命はどう坂を下ってきたのか」という問いへ橋を架けます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第2回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。誤差逆伝播（バックプロパゲーション）は合成関数の連鎖律 \(\frac{dL}{d\theta}=\frac{dL}{dh}\frac{dh}{d\theta}\) をリバースモードで適用するもので、勾配 \(\nabla L\) の<em>厳密値</em>を、順伝播1回＋逆伝播1回（順伝播1回分を単位として \(O(1)\)）で全パラメータ分まとめて与えます ── これは確立した数学・計算技術です。有限差分による勾配近似がパラメータ数 \(n\) に対して \(O(n)\) 回の順伝播を要すること、シグモイド \(\sigma(z)=1/(1+e^{-z})\) が \(\sigma'(z)=\sigma(z)(1-\sigma(z))\) を満たすことも既知の事実です。本稿の2層ネットは説明用の最小模型で、\(\sigma(0.5)=0.6225\) 等の数値は小数第4位程度で丸めた目安です（\(\nabla L\approx(0.0936,\,0.3100)\)）。バックプロパゲーションが微分可能性と計算グラフの保持を前提とすること、生物進化がこれを持たないこと、そして進化戦略(ES)との数学的一致（第6回）は後続回で扱います。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では重み「w₁」「w₂」を動かすと、順伝播の値と逆伝播の勾配 ∇L が同時に組み替わり、読み取り欄に「1歩下ると L がどう変わるか」が出ます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sw1=document.getElementById('w1'), vw1=document.getElementById('vw1'),
+      sw2=document.getElementById('w2'), vw2=document.getElementById('vw2'),
+      rd=document.getElementById('rd'), btn=document.getElementById('reset');
+  var X=1, Y=0;   // 入力・正解は固定
+  function sig(z){return 1/(1+Math.exp(-z));}
+  function sigp(z){var s=sig(z); return s*(1-s);}
+  // 順伝播＋逆伝播をまとめて計算
+  function compute(w1,w2){
+    var z1=w1*X, a1=sig(z1), yhat=w2*a1, L=0.5*(yhat-Y)*(yhat-Y);
+    var dout=yhat-Y, dw2=dout*a1, da1=dout*w2, dz1=da1*sigp(z1), dw1=dz1*X;
+    return {z1:z1,a1:a1,yhat:yhat,L:L,dout:dout,dw2:dw2,da1:da1,dz1:dz1,dw1:dw1};
+  }
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function arrow(ctx,x1,y1,x2,y2,color){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    var a=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-9*Math.cos(a-0.4), y2-9*Math.sin(a-0.4));
+    ctx.lineTo(x2-9*Math.cos(a+0.4), y2-9*Math.sin(a+0.4));
+    ctx.closePath(); ctx.fill();
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var w1=parseFloat(sw1.value), w2=parseFloat(sw2.value), c=compute(w1,w2);
+    ctx.clearRect(0,0,w,h);
+    var top=64, bh=44, bw=72;
+    var nodes=[
+      {t:'x',  v:X.toFixed(2),      s:'入力'},
+      {t:'z₁', v:c.z1.toFixed(3),   s:'= w₁·x'},
+      {t:'a₁', v:c.a1.toFixed(3),   s:'= σ(z₁)'},
+      {t:'ŷ', v:c.yhat.toFixed(3),  s:'= w₂·a₁'},
+      {t:'L',  v:c.L.toFixed(3),    s:'= ½(ŷ−y)²'}
+    ];
+    var n=5, x0=52, x1=w-52, gap=(x1-x0)/(n-1);
+    function cx(i){return x0+gap*i;}
+    var cy=top+bh/2;
+    // 見出し
+    ctx.textAlign='left'; ctx.font='bold 12px sans-serif';
+    ctx.fillStyle='#b06a10'; ctx.fillText('① 順伝播 ── 値を前へ  →', 14, 22);
+    ctx.fillStyle='#3d7a3a'; ctx.fillText('② 逆伝播 ── 勾配 δ を後ろへ  ←', 14, h-116);
+    // 順伝播の矢印＋辺ラベル
+    var elabs=['×w₁ ('+w1.toFixed(2)+')', 'σ', '×w₂ ('+w2.toFixed(2)+')', '½(·−y)²'];
+    ctx.textAlign='center';
+    for(var i=0;i<n-1;i++){
+      var xa=cx(i)+bw/2+2, xb=cx(i+1)-bw/2-2;
+      arrow(ctx,xa,cy,xb,cy,'#c08a2a');
+      ctx.fillStyle='#8a5a12'; ctx.font='11px sans-serif';
+      ctx.fillText(elabs[i], (cx(i)+cx(i+1))/2, top-9);
+    }
+    // ノード（矩形）
+    for(i=0;i<n;i++){
+      var bx=cx(i)-bw/2;
+      ctx.fillStyle='#fdfbf6'; ctx.strokeStyle='#b06a10'; ctx.lineWidth=1.8;
+      ctx.fillRect(bx,top,bw,bh); ctx.strokeRect(bx,top,bw,bh);
+      ctx.fillStyle='#7a4e10'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(nodes[i].t, cx(i), top+17);
+      ctx.fillStyle='#241d13'; ctx.font='13px sans-serif';
+      ctx.fillText(nodes[i].v, cx(i), top+36);
+      ctx.fillStyle='#8a7a5a'; ctx.font='10px sans-serif';
+      ctx.fillText(nodes[i].s, cx(i), top+bh+13);
+    }
+    // 逆伝播の矢印（右から左へ）
+    var yB=h-84;
+    for(i=n-1;i>0;i--){
+      arrow(ctx, cx(i)-bw/2-2, yB, cx(i-1)+bw/2+2, yB, '#3d7a3a');
+    }
+    // 勾配ラベル
+    ctx.textAlign='center'; ctx.font='11px sans-serif';
+    function glab(mx,txt,param,extra){
+      if(param){
+        ctx.font='bold 11px sans-serif';
+        var wt=ctx.measureText(txt).width;
+        ctx.fillStyle='#eaf2e4'; ctx.fillRect(mx-wt/2-6, yB+13, wt+12, 18);
+        ctx.strokeStyle='#3d7a3a'; ctx.lineWidth=1; ctx.strokeRect(mx-wt/2-6, yB+13, wt+12, 18);
+        ctx.fillStyle='#2f5f2c'; ctx.fillText(txt, mx, yB+26);
+        ctx.font='11px sans-serif';
+      } else {
+        ctx.fillStyle='#3d7a3a'; ctx.fillText(txt, mx, yB+26);
+      }
+      if(extra){
+        ctx.fillStyle='#6b8a5a'; ctx.font='10px sans-serif';
+        ctx.fillText(extra, mx, yB+42); ctx.font='11px sans-serif';
+      }
+    }
+    glab((cx(3)+cx(4))/2, 'δ_out='+c.dout.toFixed(3), false, null);
+    glab((cx(2)+cx(3))/2, '∂L/∂w₂='+c.dw2.toFixed(3), true, '∂L/∂a₁='+c.da1.toFixed(3));
+    glab((cx(1)+cx(2))/2, '∂L/∂z₁='+c.dz1.toFixed(3), false, null);
+    glab((cx(0)+cx(1))/2, '∂L/∂w₁='+c.dw1.toFixed(3), true, null);
+    ctx.textAlign='left';
+    report(c, w1, w2);
+  }
+  function report(c, w1, w2){
+    var eta=1.0;
+    var nw1=w1-eta*c.dw1, nw2=w2-eta*c.dw2;
+    var Lnew=compute(nw1,nw2).L, dL=Lnew-c.L;
+    if(dL<-1e-9){
+      rd.className='readout ok';
+      rd.textContent='いまの損失 L='+c.L.toFixed(4)+'。この2つの勾配で1ステップ降下（η=1.0：w₁←w₁−η∂L/∂w₁, w₂←w₂−η∂L/∂w₂）すると L='+Lnew.toFixed(4)+' へ '+dL.toFixed(4)+' 減少。逆伝播ひと往復で全パラメータの勾配がそろい、坂を下れました。';
+    } else if(dL>1e-9){
+      rd.className='readout local';
+      rd.textContent='いまの損失 L='+c.L.toFixed(4)+'。η=1.0 の1ステップでは L='+Lnew.toFixed(4)+'（+'+dL.toFixed(4)+'）と、かえって増えました ── 歩幅 η が大きすぎて谷を跨いだ形。勾配の向きは正しくても、第1回の「学習率の綱渡り」がここでも効いています。';
+    } else {
+      rd.className='readout local';
+      rd.textContent='いまの損失 L='+c.L.toFixed(4)+'。勾配がほぼ 0 で、1ステップ動かしても L はほとんど変わりません（∇L≈0 の平坦点）。重みを動かして谷から離してみてください。';
+    }
+  }
+  function syncLabels(){ vw1.textContent=parseFloat(sw1.value).toFixed(2); vw2.textContent=parseFloat(sw2.value).toFixed(2); }
+  sw1.addEventListener('input', function(){ syncLabels(); draw(); });
+  sw2.addEventListener('input', function(){ syncLabels(); draw(); });
+  btn.addEventListener('click', function(){ sw1.value=0.5; sw2.value=0.8; syncLabels(); draw(); });
+  window.addEventListener('resize', draw);
+  syncLabels();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){ MathJax.startup.promise.then(function(){ draw(); }); }
+  setTimeout(draw, 60);
+  window.addEventListener('load', draw);
+})();
+</script>
+</body>
+</html>

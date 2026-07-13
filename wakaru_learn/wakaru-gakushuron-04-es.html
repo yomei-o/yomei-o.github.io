@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進化とは、微分せずに坂を下ることである ── わかる学習論 第4回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 4 回 ／ 微分できない自然は、どうやって坂を下るのか</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>進化とは、微分せずに坂を下ることである
+    <span class="sub">自然は損失を微分できない。それでも生命は坂を下ってきた。秘密は「当てずっぽうに試して、当たり外れの相関から下り方向を推定する」こと ── 進化戦略(ES)。微分を一度も使わずに、勾配を組み立てる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の \(\theta\leftarrow\theta-\eta\nabla L\)、平均（期待値）、正規分布のイメージ</span>
+    <span>この回のキー：\(\hat g=\dfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\,\varepsilon_i\)</span>
+  </div>
+
+  <p class="lead">前回（第3回）、私たちは自然選択が<em>適応度地形の勾配を登る</em>営みだと見ました。ところがそこには、正直に認めるべき亀裂がありました ── <strong>自然は微分できない</strong>。神さまが損失関数を偏微分して \(\nabla L\) を配ってくれるわけではない。DNAは物理の方程式を知らないし、環境がどんな形の坂なのかも誰も教えてくれません。第1回で立てた更新則 \(\theta\leftarrow\theta-\eta\nabla L\) は、その \(\nabla L\) が手に入ることを前提にしていました。では、勾配を計算できない自然は、どうやって坂を下ってきたのか。今回はその答え ── <strong>進化戦略(Evolution Strategies, ES)</strong>を、自分の手で組み立てます。やることは拍子抜けするほど素朴で、<em>あちこちにデタラメに一歩ずつ踏み出してみて、うまくいった方向へ平均として寄っていく</em>だけ。それだけで、微分を一度も使わずに \(\nabla L\) が姿を現します。手品ではありません。最後にはきちんと、これが<strong>平滑化した目的関数の勾配の不偏推定</strong>であることまで見届けます。</p>
+
+  <h2><span class="n">01</span>微分できない自然のジレンマ</h2>
+
+  <p>もう一度、第1回の更新則を思い出しましょう。</p>
+
+  <div class="keybox">
+    <div class="lbl">勾配降下法（第1回・シリーズの背骨）</div>
+    $$\theta_{t+1}=\theta_t-\eta\,\nabla L(\theta_t)$$
+  </div>
+
+  <p>この式が動くには、いまいる地点 \(\theta\) での勾配 \(\nabla L(\theta)\) が要ります。ニューラルネットなら、これを自動で計算する仕掛け ── バックプロパゲーション(BP、第2回) ── がありました。BPが使えるのは、ネットワークが<em>なめらかな合成関数</em>で、連鎖律で一枚ずつ微分をさかのぼれるからです。</p>
+
+  <p>けれど自然界には、その前提が成り立たない場面が山ほどあります。適応度（生き延びて子を残せる度合い）は、DNAという入力に対して<strong>式で書けるなめらかな関数ではありません</strong>。捕食者に見つかるか、餌にありつけるか、病気にかかるか ── 環境という巨大なブラックボックスを通した結果として、ある個体が生き残ったか死んだかが決まるだけ。中身を微分するどころか、式すら分からない。これが自然のジレンマです。</p>
+
+  <div class="aside">
+    <span class="tag">ブラックボックス最適化という広い問題</span>
+    自然だけの話ではありません。\(L(\theta)\) の中身が分からず、\(\theta\) を入れると値だけが返ってくる ── そういう「箱」を相手に最小化する問題を<strong>ブラックボックス最適化</strong>と呼びます。シミュレータの出力、実験の測定値、ゲームのスコア、あるいは微分不可能な指標（生きた／死んだ、勝った／負けた）。勾配が原理的に取れないこれらの相手に対しても、ESは同じ道具立てで坂を下れます。今回の主役は「生命」ですが、その射程はずっと広い。
+  </div>
+
+  <p>問題を一つの問いに絞りましょう。<strong>\(L(\theta)\) を評価する（値を測る）ことはできるが、微分はできない。このとき、下り方向をどう知るか？</strong></p>
+
+  <h2><span class="n">02</span>当てずっぽうに試す ── 摂動 ε をばらまく</h2>
+
+  <p>微分が使えないなら、素朴にやりましょう。いまの \(\theta\) のまわりに、<strong>小さなデタラメの一歩</strong>をいくつも踏んでみる。この「デタラメの一歩」を摂動(perturbation) \(\varepsilon\) と呼び、平均0・分散 \(\sigma^2\) の正規分布から引きます。</p>
+
+  <div class="keybox">
+    <div class="lbl">摂動のばらまき方（ガウス分布）</div>
+    $$\varepsilon\sim\mathcal N(0,\sigma^2 I),\qquad \theta_i=\theta+\varepsilon_i\quad(i=1,\dots,N)$$
+  </div>
+
+  <p>\(N\) 個の摂動 \(\varepsilon_1,\dots,\varepsilon_N\) を引いて、それぞれ少しずつずれた \(N\) 人の<strong>個体</strong> \(\theta_i=\theta+\varepsilon_i\) を作る。\(\sigma\) は「どれくらい大胆にずらすか」＝突然変異の強さです。生物になぞらえるなら、\(\theta\) は親の遺伝子型、\(\varepsilon_i\) は突然変異、\(\theta_i\) はその変異を持った子どもたち。ここまでに<em>微分は一切使っていません</em>。使ったのは乱数だけ。</p>
+
+  <p>次に、各個体を<strong>評価</strong>します。\(L(\theta_i)=L(\theta+\varepsilon_i)\) を測る。これは箱に入れて値をもらうだけなので、微分不要。生物なら「その子が生き延びられたか」＝適応度の（符号を反転した）評価です。小さい \(L\) ほど良い個体。ここで手もとにあるのは、\(N\) 組の〈踏んだ方向 \(\varepsilon_i\)、その結果の悪さ \(L(\theta+\varepsilon_i)\)〉というデータだけ。この材料から、下り方向を組み立てられるでしょうか。</p>
+
+  <h2><span class="n">03</span>当たり外れの相関から、方向を推定する</h2>
+
+  <p>直感はこうです。<strong>「悪い結果 \(L\) が大きく出た方向 \(\varepsilon_i\)」の逆へ行けばいい。</strong>逆に「良い結果（\(L\) が小さい）が出た方向」へは進みたい。つまり、各摂動 \(\varepsilon_i\) を、その結果の \(L(\theta+\varepsilon_i)\) で<em>重みづけして平均</em>すれば、坂の傾きが浮かび上がるはずです。これを式にしたのが、ESの勾配推定量です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">進化戦略(ES)の勾配推定量 ── 今回の主役</div>
+    $$\hat g\;=\;\frac{1}{N\sigma^2}\sum_{i=1}^{N} L(\theta+\varepsilon_i)\,\varepsilon_i$$
+  </div>
+
+  <p>読み下せば ──「摂動 \(\varepsilon_i\) を、その悪さ \(L(\theta+\varepsilon_i)\) で重みづけして足し合わせ、頭数 \(N\) と分散 \(\sigma^2\) で割る」。\(L\) が大きく出た方向 \(\varepsilon_i\) は大きな重みで足されるので、\(\hat g\) は<strong>「悪い方（登り）」を向いたベクトル</strong>になります。だから更新は、その逆へ：</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">ESの更新則 ── L の微分は一度も使わない</div>
+    $$\theta\;\leftarrow\;\theta-\eta\,\hat g$$
+  </div>
+
+  <p>第1回の \(\theta\leftarrow\theta-\eta\nabla L\) と、形がそっくりなことに注目してください。違いはただ一点 ── \(\nabla L\) の代わりに、評価値と摂動の相関から組み立てた \(\hat g\) が座っている。<strong>ESが使うのは、評価値 \(L(\theta+\varepsilon_i)\) と摂動 \(\varepsilon_i\) の相関だけ</strong>。\(L\) を微分する操作はどこにもありません。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ \(\sigma^2\) で割るのか ── スコア関数のからくり</span>
+    この \(\hat g\) は天下りではなく、<strong>対数微分トリック（スコア関数法、強化学習のREINFORCEと同じ骨格）</strong>から出ます。摂動 \(\varepsilon\) の確率密度 \(p_\sigma(\varepsilon)\) はガウスなので、その対数の勾配（スコア）が \(\nabla_\varepsilon \log p_\sigma = -\varepsilon/\sigma^2\) となる ── ここに \(\sigma^2\) が現れます。「重みづけ平均」という素朴な直感が、確率のことばで書くとちょうどこの係数を要求するのです。厳密な導出（不偏性の証明）は、次節で予告し、第6回で<strong>Steinの補題</strong>を使ってきっちり与えます。
+  </div>
+
+  <h2><span class="n">04</span>これは「有限差分」ではない ── 平滑化 J の勾配</h2>
+
+  <p>ここで一番誤解されやすい点を、先に潰しておきます。「要するに、あちこち少しずらして差を取っているのだから、有限差分（数値微分）で \(\nabla L\) を近似しているだけでは？」── これは<strong>間違い</strong>です。ESが不偏に推定しているのは、生の \(L\) の勾配ではなく、\(L\) を<em>ぼかした（平滑化した）</em>別の関数 \(J\) の勾配です。</p>
+
+  <div class="keybox">
+    <div class="lbl">平滑化した目的関数（第6・7回の主役でもある）</div>
+    $$J(\theta)\;=\;\mathbb{E}_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}\big[\,L(\theta+\varepsilon)\,\big]$$
+  </div>
+
+  <p>\(J(\theta)\) は「\(\theta\) のまわりに \(\sigma\) の幅でガウスをかけて、\(L\) をならした値」── いわば地形にすりガラスをかけたもの。ESの推定量 \(\hat g\) は、この \(J\) の真の勾配 \(\nabla J(\theta)\) の<strong>不偏推定量(unbiased estimator)</strong>です。すなわち、サンプルの当たり外れで一回ごとにはブレても、<em>平均をとれば正確に \(\nabla J\) に一致する</em>（バイアスがゼロ）。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">ESの核心 ── 不偏性（証明は第6回で）</div>
+    $$\mathbb{E}\big[\,\hat g\,\big]\;=\;\nabla J(\theta)\qquad(\text{近似ではなく、等号})$$
+  </div>
+
+  <p>「近似」と「不偏推定」は、似て非なるものです。有限差分は、刻み幅を0に近づけないと \(\nabla L\) に一致しない<em>近似</em>で、そこには消えないバイアスと、割り算による数値的な不安定さが残ります。対してESは、刻みを0にしなくてよい ── むしろ \(\sigma\) は有限のまま、<strong>その \(\sigma\) で決まる平滑化関数 \(J\) の勾配を、バイアスなしにズバリ当てている</strong>。ブレ（分散）はサンプル数 \(N\) を増やせば減りますが、狙いそのもの（期待値）は最初から正確なのです。この \(J\) の勾配という視点は、第6回（ESとBPの一致）と第7回（地形をぼかして局所最小を越える）で、そのまま主役になります。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 集団で坂の向きを嗅ぎ当てる</h2>
+
+  <p>下は2次元の損失地形 \(L(x,y)=\tfrac12(0.4\,x^2+1.2\,y^2)+0.3\,x\) の等高線です。中心の白い点が現在の \(\theta\)。そのまわりに \(N\) 個の摂動点 \(\varepsilon_i\)（ガウス、分散 \(\sigma^2\)）を散布し、各点をその損失 \(L\) で色分けしました（<span style="color:#3d7a3a;font-weight:700;">緑＝良い（低い）</span>／<span style="color:#c0392b;font-weight:700;">赤＝悪い（高い）</span>）。二本の矢印は、素朴なESが組み立てた推定勾配 \(\hat g\) と、答え合わせ用の<strong>真の勾配 \(\nabla L\)</strong>（本来は自然に手に入らないもの）。集団サイズ \(N\) と突然変異の強さ \(\sigma\) を動かしてみてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：2次元の損失地形（等高線）と、集団 \(\{\varepsilon_i\}\) から組み立てたES推定 \(\hat g\)。矢印は勾配（登り）方向。\(N\) を増やすと \(\hat g\) が真の勾配へ寄っていく</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>集団サイズ N（サンプル数）<span class="val" id="vN">20</span>
+        <input type="range" id="sN" min="4" max="400" step="2" value="20">
+      </label>
+      <label>突然変異の強さ σ<span class="val" id="vsig">0.70</span>
+        <input type="range" id="ssig" min="0.20" max="1.50" step="0.05" value="0.70">
+      </label>
+      <button class="btn" id="res">別の乱数で再サンプル ⟳</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:#3d7a3a;"></i>良い個体（L 小）</span>
+      <span><i class="dot" style="background:#c0392b;"></i>悪い個体（L 大）</span>
+      <span><i class="swatch" style="background:#c0392b;"></i>ES推定 ĝ</span>
+      <span><i class="swatch" style="background:#2f6b2c;"></i>真の勾配 ∇L</span>
+      <span><i class="dot" style="background:#fff;border:1px solid #999;"></i>現在の θ</span>
+    </div>
+  </div>
+
+  <p>試すと、二つのことが見えてきます。第一に ── \(N\) が小さいと \(\hat g\) は真の勾配から<em>あらぬ方を向いて</em>ふらつき、押すたびに矢印が跳ねます（高分散）。\(N\) を上げていくと、\(\hat g\) はすうっと真の勾配 \(\nabla L\) に重なっていく。これが「\(N\to\infty\) で一致する」という不偏性の、目に見える姿です（厳密には第6回）。第二に ── \(\sigma\) を大きくすると個体は遠くまで散らばり、荒い地形の大局は掴みやすくなる一方、\(\hat g\) は「生の \(\nabla L\)」ではなく「よりぼけた \(J\) の勾配」を向くようになる。\(\sigma\) は視野の広さと、狙う地形のぼかし具合を同時に決めるつまみなのです。</p>
+
+  <h2><span class="n">06</span>対称サンプリングで、分散を下げる</h2>
+
+  <p>ESの弱点は、いま見た<strong>高分散</strong>です。少ないサンプルだと矢印が暴れる。実用ではこれを抑える工夫がいくつもありますが、最も基本的で美しいのが<strong>対称サンプリング（antithetic sampling）</strong>── 摂動を \(+\varepsilon_i\) と \(-\varepsilon_i\) の<em>対</em>で使う方法です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">対称サンプリング版の推定量（分散が小さい）</div>
+    $$\hat g\;=\;\frac{1}{2N\sigma^2}\sum_{i=1}^{N}\big(L(\theta+\varepsilon_i)-L(\theta-\varepsilon_i)\big)\,\varepsilon_i$$
+  </div>
+
+  <p>なぜ効くのか。片側だけの \(\hat g\) には、地形の傾きと無関係な「下駄（\(L\) の底上げ分やゆがみ）」が乗ってノイズになります。\(+\varepsilon_i\) と \(-\varepsilon_i\) の両方を測って<em>差を取る</em>と、この対称な下駄が打ち消し合い、傾きに効く成分だけがきれいに残る。しかも不偏性は保たれたまま。生物の比喩で言えば、ある突然変異とその<em>正反対の突然変異</em>を両方の子に持たせ、二人の適応度の差だけを見て、どちらへ寄るべきかを判断する ── そんなイメージです。具体的な数で確かめましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 対称サンプリングで勾配を当てる</span>
+    <p class="lbl">1次元 L(θ)=θ²、現在 θ=2、σ=1。1組の対 ε=+1（と −1）だけで推定する</p>
+    $$\hat g=\frac{1}{2N\sigma^2}\big(L(\theta+\varepsilon)-L(\theta-\varepsilon)\big)\varepsilon
+      =\frac{1}{2\cdot 1\cdot 1}\big(L(3)-L(1)\big)\cdot 1$$
+    <p class="lbl">L(3)=9, L(1)=1 を代入</p>
+    $$\hat g=\frac{9-1}{2}=4$$
+    <p class="lbl">答え合わせ：真の勾配は ∇L(θ)=2θ なので</p>
+    $$\nabla L(2)=2\cdot 2=4\qquad\Longrightarrow\qquad \hat g=\nabla L(2)=4\ \ (\text{一致})$$
+    <p style="margin-bottom:14px;">たった1組の摂動で、真の勾配 \(4\) をぴたりと当てました。<span style="color:var(--calc);font-weight:700;">正直な注記：</span>これがこんなに綺麗に一致するのは、\(L(\theta)=\theta^2\) が2次関数だからです。平滑化しても \(J(\theta)=\theta^2+\sigma^2\)（定数がずれるだけ）で、勾配は \(\nabla J=2\theta\) と<em>生の \(\nabla L\) から変わりません</em>。だから今回に限り、ぼかした勾配と生の勾配が同じ値になる。一般の（3次以上の曲がりを持つ）地形では \(\nabla J\neq\nabla L\) で、ESが当てるのはあくまで<strong>ぼかした \(J\) の勾配</strong>のほうです ── そこを混同しないことが、第4節の「有限差分ではない」を正しく理解する鍵です。</p>
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── ESは何ができて、何ができないか</h2>
+
+  <p>いつものように、道具の力と限界を正直に裁きます。ESの魅力と代償は、どちらもはっきりしています。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>ESの答え</th><th>判決</th></tr>
+    <tr>
+      <td>微分なしで坂を下れるか</td>
+      <td>下れる。評価値 \(L(\theta+\varepsilon_i)\) と摂動 \(\varepsilon_i\) の相関だけで \(\hat g\) を組む</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>ブラックボックスや非微分可能な \(L\) でも動くか</td>
+      <td>動く。中身が式で書けなくても、値さえ測れればよい</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>「有限差分で \(\nabla L\) を近似しているだけ」か</td>
+      <td>違う。平滑化目的 \(J\) の勾配の<strong>不偏推定</strong>であって、近似ではない（第6回で証明）</td>
+      <td class="v-bad">その理解は×</td>
+    </tr>
+    <tr>
+      <td>サンプル効率はよいか</td>
+      <td>不偏だが<strong>高分散</strong>。多数のサンプル（＝多くの試行、生物なら多くの死）を要する</td>
+      <td class="v-bad">効率は△</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 不偏だが、高くつく</span>
+    <p style="margin-top:0;">ESの推定 \(\hat g\) は不偏（狙いは正確）ですが、<strong>分散が大きくサンプル効率が悪い</strong>。まともな方向を得るには集団サイズ \(N\) を大きく取らねばならず、それは自然界では<em>膨大な死</em>を意味します。進化がゆっくりで残酷なのは、まさにこの高分散の代償です。その代わりESは、微分可能性を一切要求せず、ブラックボックスにも非連続な指標にも効く ── BPには真似のできない普遍性を持ちます。</p>
+    <p style="margin-bottom:0;">そして最大の注意 ──「ESはBP（誤差逆伝播）の雑な近似にすぎない」という通説は<strong>誤り</strong>です。ESが当てているのは生の \(\nabla L\) の近似ではなく、平滑化した \(J\) の勾配そのもの。では、微分するBPと微分しないESは、いったいどういう関係にあるのか？ 次回（第5回）で <em>\(N\to\infty\)</em> という「無限のサンプル」を、雰囲気ではなく<strong>厳密に数える</strong>ための数学（超準解析）を用意します。そのうえで第6回、Steinの補題を通じて ── <strong>ESとBPが、ある極限で数学的にぴたりと一致する</strong>ことを示します。今日の \(\hat g\) は、その一致へ向かう最初の一歩です。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>1次元 \(L(\theta)=\theta^2\)、現在 \(\theta=3\)、\(\sigma=1\)。対称サンプリングで1組の対 \(\varepsilon=+1\)（と \(-1\)）を使い、\(\hat g\) を求めよ。真の勾配 \(\nabla L(3)\) と一致するか。
+        <details><summary>答えを見る</summary><div class="ans">\(\hat g=\dfrac{1}{2\cdot1\cdot1}\big(L(4)-L(2)\big)\cdot1=\dfrac{16-4}{2}=6\)。真の勾配は \(\nabla L(3)=2\cdot3=6\) で一致する。\(L=\theta^2\) は2次なので、ぼかした \(J\) の勾配も \(2\theta\) のまま変わらず、綺麗に当たる。</div></details>
+      </li>
+      <li>ESの推定量 \(\hat g=\dfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\,\varepsilon_i\) は、生の \(L\) の勾配 \(\nabla L\) の不偏推定だと言ってよいか。よくないなら、何の不偏推定か。
+        <details><summary>答えを見る</summary><div class="ans">よくない。\(\hat g\) が不偏に推定しているのは、生の \(\nabla L\) ではなく、平滑化した目的関数 \(J(\theta)=\mathbb E_\varepsilon[L(\theta+\varepsilon)]\) の勾配 \(\nabla J\)。すなわち \(\mathbb E[\hat g]=\nabla J(\theta)\)。両者が一致するのは、\(L\) が2次関数などの特別な場合に限る（\(J\) は \(L\) を \(\sigma\) でぼかしたものだから）。</div></details>
+      </li>
+      <li>集団サイズ \(N\) を2倍にすると、推定 \(\hat g\) のどんな性質がどう変わるか。バイアス（期待値のズレ）と分散（ブレ）に分けて答えよ。
+        <details><summary>答えを見る</summary><div class="ans">バイアスは変わらない ── \(\hat g\) はもともと不偏（\(\mathbb E[\hat g]=\nabla J\)）で、\(N\) を増やしても期待値は \(\nabla J\) のまま。変わるのは分散で、独立なサンプルの平均なので分散はおよそ \(1/N\) に比例して減る。よって \(N\) を2倍にすると分散はおよそ半分、矢印のふらつきが小さくなり真の方向へ寄る。狙いは最初から正確、精度だけが上がる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第4回まとめ</span>進化とは、微分せずに坂を下ること</h2>
+    <p>自然は損失を微分できない ── 適応度はブラックボックスを通した非微分可能な指標だから（STEP 01）。そこでESは、\(\theta\) のまわりにガウス摂動 \(\varepsilon_i\) をばらまき（STEP 02）、各摂動をその評価値 \(L(\theta+\varepsilon_i)\) で重みづけ平均して勾配 \(\hat g=\tfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\varepsilon_i\) を組み、\(\theta\leftarrow\theta-\eta\hat g\) で下る（STEP 03）。使うのは評価値と摂動の相関だけ、\(L\) の微分は皆無。この \(\hat g\) は有限差分の近似ではなく、平滑化目的 \(J(\theta)=\mathbb E_\varepsilon[L(\theta+\varepsilon)]\) の勾配の<em>不偏推定</em>（STEP 04）。ただし不偏の代償は高分散で、対称サンプリング \(\pm\varepsilon_i\) が分散を下げる基本の工夫（STEP 06）。第1回の \(\theta\leftarrow\theta-\eta\nabla L\) と、形は同じ ── ただ \(\nabla L\) の座に \(\hat g\) が座っただけ。</p>
+    <p>微分するBPと、微分しないES。第1回で予告した「両者は同じ計算」という主張へ、いよいよ近づきます。そのために次回はまず、\(N\to\infty\) という無限を、雰囲気でなく厳密に扱う道具を手に入れます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第5回</span>
+    <strong>無限を、正直に数える。</strong> 今回「\(N\) を大きくすれば \(\hat g\) は \(\nabla J\) に近づく」と言いましたが、その \(N\to\infty\) を数学として正面から扱うには、無限小・無限大を<em>ごまかさずに</em>手で握る道具が要ります。それが<strong>超準解析</strong> ── 無限に小さい数、無限に大きい数を、実数と同じ資格で計算に載せる。この足場の上で第6回、ESとBPの一致が姿を現します。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第4回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。進化戦略(Evolution Strategies, ES)の勾配推定量 \(\hat g=\tfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\varepsilon_i\) と、それが平滑化目的 \(J(\theta)=\mathbb E_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}[L(\theta+\varepsilon)]\) の勾配 \(\nabla J\) の不偏推定量であること（\(\mathbb E[\hat g]=\nabla J\)）は、スコア関数法（対数微分トリック、強化学習のREINFORCEと同型）から導かれる確立した結果で、厳密な証明はSteinの補題を用いて第6回で与えます。対称サンプリング（antithetic）\(\hat g=\tfrac{1}{2N\sigma^2}\sum_i(L(\theta+\varepsilon_i)-L(\theta-\varepsilon_i))\varepsilon_i\) は分散低減の標準的手法で、不偏性を保ちます。本稿の計算例（\(L=\theta^2\) で \(\hat g=\nabla L\)）が綺麗に一致するのは \(L\) が2次関数で \(\nabla J=\nabla L\) となる特別な場合であり、一般には \(\nabla J\neq\nabla L\)（ESが当てるのは平滑化した \(J\) の勾配）であることを本文で明示しました。図の地形 \(L(x,y)=\tfrac12(0.4x^2+1.2y^2)+0.3x\) は説明用の模型で、色分けと矢印は各時点のサンプルから実際に \(\hat g\) を計算して描いています。乱数は標準的な擬似乱数（Box–Muller法によるガウス生成）で、押すたび・スライダー操作ごとに新しい標本になります。超準解析（第5回）、ESとBPの一致（第6回）、地形の平滑化による局所最小の緩和（第7回）は後続回で扱います。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「集団サイズ N」と「突然変異の強さ σ」を動かし、「再サンプル」を押すと新しい乱数で個体をばらまき直します。N を上げると ES推定の矢印が真の勾配へ寄っていく様子を確かめてください。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sN=document.getElementById('sN'), vN=document.getElementById('vN'),
+      ssig=document.getElementById('ssig'), vsig=document.getElementById('vsig'),
+      rd=document.getElementById('rd'), res=document.getElementById('res');
+  // 損失地形 L(x,y)=0.5(A x²+B y²)+c x, 勾配 ∇L=(A x + c, B y)
+  var A=0.4, B=1.2, C=0.3;
+  var CX=-2.0, CY=0.9;            // 現在の θ
+  var XLO=-4, XHI=4;              // x の描画範囲（y は縦横比から算出）
+  var LMIN=-0.15, LMAX=7.0;       // 色スケール
+  var zs=[];                      // 標準正規の摂動 z_i（σ を掛ける前）
+
+  function Lf(x,y){return 0.5*(A*x*x+B*y*y)+C*x;}
+  function gradL(x,y){return [A*x+C, B*y];}
+  function gauss(){ var u1=Math.random(); if(u1<1e-12)u1=1e-12; var u2=Math.random();
+    return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2); }
+  function genZ(n){ zs=[]; for(var i=0;i<n;i++){ zs.push([gauss(),gauss()]); } }
+
+  function lerp(a,b,t){return a+(b-a)*t;}
+  // t: 0=良い(低L)→1=悪い(高L)。 緑→琥珀→赤 の2区間補間
+  function heat(t){ t=Math.max(0,Math.min(1,t)); var r,g,b,u;
+    if(t<0.5){ u=t/0.5; r=lerp(61,176,u); g=lerp(122,106,u); b=lerp(58,16,u); }
+    else{ u=(t-0.5)/0.5; r=lerp(176,192,u); g=lerp(106,57,u); b=lerp(16,43,u); }
+    return 'rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function arrow(ctx,x1,y1,x2,y2,color,wd){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=wd;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    var ang=Math.atan2(y2-y1,x2-x1), hl=9;
+    ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-hl*Math.cos(ang-0.42), y2-hl*Math.sin(ang-0.42));
+    ctx.lineTo(x2-hl*Math.cos(ang+0.42), y2-hl*Math.sin(ang+0.42));
+    ctx.closePath(); ctx.fill();
+  }
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var padL=14, padR=14, padT=12, padB=12;
+    var plotW=w-padL-padR, plotH=h-padT-padB;
+    var pxU=plotW/(XHI-XLO);          // 1データ単位あたりのピクセル（x,y 等尺）
+    var midY=padT+plotH/2;
+    function X(x){return padL+(x-XLO)*pxU;}
+    function Y(y){return midY-y*pxU;}
+    var sig=parseFloat(ssig.value), N=parseInt(sN.value,10);
+
+    ctx.clearRect(0,0,w,h);
+
+    // 損失の色フィールド（粗いグリッドの塗り）
+    var cell=10;
+    for(var sx=padL; sx<w-padR; sx+=cell){
+      for(var sy=padT; sy<h-padB; sy+=cell){
+        var x=XLO+(sx+cell/2-padL)/pxU;
+        var y=(midY-(sy+cell/2))/pxU;
+        var t=(Lf(x,y)-LMIN)/(LMAX-LMIN);
+        ctx.globalAlpha=0.22; ctx.fillStyle=heat(t);
+        ctx.fillRect(sx,sy,cell,cell); ctx.globalAlpha=1;
+      }
+    }
+    // 等高線（楕円）: L = 0.5A(x-x0)² + 0.5B y² - C²/(2A), x0=-C/A
+    var x0=-C/A;
+    ctx.strokeStyle='rgba(120,90,40,0.35)'; ctx.lineWidth=1;
+    var levels=[0.2,0.6,1.2,2.0,3.0,4.5];
+    for(var li=0; li<levels.length; li++){
+      var R=levels[li]+C*C/(2*A);
+      if(R<=0) continue;
+      var ax=Math.sqrt(2*R/A)*pxU, ay=Math.sqrt(2*R/B)*pxU;
+      ctx.beginPath(); ctx.ellipse(X(x0),Y(0),ax,ay,0,0,Math.PI*2); ctx.stroke();
+    }
+
+    // 集団のサンプルと ES 推定量 ĝ を計算しつつ描く
+    var sumx=0, sumy=0;
+    for(var i=0;i<N && i<zs.length;i++){
+      var ex=sig*zs[i][0], ey=sig*zs[i][1];
+      var px=CX+ex, py=CY+ey;
+      var Li=Lf(px,py);
+      sumx+=Li*ex; sumy+=Li*ey;
+      var ti=(Li-LMIN)/(LMAX-LMIN);
+      var sxp=X(px), syp=Y(py);
+      if(sxp>padL-6 && sxp<w-padR+6 && syp>padT-6 && syp<h-padB+6){
+        ctx.fillStyle=heat(ti);
+        ctx.beginPath(); ctx.arc(sxp,syp,3.1,0,7); ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=0.8; ctx.stroke();
+      }
+    }
+    var ghat=[ sumx/(N*sig*sig), sumy/(N*sig*sig) ];
+    var g0=gradL(CX,CY);
+
+    // 矢印（勾配＝登り方向）を同一スケールで描く
+    var K=0.62;                         // データ→表示の矢印倍率
+    var bx=X(CX), by=Y(CY);
+    // 真の勾配 ∇L
+    arrow(ctx, bx,by, X(CX+g0[0]*K),Y(CY+g0[1]*K), '#2f6b2c', 3.0);
+    // ES 推定 ĝ（長すぎる場合はクリップ）
+    var gm=Math.hypot(ghat[0],ghat[1]), g0m=Math.hypot(g0[0],g0[1]);
+    var ghx=ghat[0], ghy=ghat[1], cap=3.2*g0m;
+    if(gm>cap && gm>0){ ghx=ghat[0]*cap/gm; ghy=ghat[1]*cap/gm; }
+    arrow(ctx, bx,by, X(CX+ghx*K),Y(CY+ghy*K), '#c0392b', 2.6);
+    // 現在の θ
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(bx,by,5.5,0,7); ctx.fill();
+    ctx.strokeStyle='#333'; ctx.lineWidth=1.4; ctx.stroke();
+
+    report(ghat,g0,gm,g0m,N,sig);
+  }
+
+  function report(ghat,g0,gm,g0m,N,sig){
+    var dot=ghat[0]*g0[0]+ghat[1]*g0[1];
+    var cos = (gm>1e-9 && g0m>1e-9) ? dot/(gm*g0m) : 0;
+    cos=Math.max(-1,Math.min(1,cos));
+    var deg=Math.acos(cos)*180/Math.PI;
+    var ratio = g0m>1e-9 ? gm/g0m : 0;
+    var msg='N='+N+', σ='+sig.toFixed(2)+' ｜ ES推定 ĝ と真の勾配 ∇L の角度差 '+deg.toFixed(1)+'°、大きさ比 |ĝ|/|∇L|='+ratio.toFixed(2)+'。';
+    if(deg<12){ rd.className='readout ok';
+      rd.textContent=msg+' ĝ はほぼ真の勾配に重なっている ── N が十分で、不偏推定がよく効いている。';
+    } else if(deg<35){ rd.className='readout local';
+      rd.textContent=msg+' まだ少しずれている。N を増やすと角度差が縮み、真の勾配へ寄っていく（不偏だが有限 N ではブレる）。';
+    } else { rd.className='readout bad';
+      rd.textContent=msg+' 大きくずれている ── サンプルが少なすぎて高分散。N を上げるか、再サンプルしてみてください。';
+    }
+  }
+
+  function resample(){ genZ(parseInt(sN.value,10)); draw(); }
+  function syncLabels(){ vN.textContent=sN.value; vsig.textContent=parseFloat(ssig.value).toFixed(2); }
+
+  sN.addEventListener('input',function(){ syncLabels(); genZ(parseInt(sN.value,10)); draw(); });
+  ssig.addEventListener('input',function(){ syncLabels(); draw(); });
+  res.addEventListener('click',resample);
+  window.addEventListener('resize',draw);
+
+  syncLabels(); genZ(parseInt(sN.value,10));
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){ MathJax.startup.promise.then(draw); }
+  setTimeout(draw,60);
+  window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

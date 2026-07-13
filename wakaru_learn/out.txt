@@ -1,0 +1,120 @@
+     Evolution Strategies as Infinite-Dimensional
+                        Backpropagation:
+
+A Non-Standard Analysis Perspective on Biological
+                              Evolution
+
+                                             Yomei Otani
+
+                                          January 19, 2026
+
+Abstract                                                 that as the population size N  , the accumu-
+                                                         lation of ES updates converges to the exact gradi-
+Recent advances in hyperscale evolution strate-          ent of a smoothed objective function. This implies
+gies (ES), such as the "Eggroll" architecture, have      that "integration" (ES) and "differentiation" (BP)
+demonstrated that gradient-free optimization can         are unified at the limit. We further discuss the
+scale comparably to backpropagation-based meth-          philosophical implications of this duality, propos-
+ods. This paper proposes a theoretical framework         ing that biological evolution can be interpreted as
+interpreting ES not merely as a zeroth-order ap-         an implicit backpropagation process performed by
+proximation, but as an infinite-dimensional back-        the biosphere.
+propagation process via the lens of non-standard
+analysis. We demonstrate that the aggregation of         2 Mathematical Equivalence
+infinite random perturbations (mutations) in ES is
+mathematically equivalent to computing the gra-          2.1 Evolution Strategies (ES)
+dient of a Gaussian-smoothed loss landscape. Fur-
+thermore, we argue that this equivalence provides        Let  be the parameters of a neural network (or an
+a mathematical foundation for understanding bio-         organism's DNA), and L() be the loss (or nega-
+logical evolution: living organisms function as dis-     tive fitness) function. ES estimates the descent
+crete samples in a massive parallel computation,         direction by applying Gaussian noise   N (0, I).
+collectively approximating the gradient of the sur-      The update rule for infinite population size is de-
+vival function. This suggests that biological evolu-     fined as the expectation:
+tion is effectively performing backpropagation at a
+planetary scale without explicit differentiation.                  1                    (1)
+                                                         ES =  E[L( + ) · ]
+1 Introduction
+                                                         This equation represents a search based purely on
+Deep learning has traditionally relied on Back-          the correlation between the perturbation  and the
+propagation (BP) to compute gradients L() for            resulting loss L, without calculating any deriva-
+parameter updates. In contrast, Evolution Strate-        tives.
+gies (ES) update parameters by sampling random
+perturbations in the parameter space. While ES           2.2 Smoothed Backpropagation
+has been viewed as a scalable alternative to Rein-
+forcement Learning, the precise mathematical re-         Consider the "smoothed" loss function L(), de-
+lationship between the "blind" search of ES and          fined as the convolution of the original loss land-
+the "directed" descent of BP has often been sim-         scape with a Gaussian kernel. The gradient of this
+plified as a mere finite difference approximation.       smoothed landscape is:
+
+   In this paper, we revisit this relationship using      L() = E[L( + )] = E[L( + )] (2)
+concepts from non-standard analysis. We show
+                                                         The right-hand side represents the average of gra-
+                                                         dients calculated by backpropagation at infinite
+                                                         points in the neighborhood of .
+
+                                                      1
+2.3 Stein's Lemma and Unification                            · Reproduction corresponds to the parameter
+                                                                update t+1  t - ES.
+Using Stein's Lemma (Gaussian integration by
+parts), we can prove the fundamental identity link-       4.2 The Purpose of Existence
+ing these two approaches:
+
+1                            E[L( + )]                    Under this interpretation, the "purpose" of an in-
+ E[L( + ) · ] =                                           dividual organism's existence is to serve as a probe
+                                                          for gradient estimation. Nature cannot perform
+ES (No Derivative)  Average BP (Infinite Derivatives)     analytical differentiation (it does not know the
+                                                          equation of physics), but it can perform integra-
+                                        (3)               tion through massive parallel sampling. By sum-
+                                                          ming up the lives of billions of individuals, the
+This equality is non-trivial. It states that the          species effectively computes the gradient L, mov-
+                                                          ing towards better adaptation. Thus, every life is a
+weighted average of zero-order evaluations (ES) is        necessary computational unit to drive the "infinite
+                                                          backpropagation" of the species.
+mathematically identical to the expected value of
+
+first-order gradients (BP).
+
+3 Interpretation via Non-
+
+    Standard Analysis                                     5 Conclusion
+
+Non-standard analysis allows us to rigorously treat       We have demonstrated that Evolution Strategies
+infinitesimals and infinite numbers.                      are not merely an approximation of backpropaga-
+                                                          tion but its dual representation through the lens
+   · BP as Local/Microscopic: Standard back-              of infinite sampling. This duality suggests that
+      propagation computes the derivative at a sin-       computational intelligence and biological evolution
+      gle point , strictly relying on local differen-     share the same underlying mathematical principle:
+      tiability.                                          the extraction of gradient information from high-
+                                                          dimensional noise.
+   · ES as Global/Macroscopic: ES integrates
+      over a hyper-volume defined by .
+
+   We propose that ES can be viewed as "Back-             Acknowledgments
+propagation in the limit of infinite sampling." In
+the context of non-standard analysis, the integral        The core concepts, mathematical derivations, and
+operation in ES acts as a "global derivative." The        philosophical interpretations presented in this pa-
+"monad" (infinitesimal neighborhood) around  is           per were developed through an extensive series of
+explored by the population. The "consensus" of            dialogues with Gemini, an AI model developed by
+this infinite population perfectly recovers the gra-      Google. The author acknowledges the AI's contri-
+dient information.                                        bution in formulating the connection between in-
+                                                          finite sampling in ES and non-standard analysis.
+4 Biological Implications: Life as
+    Calculation                                           References
+
+This mathematical framework offers a profound [1] Salimans, T., et al. (2017). Evolution Strate-
+
+perspective on the nature of life.                        gies as a Scalable Alternative to Reinforcement
+
+                                                          Learning. OpenAI.
+
+4.1 The Biosphere as a GPU                                [2] Nabergoj, A., et al. (2025). Evolution Strate-
+
+If we consider the biosphere as a computational gies at the Hyperscale. arXiv:2511.16652.
+
+system:
+
+· Each organism is a sample  + i.
+
+· The life and death of the organism corre-
+   sponds to the evaluation of L( + i).
+
+                                                       2
+

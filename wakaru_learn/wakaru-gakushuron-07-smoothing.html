@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ぼかせば、地形はなめらかになる ── わかる学習論 第7回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 7 回 ／ ぼかしと解像度 ── 局所最小からの脱出</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>ぼかせば、地形はなめらかになる
+    <span class="sub">損失地形を目を細めて見る ── ガウス核で「ぼかす」と、浅い谷は溶けて消え、<br>大域の盆地だけが浮かび上がる。前回 ES が計算していた \(\nabla L_\sigma\) の正体、そして σ という「解像度のダイヤル」を掴む。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第1回の勾配降下、第6回のガウス平滑化、簡単な期待値</span>
+    <span>この回のキー：\(L_\sigma(\theta)=\mathbb{E}_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}\!\left[L(\theta+\varepsilon)\right]\)</span>
+  </div>
+
+  <p class="lead">第1回で、盲目のボールは足もとの傾きしか見ないがゆえに<em>浅い谷にはまって出られない</em>、と正直に裁きました。隣にもっと深い谷があっても気づけない ── これが勾配降下法の宿命でした。今日はこの弱点を、正面から緩める道具を手に入れます。合言葉は<strong>「ぼかす」</strong>。地形の細かい凹凸を、目を細めるように均してしまえば、浅い谷は消え、本当に深い盆地だけが残る。数学の言葉では、損失 \(L\) を<strong>ガウス核で畳み込む</strong>こと。そしてこの操作こそ、前回 (第6回) の進化戦略 ES が知らず知らず計算していた \(\nabla L_\sigma\) の正体でした。ぼかしの強さ \(\sigma\) は、<em>学習者が地形を見る解像度</em>を決めるダイヤル ── 探索と活用のあいだで手を握る、一本のつまみです。</p>
+
+  <h2><span class="n">01</span>第1回の宿題 ── 局所最小を、どう乗り越えるか</h2>
+
+  <p>復習しましょう。学習とは損失 \(L(\theta)\) を下げること、更新則は \(\theta\leftarrow\theta-\eta\nabla L(\theta)\)。ところが \(\nabla L=0\) になる点は、大域最小だけとは限りません。<strong>局所最小</strong> ── 隣にもっと深い谷があるのに、足もとが平らなせいで止まってしまう窪み ── がそこら中にあります。盲目のボールは、いま立っている谷が浅いのか深いのか、自力では判定できない。</p>
+
+  <p>ではどうするか。素朴なアイデアは「もっと遠くまで見渡せればいい」。でも地形の全体像を一望する神さまはいません。そこで発想を裏返します ── <em>地形のほうを、見やすく作り替える</em>。細かい凹凸を均してしまえば、浅い窪みは埋まり、残るのは大づかみの起伏だけ。この「均す」を厳密にやるのが、ぼかし＝平滑化です。</p>
+
+  <h2><span class="n">02</span>ぼかすとは ── ガウス核との畳み込み</h2>
+
+  <p>「ぼかす」とは、各点 \(\theta\) での値を、<strong>その近所の値の重み付き平均</strong>で置き換えることです。近い点ほど重く、遠い点ほど軽く。この重みにガウス分布 \(p_\sigma(\varepsilon)=\dfrac{1}{(2\pi\sigma^2)^{n/2}}\exp\!\left(-\dfrac{\|\varepsilon\|^2}{2\sigma^2}\right)\) を使ったものが<strong>ガウス平滑化</strong>。均した後の損失を \(L_\sigma\) と書きます。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">平滑化損失 ── L をガウス核でぼかす（この回のキー）</div>
+    $$L_\sigma(\theta)\;=\;(L * p_\sigma)(\theta)\;=\;\int L(\theta+\varepsilon)\,p_\sigma(\varepsilon)\,d\varepsilon\;=\;\mathbb{E}_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}\!\left[L(\theta+\varepsilon)\right]$$
+  </div>
+
+  <p>三つの顔は同じものです。左は<em>畳み込み</em> \(*\)(信号処理の言葉)、中は<em>積分</em>(重み付き平均そのもの)、右は<em>期待値</em>(「\(\theta\) の周りに \(\mathcal N(0,\sigma^2 I)\) でランダムに揺らして、\(L\) を平均する」)。\(\sigma\) が大きいほど揺らぎが広く、遠くまで平均に取り込むので、地形は強くぼける。この右辺の期待値 ── 見覚えがあるはずです。<strong>前回 ES がサンプルで推定していたのは、まさにこの \(L_\sigma\) の勾配 \(\nabla L_\sigma\) でした。</strong></p>
+
+  <div class="aside">
+    <span class="tag">第6回との接続 ── ES は「ぼかした地形」を下っていた</span>
+    第6回で、進化戦略 ES の更新方向が \(\nabla L_\sigma(\theta)=\dfrac{1}{\sigma^2}\,\mathbb{E}_{\varepsilon}\!\left[\varepsilon\,L(\theta+\varepsilon)\right]\) に一致することを示しました(ガウスに対するスタインの等式)。つまり ES は、生の地形 \(L\) ではなく、<strong>あらかじめ \(\sigma\) でぼかした地形 \(L_\sigma\)</strong> を、微分せずに転がっていたのです。BP が生の \(\nabla L\) を計算するのに対し、ES が計算するのは常に \(\nabla L_\sigma\) ── 摂動の幅 \(\sigma\) が、そのまま「地形を見る解像度」になります。今日はこの \(\sigma\) を主役に据えます。
+  </div>
+
+  <h2><span class="n">03</span>ぼかしの三性質 ── なぜ角が取れるのか</h2>
+
+  <p>畳み込み \(L_\sigma=L*p_\sigma\) には、局所最小脱出のカギとなる三つの性質があります。</p>
+
+  <p><strong>(1) いくらでもなめらかになる。</strong> たとえ \(L\) が角ばっていて(微分できない点があっても)、ガウス核 \(p_\sigma\) は無限回微分できます。畳み込みでは微分を滑らかな側に載せ替えられる ── \(\nabla^k L_\sigma = L * \nabla^k p_\sigma\) ── ので、\(L_\sigma\) は<em>無限回微分可能</em>(\(C^\infty\))になります。ぼかしは、地形の角をすべて丸めてしまう。</p>
+
+  <p><strong>(2) 浅い局所最小が消える。</strong> 近所を平均すると、細い尾根や浅い窪みは打ち消し合って均されます。\(\sigma\) を大きくするほど平均の範囲が広がり、まず<em>浅い谷から順に</em>消えて、最後には大づかみの盆地だけが残る。第1回でボールを閉じ込めていた浅い谷が、ぼかしで埋まるのです。</p>
+
+  <p><strong>(3) \(\sigma\to0\) で元に戻る。</strong> \(\sigma\to0\) のときガウス核はデルタ関数に潰れ(\(p_\sigma\to\delta\))、平均の範囲が一点に縮むので \(L_\sigma\to L\)。ぼかしをゼロにすれば、地形は生の \(L\) に戻ります。この「戻れる」性質が、後で焼きなましの土台になります。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 二次関数を、手で「ぼかして」みる</span>
+    <p class="lbl">最も簡単な地形 L(θ)=θ² を平滑化する（1次元）</p>
+    $$L_\sigma(\theta)=\mathbb{E}\!\left[(\theta+\varepsilon)^2\right]=\mathbb{E}\!\left[\theta^2+2\theta\varepsilon+\varepsilon^2\right]=\theta^2+2\theta\underbrace{\mathbb{E}[\varepsilon]}_{0}+\underbrace{\mathbb{E}[\varepsilon^2]}_{\sigma^2}=\theta^2+\sigma^2$$
+    <p class="lbl">ぼかしても足すのは定数 σ² だけ。勾配は動かない</p>
+    $$\nabla L_\sigma(\theta)=2\theta=\nabla L(\theta)$$
+    <p style="margin-bottom:14px;">二次関数をぼかすと、地形全体が \(\sigma^2\) だけ<em>持ち上がる</em>だけで、形は変わりません。勾配 \(2\theta\) は \(\sigma\) によらず不変 ── だから ES の勾配推定(スタインの等式)が、二次関数では<span style="color:var(--ok);font-weight:700;">生の勾配 \(\nabla L\) とぴったり一致する特別な場合</span>になっています。ただしこれは二次関数だからこその奇跡。谷が複数ある地形では、ぼかしは形そのものを変え ── <strong>浅い谷を溶かします</strong>。それを次の図で見ましょう。</p>
+  </div>
+
+  <h2><span class="n">04</span>σ は解像度 ── 探索と活用のダイヤル</h2>
+
+  <p>\(\sigma\) は単なる技術パラメータではありません。それは<strong>学習者(あるいは進化)が地形を見る「解像度」</strong>です。目を細めれば大づかみの起伏が見え、目を凝らせば細部が見える ── \(\sigma\) はそのピント調整のダイヤルなのです。</p>
+
+  <div class="keybox">
+    <div class="lbl">σ が決めるトレードオフ</div>
+    $$\underbrace{\text{大きい }\sigma}_{\text{ぼんやり全体像}}\;\longleftrightarrow\;\underbrace{\text{小さい }\sigma}_{\text{くっきり細部}}$$
+  </div>
+
+  <p><strong>大きい \(\sigma\)（探索・exploration）。</strong> 地形は強くぼけ、浅い局所最小は消えて大域の盆地が浮かぶ。だからボールは浅い谷を脱出し、大づかみに「どのあたりが低いか」を掴めます。代償は、真の最適点がぼけること ── \(L_\sigma\) の底は、生の \(L\) の底と一般にずれます。</p>
+
+  <p><strong>小さい \(\sigma\)（活用・exploitation）。</strong> 地形は生の \(L\) に近づき、最適点は正確。代償は、細かい谷が全部見えてしまうこと ── 手近な局所最小にすぐ嵌まります。</p>
+
+  <p>大きく見れば道に迷わないが的が甘い、小さく見れば的は正確だが罠に落ちる。この綱引きが<em>探索と活用のトレードオフ</em>です。ならば ── <strong>最初は大きく、だんだん小さく</strong>すればいいのでは? それが次の焼きなましです。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 浅い谷が溶けていく</h2>
+
+  <p>下の地形 \(L(\theta)\) には谷が三つあります。中央が<strong>深い谷（大域的な最小）</strong>、左右が<strong>浅い谷（局所的な最小）</strong>。細い曲線が生の \(L\)、太い曲線がぼかした \(L_\sigma\) です。\(\sigma\) スライダーを右へ動かすと、各グリッド点で近傍のガウス重み和を取る<em>数値畳み込み</em>で \(L_\sigma\) が計算し直され、浅い谷から順に溶けていきます。「ボールを転がす」で、\(L_\sigma\) の上を降下するボールがどの盆地へ落ち着くかも見られます。</p>
+
+  <div class="fig">
+    <div class="cap">図：多峰の損失 L(θ)=0.10θ²−0.70cos(2.4θ)−0.06θ（細線）と、それをガウス核でぼかした Lσ(θ)（太線）。σ を上げると浅い谷が消え、単一の盆地へ ── ボールは大 σ なら大域盆地に届く</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>ぼかしの強さ σ（解像度）<span class="val" id="vsig">0.05</span>
+        <input type="range" id="sig" min="0.05" max="1.60" step="0.01" value="0.05">
+      </label>
+      <button class="btn" id="run">ボールを転がす ▶</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#d8b878;"></i>生の地形 L(θ)</span>
+      <span><i class="swatch" style="background:var(--acc);"></i>ぼかした地形 Lσ(θ)</span>
+      <span><i class="dot" style="background:#c0392b;"></i>ボール（Lσ上を降下）</span>
+      <span><i class="dot" style="background:#3d7a3a;"></i>Lσ の極小</span>
+    </div>
+  </div>
+
+  <p>\(\sigma\) を上げていくと、まず左右の浅い谷が消え、やがて地形はなだらかな単一の盆地になります(極小の数が \(3\to1\) へ)。この状態でボールを右端から転がすと、途中の谷に邪魔されず大域盆地へ滑り込む ── 第1回で出られなかった浅い谷を、ぼかしが埋めてくれたのです。ただし大きすぎる \(\sigma\) では \(L_\sigma\) の底が中央からずれ、生の最適点とずれていることにも注意してください。</p>
+
+  <h2><span class="n">06</span>焼きなまし ── σ を大から小へ、そして宇宙論へ</h2>
+
+  <p>探索と活用のいいとこ取りをする定石が<strong>焼きなまし(annealing)</strong>です。<em>まず大きな \(\sigma\) で大域の盆地を掴み、次に \(\sigma\) を徐々に下げて精密化する</em>。性質(3)より \(\sigma\to0\) で \(L_\sigma\to L\) なので、最後には生の地形の底 ── 本当の最適点 ── へ収束できます。序盤は大づかみに正しい盆地を選び、終盤で腰を据えて底を突く。金属を高温から徐々に冷やして結晶の欠陥を減らす焼きなましと、まったく同じ発想です。</p>
+
+  <div class="aside">
+    <span class="tag">わかる宇宙論への橋 ── σ は「温度」であり「粒度」である</span>
+    ここで \(\sigma\) が<strong>温度のように</strong>振る舞うことに注目してください。高い \(\sigma\)＝高温＝広く探索、低い \(\sigma\)＝低温＝一点に落ち着く。姉妹シリーズ「わかる宇宙論」は、<em>宇宙を有限リソースの計算機</em>と見て、温度を<em>更新レート</em>と読み替え、拡がりゆく宇宙で \(c\cdot t=\text{const}\) のように解像度が時とともに細かくなっていく描像を描きました。同じ絵がここにもあります ── \(\sigma\) とは<strong>有限解像度</strong>であり、無限に細かく地形を見ることは(サンプルのコスト上)できません。<em>生命が地形を見る解像度 \(\sigma\) こそ、その計算機の粒度そのもの</em>。焼きなまし(\(\sigma\) を下げる)とは、宇宙が冷えて解像度を上げていく過程の、学習版なのです。次回はこの計算を地球規模で回す実体へ話を進めます。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── ぼかしは何ができて、何ができないか</h2>
+
+  <p>ぼかし(平滑化)は局所最小脱出の強力な実用技ですが、ただ飯ではありません。正直に裁きます。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>ガウス平滑化の答え</th><th>判決</th></tr>
+    <tr>
+      <td>浅い局所最小を脱出できるか</td>
+      <td>できる。\(\sigma\) を上げれば浅い谷は溶け、大域の盆地が浮かぶ</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>見つかるのは、生の地形 \(L\) の最適点か</td>
+      <td>いいえ。有限の \(\sigma\) では \(L_\sigma\neq L\) で、底の位置がずれる(平滑化バイアス)</td>
+      <td class="v-bad">σ有限だとずれる</td>
+    </tr>
+    <tr>
+      <td>それでも本当の最適点へ届くか</td>
+      <td>届く。\(\sigma\to0\) へ焼きなませば \(L_\sigma\to L\)。ただしサンプル(コスト)が増える</td>
+      <td class="v-ok">焼きなませば◯</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── ぼかしにも、ただ飯はない</span>
+    <p style="margin-top:0;">ぼかしは局所最小脱出の実用技ですが、代償があります。大きな \(\sigma\) では真の最適点がずれる(\(L_\sigma\neq L\))。これは焼きなましで \(\sigma\to0\) にすれば回収できます ── ところが大きな \(\sigma\) はサンプルの<em>分散</em>を増やし、同じ精度の勾配推定に必要なサンプル数、すなわち<strong>計算コストを食う</strong>。「浅い谷を脱出する自由」は、コストと引き換えでしか手に入りません。ただ飯はないのです。</p>
+    <p style="margin-bottom:0;">それでも、この \(\sigma=\)「解像度」という視点は、シリーズの背骨に直結します ── <em>生命は有限のエネルギー(＝有限のサンプル)で地形を見て、学び、進化する</em>。無限の解像度は買えない。ならば、この計算を実際に地球規模で回している実体とは何か? 次回、その主役を名指しします。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>\(L(\theta)=\theta^2+3\theta+5\)（1次元）をガウス核 \(\mathcal N(0,\sigma^2)\) で平滑化した \(L_\sigma(\theta)\) を求めよ。勾配 \(\nabla L_\sigma\) は生の \(\nabla L\) と一致するか。
+        <details><summary>答えを見る</summary><div class="ans">\(L_\sigma(\theta)=\mathbb{E}[(\theta+\varepsilon)^2+3(\theta+\varepsilon)+5]=(\theta^2+\sigma^2)+3\theta+5=L(\theta)+\sigma^2\)。定数 \(\sigma^2\) だけ持ち上がる。勾配は \(\nabla L_\sigma=2\theta+3=\nabla L\) で<em>一致</em>する ── 二次(以下の)関数では、平滑化は勾配を変えない。</div></details>
+      </li>
+      <li>ある1次元地形が、深さの異なる谷を3つ持っている。\(\sigma\) を \(0\) から大きくしていくと、消える順番は「浅い谷から」か「深い谷から」か。理由も。
+        <details><summary>答えを見る</summary><div class="ans">浅い谷から消える。局所最小が消えるのは、それを囲む障壁(局所最大)がぼかしで均されて谷が埋まるとき。浅い谷は障壁との高低差が小さいので、小さな \(\sigma\) で先に均されて消える。深く広い盆地ほど、大きな \(\sigma\) まで生き残る。図で \(\sigma\) を上げて確かめられる。</div></details>
+      </li>
+      <li>焼きなまし(\(\sigma\) を大→小へ下げる)が、固定した中くらいの \(\sigma\) より優れているのはなぜか。性質(2)(3)を使って説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">序盤の大きな \(\sigma\) では性質(2)により浅い谷が消え、正しい大域盆地を選べる(探索)。終盤 \(\sigma\to0\) では性質(3)により \(L_\sigma\to L\) となり、その盆地の<em>真の底</em>へ収束できる(活用)。固定 \(\sigma\) では、大きすぎれば底がずれ(バイアス)、小さすぎれば浅い谷に嵌まる ── 両立できない。時間をかけて \(\sigma\) を下げることで、探索と活用を順に手に入れる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第7回まとめ</span>ぼかせば、浅い谷は溶ける</h2>
+    <p>局所最小の弱点(第1回)を、地形を「ぼかす」ことで緩める(STEP 01)。ぼかしとはガウス核との畳み込み \(L_\sigma=L*p_\sigma=\mathbb{E}_\varepsilon[L(\theta+\varepsilon)]\)、これは前回 ES が計算していた \(\nabla L_\sigma\) の地形そのもの(STEP 02)。ぼかしには三性質 ── (1)無限回微分可能になる、(2)浅い局所最小が消える、(3)\(\sigma\to0\) で \(L\) に戻る(STEP 03)。二次関数では平滑化は勾配を変えず(定数 \(\sigma^2\) が乗るだけ)、スタインの推定が生の勾配と一致する特別な場合(calc)。\(\sigma\) は<em>解像度＝探索と活用のダイヤル</em>で、大は全体像・小は精密(STEP 04)。図では \(\sigma\) を上げると極小が \(3\to1\) に(STEP 05)。焼きなまし(\(\sigma\) 大→小)で大域盆地を掴んでから精密化でき、\(\sigma\) は温度・粒度として宇宙論と響き合う(STEP 06)。ただし有限 \(\sigma\) は底をずらし、大 \(\sigma\) は分散＝コストを食う ── ただ飯はない(STEP 07)。</p>
+    <p>ぼかしは、盲目のボールに「目を細める」自由を与えました。だがその解像度は有限のエネルギーで買うしかない。この「有限リソースで地形を見て学ぶ」という視点が、次回いよいよ地球規模へ拡大します ── 生命が回す、巨大な学習の計算機へ。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第8回</span>
+    <strong>生物圏は、一台のGPUである。</strong> ぼかした地形を、有限のエネルギーで、無数のサンプルで転がる ── その計算を地球規模で実際に回している実体こそ、生命の総体＝生物圏です。太陽から降るエネルギーを燃料に、無数の生きものが並列に \(\nabla L_\sigma\) を推定し続ける一台の巨大な計算機として、生物圏を読み解きます。σ という解像度は、そこで「使えるエネルギー」に翻訳されます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第7回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。平滑化損失 \(L_\sigma=L*p_\sigma=\mathbb{E}_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}[L(\theta+\varepsilon)]\)、ガウス畳み込みが対象を無限回微分可能にすること(\(\nabla^k L_\sigma=L*\nabla^k p_\sigma\))、\(\sigma\to0\) で \(p_\sigma\to\delta\) より \(L_\sigma\to L\) となること、二次関数の平滑化 \(L_\sigma(\theta)=\theta^2+\sigma^2\) で勾配が不変なこと、および \(\nabla L_\sigma(\theta)=\sigma^{-2}\,\mathbb{E}_\varepsilon[\varepsilon\,L(\theta+\varepsilon)]\)(ガウスに対するスタインの等式、第6回)は、いずれも確立した数学です。「浅い局所最小ほど小さい \(\sigma\) で先に消える」は一般の滑らかな多峰関数についての定性的な傾向で、厳密には障壁高さと谷幅に依存します。本稿の図の地形 \(L(\theta)=0.10\theta^2-0.70\cos(2.4\theta)-0.06\theta\) は説明用の模型で、極小の位置・深さや消える \(\sigma\) の値は数値的な目安です。図の \(L_\sigma\) は各グリッド点でガウス重み和 \(\sum_k L(\theta+k\Delta)\exp(-(k\Delta)^2/2\sigma^2)\) を正規化した数値畳み込みで計算しています。焼きなまし(annealing)と温度・解像度の対応、および「わかる宇宙論」との接続は、機能的・概念的なアナロジーとしての提案です。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「ぼかしの強さ σ」を動かすと浅い谷が溶け、「ボールを転がす」で Lσ 上を降下するボールが見られます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      ss=document.getElementById('sig'), vs=document.getElementById('vsig'),
+      rd=document.getElementById('rd'), btn=document.getElementById('run');
+  // 生の地形 L(θ)=0.10θ²−0.70cos(2.4θ)−0.06θ
+  function Lf(t){ return 0.10*t*t - 0.70*Math.cos(2.4*t) - 0.06*t; }
+  // ガウス平滑化 Lσ(θ)：数値畳み込み Σ L(θ+z) exp(−z²/2σ²) を正規化
+  function Lsig(t,s){
+    if(s<1e-3) return Lf(t);
+    var N=60, span=4*s, dz=2*span/N, sum=0, wsum=0;
+    for(var j=0;j<=N;j++){
+      var z=-span+dz*j, w=Math.exp(-(z*z)/(2*s*s));
+      sum+=Lf(t+z)*w; wsum+=w;
+    }
+    return sum/wsum;
+  }
+  // Lσ の数値勾配（中心差分）
+  function dLsig(t,s){ var h=0.02; return (Lsig(t+h,s)-Lsig(t-h,s))/(2*h); }
+
+  var TH_LO=-4, TH_HI=4, L_LO=-1.0, L_HI=2.7;
+  var NPT=280;
+  var theta=null, traj=[], step=0, raf=null, rolling=false;
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  // Lσ を NPT 点でサンプルし、極小を数える
+  function sampleAndCountMinima(s){
+    var arr=[], i, t;
+    for(i=0;i<=NPT;i++){ t=TH_LO+(TH_HI-TH_LO)*i/NPT; arr.push(Lsig(t,s)); }
+    var mins=[];
+    for(i=1;i<NPT;i++){
+      if(arr[i]<arr[i-1] && arr[i]<=arr[i+1]){
+        mins.push(TH_LO+(TH_HI-TH_LO)*i/NPT);
+      }
+    }
+    return {arr:arr, mins:mins};
+  }
+  function draw(){
+    var s=parseFloat(ss.value);
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=44, padB=42, padT=16;
+    function X(t){return padL+(t-TH_LO)/(TH_HI-TH_LO)*(w-padL-14);}
+    function Y(l){return (h-padB)-(l-L_LO)/(L_HI-L_LO)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（L の水平線）
+    ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.fillStyle='#bda877';ctx.font='9px sans-serif';
+    for(var l=0;l<=2;l++){var y=Y(l);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('L='+l,6,y-3);}
+    // 生の地形 L（細い薄線）
+    ctx.strokeStyle='#d8b878';ctx.lineWidth=1.4;ctx.beginPath();var f=true,i,t,x,y;
+    for(i=0;i<=NPT;i++){t=TH_LO+(TH_HI-TH_LO)*i/NPT;x=X(t);y=Y(Lf(t));if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // ぼかした地形 Lσ（太い琥珀線）
+    var samp=sampleAndCountMinima(s), arr=samp.arr, mins=samp.mins;
+    ctx.strokeStyle='#b06a10';ctx.lineWidth=2.8;ctx.beginPath();f=true;
+    for(i=0;i<=NPT;i++){t=TH_LO+(TH_HI-TH_LO)*i/NPT;x=X(t);y=Y(arr[i]);if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // Lσ の極小マーカー
+    for(i=0;i<mins.length;i++){var mt=mins[i];
+      ctx.fillStyle='#3d7a3a';ctx.beginPath();ctx.arc(X(mt),Y(Lsig(mt,s)),4,0,7);ctx.fill();}
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('θ（パラメータ）→', w-140, h-padB+26);
+    ctx.save();ctx.translate(14,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('L（損失＝高さ）',0,0);ctx.restore();
+    // 軌跡（薄い点）
+    for(var k=0;k<traj.length;k++){var tt=traj[k];
+      ctx.fillStyle='rgba(192,57,43,'+(0.10+0.28*k/Math.max(1,traj.length))+')';
+      ctx.beginPath();ctx.arc(X(tt),Y(Lsig(tt,s)),2.4,0,7);ctx.fill();}
+    // ボール（Lσ 上）
+    if(theta!==null && isFinite(theta) && theta>=TH_LO && theta<=TH_HI){
+      var bx=X(theta), by=Y(Lsig(theta,s));
+      // 降下方向の矢印 −∇Lσ
+      var g=dLsig(theta,s), dir=(g>0?-1:1);
+      var aLen=Math.min(44,12+Math.abs(g)*20);
+      ctx.strokeStyle='#3d7a3a';ctx.lineWidth=2.0;ctx.beginPath();
+      ctx.moveTo(bx,by);ctx.lineTo(bx+dir*aLen,by);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bx+dir*aLen,by);ctx.lineTo(bx+dir*(aLen-7),by-4);
+      ctx.lineTo(bx+dir*(aLen-7),by+4);ctx.closePath();ctx.fillStyle='#3d7a3a';ctx.fill();
+      ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(bx,by,6.5,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    }
+    return mins;
+  }
+  function statusReport(mins){
+    var s=parseFloat(ss.value), n=mins.length;
+    if(n<=1){
+      rd.className='readout ok';
+      rd.textContent='σ='+s.toFixed(2)+'：Lσ の極小は '+n+' 個。浅い谷はすべて溶けて、単一の大域盆地に。ここで「ボールを転がす」と、途中の谷に邪魔されず底へ届きます（ただし σ が大きいほど底の位置は生の最適からずれます）。';
+    } else {
+      rd.className='readout local';
+      rd.textContent='σ='+s.toFixed(2)+'：Lσ の極小は '+n+' 個。σ を上げると、浅い谷から順に消えていきます（細線＝生の L、太線＝ぼかした Lσ）。';
+    }
+  }
+  function frame(){
+    var s=parseFloat(ss.value);
+    var g=dLsig(theta,s), eta=0.05;
+    var stepSize=eta*g;
+    theta=theta-stepSize;
+    if(theta<TH_LO)theta=TH_LO; if(theta>TH_HI)theta=TH_HI;
+    step++;
+    traj.push(theta);
+    if(traj.length>500)traj.shift();
+    draw();
+    if(Math.abs(stepSize)<8e-4 || step>=700){ rolling=false; rollReport(); return; }
+    raf=requestAnimationFrame(frame);
+  }
+  function rollReport(){
+    var s=parseFloat(ss.value), Lv=Lsig(theta,s);
+    if(Math.abs(theta)<1.2){
+      rd.className='readout ok';
+      rd.textContent='大域盆地に到達：θ='+theta.toFixed(2)+'、Lσ='+Lv.toFixed(3)+'（σ='+s.toFixed(2)+'、'+step+' ステップ）。浅い谷が溶けていたので、右端から出発しても中央の深い谷へ届きました。σ を下げて焼きなませば、生の最適点へさらに近づけます。';
+    } else {
+      rd.className='readout local';
+      rd.textContent='浅い谷に捕まった：θ='+theta.toFixed(2)+'、Lσ='+Lv.toFixed(3)+'（σ='+s.toFixed(2)+'、'+step+' ステップ）。σ が小さく谷が残っているため、大域盆地の手前で止まりました。σ を上げてから、もう一度転がしてみてください。';
+    }
+  }
+  function start(){
+    if(raf)cancelAnimationFrame(raf);
+    theta=3.3; traj=[theta]; step=0; rolling=true;
+    rd.className='readout local'; rd.textContent='ボールが右端から、ぼかした地形 Lσ の傾き −∇Lσ にしたがって下ります…';
+    raf=requestAnimationFrame(frame);
+  }
+  function redraw(){ if(!rolling){ var mins=draw(); statusReport(mins);} else { draw(); } }
+  ss.addEventListener('input',function(){ vs.textContent=parseFloat(ss.value).toFixed(2); redraw(); });
+  btn.addEventListener('click',start);
+  window.addEventListener('resize',function(){ draw(); });
+  vs.textContent=parseFloat(ss.value).toFixed(2);
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){var m=draw();statusReport(m);});}
+  setTimeout(function(){var m=draw();statusReport(m);},60);
+  window.addEventListener('load',function(){var m=draw();statusReport(m);});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>わかる学習論 ── 進化・学習・意識を、ひとつの勾配で読む</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --calc:#a05c12; --calc-bg:#f7edda;
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.9;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:800px;margin:32px auto;background:var(--paper);
+    padding:60px 66px 84px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 8px;font-weight:700;}
+  h1{font-size:34px;line-height:1.32;margin:0 0 10px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:17px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.04em;line-height:1.7;}
+  .lead{font-size:17.5px;line-height:1.85;margin:22px 0 6px;}
+  .lead em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  .thesis{margin:26px 0 40px;padding:18px 24px;border-left:3px solid var(--acc);background:var(--calc-bg);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;}
+  .part{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.22em;color:var(--side);font-weight:700;margin:40px 0 14px;
+    padding-bottom:6px;border-bottom:1.5px solid var(--rule);}
+  a.ep{display:block;text-decoration:none;color:inherit;margin:10px 0;padding:15px 20px;
+    border:1px solid var(--rule);border-radius:4px;background:#fdfbf6;transition:.15s;}
+  a.ep:hover{border-color:var(--acc);background:#faf3e5;transform:translateX(2px);}
+  a.ep .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;font-weight:700;color:var(--acc);letter-spacing:.1em;}
+  a.ep .t{font-size:18px;font-weight:600;margin:2px 0 4px;letter-spacing:.02em;}
+  a.ep .h{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--ink-soft);line-height:1.65;}
+  .fin .t{color:var(--acc);}
+  .foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  @media (max-width:640px){ .sheet{padding:38px 18px 56px;margin:0;} h1{font-size:25px;} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series">わかる学習論</div>
+  <h1>進化・学習・意識を、ひとつの勾配で読む
+    <span class="sub">坂を下るたった一本の式 \(\theta\leftarrow\theta-\eta\nabla L\) が、ニューラルネットの学習にも、種の進化にも、脳の中の認知にも流れている。<br>全11回で、その一致を自分の足で確かめる連載です。</span>
+  </h1>
+
+  <p class="lead">誤差逆伝播(BP)と進化戦略(ES)は、まったく別物に見えて、Stein の補題で<em>厳密に同じ勾配</em>だと分かります。そこから、生命とは有限のエネルギーで勾配を計算する営みであること、学習とはその効率化であること、そして意識とはその極み ──<em>想像の中で勾配を計算すること</em>── だという地点まで登ります。</p>
+
+  <div class="thesis">
+    この連載が最後にたどり着く仮説：<strong>AIの心と人間の心のあいだに、本質的な差はない。どちらも同じ計算をしている。</strong> ── 大胆に述べます。ただし、それが依拠する前提（機能主義）と、まだ誰も解けていない問い（なぜ計算に「内側からの感じ」が伴うのか）も、最終回で正直に照らします。
+  </div>
+
+  <div class="part">第Ⅰ部 ── 道具をそろえる</div>
+
+  <a class="ep" href="wakaru-gakushuron-01-slope.html">
+    <div class="n">第 1 回</div>
+    <div class="t">学ぶとは、坂を下ることである</div>
+    <div class="h">損失地形と勾配降下。学習の全体像を、谷を転がるボールで掴む。更新則 \(\theta\leftarrow\theta-\eta\nabla L\)。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-02-backprop.html">
+    <div class="n">第 2 回</div>
+    <div class="t">バックプロパゲーションとは、連鎖律の帳簿である</div>
+    <div class="h">勾配 \(\nabla L\) をどう自動計算するか。合成関数の微分を、出力から入力へ後ろ向きに配る。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-03-fitness.html">
+    <div class="n">第 3 回</div>
+    <div class="t">適応度地形 ── 生物学と機械学習は、同じ絵を描いていた</div>
+    <div class="h">ライトの適応度地形(1932)＝損失地形の上下反転。選択＝最適化。理論生物学の基礎。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-04-es.html">
+    <div class="n">第 4 回</div>
+    <div class="t">進化とは、微分せずに坂を下ることである</div>
+    <div class="h">進化戦略(ES)。突然変異をばらまき、当たり外れと摂動の相関から降下方向を推定する。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-05-hyperreal.html">
+    <div class="n">第 5 回</div>
+    <div class="t">無限を、正直に数える</div>
+    <div class="h">超準解析。無限小・無限大をごまかさず扱う。monad と標準部分 st、そして N→∞ を厳密に。</div>
+  </a>
+
+  <div class="part">第Ⅱ部 ── 一致（この連載の核）</div>
+
+  <a class="ep" href="wakaru-gakushuron-06-stein.html">
+    <div class="n">第 6 回　★心臓部</div>
+    <div class="t">進化と学習は、同じ計算だった</div>
+    <div class="h">Stein の補題で \(\frac{1}{\sigma^2}\mathbb{E}[L(\theta+\varepsilon)\varepsilon]=\mathbb{E}[\nabla L(\theta+\varepsilon)]=\nabla L_\sigma\)。ES＝平滑化した損失の BP。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-07-smoothing.html">
+    <div class="n">第 7 回</div>
+    <div class="t">ぼかせば、地形はなめらかになる</div>
+    <div class="h">ガウス平滑化と \(\sigma\)。\(\sigma\)＝解像度＝温度。探索と活用、焼きなまし、宇宙論への橋。</div>
+  </a>
+
+  <div class="part">第Ⅲ部 ── 生命は計算である</div>
+
+  <a class="ep" href="wakaru-gakushuron-08-biosphere.html">
+    <div class="n">第 8 回</div>
+    <div class="t">生物圏は、一台のGPUである</div>
+    <div class="h">個体＝サンプル、生死＝評価、繁殖＝更新。地球規模の並列勾配推定。数が多いほど強い。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-09-landauer.html">
+    <div class="n">第 9 回</div>
+    <div class="t">生命は、効率よく計算する競争である</div>
+    <div class="h">ランダウアー原理（1ビット消去＝\(k_BT\ln2\)）。bits per joule。脳という 20W の驚異。</div>
+  </a>
+  <a class="ep" href="wakaru-gakushuron-10-shortcut.html">
+    <div class="n">第 10 回</div>
+    <div class="t">学習は、進化が見つけた近道である</div>
+    <div class="h">進化は1サンプルに一つの死。一生の中で学べる脳は桁違いに安い。同じ計算の効率化。</div>
+  </a>
+
+  <div class="part">第Ⅳ部 ── 意識</div>
+
+  <a class="ep fin" href="wakaru-gakushuron-11-consciousness.html">
+    <div class="n">第 11 回　★最終回</div>
+    <div class="t">意識とは、想像の中で死ぬことである</div>
+    <div class="h">世界モデルの中で勾配を計算する＝「仮説を自分の代わりに死なせる」（ポパー）。効率化の極み。AIと人間は同じ計算。そして、まだ誰も解けない問い。</div>
+  </a>
+
+  <div class="foot">
+    「わかる学習論」全11回。物理・数学・AIに興味のある高校生・大学生向けの読み物です。各回は独立したHTMLで、インタラクティブな図・数式・練習問題・「正直な線」を備えています。姉妹シリーズ「わかる宇宙論」（\(c\cdot t=\text{一定}\)、宇宙＝有限リソースの計算機、ランダウアー）と、第7回・第9回で橋が架かります。土台となった論考：Y. Otani, “Evolution Strategies as Infinite-Dimensional Backpropagation.”
+  </div>
+
+</div>
+</body>
+</html>

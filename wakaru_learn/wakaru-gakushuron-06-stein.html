@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進化と学習は、同じ計算だった ── わかる学習論 第6回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 6 回 ／ 統一 ── ES＝BP、シリーズの心臓部</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>進化と学習は、同じ計算だった
+    <span class="sub">微分せずに坂を下る「進化戦略(ES)」と、微分で坂を下る「誤差逆伝播(BP)」。<br>まったく別物に見える二つが、Stein の補題というたった一本の等式で、<em>厳密に同じ勾配</em>だと分かる。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：ガウス積分・部分積分、第5回の超準解析</span>
+    <span>この回のキー：\(\dfrac{1}{\sigma^2}\,\mathbb{E}\!\left[L(\theta+\varepsilon)\,\varepsilon\right]=\nabla L_\sigma(\theta)\)</span>
+  </div>
+
+  <p class="lead">ここまでのシリーズで、私たちは二つの「坂の下り方」を手にしました。ひとつは第2回の<strong>誤差逆伝播(BP)</strong> ── 損失を微分し、勾配 \(\nabla L\) をまっすぐ計算して下る、鋭い局所の道具。もうひとつは第4回の<strong>進化戦略(ES)</strong> ── 微分を一切使わず、たくさんの摂動をばらまいて「良かった方向」を平均する、鈍いが頑健な集団の道具。<em>微分する学習</em>と<em>微分しない進化</em>。両者は哲学からして正反対に見えます。ところが本当は、両者は<strong>まったく同じ勾配を計算している</strong>。ES は「積分」の顔をした BP であり、BP は「微分」の顔をした ES なのです。この一致を証明するのが、統計学の古典 ── <strong>Stein の補題</strong>。この回はシリーズの心臓部です。数式の導出をひとつも飛ばさず、最後の恒等式まで自分の足で歩ききりましょう。</p>
+
+  <h2><span class="n">01</span>二つの下り方 ── 積分と微分</h2>
+
+  <p>まず、両者の姿を並べます。第7回で主役になる<strong>平滑化損失(ガウス平滑化)</strong>を先取りしておきます。損失 \(L\) を、中心 \(\theta\) のまわりに標準偏差 \(\sigma\) のガウスノイズ \(\varepsilon\) でぼかした「ならし」の損失です。</p>
+
+  <div class="keybox">
+    <div class="lbl">平滑化損失（θ のまわりを σ でぼかす）</div>
+    $$J(\theta)\;=\;\mathbb{E}_{\varepsilon\sim\mathcal{N}(0,\sigma^2 I)}\!\bigl[\,L(\theta+\varepsilon)\,\bigr]\;=\;L_\sigma(\theta)$$
+  </div>
+
+  <p>この \(L_\sigma\) を下げたい、というのが両者の共通の目標です。では、その勾配 \(\nabla L_\sigma(\theta)\) を、二人はどう手に入れるのか。</p>
+
+  <p><strong>ES（進化・積分の顔）。</strong>中心 \(\theta\) から \(N\) 個の摂動 \(\varepsilon_1,\dots,\varepsilon_N\) をガウスでばらまき、それぞれの<em>評価値だけ</em> \(L(\theta+\varepsilon_i)\) を測る。微分はしない。そして「評価値を重みにした摂動の平均」をとる ── これが ES の勾配推定です。損失の<em>値</em>を集めて<em>積分（平均）</em>する、大域的な操作。</p>
+
+  <div class="calc" style="margin-top:14px;">
+    <span class="tag">二つの推定量を並べる</span>
+    <p class="lbl">ES：評価値 × 摂動 の平均（微分なし・大域）</p>
+    $$\hat{g}_{\mathrm{ES}}\;=\;\frac{1}{\sigma^2}\cdot\frac{1}{N}\sum_{i=1}^{N} L(\theta+\varepsilon_i)\,\varepsilon_i$$
+    <p class="lbl">BP：近傍での勾配の平均（微分あり・局所）</p>
+    $$\hat{g}_{\mathrm{BP}}\;=\;\frac{1}{N}\sum_{i=1}^{N}\nabla L(\theta+\varepsilon_i)\quad\bigl(N\to\infty\ \text{で}\ \mathbb{E}[\nabla L(\theta+\varepsilon)]\bigr)$$
+  </div>
+
+  <p><strong>BP（学習・微分の顔）。</strong>各点で損失を微分し、勾配 \(\nabla L\) を直接読む。ぼかした損失の勾配なら、近傍の勾配を平均すればよい。損失の<em>傾き</em>を集める、局所的な操作。</p>
+
+  <p>一方は<em>値の積分</em>、他方は<em>傾きの微分</em>。使う情報も、計算の哲学も違う。にもかかわらず、この二つは同じ量に収束します。その橋がStein の補題です。</p>
+
+  <h2><span class="n">02</span>Stein の補題 ── ガウスの部分積分</h2>
+
+  <p>鍵になるのは、ガウス分布がもつ一つの美しい等式です。ガウスノイズに「掛け算」された量の平均は、その量を「微分」した平均に化ける ── 積分（平均）と微分を橋渡しする、まさにこの回のための定理です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">Stein の補題（ガウスの部分積分）</div>
+    $$\varepsilon\sim\mathcal{N}(0,\sigma^2 I),\quad
+      \mathbb{E}\!\left[\,\varepsilon\, f(\varepsilon)\,\right]\;=\;\sigma^2\,\mathbb{E}\!\left[\,\nabla f(\varepsilon)\,\right]$$
+    <p style="margin:12px 0 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);">（\(f\) は十分によい ── 微分可能で、\(\varepsilon\) が遠方へ行くと爆発しない ── 関数とする）</p>
+  </div>
+
+  <p>左辺は「ノイズ \(\varepsilon\) と関数値 \(f\) の積」の平均、右辺は「\(f\) の微分」の平均。左が値の積分、右が傾きの平均。<strong>これがそのまま ES と BP の関係の骨格</strong>です。なぜこの等式が成り立つのか ── ガウス密度がもつ、たった一つの性質から一行で出ます。次節で1次元の場合を最後まで証明しましょう（多次元は各成分に同じ議論を当てるだけです）。</p>
+
+  <h2><span class="n">03</span>1次元での証明 ── 部分積分を最後まで</h2>
+
+  <p>証明の心臓は、ガウス密度 \(p(\varepsilon)\) が満たす<em>微分方程式</em>です。ガウスを微分すると、自分自身に \(-\varepsilon/\sigma^2\) が掛かって戻ってくる ── この一点だけで、あとは部分積分が全部やってくれます。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── ガウスの部分積分</span>
+    <p class="lbl">① ガウス密度と、その微分</p>
+    $$p(\varepsilon)=\frac{1}{\sqrt{2\pi}\,\sigma}\,e^{-\varepsilon^2/(2\sigma^2)}
+      \qquad\Longrightarrow\qquad p'(\varepsilon)=-\frac{\varepsilon}{\sigma^2}\,p(\varepsilon)$$
+    <p class="lbl">② よって「ε × 密度」は「密度の微分」で書き直せる</p>
+    $$\varepsilon\,p(\varepsilon)\;=\;-\,\sigma^2\,p'(\varepsilon)$$
+    <p class="lbl">③ これを平均 \(\mathbb{E}[\varepsilon f(\varepsilon)]\) に代入する</p>
+    $$\mathbb{E}\!\left[\varepsilon f(\varepsilon)\right]
+      =\int_{-\infty}^{\infty}\!\varepsilon\, f(\varepsilon)\,p(\varepsilon)\,d\varepsilon
+      =-\,\sigma^2\!\int_{-\infty}^{\infty}\! f(\varepsilon)\,p'(\varepsilon)\,d\varepsilon$$
+    <p class="lbl">④ 部分積分（境界項は \(p\to 0\) で消える）</p>
+    $$\int f\,p'\,d\varepsilon
+      =\underbrace{\bigl[\,f(\varepsilon)\,p(\varepsilon)\,\bigr]_{-\infty}^{\infty}}_{=\,0}
+      -\int f'(\varepsilon)\,p(\varepsilon)\,d\varepsilon
+      =-\int f'(\varepsilon)\,p(\varepsilon)\,d\varepsilon$$
+    <p class="lbl">⑤ ③に戻すと、負×負で符号がそろう</p>
+    $$\mathbb{E}\!\left[\varepsilon f(\varepsilon)\right]
+      =-\,\sigma^2\left(-\int f'(\varepsilon)\,p(\varepsilon)\,d\varepsilon\right)
+      =\sigma^2\!\int f'(\varepsilon)\,p(\varepsilon)\,d\varepsilon
+      =\sigma^2\,\mathbb{E}\!\left[f'(\varepsilon)\right]$$
+    <p style="margin-bottom:14px;">これで \(\mathbb{E}[\varepsilon f(\varepsilon)]=\sigma^2\,\mathbb{E}[f'(\varepsilon)]\) ── <span style="color:var(--ok);font-weight:700;">Stein の補題（1次元）が厳密に証明できました</span>。近似は一切していません。ガウス密度の \(p'=-(\varepsilon/\sigma^2)p\) という性質と、部分積分だけ。境界項が消えるのは、\(f\) がガウスの裾より穏やかなら \(f(\varepsilon)p(\varepsilon)\to 0\) だからです。</p>
+  </div>
+
+  <div class="aside">
+    <span class="tag">なぜ「部分積分」がここまで効くのか</span>
+    部分積分は「微分を、掛かっている相手に押しつける」操作です。ここでは、測りたい \(f\) にかかっていた微分を、いったんガウス密度 \(p\) に肩代わりさせ（③）、\(p'=-(\varepsilon/\sigma^2)p\) でそれを「\(\varepsilon\) を掛ける」に翻訳し、部分積分でもう一度 \(f\) 側へ戻す（④⑤）。<em>微分と「\(\varepsilon\) を掛ける」が、ガウスの上では表裏一体</em> ── これが Stein の補題の正体であり、のちに ES（掛け算）と BP（微分）が一致する理由そのものです。
+  </div>
+
+  <h2><span class="n">04</span>中心の恒等式 ── ES ＝ BP ＝ ∇Lσ</h2>
+
+  <p>準備は整いました。Stein の補題に \(f(\varepsilon)=L(\theta+\varepsilon)\) を代入します。合成関数の微分から、\(\varepsilon\) についての勾配は \(\theta\) についての勾配に等しい ── \(\nabla_\varepsilon L(\theta+\varepsilon)=\nabla_\theta L(\theta+\varepsilon)\) ── ことに注意して。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── 本題への適用</span>
+    <p class="lbl">① Stein の補題に \(f(\varepsilon)=L(\theta+\varepsilon)\) を入れる</p>
+    $$\mathbb{E}\!\left[\varepsilon\,L(\theta+\varepsilon)\right]\;=\;\sigma^2\,\mathbb{E}\!\left[\nabla L(\theta+\varepsilon)\right]$$
+    <p class="lbl">② 両辺を \(\sigma^2\) で割る</p>
+    $$\frac{1}{\sigma^2}\,\mathbb{E}\!\left[L(\theta+\varepsilon)\,\varepsilon\right]\;=\;\mathbb{E}\!\left[\nabla L(\theta+\varepsilon)\right]$$
+    <p class="lbl">③ 平均と微分を入れ替える（\(\nabla_\theta\) は \(\varepsilon\) の平均の外へ出せる）</p>
+    $$\mathbb{E}\!\left[\nabla_\theta L(\theta+\varepsilon)\right]\;=\;\nabla_\theta\,\mathbb{E}\!\left[L(\theta+\varepsilon)\right]\;=\;\nabla L_\sigma(\theta)$$
+  </div>
+
+  <p>三つを一本につなぐと、このシリーズの<strong>背骨となる恒等式</strong>が現れます。</p>
+
+  <div class="keybox" style="border-width:2.5px;">
+    <div class="lbl" style="color:var(--acc);">中心の恒等式 ── ES と BP は同じ勾配</div>
+    $$\underbrace{\frac{1}{\sigma^2}\,\mathbb{E}\!\left[\,L(\theta+\varepsilon)\,\varepsilon\,\right]}_{\text{ES：値の積分・大域}}
+      \;=\;
+      \underbrace{\mathbb{E}\!\left[\,\nabla L(\theta+\varepsilon)\,\right]}_{\text{BP：傾きの平均・局所}}
+      \;=\;
+      \nabla\,\mathbb{E}\!\left[L(\theta+\varepsilon)\right]
+      \;=\;
+      \nabla L_\sigma(\theta)$$
+  </div>
+
+  <p>左端は ES ── <em>微分を使わず</em>、評価値 \(L(\theta+\varepsilon)\) を摂動 \(\varepsilon\) で重みづけて平均した、大域的な「積分」の量。中央は BP ── 無限個の近傍点で<em>微分して</em>得た勾配を平均した、局所的な「微分」の量。この二つが、<strong>厳密に等しい</strong>。しかもどちらも、平滑化損失 \(L_\sigma\) の勾配 \(\nabla L_\sigma\) にほかならない。</p>
+
+  <div class="keybox" style="border:none;background:transparent;text-align:center;padding:6px 0;">
+    <p style="font-size:19px;margin:0;line-height:1.7;"><strong>ES は、平滑化した損失の BP である。</strong><br>進化と学習は、同じ勾配を計算していた。</p>
+  </div>
+
+  <p>近似ではありません。有限差分でもありません。Stein の補題という<em>厳密な等式</em>が、二つの世界を一本の線でつないでいる。微分しない進化と、微分する学習は、\(L_\sigma\) という同じ地形の同じ勾配を、ただ違う顔で計算していただけだったのです。</p>
+
+  <h2><span class="n">05</span>動かしてみる ── 定理が目の前で握手する</h2>
+
+  <p>下の図は、恒等式そのものの可視化です。2次元の損失地形（等高線）の上に一点 \(\theta\)（赤）を置き、そこから \(N\) 個のガウス摂動をばらまきます（琥珀の点）。<strong>緑の矢印</strong>は、ばらまいた点の<em>評価値だけ</em>から左辺の式で作った ES 推定 \(\hat{g}\)。<strong>黒の矢印</strong>は、この地形で解析的に計算できる真の平滑化勾配 \(\nabla L_\sigma\)（右辺）。\(N\) を上げてください ── ES の矢印が、真の勾配へ<em>吸い寄せられるように</em>収束します（推定のばらつきは \(\propto 1/N\)）。\(\sigma\) を変えると、ぼかしの強さ＝真の勾配自体が変わります。</p>
+
+  <div class="fig">
+    <div class="cap">図：損失地形（負のガウス谷の和）上での中心の恒等式。緑＝ES 推定 ĝ ＝(1/Nσ²)Σ L(θ+εᵢ)εᵢ（評価値のみ・微分なし）／黒＝真の平滑化勾配 ∇Lσ（右辺・解析値）。N を上げると緑が黒へ収束する ── これがそのまま定理の証拠</div>
+    <canvas id="cv" width="680" height="600"></canvas>
+    <div class="controls">
+      <label>集団サイズ N（摂動の本数）<span class="val" id="vN">40</span>
+        <input type="range" id="sN" min="0" max="100" step="1" value="46">
+      </label>
+      <label>ぼかし σ（摂動の広がり）<span class="val" id="vsig">0.35</span>
+        <input type="range" id="ssig" min="0.08" max="0.85" step="0.01" value="0.35">
+      </label>
+      <button class="btn" id="run">再抽選 ↻</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#241d13;"></i>真の平滑化勾配 ∇Lσ（右辺）</span>
+      <span><i class="swatch" style="background:#3d7a3a;"></i>ES 推定 ĝ（左辺・評価値のみ）</span>
+      <span><i class="dot" style="background:#c0392b;"></i>中心 θ</span>
+      <span><i class="dot" style="background:rgba(176,106,16,.6);"></i>摂動 θ+εᵢ</span>
+    </div>
+  </div>
+
+  <p>\(N=2\) ではどうか。緑の矢印は毎回とんでもない方向を指し、長さもでたらめです ── たった2個の評価値から勾配を当てようというのだから当然。ところが \(N\) を数百に上げると、緑は黒にぴたりと重なります。<em>評価値をかき集めて平均するだけ</em>で、微分をしていないのに、微分で得られる勾配が復元される。読み取り欄の「角度差」は \(0^\circ\) へ、「大きさ比」は \(1\) へ近づいていく。これが「ES は BP の不偏推定である」ということの、目に見える意味です。</p>
+
+  <h2><span class="n">06</span>積分と微分が握手する ── 超準解析の言葉で</h2>
+
+  <p>前回（第5回）の超準解析の言葉を使うと、この収束はもっと透明になります。集団サイズ \(N\) を有限のまま大きくするのではなく、<em>超有限</em>な \(N\)（無限大の超自然数）にとってみましょう。すると ES の和は<strong>超有限和</strong>になります。</p>
+
+  <div class="keybox">
+    <div class="lbl">超準解析の読み ── 標準部分が勾配を復元する</div>
+    $$\mathrm{st}\!\left(\frac{1}{\sigma^2}\cdot\frac{1}{N}\sum_{i=1}^{N} L(\theta+\varepsilon_i)\,\varepsilon_i\right)
+      \;=\;\frac{1}{\sigma^2}\,\mathbb{E}\!\left[L(\theta+\varepsilon)\,\varepsilon\right]
+      \;=\;\nabla L_\sigma(\theta)$$
+  </div>
+
+  <p>無限に多くの個体からなる集団の、評価値で重みづけた平均。その<strong>標準部分 \(\mathrm{st}\)</strong>（無限小のゆらぎを削ぎ落とした「見える値」）が、ちょうど右辺の期待値＝真の勾配に一致します。第5回で見たとおり、集団の一人ひとりは中心 \(\theta\) の<em>モナド（無限小近傍）</em>を埋め尽くす無限小の摂動であり、その無限小たちの<em>合意</em>が、標準の世界の勾配を復元する。有限の \(N\) ではこの合意に \(\propto 1/N\) のゆらぎ（第5回でいう無限小からのズレ）が残りますが、\(N\) が超有限なら、そのズレは無限小として \(\mathrm{st}\) が消し去ります。</p>
+
+  <div class="aside">
+    <span class="tag">積分と微分が、ガウスの上で握手する</span>
+    ふつう積分（値をかき集めて平均する）と微分（一点での傾き）は、逆向きの操作です。それが Stein の補題では等号で結ばれる。左辺は「集団全体を積分した大域の量」、右辺は「一点の勾配という局所の量」。<em>ガウスという分布の対称性</em>が、この大域と局所を折り合わせている。進化が「集団というマクロ」で、学習が「勾配というミクロ」で、それぞれ別々に発見した同じ真実 ── それが \(\nabla L_\sigma\) だったのです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── 何が厳密で、何に注意すべきか</h2>
+
+  <p>この一致は強力ですが、正確に何を主張しているのかは丁寧に裁く必要があります。よくある言い回しを、三つとも法廷にかけます。</p>
+
+  <table class="verdict">
+    <tr><th>主張</th><th>検討</th><th>判決</th></tr>
+    <tr>
+      <td>「ES は BP の有限差分近似（差分商で微分を真似ているだけ）」</td>
+      <td>違う。ES は生の \(L\) を数値微分しているのではなく、<strong>平滑化損失 \(L_\sigma\) の勾配の不偏推定</strong>。有限差分ではなく、Stein の恒等式による厳密な平均量である</td>
+      <td class="v-bad">×（棄却）</td>
+    </tr>
+    <tr>
+      <td>「ES と BP は、生の損失 \(L\) の上で厳密に一致する」</td>
+      <td>一致するのは \(\sigma\) でぼかした \(L_\sigma\) の勾配であって、生の \(L\) の勾配ではない。両者が一致するのは \(\sigma\to 0\)（かつ \(L\) が滑らか）の極限のみ</td>
+      <td class="v-bad">要注意</td>
+    </tr>
+    <tr>
+      <td>「Stein の恒等式は厳密（近似ではない）」</td>
+      <td>そのとおり。可積分性と滑らかさの穏当な仮定のもとで、部分積分から導かれる完全な等式。第3節で近似を一切使わずに証明した</td>
+      <td class="v-ok">生存</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 「同じ」なのは Lσ の勾配であって、生の L ではない</span>
+    <p style="margin-top:0;">恒等式 \(\tfrac{1}{\sigma^2}\mathbb{E}[L(\theta+\varepsilon)\,\varepsilon]=\nabla L_\sigma(\theta)\) は、Stein の補題による<strong>厳密な等式</strong>です（可積分性・滑らかさの穏当な仮定下）。ただし、ここで ES と BP が「同じ」だと言えるのは、あくまで<em>平滑化損失 \(L_\sigma\) の勾配</em>についてです。\(\sigma\) が有限であるかぎり、\(\nabla L_\sigma\) は生の損失の勾配 \(\nabla L\) とはズレます ── このズレの正体と、\(\sigma\) が果たす役割こそ、次回の主題です。</p>
+    <p style="margin-bottom:0;">それでも主張は十分に強い。進化(ES)と学習(BP)は、別々の原理ではなく、<strong>同一の勾配計算がもつ二つの顔</strong>（積分と微分）だった。片方は集団の値をかき集め、片方は一点で微分する ── 道具立てはまるで違うのに、指し示す勾配は同じ。これがこのシリーズの背骨です。次回は、この \(\sigma\) を「解像度／温度」として読み替え、ぼかすことで地形がなめらかになり、局所最小が埋まっていく様子を見ます。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の恒等式だけで解けます）</div>
+    <ol>
+      <li>Stein の補題で \(f(\varepsilon)=\varepsilon\)（1次元、\(\varepsilon\sim\mathcal N(0,\sigma^2)\)）とおくと、何が出るか。左辺・右辺をそれぞれ計算せよ。
+        <details><summary>答えを見る</summary><div class="ans">左辺 \(\mathbb{E}[\varepsilon\cdot\varepsilon]=\mathbb{E}[\varepsilon^2]=\sigma^2\)。右辺 \(\sigma^2\,\mathbb{E}[f'(\varepsilon)]=\sigma^2\,\mathbb{E}[1]=\sigma^2\)。両辺とも \(\sigma^2\) で一致し、Stein の補題が「分散は \(\sigma^2\)」というよく知る事実を含んでいることが分かる。</div></details>
+      </li>
+      <li>損失が二次関数 \(L(\theta)=\tfrac12\|\theta\|^2\) のとき、平滑化損失の勾配 \(\nabla L_\sigma(\theta)\) を求めよ。生の勾配 \(\nabla L=\theta\) とどう違うか。
+        <details><summary>答えを見る</summary><div class="ans">\(L_\sigma(\theta)=\mathbb{E}[\tfrac12\|\theta+\varepsilon\|^2]=\tfrac12\|\theta\|^2+\tfrac12\,\mathbb{E}\|\varepsilon\|^2=\tfrac12\|\theta\|^2+\text{定数}\)。定数は微分で消えるので \(\nabla L_\sigma(\theta)=\theta=\nabla L(\theta)\)。二次関数では平滑化しても勾配が変わらない（だから「生の \(L\) と一致」に見える特別な場合）。一般の非線形な \(L\) ではズレが出る ── そこが判決表の「要注意」。</div></details>
+      </li>
+      <li>ES 推定 \(\hat g=\tfrac{1}{\sigma^2}\cdot\tfrac1N\sum_i L(\theta+\varepsilon_i)\varepsilon_i\) について、\(N\) を4倍にすると推定の「ばらつき（標準偏差）」はおよそ何倍になるか。図で確かめられるか。
+        <details><summary>答えを見る</summary><div class="ans">分散は \(\propto 1/N\) なので、\(N\) を4倍にすると分散は \(1/4\)、標準偏差はその平方根で \(1/2\) 倍。図で \(N\) を大きくすると緑の矢印の暴れ幅がちょうど半分ずつ縮み、黒の矢印へ収束していくのが見える。これが「不偏だが分散のある推定」の典型的な振る舞い。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第6回まとめ</span>進化と学習は、同一の勾配の二つの顔</h2>
+    <p>ES は評価値だけを積分する大域の道具、BP は勾配を微分する局所の道具（STEP 01）。両者を橋渡しするのが Stein の補題 \(\mathbb{E}[\varepsilon f(\varepsilon)]=\sigma^2\mathbb{E}[\nabla f]\)（STEP 02）で、これはガウス密度の \(p'=-(\varepsilon/\sigma^2)p\) と部分積分だけから<em>厳密に</em>証明できる（STEP 03）。\(f(\varepsilon)=L(\theta+\varepsilon)\) を入れて整理すると、中心の恒等式 \(\tfrac1{\sigma^2}\mathbb{E}[L(\theta+\varepsilon)\varepsilon]=\mathbb{E}[\nabla L(\theta+\varepsilon)]=\nabla L_\sigma(\theta)\) ── ES＝BP＝平滑化損失の勾配（STEP 04）。図では \(N\) を上げるほど ES 推定が真の勾配へ収束し（STEP 05）、超準解析では超有限和の標準部分が勾配を復元する（STEP 06）。ただし「同じ」なのは \(L_\sigma\) の勾配で、生の \(L\) ではない（STEP 07）。</p>
+    <p>微分しない進化と、微分する学習は、別物ではなかった。同じ地形 \(L_\sigma\) の同じ勾配を、積分と微分という二つの顔で計算していただけ ── この一致が、このシリーズの心臓です。残る問いはただ一つ。では \(\sigma\) とは何なのか。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第7回</span>
+    <strong>ぼかせば、地形はなめらかになる。</strong> 今回、ES と BP を結んだ平滑化損失 \(L_\sigma\)。その \(\sigma\) は単なる「ノイズの大きさ」ではありません。地形を \(\sigma\) でぼかすと、細かい谷（局所最小）が埋まり、大きな流れだけが残る ── \(\sigma\) は<em>解像度であり温度</em>です。大きな \(\sigma\) で大局を掴み、小さくして細部へ降りる。局所最小という第1回以来の宿敵に、ぼかしという武器で挑みます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第6回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。Stein の補題（\(\varepsilon\sim\mathcal N(0,\sigma^2 I)\) に対し \(\mathbb{E}[\varepsilon f(\varepsilon)]=\sigma^2\mathbb{E}[\nabla f(\varepsilon)]\)）は C. Stein に由来する統計学の古典的等式で、本稿の1次元証明（ガウス密度の関係式 \(p'=-(\varepsilon/\sigma^2)p\) と部分積分、境界項の消失）は可積分性・十分な滑らかさ・裾での減衰という穏当な仮定のもとで厳密に成り立ちます。これを \(f(\varepsilon)=L(\theta+\varepsilon)\) に適用し、平均と勾配の交換（優収束など標準的な条件下で正当）を用いて得られる恒等式 \(\tfrac1{\sigma^2}\mathbb{E}[L(\theta+\varepsilon)\varepsilon]=\mathbb{E}[\nabla L(\theta+\varepsilon)]=\nabla L_\sigma(\theta)\) は、進化戦略(ES)の勾配推定が平滑化損失 \(L_\sigma\) の勾配の不偏推定であることを示します（Salimans らの Evolution Strategies の定式化と同じ関係）。強調すべき点として、この一致は生の損失 \(L\) の勾配についてではなく、あくまで \(\sigma\) 平滑化した \(L_\sigma\) の勾配についてのものです。本稿の図の地形は負のガウス関数の和による説明用の模型で、ガウス平滑化が解析的に閉じる（ガウス同士の畳み込みがガウスになる）性質を使って真の \(\nabla L_\sigma\) を厳密に描いています。推定量の分散が \(\propto 1/N\) で減ることは独立標本の標本平均の一般的性質です。超準解析による超有限和の標準部分の解釈は第5回の枠組みに接続した読み替えです。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「集団サイズ N」を上げると、緑の ES 推定矢印が黒の真の勾配 ∇Lσ へ収束します。「ぼかし σ」で平滑化の強さを変え、「再抽選」で摂動を引き直せます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sN=document.getElementById('sN'), vN=document.getElementById('vN'),
+      ssig=document.getElementById('ssig'), vsig=document.getElementById('vsig'),
+      rd=document.getElementById('rd'), btn=document.getElementById('run');
+
+  // ---- 損失地形：負のガウス谷の和 L(x,y) = -Σ A_k exp(-r²/(2 w_k²)) ----
+  var WELLS=[
+    {A:1.00, cx:-0.85, cy:-0.55, w:0.75},
+    {A:0.78, cx: 0.85, cy: 0.65, w:0.60},
+    {A:0.55, cx: 0.55, cy:-0.95, w:0.50}
+  ];
+  // 評価する中心 θ（固定）
+  var THx=-0.10, THy=0.30;
+  var XLO=-2, XHI=2, YLO=-2, YHI=2;
+
+  function Lraw(x,y){ // 生の損失 L
+    var s=0;
+    for(var k=0;k<WELLS.length;k++){var W=WELLS[k];
+      var rx=x-W.cx, ry=y-W.cy, r2=rx*rx+ry*ry;
+      s+=W.A*Math.exp(-r2/(2*W.w*W.w));
+    }
+    return -s;
+  }
+  // 平滑化損失の勾配 ∇L_σ（ガウス畳み込みが閉じる：s²=w²+σ²）
+  function gradLsig(x,y,sig){
+    var s2v=sig*sig, gx=0, gy=0;
+    for(var k=0;k<WELLS.length;k++){var W=WELLS[k];
+      var s2=W.w*W.w+s2v;
+      var rx=x-W.cx, ry=y-W.cy, r2=rx*rx+ry*ry;
+      var c=W.A*(W.w*W.w)/(s2*s2)*Math.exp(-r2/(2*s2));
+      gx+=c*rx; gy+=c*ry;
+    }
+    return [gx,gy];
+  }
+
+  // ---- ガウス乱数（Box–Muller）----
+  function randn(){
+    var u=0,v=0;
+    while(u===0) u=Math.random();
+    while(v===0) v=Math.random();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  }
+
+  function sliderToN(s){ // 0..100 → 2..6000（指数）
+    return Math.max(2, Math.round(2*Math.pow(3000, s/100)));
+  }
+
+  var samps=[]; // {ex,ey}
+  function resample(){
+    var N=sliderToN(parseFloat(sN.value)), sig=parseFloat(ssig.value);
+    samps=[];
+    for(var i=0;i<N;i++){ samps.push({ex:sig*randn(), ey:sig*randn()}); }
+  }
+
+  // ES 推定 ĝ = (1/(σ²)) · (1/N) Σ L(θ+εᵢ) εᵢ
+  function esEstimate(){
+    var sig=parseFloat(ssig.value), s2=sig*sig, N=samps.length, gx=0, gy=0;
+    for(var i=0;i<N;i++){
+      var ex=samps[i].ex, ey=samps[i].ey;
+      var Lv=Lraw(THx+ex, THy+ey);
+      gx+=Lv*ex; gy+=Lv*ey;
+    }
+    return [gx/(s2*N), gy/(s2*N)];
+  }
+
+  function lerpC(a,b,t){ // hex a→b
+    var A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16);
+    var ar=(A>>16)&255, ag=(A>>8)&255, ab=A&255;
+    var br=(B>>16)&255, bg=(B>>8)&255, bb=B&255;
+    var r=Math.round(ar+(br-ar)*t), g=Math.round(ag+(bg-ag)*t), bl=Math.round(ab+(bb-ab)*t);
+    return 'rgb('+r+','+g+','+bl+')';
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var padL=40, padR=16, padT=14, padB=30;
+    var plotW=w-padL-padR, plotH=h-padT-padB;
+    var sc=Math.min(plotW/(XHI-XLO), plotH/(YHI-YLO));
+    var ox=padL+(plotW-sc*(XHI-XLO))/2;
+    var oy=padT+(plotH-sc*(YHI-YLO))/2;
+    function X(x){return ox+(x-XLO)*sc;}
+    function Y(y){return oy+(YHI-y)*sc;}
+    ctx.clearRect(0,0,w,h);
+
+    // --- ヒートマップ（谷ほど濃い琥珀） ---
+    var LMIN=-1.15, LMAX=0.02, G=84, cw=sc*(XHI-XLO)/G, ch=sc*(YHI-YLO)/G;
+    for(var i=0;i<G;i++){
+      for(var j=0;j<G;j++){
+        var x=XLO+(XHI-XLO)*(i+0.5)/G, y=YHI-(YHI-YLO)*(j+0.5)/G;
+        var t=(Lraw(x,y)-LMIN)/(LMAX-LMIN); if(t<0)t=0; if(t>1)t=1;
+        ctx.fillStyle=lerpC('#7a4e10','#fdf7ea', t);
+        ctx.fillRect(ox+i*cw-0.5, oy+j*ch-0.5, cw+1, ch+1);
+      }
+    }
+    // --- 等高線（マーチングスクエア） ---
+    var NC=52, levels=[-1.05,-0.85,-0.65,-0.48,-0.34,-0.22,-0.13,-0.06];
+    var gx0=XLO, gy0=YLO, dx=(XHI-XLO)/NC, dy=(YHI-YLO)/NC;
+    var grid=[];
+    for(var a=0;a<=NC;a++){grid[a]=[]; for(var b=0;b<=NC;b++){ grid[a][b]=Lraw(gx0+a*dx, gy0+b*dy); }}
+    function ip(v1,v2,lv){ var dnm=(v2-v1); return dnm===0?0.5:(lv-v1)/dnm; }
+    ctx.strokeStyle='rgba(60,44,20,0.30)'; ctx.lineWidth=1;
+    for(var li=0;li<levels.length;li++){
+      var lv=levels[li];
+      ctx.beginPath();
+      for(var a2=0;a2<NC;a2++){
+        for(var b2=0;b2<NC;b2++){
+          var v0=grid[a2][b2], v1=grid[a2+1][b2], v2=grid[a2+1][b2+1], v3=grid[a2][b2+1];
+          var idx=(v0>lv?1:0)|(v1>lv?2:0)|(v2>lv?4:0)|(v3>lv?8:0);
+          if(idx===0||idx===15) continue;
+          var xL=gx0+a2*dx, xR=xL+dx, yB=gy0+b2*dy, yT=yB+dy;
+          // 各辺の交点（辺0:下,1:右,2:上,3:左）
+          var pB=[xL+ip(v0,v1,lv)*dx, yB];
+          var pR=[xR, yB+ip(v1,v2,lv)*dy];
+          var pT=[xL+ip(v3,v2,lv)*dx, yT];
+          var pLe=[xL, yB+ip(v0,v3,lv)*dy];
+          function seg(p,q){ ctx.moveTo(X(p[0]),Y(p[1])); ctx.lineTo(X(q[0]),Y(q[1])); }
+          switch(idx){
+            case 1: case 14: seg(pLe,pB); break;
+            case 2: case 13: seg(pB,pR); break;
+            case 3: case 12: seg(pLe,pR); break;
+            case 4: case 11: seg(pR,pT); break;
+            case 6: case 9:  seg(pB,pT); break;
+            case 7: case 8:  seg(pLe,pT); break;
+            case 5: seg(pLe,pT); seg(pB,pR); break;
+            case 10: seg(pLe,pB); seg(pR,pT); break;
+          }
+        }
+      }
+      ctx.stroke();
+    }
+
+    // --- 摂動点（最大400本まで描画） ---
+    var drawn=Math.min(samps.length,400);
+    for(var s=0;s<drawn;s++){
+      var px=X(THx+samps[s].ex), py=Y(THy+samps[s].ey);
+      ctx.fillStyle='rgba(176,106,16,0.55)';
+      ctx.beginPath(); ctx.arc(px,py,2.0,0,7); ctx.fill();
+    }
+
+    // --- 矢印 ---
+    var sig=parseFloat(ssig.value);
+    var gt=gradLsig(THx,THy,sig);        // 真の平滑化勾配（右辺）
+    var ge=esEstimate();                 // ES 推定（左辺）
+    var gtN=Math.hypot(gt[0],gt[1]);
+    var geN=Math.hypot(ge[0],ge[1]);
+    var target=0.95;                     // 真の矢印の長さ（データ単位）
+    var K=(gtN>1e-9)?(target/gtN):0;     // 両矢印で共通のスケール
+    function arrow(vx,vy,color,lw){
+      var x1=THx+K*vx, y1=THy+K*vy;
+      var p0x=X(THx), p0y=Y(THy), p1x=X(x1), p1y=Y(y1);
+      var ang=Math.atan2(p1y-p0y, p1x-p0x), hl=9;
+      ctx.strokeStyle=color; ctx.lineWidth=lw;
+      ctx.beginPath(); ctx.moveTo(p0x,p0y); ctx.lineTo(p1x,p1y); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(p1x,p1y);
+      ctx.lineTo(p1x-hl*Math.cos(ang-0.4), p1y-hl*Math.sin(ang-0.4));
+      ctx.lineTo(p1x-hl*Math.cos(ang+0.4), p1y-hl*Math.sin(ang+0.4));
+      ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+    }
+    if(K>0){
+      arrow(ge[0],ge[1],'#3d7a3a',3.0);   // 緑：ES 推定
+      arrow(gt[0],gt[1],'#241d13',2.4);   // 黒：真の勾配
+    }
+    // 中心 θ
+    ctx.fillStyle='#c0392b'; ctx.beginPath(); ctx.arc(X(THx),Y(THy),6,0,7); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#241d13'; ctx.font='bold 12px sans-serif'; ctx.fillText('θ', X(THx)+9, Y(THy)-8);
+
+    report(gt,ge,gtN,geN);
+  }
+
+  function report(gt,ge,gtN,geN){
+    var N=samps.length, sig=parseFloat(ssig.value);
+    var dot=gt[0]*ge[0]+gt[1]*ge[1];
+    var cos=(gtN>1e-9&&geN>1e-9)?dot/(gtN*geN):0;
+    cos=Math.max(-1,Math.min(1,cos));
+    var ang=Math.acos(cos)*180/Math.PI;
+    var ratio=(gtN>1e-9)?(geN/gtN):0;
+    var base='N='+N+'、σ='+sig.toFixed(2)+' ｜ ES推定と真の勾配 ∇Lσ の角度差 = '+ang.toFixed(1)+'°、大きさ比 |ĝ|/|∇Lσ| = '+ratio.toFixed(2)+'。';
+    if(ang<8 && ratio>0.82 && ratio<1.18){
+      rd.className='readout ok';
+      rd.textContent=base+' 緑と黒がほぼ重なった ── ES（値の積分）が BP（傾きの微分）を復元。これが中心の恒等式の証拠。N をさらに上げると角度差→0°・比→1 へ。';
+    } else if(N<20){
+      rd.className='readout bad';
+      rd.textContent=base+' N が小さく、推定は大きく暴れている（分散∝1/N）。N を上げると緑が黒へ吸い寄せられていく。';
+    } else {
+      rd.className='readout local';
+      rd.textContent=base+' まだズレが残る。N を上げれば角度差は 0°、大きさ比は 1 へ近づく（ばらつきは 1/N で縮む）。';
+    }
+  }
+
+  function refresh(){ resample(); draw(); }
+  function syncLabels(){ vN.textContent=sliderToN(parseFloat(sN.value)); vsig.textContent=parseFloat(ssig.value).toFixed(2); }
+
+  sN.addEventListener('input',function(){ syncLabels(); refresh(); });
+  ssig.addEventListener('input',function(){ syncLabels(); refresh(); });
+  btn.addEventListener('click',refresh);
+  window.addEventListener('resize',draw);
+
+  syncLabels(); resample();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(draw);}
+  setTimeout(draw,60);
+  window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

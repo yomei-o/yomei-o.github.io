@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無限を、正直に数える ── わかる学習論 第5回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 5 回 ／ 無限小という道具 ── 極限のごまかしを、厳密にする</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>無限を、正直に数える
+    <span class="sub">「限りなく0に近づける」── その言い回しに、少しだけ後ろめたさを感じたことはないでしょうか。<br>0でも有限でもない数、無限小 ε を本当に手に持てる数として認める。すると微分は、極限の儀式なしに、割り算そのものへ戻ります。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回の「無限集団 N→∞」、微分の定義</span>
+    <span>この回のキー：\(f'(x)=\operatorname{st}\!\big(\tfrac{f(x+\varepsilon)-f(x)}{\varepsilon}\big)\)</span>
+  </div>
+
+  <p class="lead">前回（第4回）、進化戦略(ES)を語るとき、私たちは<em>ためらいながら</em>「無限個の集団 \(N\to\infty\)」「\(\theta\) のごく近く、無限小の近傍を探る」という言い方を使いました。便利だけれど、どこか反則めいた響きがあります ── \(N\to\infty\) の「集団」など本当に存在するのか。「無限小の近傍」とは、結局は \(\varepsilon\to 0\) の極限のことで、ならば正直に極限記号を書けばいいだけではないか、と。今回はこの後ろめたさに、数学の側から正面から答えます。<strong>無限小 \(\varepsilon\) を、0でも有限でもない一つの「数」として本当に手に取れる</strong>ようにする道具 ── それが<em>超準解析(non-standard analysis)</em>です。これを手にすると、微分は「限りなく近づける」という時間のかかる儀式ではなく、<strong>無限小で割って、答えの実数部分だけを読む</strong>という、たった一手の操作になります。第4回の「無限集団」も、第6回で握手する「\(\infty\) サンプルの平均＝微分」も、ここで初めて<em>ごまかしなしに</em>語れるようになります。</p>
+
+  <h2><span class="n">01</span>「限りなく近づける」の、後ろめたさ</h2>
+
+  <p>微分を初めて習ったとき、こう教わったはずです。傾きを知りたければ、2点を結ぶ<strong>割線(secant)</strong>の傾き \(\dfrac{f(x+h)-f(x)}{h}\) を作り、\(h\) を「限りなく0に近づける」。すると割線は<strong>接線(tangent)</strong>に化ける、と。</p>
+
+  <div class="keybox">
+    <div class="lbl">教科書の微分（極限による定義）</div>
+    $$f'(x)\;=\;\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$
+  </div>
+
+  <p>ここに小さな不誠実があります。計算の途中、\(h\) は<em>0であってはならない</em> ── 0で割れないからです。ところが最後の最後、極限をとる瞬間には \(h\) を<em>0そのものにしたい</em>。「0ではないが、いくらでも0に近い \(h\)」という、どっちつかずの存在をこっそり使っているのです。18世紀、ライプニッツやオイラーはこれを<strong>無限小</strong>と呼び、ためらいなく「数」として計算しました。哲学者バークリは1734年、これを<em>「亡くなった量の亡霊」</em>と痛烈に皮肉ります。19世紀のワイエルシュトラスらは、この亡霊を追い払うために \(\varepsilon\text{-}\delta\) 論法を発明し、無限小を<em>言い回し</em>へ格下げして解析学を厳密化しました。極限記号 \(\lim\) は、その「無限小を使わずに済ませる」ための約束事なのです。</p>
+
+  <div class="aside">
+    <span class="tag">では、亡霊を本物にできないのか</span>
+    ワイエルシュトラスの道は「無限小を消す」ことで厳密さを買いました。けれど問いは残ります ── <strong>無限小そのものを、矛盾なく数として認めることはできないのか</strong>。この問いに肯定で答えたのが、論理学者エイブラハム・ロビンソンです。1960年、彼は数理論理学（モデル理論）を使い、実数体 \(\mathbb{R}\) を拡張して無限小と無限大を<em>本当に含む</em>新しい数の体系を、一片の矛盾もなく構成してみせました。ライプニッツの直観は、300年越しで厳密な市民権を得たのです。
+  </div>
+
+  <h2><span class="n">02</span>超実数体 *ℝ ── 無限小と無限大を、数として持つ</h2>
+
+  <p>ロビンソンが作った数の体系を<strong>超実数体(hyperreal numbers)</strong> \({}^{*}\mathbb{R}\) と呼びます。これは実数体 \(\mathbb{R}\) を丸ごと含み、その上に<em>新しい住人</em>を二種類迎え入れた、より大きな数直線です。加減乗除も大小比較も、実数と同じ規則で自由にできます（体としての性質を保つ）。新しい住人とは ── </p>
+
+  <div class="keybox">
+    <div class="lbl">無限小 ε の定義（どんな正の実数より小さい正の数）</div>
+    $$\varepsilon>0\quad\text{かつ}\quad \varepsilon<\frac{1}{n}\ \ \text{（すべての自然数 } n=1,2,3,\dots\text{ に対して）}$$
+  </div>
+
+  <p>ふつうの実数 \(r>0\) なら、どれだけ小さくても、それより大きい \(1/n\) が必ず見つかります（アルキメデスの性質）。ところが \(\varepsilon\) は、\(1,\ \tfrac12,\ \tfrac13,\ \dots\) の<em>すべて</em>より小さい。0ではない（\(\varepsilon>0\)）のに、どんな有限の物差しでも測れないほど小さい ── これが<strong>無限小</strong>です。そしてその逆数をとると、</p>
+
+  <div class="keybox">
+    <div class="lbl">無限大 H ── 無限小の逆数</div>
+    $$H=\frac{1}{\varepsilon}\quad\Longrightarrow\quad H>n\ \ \text{（すべての自然数 } n \text{ より大きい）}$$
+  </div>
+
+  <p>\(\varepsilon\) が \(1/n\) より小さいなら、逆数をとって \(H=1/\varepsilon\) はすべての \(n\) より大きい ── <strong>無限大</strong>の超実数です。ここが決定的な違いです。\(\infty\) は記号（「限りなく大きくなる」という<em>動き</em>）であって数ではありませんが、\(H\) は \({}^{*}\mathbb{R}\) の中に<em>実在する一つの数</em>で、\(H+1\)、\(2H\)、\(H^2\)、\(\sqrt{H}\) といった計算が全部できます。第4回で口ごもりながら書いた「\(N\to\infty\) の集団」は、これからは <strong>\(N=H\)、無限大個の集団</strong>と、静止した一つの数として名指しできるのです。</p>
+
+  <h2><span class="n">03</span>標準部分 st(x) ── 無限に近い、ただ一つの実数</h2>
+
+  <p>超実数 \(x\) が有限（無限大でない）なら、それに<strong>無限に近い実数がただ一つ</strong>だけ存在します。それを取り出す操作を<strong>標準部分(standard part)</strong>と呼び、\(\operatorname{st}(x)\) と書きます。まず「無限に近い」を定義しましょう。</p>
+
+  <div class="keybox">
+    <div class="lbl">無限に近い（≈）と、標準部分 st</div>
+    $$x\approx y\ \ \overset{\text{def}}{\Longleftrightarrow}\ \ x-y\ \text{が無限小}\qquad\qquad \operatorname{st}(x)=\big(\,x\ \text{に無限に近い、ただ一つの実数}\,\big)$$
+  </div>
+
+  <p>たとえば \(3+\varepsilon\) は、実数 \(3\) と無限小しか違いません。だから \(3+\varepsilon\approx 3\)、そして \(\operatorname{st}(3+\varepsilon)=3\)。標準部分とは、<em>超実数から「無限小のホコリ」を払い落として、いちばん近い実数に丸める</em>操作だと思ってください。\(\operatorname{st}(7-2\varepsilon)=7\)、\(\operatorname{st}(\varepsilon)=0\)、\(\operatorname{st}(5)=5\)。有限な超実数はすべて、\(\big(\text{実数}\big)+\big(\text{無限小}\big)\) の形にただ一通りに分かれ、\(\operatorname{st}\) はその実数部分を抜き出します。</p>
+
+  <div class="aside">
+    <span class="tag">monad ── 点のまわりの、無限小の霧</span>
+    一つの点 \(x\) に無限に近い超実数を、ぜんぶ集めた雲を <strong>monad（モナド、\(x\) の単子）</strong>と呼びます。$$\operatorname{monad}(x)=\{\,y\in{}^{*}\mathbb{R} : y\approx x\,\}=\{\,x+(\text{無限小})\,\}$$ 実数直線の各点の「真上」に、目に見えないほど薄い無限小の霧がかかっているイメージです。\(\operatorname{st}\) は、この霧のどこに立っていても、霧の中心にある<em>ただ一つの実数</em>を指し示す。第4回で「\(\theta\) の無限小近傍を探索する」と書いたあの「近傍」の正体こそ、この \(\operatorname{monad}(\theta)\) です。ES はいわば、\(\theta\) の monad にサンプルをばらまいて、その反応から坂の傾きを読み取っていたのです。
+  </div>
+
+  <h2><span class="n">04</span>微分を、正直な割り算に戻す</h2>
+
+  <p>道具がそろいました。無限小 \(\varepsilon\)（0でない数！）で割ってよく、最後に \(\operatorname{st}\) で実数へ丸める。すると微分の定義から、\(\lim\) という「近づける動作」が消え、<strong>割って・丸める</strong>という二手の静的な計算になります。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">微分の正直な定義（超準解析版）</div>
+    $$f'(x)\;=\;\operatorname{st}\!\left(\frac{f(x+\varepsilon)-f(x)}{\varepsilon}\right)\qquad(\varepsilon\ \text{は任意の0でない無限小})$$
+  </div>
+
+  <p>ここで \(\varepsilon\ne 0\) なので、割り算 \(\dfrac{f(x+\varepsilon)-f(x)}{\varepsilon}\) は<em>正真正銘の割り算</em>です ── 「0に近い」ではなく、本当に0でない数で割っている。その結果は「\(f'(x)\)＋無限小」という超実数になり、最後に \(\operatorname{st}\) がその無限小を払って、実数の傾きを返す。ライプニッツが記号 \(\dfrac{dy}{dx}\) で表したかった「無限小どうしの比」が、ここでは文字通りの分数として成立しています。\(f\) が（標準的な意味で）微分可能でありさえすれば、<em>どの</em>無限小 \(\varepsilon\) を選んでも \(\operatorname{st}\) の値は同じ ── 300年前の直観と、現代の \(\varepsilon\text{-}\delta\) が、ここで完全に一致します。次の節で、\(x^2\) を実際に割ってみましょう。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── f(x)=x² を、無限小 ε で割る</span>
+    <p class="lbl">まず割線の傾き（分子を展開する）</p>
+    $$\frac{f(x+\varepsilon)-f(x)}{\varepsilon}=\frac{(x+\varepsilon)^2-x^2}{\varepsilon}=\frac{x^2+2x\varepsilon+\varepsilon^2-x^2}{\varepsilon}=\frac{2x\varepsilon+\varepsilon^2}{\varepsilon}$$
+    <p class="lbl">ε≠0 なので、堂々と ε で約分できる</p>
+    $$=\ 2x+\varepsilon$$
+    <p class="lbl">最後に標準部分をとる ── 無限小 ε が落ちる</p>
+    $$f'(x)=\operatorname{st}(2x+\varepsilon)=2x$$
+    <p style="margin-bottom:14px;">見どころは二つ。第一に、二次の項 \(\varepsilon^2\) は約分の前から<em>他より一段小さい無限小</em>で、割ったあと \(\varepsilon\) となって現れ、<span style="color:var(--calc);font-weight:700;">高次の無限小として \(\operatorname{st}\) に落とされます</span>。「無限小の2乗は無視できる」というライプニッツの経験則の、これが正体です。第二に、途中に \(\lim\) は一度も出てきません。<em>0でない \(\varepsilon\) で割り、最後に \(\operatorname{st}\) で丸める</em> ── たったこれだけで、\((x^2)'=2x\) が<span style="color:var(--ok);font-weight:700;">厳密に</span>出ました。極限の儀式は、\(\operatorname{st}\) という一手に吸収されたのです。</p>
+  </div>
+
+  <h2><span class="n">05</span>動かしてみる ── 割線が、接線に化ける瞬間</h2>
+
+  <p>いまの計算を目で見ましょう。放物線 \(f(x)=x^2\) の上に点 \(P=(x,\,x^2)\) を固定し、そこから \(\varepsilon\) だけ右の点 \(Q=(x+\varepsilon,\,(x+\varepsilon)^2)\) を結んだ<strong>割線 \(PQ\)</strong> を引きます。その傾きは、いま計算したとおり厳密に \(2x+\varepsilon\)。スライダーで \(\varepsilon\) を小さく（対数目盛で「無限小」の側へ）していくと、割線の傾き \(2x+\varepsilon\) が接線の傾き \(2x\) へ ── つまり \(\operatorname{st}(2x+\varepsilon)=2x\) へ ── 吸い込まれていくのが見えます。</p>
+
+  <div class="fig">
+    <div class="cap">図：f(θ)=θ² 上で点 P を固定し、ε だけ離れた Q との割線を引く。割線の傾きは厳密に 2x+ε。ε を「無限小」側へ縮めると、傾きは接線の傾き st=2x に一致する</div>
+    <canvas id="cv" width="680" height="360"></canvas>
+    <div class="controls">
+      <label>接点の位置 x<span class="val" id="vx">1.00</span>
+        <input type="range" id="xx" min="-1.6" max="1.6" step="0.05" value="1.00">
+      </label>
+      <label>無限小 ε（対数目盛・左へ動かすほど 0 に近い）<span class="val" id="veps">0.60000</span>
+        <input type="range" id="eps" min="-4" max="-0.22" step="0.01" value="-0.22">
+      </label>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--acc);"></i>放物線 f(x)=x²</span>
+      <span><i class="dot" style="background:#c0392b;"></i>接点 P（x を固定）</span>
+      <span><i class="dot" style="background:#2a6fb0;"></i>近くの点 Q（x+ε）</span>
+      <span><i class="swatch" style="background:#8a5a12;"></i>割線 PQ（傾き 2x+ε）</span>
+      <span><i class="swatch" style="background:#3d7a3a;"></i>接線（傾き 2x＝st）</span>
+    </div>
+  </div>
+
+  <p>\(\varepsilon\) を左端へ寄せると、青い点 \(Q\) は赤い点 \(P\) の「monad」へ ── 無限小の霧の中へ ── 沈んでいき、茶色い割線と緑の接線が見分けられなくなります。傾きの読み値 \(2x+\varepsilon\) は、標準部分 \(2x\) に「無限小だけ」ズレた値。\(x\) スライダーを動かせば、どの接点でも「割線の傾き \(=2x+\varepsilon\ \to\ \operatorname{st}=2x\)」がそのまま成り立つのが確かめられます。画面の \(\varepsilon\) はもちろん有限の実数ですが、<em>いくら小さくしても割り算は破綻しない</em>という一点こそ、無限小 \(\varepsilon\) が数として振る舞える証拠の縮図です。</p>
+
+  <h2><span class="n">06</span>移行原理 ── 無限小で計算しても、正しい理由</h2>
+
+  <p>ここで当然の不安が湧きます。\({}^{*}\mathbb{R}\) という<em>別世界</em>で無限小を使って計算した答えを、なぜ私たちの実数の世界で信じてよいのか。この橋渡しを保証するのが、超準解析の心臓 ── <strong>移行原理(transfer principle)</strong>です。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">移行原理（transfer principle）</div>
+    $$\text{一階の言明 }\varphi\ \text{について}\quad \mathbb{R}\models\varphi\ \ \Longleftrightarrow\ \ {}^{*}\mathbb{R}\models\varphi$$
+  </div>
+
+  <p>かみくだくと ── <strong>実数 \(\mathbb{R}\) の上で真である「一階の」言明は、超実数 \({}^{*}\mathbb{R}\) の上でもそっくり真であり、その逆も成り立つ</strong>。「一階の」とは、要素（数）について「すべての」「ある」を語る言明のこと（集合全体をひとまとめに量化するような文は除きます）。だから、実数で成り立つ計算法則 ── 交換法則、分配法則、「\(\varepsilon\ne 0\) なら \(\varepsilon/\varepsilon=1\)」といった規則は、無限小 \(\varepsilon\) に対しても<em>そのまま</em>使ってよい。私たちが第4節で \((x+\varepsilon)^2\) を展開し、\(\varepsilon\) で約分できたのは、まさにこの原理が「実数と同じ代数規則が \({}^{*}\mathbb{R}\) でも有効だ」と保証してくれたからです。</p>
+
+  <div class="aside">
+    <span class="tag">往復切符 ── だから結論は実数で正しい</span>
+    移行原理は<strong>双方向（⟺）</strong>であることが肝心です。実数の問題を、いったん無限小・無限大が使える便利な \({}^{*}\mathbb{R}\) へ持ち込み（往路）、そこで直観的にラクに計算し、\(\operatorname{st}\) で実数へ丸めて戻る（復路）。得られた等式が一階の言明なら、移行原理により<em>実数の世界でも真</em>だと保証される。無限小は「計算を楽にする作業用の足場」で、足場を外しても建物（実数の定理）はちゃんと建っている ── これが「無限小で計算しても標準の世界で正しい」ことの、からくりです。
+  </div>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">07</span>判決 ── 超準解析は何ができて、何ができないか</h2>
+
+  <p>このシリーズは毎回、道具の力と限界を正直に裁きます。無限小は魅力的ですが、<em>魔法ではありません</em>。何を新たに可能にし、何は可能にしないのかを、はっきりさせましょう。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>超準解析の答え</th><th>判決</th></tr>
+    <tr>
+      <td>無限小・無限大を、矛盾なく「数」として厳密に扱えるか</td>
+      <td>扱える。\({}^{*}\mathbb{R}\) が \(\varepsilon,\,H=1/\varepsilon\) を実在する数として持ち、移行原理が代数規則を保証する</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>「微分は無限小どうしの比」「積分は無限小の無限和」という直観に、厳密な足場を与えられるか</td>
+      <td>与えられる。\(f'=\operatorname{st}\!\big(\tfrac{\Delta f}{\varepsilon}\big)\)、\(\int=\operatorname{st}\!\big(\sum(\text{無限小})\big)\) が定理になる</td>
+      <td class="v-ok">できる</td>
+    </tr>
+    <tr>
+      <td>標準解析（\(\varepsilon\text{-}\delta\)）では証明できない新しい定理を、証明できるか</td>
+      <td>できない。移行原理で往復できる以上、証明できる<em>実数の定理</em>の範囲はぴたり同じ ── 違うのは表現の選択だけ</td>
+      <td class="v-bad">同等・表現の差</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 新しい物理を生む魔法ではない</span>
+    <p style="margin-top:0;">はっきりさせておきます。超準解析は、標準解析（\(\varepsilon\text{-}\delta\)）を<em>置き換える</em>ものでも、それより<em>強い</em>ものでもありません。移行原理という往復切符がある以上、両者は<strong>同じ実数の定理を証明する、二つの正しい土台</strong>です。無限小を認めれば急に新しい物理法則が湧いてくる、といった魔法は<em>起きない</em>。超準解析が与えるのは、力の増強ではなく<strong>語り口のレンズ</strong> ── 「限りなく近づける」という動的な儀式を、「無限小で割って標準部分をとる」という静的で直観的な一手に置き換えるレンズです。</p>
+    <p style="margin-bottom:0;">けれど、このシリーズにとってそれで十分です。私たちが欲しかったのは新しい力ではなく、第4回で口ごもった<strong>「無限集団 \(N\to\infty\)」「無限小の近傍」を、ごまかしなく正直に語る言葉</strong>でした。\(N=H\) の集団、\(\operatorname{monad}(\theta)\) の探索、平均の \(\operatorname{st}\) ── いまや全部、厳密な数学の言葉です。この足場の上で次回、ES（\(\infty\) サンプルの積分）と BP（微分）が握手します。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の定義だけで解けます）</div>
+    <ol>
+      <li>無限小 \(\varepsilon>0\) を使って、\(\operatorname{st}(5+3\varepsilon)\)、\(\operatorname{st}(2-\varepsilon^2)\)、\(\operatorname{st}\!\big(\tfrac{4\varepsilon}{\varepsilon}\big)\) をそれぞれ求めよ。
+        <details><summary>答えを見る</summary><div class="ans">\(\operatorname{st}(5+3\varepsilon)=5\)（\(3\varepsilon\) は無限小なので落ちる）。\(\operatorname{st}(2-\varepsilon^2)=2\)（\(\varepsilon^2\) も無限小）。\(\tfrac{4\varepsilon}{\varepsilon}\) は \(\varepsilon\ne0\) だから約分できて \(=4\)、よって \(\operatorname{st}(4)=4\)。最後の例は「無限小どうしの比は無限小とは限らない」ことを示している ── これが微分が有限値になる理由。</div></details>
+      </li>
+      <li>\(f(x)=x^3\) の導関数を、超準解析の定義 \(f'(x)=\operatorname{st}\!\big(\tfrac{f(x+\varepsilon)-f(x)}{\varepsilon}\big)\) で求めよ。
+        <details><summary>答えを見る</summary><div class="ans">\((x+\varepsilon)^3-x^3=3x^2\varepsilon+3x\varepsilon^2+\varepsilon^3\)。\(\varepsilon\) で割ると \(3x^2+3x\varepsilon+\varepsilon^2\)。標準部分をとると、\(3x\varepsilon\) と \(\varepsilon^2\) は無限小なので落ちて \(f'(x)=\operatorname{st}(3x^2+3x\varepsilon+\varepsilon^2)=3x^2\)。高次の無限小が \(\operatorname{st}\) で消える構図は \(x^2\) のときと同じ。</div></details>
+      </li>
+      <li>無限大 \(H=1/\varepsilon\) について、\(H\) は超実数 \({}^{*}\mathbb{R}\) の要素であって記号 \(\infty\) とは違う、と言えるのはなぜか。また \(\operatorname{st}(H)\) は定義できるか。
+        <details><summary>答えを見る</summary><div class="ans">\(H=1/\varepsilon\) は \({}^{*}\mathbb{R}\) の中に実在する一つの数で、\(H+1,\ 2H,\ H^2\) などの四則計算ができる。一方 \(\infty\) は「限りなく大きくなる」という<em>動き</em>を表す記号で、数ではなく計算の対象にならない。\(\operatorname{st}(H)\) は定義<strong>できない</strong> ── \(\operatorname{st}\) は「有限な」超実数にしか適用できず、無限大 \(H\) はどの実数にも無限に近くないから。第4回の「\(N\to\infty\) の集団」は、これで \(N=H\)（無限大個）という静止した数として名指しできる。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第5回まとめ</span>無限を、正直に数える</h2>
+    <p>「限りなく0に近づける」極限の儀式には、0でも有限でもない量をこっそり使う後ろめたさがあった（STEP 01）。ロビンソン(1960)の超実数体 \({}^{*}\mathbb{R}\) は、実数 \(\mathbb{R}\) を含み、どんな \(1/n\) より小さい無限小 \(\varepsilon\) と、その逆数の無限大 \(H=1/\varepsilon\) を<em>実在する数</em>として持つ（STEP 02）。有限な超実数からは、無限に近いただ一つの実数を返す標準部分 \(\operatorname{st}\) がとれ、点のまわりの無限小の霧が \(\operatorname{monad}(x)\)（STEP 03）。すると微分は \(f'(x)=\operatorname{st}\!\big(\tfrac{f(x+\varepsilon)-f(x)}{\varepsilon}\big)\) ── 0でない \(\varepsilon\) で正直に割り、\(\operatorname{st}\) で丸める二手になり、\((x^2)'=\operatorname{st}(2x+\varepsilon)=2x\) が \(\lim\) なしに出た（STEP 04・05）。無限小での計算が実数で正しい保証は、双方向の移行原理 \(\mathbb{R}\models\varphi\Leftrightarrow{}^{*}\mathbb{R}\models\varphi\)（STEP 06）。ただし新しい定理を生む力はなく、標準解析と同等の、直観を厳密にする<em>レンズ</em>である（STEP 07）。</p>
+    <p>これで第4回の宿題が片づきました。「無限集団 \(N\to\infty\)」は \(N=H\)、「\(\theta\) の無限小近傍」は \(\operatorname{monad}(\theta)\)、「\(\infty\) サンプルの平均が勾配を復元する」は<em>平均の標準部分が微分に一致する</em>という主張として、いまや厳密に書けます。積分（\(\infty\) 個の無限小の和）と微分（無限小の比）が、無限小のもとで握手する ── その伏線が張られました。次回、この足場の上で ES と BP が<strong>数学的に一つの計算</strong>だと明かされます。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第6回</span>
+    <strong>進化と学習は、同じ計算だった。</strong> 微分しない進化戦略(ES)は、\(\theta\) の monad にばらまいた \(\infty\) 個のサンプル ── ノイズ \(\varepsilon\) を混ぜた損失の平均 ── を見て坂を下ります。微分するバックプロパゲーション(BP)は、勾配 \(\nabla L\) をじかに計算します。この一見まるで別物の二つが、<strong>スタインの補題(Stein's lemma)</strong>というたった一本の等式で結ばれる。ES の「\(\infty\) サンプルの積分」の標準部分が、BP の「微分」そのものに<em>厳密に一致</em>する。今回鍛えた無限小と標準部分を足場に、進化と学習が一つの式に溶け合う瞬間を見届けます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第5回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。超実数体 \({}^{*}\mathbb{R}\)、無限小・無限大、標準部分 \(\operatorname{st}\)、および微分の超準的定義 \(f'(x)=\operatorname{st}\!\big(\tfrac{f(x+\varepsilon)-f(x)}{\varepsilon}\big)\) と移行原理(transfer principle)は、A. ロビンソンが1960年前後に数理論理学（モデル理論）を用いて厳密に構成した超準解析(non-standard analysis)の標準的な内容です。厳密な構成には超フィルターによる超冪(ultrapower)などを要しますが、本稿では立ち入らず結果のみを述べました。移行原理が適用されるのは一階の（要素についての）言明であり、集合全体を量化するような二階の言明はそのままでは移行しないこと、\(\operatorname{st}\) が定義されるのは有限な超実数に限ることに注意してください。「新しい実数の定理を生むわけではなく標準解析と同等の力を持つ」という趣旨は、両体系が同じ一階の帰結を持つこと（保存拡大であること）を指しています。本稿の図は \(f(x)=x^2\) の割線と接線の関係を説明するための模型で、画面上の \(\varepsilon\) は有限の実数値です。第4回の無限集団・無限小近傍との対応づけ、および第6回のスタインの補題による ES＝BP の一致は、本シリーズの構成上の見立てとして述べており、その厳密な定式化は各回で扱います。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「接点の位置 x」と「無限小 ε」を変えると、割線の傾き 2x+ε が接線の傾き 2x（＝st）へ吸い込まれる様子が見えます。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sx=document.getElementById('xx'), vx=document.getElementById('vx'),
+      sp=document.getElementById('eps'), vp=document.getElementById('veps'),
+      rd=document.getElementById('rd');
+  // 放物線 f(x)=x², 導関数 f'(x)=2x
+  function Ff(t){return t*t;}
+  var X_LO=-1.9, X_HI=1.9, Y_LO=-0.55, Y_HI=3.4;
+
+  function getEps(){ return Math.pow(10, parseFloat(sp.value)); } // 対数スライダー → ε
+  function getX(){ return parseFloat(sx.value); }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function draw(){
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h, padL=44, padB=42, padT=16;
+    function X(t){return padL+(t-X_LO)/(X_HI-X_LO)*(w-padL-14);}
+    function Y(l){return (h-padB)-(l-Y_LO)/(Y_HI-Y_LO)*(h-padB-padT);}
+    ctx.clearRect(0,0,w,h);
+    // グリッド（y の水平線）
+    ctx.strokeStyle='#efe4cd';ctx.lineWidth=1;ctx.fillStyle='#bda877';ctx.font='9px sans-serif';
+    for(var l=0;l<=3;l++){var y=Y(l);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.fillText('y='+l,6,y-3);}
+    var y0=Y(0);ctx.strokeStyle='#e0d2b4';ctx.beginPath();ctx.moveTo(padL,y0);ctx.lineTo(w-8,y0);ctx.stroke();
+    // 放物線 f(x)=x²
+    ctx.strokeStyle='#b06a10';ctx.lineWidth=2.6;ctx.beginPath();var f=true;
+    for(var i=0;i<=240;i++){var t=X_LO+(X_HI-X_LO)*i/240; var x=X(t),y=Y(Ff(t)); if(f){ctx.moveTo(x,y);f=false;}else ctx.lineTo(x,y);}
+    ctx.stroke();
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('x（パラメータ）→', w-150, h-padB+26);
+    ctx.save();ctx.translate(14,h/2+30);ctx.rotate(-Math.PI/2);ctx.fillText('y = f(x) = x²',0,0);ctx.restore();
+
+    var xv=getX(), eps=getEps();
+    var xq=xv+eps;
+    var slopeSec=2*xv+eps;   // 割線の傾き（厳密に 2x+ε）
+    var slopeTan=2*xv;       // 接線の傾き（st）
+    var Px=X(xv), Py=Y(Ff(xv)), Qx=X(xq), Qy=Y(Ff(xq));
+
+    // 接線（緑）: y = slopeTan*(t - xv) + f(xv), 画面幅いっぱいに
+    function lineAt(slope){
+      var tL=X_LO, tR=X_HI;
+      var yL=slope*(tL-xv)+Ff(xv), yR=slope*(tR-xv)+Ff(xv);
+      return [X(tL),Y(yL),X(tR),Y(yR)];
+    }
+    var tan=lineAt(slopeTan);
+    ctx.strokeStyle='#3d7a3a';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(tan[0],tan[1]);ctx.lineTo(tan[2],tan[3]);ctx.stroke();ctx.setLineDash([]);
+    // 割線（茶）: 接点 P を通り傾き slopeSec の直線を伸ばす
+    var sec=lineAt(slopeSec);
+    ctx.strokeStyle='#8a5a12';ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(sec[0],sec[1]);ctx.lineTo(sec[2],sec[3]);ctx.stroke();
+
+    // 点 Q（青）
+    if(isFinite(Qx)){
+      ctx.fillStyle='#2a6fb0';ctx.beginPath();ctx.arc(Qx,Qy,5.2,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.stroke();
+    }
+    // 点 P（赤・接点）
+    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(Px,Py,6.2,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    // P,Q ラベル
+    ctx.fillStyle='#8a3020';ctx.font='11px sans-serif';ctx.fillText('P (x, x²)',Px+9,Py+16);
+    if(Math.abs(Qx-Px)>26){ ctx.fillStyle='#1f5a92';ctx.fillText('Q (x+ε)',Qx+8,Qy-8); }
+
+    // 読み値
+    var near = eps < 0.02;
+    rd.className = near ? 'readout ok' : 'readout local';
+    rd.textContent =
+      'x='+xv.toFixed(2)+'、ε='+eps.toExponential(2)
+      +' ／ 割線 PQ の傾き = 2x+ε = '+slopeSec.toFixed(5)
+      +'  →  st(2x+ε) = 2x = '+slopeTan.toFixed(5)
+      +'（差 ε = '+eps.toExponential(2)+' が“無限小”。'
+      +(near ? 'ε がごく小さく、割線は接線とほぼ重なっています ── これが st の丸め。'
+             : 'ε を左（0側）へ動かすと、割線が接線＝st に吸い込まれます。')+'）';
+  }
+  function syncLabels(){ vx.textContent=getX().toFixed(2); vp.textContent=getEps().toFixed(5); }
+  sx.addEventListener('input',function(){syncLabels();draw();});
+  sp.addEventListener('input',function(){syncLabels();draw();});
+  window.addEventListener('resize',draw);
+  syncLabels();
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(function(){draw();});}
+  setTimeout(draw,60);
+  window.addEventListener('load',draw);
+})();
+</script>
+</body>
+</html>

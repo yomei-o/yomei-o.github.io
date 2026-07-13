@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生物圏は、一台のGPUである ── わかる学習論 第8回</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#241d13; --ink-soft:#574a38;
+    --paper:#fbf6ee; --paper-edge:#e8dcc4;   /* 第1回：学習・生命・エネルギー＝琥珀の紙 */
+    --side:#6f4b1f; --side-bg:#f4ece0;
+    --warn:#8a4b2f;
+    --calc:#a05c12; --calc-bg:#f7edda;   /* 計算色＝琥珀 */
+    --rule:#e3d6bd; --hair:#c9b48a;
+    --acc:#b06a10;    /* アクセント＝琥珀 */
+    --grid:#eaddc4;
+    --ok:#3d7a3a; --bad:#a83a22; --hot:#c0392b; --cold:#2a6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper-edge);color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",'Noto Serif JP',serif;
+    line-height:1.92;font-size:17px;letter-spacing:.01em;}
+  .sheet{max-width:770px;margin:32px auto;background:var(--paper);
+    padding:64px 70px 90px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.10);
+    border:1px solid var(--paper-edge);}
+  .series{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.3em;color:var(--acc);margin:0 0 6px;font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+  .series .ep{color:var(--ink-soft);letter-spacing:.14em;font-weight:600;font-size:11.5px;}
+  .eyebrow{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;letter-spacing:.16em;color:var(--side);margin:0 0 22px;font-weight:600;}
+  h1{font-size:37px;line-height:1.3;margin:0 0 8px;font-weight:600;letter-spacing:.02em;}
+  h1 .sub{display:block;font-size:18px;color:var(--ink-soft);font-weight:400;margin-top:14px;
+    letter-spacing:.05em;line-height:1.7;}
+  .byline{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:26px;padding-top:18px;
+    border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h2{font-size:23px;font-weight:600;margin:54px 0 4px;letter-spacing:.03em;line-height:1.42;}
+  h2 .n{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    color:var(--acc);font-size:13.5px;letter-spacing:.12em;display:block;margin-bottom:3px;font-weight:600;}
+  p{margin:15px 0;}
+  .lead{font-size:19px;line-height:1.85;}
+  em{font-style:normal;background:linear-gradient(transparent 62%, #f2dca0 62%);padding:0 .05em;}
+  strong{font-weight:600;}
+
+  .aside{margin:24px 0;background:var(--side-bg);border-left:3px solid var(--side);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3a2c1a;}
+  .aside .tag,.caveat .tag,.calc .tag{display:block;font-size:11px;letter-spacing:.2em;font-weight:700;margin-bottom:7px;}
+  .aside .tag{color:var(--side);}
+  .caveat{margin:24px 0;background:#f6ede4;border-left:3px solid var(--warn);padding:16px 22px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14.5px;line-height:1.8;color:#3f2a1c;}
+  .caveat .tag{color:var(--warn);}
+  .calc{margin:26px 0;background:var(--calc-bg);border:1px solid #e4d2ac;border-left:3px solid var(--calc);
+    padding:18px 24px 8px;border-radius:2px;}
+  .calc .tag{color:var(--calc);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;}
+  .calc .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;color:var(--calc);font-weight:600;margin:12px 0 -6px;letter-spacing:.04em;}
+
+  .fig{margin:26px 0;padding:18px 20px 20px;background:#fdfaf4;border:1px solid var(--rule);border-radius:4px;}
+  .fig .cap{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;letter-spacing:.03em;}
+  .fig canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--grid);border-radius:2px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:14px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink-soft);}
+  .controls label{display:flex;flex-direction:column;gap:4px;min-width:240px;flex:1;}
+  .controls .val{color:var(--acc);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--acc);}
+  .btn{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--acc);
+    border:none;border-radius:3px;padding:9px 18px;cursor:pointer;align-self:flex-end;}
+  .btn:hover{background:#96590c;}
+  .readout{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:13.5px;margin-top:10px;padding:9px 13px;border-radius:3px;font-weight:600;line-height:1.6;}
+  .readout.ok{background:#eef2e6;color:#3a6030;}
+  .readout.local{background:#f6ecda;color:#8a5a12;}
+  .readout.bad{background:#f6e2dc;color:#9a3520;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%;}
+  .divider{text-align:center;color:var(--hair);letter-spacing:1em;margin:46px 0;font-size:12px;}
+  .keybox{margin:30px 0;padding:20px 26px;border:1.5px solid var(--ink);background:#fdfbf6;border-radius:2px;}
+  .keybox .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;margin-bottom:4px;}
+
+  table.verdict{width:100%;border-collapse:collapse;margin:22px 0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:13.5px;}
+  table.verdict th,table.verdict td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.55;}
+  table.verdict th{background:#f3e6cd;color:#7a4e10;font-weight:700;}
+  table.verdict .v-ok{color:var(--ok);font-weight:700;}
+  table.verdict .v-bad{color:var(--bad);font-weight:700;}
+
+  .prob{margin:30px 0;padding:22px 26px 10px;border:1.5px dashed var(--acc);border-radius:2px;background:#f9f2e3;}
+  .prob .lbl{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:10px;}
+  .prob ol{margin:0;padding-left:1.3em;} .prob li{margin:10px 0;}
+  details{margin-top:12px;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;letter-spacing:.04em;}
+  details[open] summary{margin-bottom:8px;} .ans{color:#6a4410;line-height:1.75;}
+
+  .record{margin:52px 0 8px;padding:30px 34px;border:1.5px solid var(--rule);border-radius:2px;
+    background:linear-gradient(180deg,#fdfaf4,#f2e7d1);}
+  .record h2{margin-top:0;} .record p:last-child{margin-bottom:0;}
+  .next{margin:24px 0 0;padding:16px 22px;background:#f3e7cf;border-radius:2px;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;font-size:14px;color:#6a4410;}
+  .next .lbl{font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:700;margin-bottom:6px;display:block;}
+  .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12px;color:var(--ink-soft);line-height:1.7;letter-spacing:.03em;}
+
+  @media print{
+    @page{size:A4;margin:18mm 16mm;}
+    body{background:#fff;font-size:11pt;line-height:1.72;}
+    .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0;}
+    h1{font-size:23pt;} h1 .sub{font-size:12.5pt;}
+    h2{font-size:15pt;margin-top:24pt;break-after:avoid;}
+    .lead{font-size:12.5pt;}
+    .aside,.caveat,.calc,.keybox,.record,.prob,.next,.fig,table.verdict{break-inside:avoid;}
+    .aside,.caveat,.calc{font-size:9.7pt;}
+    .controls{display:none;} details{display:none;} .no-print{display:none;}
+  }
+  @media (max-width:640px){ .sheet{padding:40px 18px 60px;margin:0;} h1{font-size:25px;} body{font-size:16px;} }
+  .hint{max-width:770px;margin:18px auto 0;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",'Noto Sans JP',sans-serif;
+    font-size:12.5px;color:#8a7a5a;text-align:center;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="series"><span>わかる学習論</span><span class="ep">第 8 回 ／ 生物圏という計算機 ── ESと選択の同型</span></div>
+  <p class="eyebrow">進化・学習・意識を、ひとつの勾配で読む</p>
+  <h1>生物圏は、一台のGPUである
+    <span class="sub">無数の個体が、それぞれ少しずつ違う遺伝子で生き、そして死ぬ。その膨大な並列試行の集計が、<br>種というパラメータの「勾配」を推定している。地球は、微分せずに坂を下る一台の最適化器だった。</span>
+  </h1>
+  <div class="byline">
+    <span>必要な道具：第4回のES勾配、第6回の分散、ベクトルの平均</span>
+    <span>この回のキー：\(\hat g=\dfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\,\varepsilon_i,\quad \mathrm{Var}(\hat g)\propto \tfrac{1}{N}\)</span>
+  </div>
+
+  <p class="lead">前回、私たちは「地形をぼかす」解像度 \(\sigma\) を手に入れ、進化戦略(ES)が<em>微分できない地形の上でも勾配を推定できる</em>ことを見ました。今回はその視点を、思いきり引いて眺めます ── 一匹の生きものではなく、<strong>地球上の全生命を、一斉に走る一つの計算</strong>として。無数の個体が、少しずつ違う遺伝子 \(\theta+\varepsilon_i\) を持って生まれ、環境の中で試され、多くは死に、一部が子を残す。この「生と死の総体」が、実は第4回で書いたES勾配推定量 \(\hat g\) を、そっくりそのまま計算しているのです。個体は<em>サンプル</em>、生死は<em>損失評価</em>、繁殖は<em>更新</em>。同じ処理を別々のノイズで大量に並列実行するその姿は、GPUのSPMD(単一命令・多数データ)そのものです。生物圏とは、一台の巨大な無微分最適化器 ── いわば地球規模のGPUなのだ、という主張を、式と図で確かめましょう。</p>
+
+  <h2><span class="n">01</span>生命がしている“計算”とは</h2>
+
+  <p>「生命が計算をしている」と言うと比喩に聞こえます。しかし第1回から積み上げてきた道具立てでは、これは<strong>比喩ではなく構造の一致</strong>として言えます。学習とは、パラメータ \(\theta\) を動かして損失 \(L(\theta)\) を下げること(第1回)。進化では、\(L\) は<em>適応度の符号を反転したもの</em>でした ── 生き延びて子を残せば損失は小さく、そうでなければ大きい。</p>
+
+  <p>問題は、自然界に「損失を微分してくれる神さま」がいないことです。DNA を偏微分する装置など、どこにもない。にもかかわらず、種は世代を越えて着実に地形を下っていく。どうやって? 答えが第4回の進化戦略でした ── <strong>微分せず、たくさん試して、結果で重みづけて平均する</strong>。今回は、その「たくさん試す」の主語を<em>集団そのもの</em>に置き換えます。</p>
+
+  <div class="keybox">
+    <div class="lbl">この回の出発点（第4回のES勾配推定量の再掲）</div>
+    $$\hat g \;=\; \frac{1}{N\sigma^2}\sum_{i=1}^{N} L(\theta+\varepsilon_i)\,\varepsilon_i ,\qquad \varepsilon_i \sim \mathcal N(0,\sigma^2 I)$$
+    <div style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:12.5px;color:#6b5a38;margin-top:6px;">
+      \(\theta\)＝種のパラメータ、\(\varepsilon_i\)＝個体ごとの変異、\(N\)＝集団サイズ、\(\sigma\)＝変異の広がり（前回の解像度）。この \(\hat g\) を使って \(\theta\leftarrow\theta-\eta\,\hat g\)。
+    </div>
+  </div>
+
+  <h2><span class="n">02</span>生物圏＝一台のGPU</h2>
+
+  <p>この式の各記号を、生物学の言葉に翻訳してみましょう。驚くほど素直に対応します。</p>
+
+  <div class="keybox">
+    <div class="lbl">対応表 ── ES最適化器と生物圏は同じ処理を指している</div>
+    <table class="verdict" style="margin:6px 0 2px;">
+      <tr><th>ES／最適化の言葉</th><th>生物圏の言葉</th><th>意味</th></tr>
+      <tr><td>サンプル \(\theta+\varepsilon_i\)</td><td>個体 \(i\)</td><td>種の設計図をわずかに変異させた一つの試作</td></tr>
+      <tr><td>損失評価 \(L(\theta+\varepsilon_i)\)</td><td>個体の生死（適応度評価）</td><td>環境が下す採点。生き延びて子を残せたか</td></tr>
+      <tr><td>パラメータ更新 \(\theta\leftarrow\theta-\eta\,\hat g\)</td><td>繁殖（次世代の構成）</td><td>うまくいった変異の方向へ、種の中身がずれる</td></tr>
+      <tr><td>最適化される \(\theta\)</td><td>種（そのもの）</td><td>調整され続ける当のパラメータ束＝遺伝子プール</td></tr>
+      <tr><td>1回の更新ステップ</td><td>1世代</td><td>評価と更新の1サイクル</td></tr>
+      <tr><td>並列スレッド数 \(N\)</td><td>集団サイズ</td><td>同時に走る「生きて試される」処理の本数</td></tr>
+    </table>
+  </div>
+
+  <p>一匹一匹の個体は、<em>同じ「生まれて・環境で試されて・採点される」というただ一つの処理</em>を、別々の変異 \(\varepsilon_i\) を入力として実行しているだけです。これはコンピュータの用語でいう<strong>SPMD(Single Program, Multiple Data ── 単一プログラム・多数データ)</strong>、まさにGPUが数千のコアで同じカーネルを別々のデータに走らせるあの並列モデルと同型です。生物圏を一台の計算機だと見立てれば、<strong>個体はスレッド、世代はクロック、種はレジスタに載ったパラメータ</strong>。地球は、この上なく巨大で、この上なく並列な一台のGPUなのです。</p>
+
+  <div class="aside">
+    <span class="tag">なぜ「GPU」なのか ── CPUではなく</span>
+    CPUは少数の強力なコアで手順を逐次にこなす機械、GPUは多数の弱いコアで<em>同じ計算を一斉に</em>こなす機械です。進化には「賢い設計者が一手ずつ最善手を打つ」中枢はありません。あるのは、無数の凡庸な試行を並列にばらまき、生死という採点でふるいにかける仕組みだけ。だから生物圏の計算様式は、逐次のCPUではなく、圧倒的並列のGPUに似ます。知能なきスケールが、設計を代替するのです。
+  </div>
+
+  <h2><span class="n">03</span>集団＝並列スレッド</h2>
+
+  <p>対応表の心臓は「集団全体が一つの勾配推定量を計算している」という点です。もう一度、式を見ます。</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">集団が計算している勾配推定量</div>
+    $$\hat g \;=\; \frac{1}{N\sigma^2}\sum_{i=1}^{N} \underbrace{L(\theta+\varepsilon_i)}_{\text{個体 }i\text{ の採点}}\;\underbrace{\varepsilon_i}_{\text{個体 }i\text{ の変異方向}}$$
+  </div>
+
+  <p>右辺は「<strong>各個体の変異方向 \(\varepsilon_i\) を、その個体の採点 \(L\) で重みづけて足し合わせ、頭数 \(N\) で割る</strong>」という操作です。うまくいった変異（損失が小さい方向）ほど次世代に多く残り、その平均として、種を下り坂へ押す方向 \(\hat g\) が浮かび上がる。誰も微分していないのに、集団全体の集計が勾配を代弁しているのです。個体たちは互いを知りません。ただ同じ環境で並列に生き、死ぬ。その総和が \(\hat g\) になる ── これがSPMDの集計(リダクション)にあたります。</p>
+
+  <div class="aside">
+    <span class="tag">同じ命令・違うデータ</span>
+    GPUのカーネルは「このデータについて所定の計算をせよ」という一つの命令を、スレッドごとに違うデータで走らせます。生物圏のカーネルは「この変異 \(\varepsilon_i\) を持って生き、環境の採点を受けよ」。命令はどの個体にも同じ、データ（変異 \(\varepsilon_i\)）だけが違う。走り終えた全スレッドの結果を \(L\cdot\varepsilon\) の重みで足し上げれば、それがそのまま勾配推定 \(\hat g\) になります。
+  </div>
+
+  <h2><span class="n">04</span>なぜ数が多いほど強いか ── Var ∝ 1/N</h2>
+
+  <p>ここで「集団サイズ \(N\) が大きいほど有利」という、進化のもっとも素朴な事実が、統計の言葉で正確に説明できます。\(\hat g\) は、独立同分布な \(N\) 本の項</p>
+
+  <div class="keybox">
+    <div class="lbl">1個体ぶんの寄与（同じ分布から独立に引かれる）</div>
+    $$X_i \;=\; \frac{1}{\sigma^2}\,L(\theta+\varepsilon_i)\,\varepsilon_i,\qquad \hat g=\frac{1}{N}\sum_{i=1}^{N} X_i$$
+  </div>
+
+  <p>の<strong>標本平均</strong>にほかなりません。独立な確率変数の平均の分散は、1個ぶんの分散を頭数で割ったもの ── これは統計の基本定理です。したがって、</p>
+
+  <div class="keybox" style="border-color:var(--acc);">
+    <div class="lbl" style="color:var(--acc);">大数の効き方（この回の眼目）</div>
+    $$\mathrm{Var}(\hat g)\;=\;\frac{\mathrm{Var}(X_1)}{N}\;\propto\;\frac{1}{N}$$
+  </div>
+
+  <p>期待値（＝推定したい真の勾配）は \(N\) によらず同じままで、<em>ばらつきだけ</em>が \(1/N\) で縮む。つまり大集団ほど、種は勾配をより正確に見積もり、より速く・より安定に地形を下れる。<strong>「数の多さ」は、そのまま「勾配推定器としての精度」</strong>なのです。小さな集団は少数のサンプルで勾配を当てずっぽうに推定するので、世代ごとの向きがふらつく（漂流・遺伝的浮動）。大きな集団は滑らかに、迷いなく坂を下る。</p>
+
+  <div class="calc">
+    <span class="tag">やってみよう ── Nを16倍で、ばらつきは1/4になる</span>
+    <p class="lbl">分散は 1/N。標準偏差（ばらつき）はその平方根なので 1/√N</p>
+    $$\mathrm{sd}(\hat g)=\sqrt{\mathrm{Var}(\hat g)}\;\propto\;\frac{1}{\sqrt N}$$
+    <p class="lbl">N を 4 から 64 へ（16倍）増やすと</p>
+    $$\frac{\mathrm{sd}_{N=64}}{\mathrm{sd}_{N=4}}=\sqrt{\frac{4}{64}}=\sqrt{\frac{1}{16}}=\frac14$$
+    <p style="margin-bottom:14px;">たとえば \(N=4\) で勾配推定の標準偏差が \(0.40\) だったとすると、同じ \(\theta,\ \sigma\) のまま \(N=64\) にすれば \(0.40\times\tfrac14=0.10\) まで下がる ── ばらつきが<span style="color:var(--ok);font-weight:700;">4分の1</span>。ただし精度を2倍にするには \(N\) を<em>4倍</em>にせねばならず（\(\mathrm{sd}\propto1/\sqrt N\)）、<span style="color:var(--calc);font-weight:700;">収穫は逓減</span>します。次の図で、この \(1/\sqrt N\) の効き方を目で確かめましょう。</p>
+  </div>
+
+  <h2><span class="n">05</span>動かしてみる ── 坂を下る集団</h2>
+
+  <p>下は2次元の損失地形（明るいほど損失が小さい＝適応度が高い）。白い点が個体（＝並列スレッド、色は適応度：緑ほど良く赤ほど悪い）、赤い大きな点が集団の重心＝種のパラメータ \(\theta\) です。「1世代進める」で1ステップ、「自動」で連続実行。<strong>スライダー \(N\)</strong> を小さくすると重心の動きがガタつき（高分散）、大きくすると滑らかに前進します（低分散）。同じ地形・同じ \(\sigma\) で \(N=4\) と \(N=64\) を見比べてください。</p>
+
+  <div class="fig">
+    <div class="cap">図：2次元損失地形上のES／自然選択。個体（点）は変異 θ+εᵢ、色は適応度。重心（赤）は ĝ に沿って谷底へ下る。N が小さいと推定が高分散でふらつき、大きいと滑らか</div>
+    <canvas id="cv" width="680" height="380"></canvas>
+    <div class="controls">
+      <label>集団サイズ N（並列スレッド数）<span class="val" id="vN">16</span>
+        <input type="range" id="N" min="2" max="128" step="1" value="16">
+      </label>
+      <button class="btn" id="step">1世代進める ▶</button>
+      <button class="btn" id="run" style="background:#7a4e10;">自動 ⏵</button>
+      <button class="btn" id="reset" style="background:#9a7a3a;">最初から ↻</button>
+    </div>
+    <div class="readout local" id="rd"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:#c0392b;border:2px solid #fff;box-shadow:0 0 0 1px #999;"></i>種の重心 θ</span>
+      <span><i class="dot" style="background:#3d7a3a;"></i>適応度の高い個体（低損失）</span>
+      <span><i class="dot" style="background:#a83a22;"></i>適応度の低い個体（高損失）</span>
+      <span><i class="swatch" style="background:linear-gradient(90deg,#6f4b1f,#fbf6ee);width:34px;height:8px;"></i>暗＝高損失／明＝低損失</span>
+    </div>
+  </div>
+
+  <p>\(N=4\) では、重心が世代ごとに向きを変え、行き過ぎたり戻ったり ── わずか4サンプルの平均では勾配がまるで定まらないからです。これが小集団の宿命（浮動）。\(N=64\) や \(128\) にすると、重心はほとんど一直線に谷底へ滑り込みます。読み取り欄の「ばらつき」の数値が、\(N\) を4倍するごとにおよそ半分になる（\(1/\sqrt N\)）ことも確かめてください。</p>
+
+  <div class="divider">◇ ◇ ◇</div>
+
+  <h2><span class="n">06</span>積分する惑星 ── 自然は微分できないが、積分はできる</h2>
+
+  <p>ここに、今回のいちばん美しい逆説があります。<strong>自然は微分できない。しかし積分はできる。</strong></p>
+
+  <p>微分とは、地形の一点で無限に細かい極限をとって傾きを解析的に求める操作です。それには地形の数式を知り、それを操れる主体が要る ── 自然界にそんな計算者はいません。ところが \(\hat g\) の式をよく見ると、これは<em>期待値（＝積分）のモンテカルロ近似</em>です。真に推定しているのは、変異全体にわたる平均</p>
+
+  <div class="keybox">
+    <div class="lbl">集団が近似している「積分」（平滑化した地形の勾配）</div>
+    $$\mathbb E_{\varepsilon}\!\big[\hat g\big]\;=\;\nabla_\theta\, \mathbb E_{\varepsilon\sim\mathcal N(0,\sigma^2 I)}\big[L(\theta+\varepsilon)\big]\;=\;\nabla_\theta\, (L * \phi_\sigma)(\theta)$$
+    <div style="font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;font-size:12.5px;color:#6b5a38;margin-top:6px;">
+      \(L*\phi_\sigma\) は損失をガウス \(\phi_\sigma\) で<strong>ぼかした（平滑化した）</strong>地形（第7回）。その勾配を、無数の生死の集計で積分近似している。
+    </div>
+  </div>
+
+  <p>つまり自然は、鋭い一点の傾きを<em>計算する</em>のではなく、変異という名の膨大なサンプルを地形にばらまき、その生死を集計する ── <strong>解析的微分の代わりに、地球規模の並列サンプリングで積分を実行し、そこから勾配を取り出している</strong>。無数の生と死のひとつひとつが、この積分の被積分点なのです。前回「ぼかせば微分できない地形も下れる」と言いましたが、そのぼかしの正体は、この惑星規模のモンテカルロ積分だった。個体の死は無駄ではなく、勾配を推定するための<em>一評価</em>だったのです ── これが元論文のいう「生物圏はGPUである」の核心です。</p>
+
+  <div class="aside">
+    <span class="tag">無微分バックプロパゲーション</span>
+    第2回のバックプロパゲーションは、地形の数式を後ろ向きにたどって勾配を<em>解析的に</em>計算しました。生物圏がやっているのは、その真逆の道 ── 数式を一切使わず、前向きの評価（生きてみる）を並列に大量に回し、結果から勾配を<em>統計的に</em>推定する。同じ勾配 \(\nabla L\) に、微分から迫るのがBP、積分から迫るのがES＝進化。第6回で見たとおり、両者は同じものへの二つの経路です。
+  </div>
+
+  <h2><span class="n">07</span>判決 ── 生物圏はどこまでGPUか</h2>
+
+  <p>この比喩は、どこまでが厳密な一致で、どこからが理想化か。正直に裁きます。</p>
+
+  <table class="verdict">
+    <tr><th>問い</th><th>答え</th><th>判決</th></tr>
+    <tr>
+      <td>ES推定量 \(\hat g\) は、選択（生死の集計）が計算している量と同じ構造か</td>
+      <td>同じ。損失で重みづけた変異の平均、という骨格は厳密に一致する</td>
+      <td class="v-ok">構造は一致</td>
+    </tr>
+    <tr>
+      <td>大集団は、より低分散の勾配推定になるか</td>
+      <td>なる。\(\mathrm{Var}(\hat g)\propto 1/N\) がそのまま効く</td>
+      <td class="v-ok">成り立つ</td>
+    </tr>
+    <tr>
+      <td>現実の進化は、この式の通りに動いているか</td>
+      <td>厳密には違う。目的は動き、選択は正確な報酬重み平均ではなく、変異も等方ガウスでなく、中央の更新者もいない</td>
+      <td class="v-bad">理想化</td>
+    </tr>
+  </table>
+
+  <div class="caveat">
+    <span class="tag">正直な線 ── 強い比喩の、強さと限界</span>
+    <p style="margin-top:0;">「生物圏＝一台のES最適化器／GPU」は、<strong>構造的にとても強い比喩</strong>です ── ES推定量と自然選択の対応（損失で重みづけた変異の平均）は、こじつけではなく本物の同型だからです。しかし、そのまま現実の進化そのものだと言えば理想化が過ぎます。第一に、<em>地形は固定されていない</em>：共進化で獲物が速くなれば捕食者の適応度地形も動く、絶えず揺れる標的です。第二に、選択は<em>厳密には報酬重み平均ではなく、適応度に比例した再サンプリング</em>で、これはむしろ自然勾配（フィッシャー情報で整えた勾配）に近い。第三に、突然変異は<em>等方ガウスではない</em>：ゲノム上の位置で率が違い、方向にも偏りがある。第四に、\(\theta\leftarrow\theta-\eta\hat g\) のような<em>中央集権的な一括更新は存在しない</em>：更新は無数の局所的な生死に分散していて、全体を束ねる主体はいない。</p>
+    <p style="margin-bottom:0;">モデルとしての強さ（骨格は本物）と限界（細部は理想化）を、両方とも正直に。そして次回、この並列計算は<strong>タダではない</strong>という話に進みます ── 一つの評価にも、一つの死にも、エネルギーが要る。計算に物理的コストがある以上（ランダウアーの原理）、生命は必然的に<em>効率よく計算する競争</em>になるのです。</p>
+  </div>
+
+  <div class="prob">
+    <div class="lbl">練習問題（今回の式だけで解けます）</div>
+    <ol>
+      <li>ある集団サイズで勾配推定の標準偏差が \(0.24\) だった。分散を \(1/9\) に減らす（＝標準偏差を \(1/3\) にする）には、集団サイズを何倍にすればよいか。
+        <details><summary>答えを見る</summary><div class="ans">\(\mathrm{Var}\propto 1/N\) なので、分散を \(1/9\) にするには \(N\) を \(9\) 倍。このとき標準偏差は \(\sqrt{1/9}=1/3\) 倍、すなわち \(0.24\to0.08\)。精度（標準偏差の逆）を3倍にするのに頭数は9倍要る ── 収穫逓減の典型。</div></details>
+      </li>
+      <li>対応表で「損失評価 \(L(\theta+\varepsilon_i)\)」に当たる生物学的事象は何か。またそれがGPUの何に相当するか、一言で。
+        <details><summary>答えを見る</summary><div class="ans">個体の生死（適応度評価）＝環境がその個体に下す採点。GPUでいえば「1スレッドがカーネルを最後まで実行し、結果を返す」こと。全スレッドの結果を \(L\cdot\varepsilon\) の重みで足し上げる集計(リダクション)が \(\hat g\) を作る。</div></details>
+      </li>
+      <li>「自然は微分できないが積分はできる」とはどういう意味か。\(\hat g\) の期待値を手がかりに説明せよ。
+        <details><summary>答えを見る</summary><div class="ans">微分は地形の数式を解析的に操る操作で、自然界に計算者はいない。一方 \(\hat g\) は \(\mathbb E_\varepsilon[L(\theta+\varepsilon)]\)（＝変異にわたる積分）の勾配を、多数のサンプル（個体の生死）で近似したもの。自然は無数の並列試行を集計する＝積分を実行することで、微分せずに勾配を得ている。平滑化した地形 \(L*\phi_\sigma\) の勾配を、惑星規模のモンテカルロ積分で推定しているのだ。</div></details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="record">
+    <h2 style="border:none;"><span class="n">第8回まとめ</span>地球は、微分せずに坂を下る一台の計算機</h2>
+    <p>個体＝サンプル \(\theta+\varepsilon_i\)、生死＝損失評価、繁殖＝更新、種＝パラメータ \(\theta\)、世代＝1ステップ、集団サイズ＝並列スレッド数 \(N\)（STEP 01–02）。集団全体は、変異を採点で重みづけて平均するES勾配推定量 \(\hat g=\tfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\varepsilon_i\) を、同じ処理を別データで走らせるSPMD（GPU）として計算している（STEP 03）。\(\hat g\) は標本平均だから \(\mathrm{Var}(\hat g)\propto 1/N\)：大集団ほど低分散＝良い推定器で、\(N\) を16倍にすればばらつきは1/4（STEP 04–05）。そして自然は微分できないが、無数の生死を集計する＝積分はできる：平滑化地形 \(L*\phi_\sigma\) の勾配を、地球規模のモンテカルロ積分で得ている（STEP 06）。骨格は厳密な同型、細部は理想化（STEP 07）。</p>
+    <p>個体の死は無駄ではなかった。それは勾配を推定するための一評価であり、生物圏という一台のGPUの、一本のスレッドの終了だった。次回は、この並列計算の<em>電気代</em>を問います。</p>
+  </div>
+
+  <div class="next">
+    <span class="lbl">次回予告 ── 第9回</span>
+    <strong>生命は、効率よく計算する競争である。</strong> 今回の並列計算はタダではありません。1回の評価にも、1つの死にも、物理的なエネルギーが要る ── 情報を消すには最低限の熱を払わねばならない、というランダウアーの原理から出発します。計算にコストがある以上、進化は「同じ勾配推定を、より少ないエネルギーで」達成する方向へ押される。生命とは、熱力学に追い立てられた<em>効率よく計算する競争</em>だった、という次の一枚を描きます。
+  </div>
+
+  <div class="foot">
+    この文書は「わかる学習論」シリーズ第8回、物理・数学・AIに興味のある高校生・大学生向けの読み物です。進化戦略(ES)の勾配推定量 \(\hat g=\tfrac{1}{N\sigma^2}\sum_i L(\theta+\varepsilon_i)\varepsilon_i\) は、ガウス平滑化した目的関数 \(\mathbb E_{\varepsilon\sim\mathcal N(0,\sigma^2I)}[L(\theta+\varepsilon)]=(L*\phi_\sigma)(\theta)\) の勾配の不偏推定量であり（第4・6・7回で扱った確立した事実）、独立同分布な項の標本平均なので分散は \(1/N\) に比例します（大数の法則・標本平均の分散の基本定理）。「生物圏＝一台のGPU／ES最適化器」は元論文 §4.1 に基づく構造的比喩で、ES推定量と自然選択（適応度で重みづけた変異の集計）の同型は本物ですが、現実の進化はこの理想化から離れます：適応度地形は共進化で時間変化し、選択は厳密な報酬重み平均ではなく適応度比例の再サンプリング（自然勾配に近い）で、突然変異は非等方・非ガウスであり、\(\theta\leftarrow\theta-\eta\hat g\) のような中央集権的な一括更新は存在せず更新は分散的です。本稿の図の地形・数値（勾配推定のばらつき等）は説明用の模型で、傾向（\(N\) を増やすとばらつきが \(1/\sqrt N\) で縮む）を示すための目安です。ランダウアーの原理と計算の熱力学的コスト（第9回）、意識に関する解釈（後続回）は該当回で扱い、意識の議論は機能的・計算論的立場からの提案であって主観的経験の「なぜ」（ハードプロブレム）に答えるものではないことを、その回で明示します。 ── 印刷する場合はブラウザの「印刷」から「PDF に保存」を（印刷版ではスライダーと解答は静止・非表示になります）。
+  </div>
+
+</div>
+<p class="hint no-print">印刷 / PDF 化：⌘+P（Windows は Ctrl+P）。画面では「集団サイズ N」を変えて「自動」を押すと、個体（点）が散布され、種の重心が坂を下ります。N=4 と N=64 でふらつき方を見比べ、「ばらつき」の数値が 1/√N で縮むことを確かめてください。「答えを見る」で解答が開きます。</p>
+
+<script>
+(function(){
+  "use strict";
+  var cv=document.getElementById('cv'),
+      sN=document.getElementById('N'), vN=document.getElementById('vN'),
+      rd=document.getElementById('rd'),
+      bStep=document.getElementById('step'), bRun=document.getElementById('run'), bReset=document.getElementById('reset');
+
+  // ---- 損失地形 L(x,y)：緩やかな器 + 一つの深い谷（大域最小） ----
+  function Lf(x,y){
+    var e=Math.exp(-(((x+1.4)*(x+1.4))+((y+1.4)*(y+1.4)))/1.6);
+    return 0.08*(x*x+y*y) - 1.3*e;
+  }
+  // 数値微分による真の勾配（比較用）
+  function gradTrue(x,y){
+    var h=1e-2;
+    return [ (Lf(x+h,y)-Lf(x-h,y))/(2*h), (Lf(x,y+h)-Lf(x,y-h))/(2*h) ];
+  }
+  // ガウス乱数（Box–Muller）
+  function randn(){
+    var u=Math.random(), v=Math.random();
+    return Math.sqrt(-2*Math.log(u+1e-12))*Math.cos(2*Math.PI*v);
+  }
+
+  var XMIN=-4, XMAX=4, YMIN=-4, YMAX=4;
+  var SIGMA=0.6, ETA=0.22;
+  var TH0=[3.1,2.9];
+  var theta=TH0.slice(), gen=0, traj=[TH0.slice()], inds=[], rms=0, avgL=0, timer=null;
+  var bestXY=[0,0], fMin=0, fMax=1, field=null;
+
+  // 地形をオフスクリーンに一度だけ描く（ヒートマップ）＋ 最小値・argmin を求める
+  function buildField(){
+    var W=180, H=180;
+    field=document.createElement('canvas'); field.width=W; field.height=H;
+    var octx=field.getContext('2d'), img=octx.createImageData(W,H);
+    fMin=1e9; fMax=-1e9;
+    var grid=[];
+    for(var j=0;j<H;j++){ grid.push([]);
+      for(var i=0;i<W;i++){
+        var x=XMIN+(XMAX-XMIN)*i/(W-1);
+        var y=YMAX-(YMAX-YMIN)*j/(H-1);
+        var L=Lf(x,y); grid[j].push(L);
+        if(L<fMin){fMin=L; bestXY=[x,y];}
+        if(L>fMax)fMax=L;
+      }
+    }
+    for(var j2=0;j2<H;j2++){
+      for(var i2=0;i2<W;i2++){
+        var t=(grid[j2][i2]-fMin)/(fMax-fMin); // 0=低損失(明) 1=高損失(暗)
+        // 明(#fbf6ee) → 暗(#6f4b1f)
+        var r=Math.round(0xfb+(0x6f-0xfb)*t);
+        var g=Math.round(0xf6+(0x4b-0xf6)*t);
+        var b=Math.round(0xee+(0x1f-0xee)*t);
+        var k=(j2*W+i2)*4;
+        img.data[k]=r; img.data[k+1]=g; img.data[k+2]=b; img.data[k+3]=255;
+      }
+    }
+    octx.putImageData(img,0,0);
+  }
+
+  function setupHiDPI(c){
+    var r=window.devicePixelRatio||1, cssW=c.clientWidth||c.width, cssH=c.height*(cssW/c.width);
+    c.width=Math.round(cssW*r); c.height=Math.round(cssH*r);
+    var ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0);
+    return {ctx:ctx,w:cssW,h:cssH};
+  }
+  function lerpCol(t){ // 適応度：0=良(緑) 1=悪(赤)
+    var r=Math.round(0x3d+(0xa8-0x3d)*t);
+    var g=Math.round(0x7a+(0x3a-0x7a)*t);
+    var b=Math.round(0x3a+(0x22-0x3a)*t);
+    return 'rgb('+r+','+g+','+b+')';
+  }
+
+  var padL=40,padR=14,padT=14,padB=30;
+  function draw(){
+    if(!field) buildField();
+    var d=setupHiDPI(cv), ctx=d.ctx, w=d.w, h=d.h;
+    var plotW=w-padL-padR, plotH=h-padT-padB;
+    function X(x){return padL+(x-XMIN)/(XMAX-XMIN)*plotW;}
+    function Y(y){return padT+(YMAX-y)/(YMAX-YMIN)*plotH;}
+    ctx.clearRect(0,0,w,h);
+    // 地形
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(field,padL,padT,plotW,plotH);
+    // 枠
+    ctx.strokeStyle='#c9b48a';ctx.lineWidth=1;ctx.strokeRect(padL,padT,plotW,plotH);
+    // 大域最小マーカー
+    var bx=X(bestXY[0]),by=Y(bestXY[1]);
+    ctx.strokeStyle='#fdfaf4';ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(bx-6,by);ctx.lineTo(bx+6,by);ctx.moveTo(bx,by-6);ctx.lineTo(bx,by+6);ctx.stroke();
+    ctx.fillStyle='#fdfaf4';ctx.font='10px sans-serif';ctx.fillText('谷底',bx+8,by+4);
+    // 軌跡
+    if(traj.length>1){
+      ctx.strokeStyle='rgba(192,57,43,.55)';ctx.lineWidth=1.6;ctx.beginPath();
+      for(var k=0;k<traj.length;k++){var px=X(traj[k][0]),py=Y(traj[k][1]); if(k===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+      ctx.stroke();
+    }
+    // 個体
+    for(var m=0;m<inds.length;m++){
+      var ii=inds[m], t=(ii.L-fMin)/(fMax-fMin); if(t<0)t=0; if(t>1)t=1;
+      var ix=X(ii.x),iy=Y(ii.y);
+      ctx.fillStyle=lerpCol(t);
+      ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(ix,iy,3.4,0,7);ctx.fill();ctx.stroke();
+    }
+    // 重心（種）
+    var cx=X(theta[0]),cy=Y(theta[1]);
+    if(theta[0]>=XMIN&&theta[0]<=XMAX&&theta[1]>=YMIN&&theta[1]<=YMAX){
+      ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(cx,cy,7,0,7);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=2.4;ctx.stroke();
+    }
+    // 軸ラベル
+    ctx.fillStyle='#6b5a38';ctx.font='12px sans-serif';
+    ctx.fillText('θ₁ →', w-56, h-padB+22);
+    ctx.save();ctx.translate(14,padT+plotH/2+16);ctx.rotate(-Math.PI/2);ctx.fillText('θ₂ →',0,0);ctx.restore();
+  }
+
+  // 1世代（＝1更新ステップ）
+  function stepGen(){
+    var N=parseInt(sN.value,10);
+    var gx=0, gy=0, sumL=0; inds=[];
+    for(var i=0;i<N;i++){
+      var ex=SIGMA*randn(), ey=SIGMA*randn();
+      var px=theta[0]+ex, py=theta[1]+ey;
+      var L=Lf(px,py); sumL+=L;
+      gx += L*ex; gy += L*ey;
+      if(inds.length<200) inds.push({x:px,y:py,L:L});
+    }
+    var inv=1/(N*SIGMA*SIGMA);
+    gx*=inv; gy*=inv;
+    // 真の勾配との誤差（推定のばらつきの指標）
+    var gt=gradTrue(theta[0],theta[1]);
+    var err=Math.hypot(gx-gt[0], gy-gt[1]);
+    rms = gen===0 ? err : Math.sqrt(0.75*rms*rms + 0.25*err*err);
+    avgL = sumL/N;
+    // 更新
+    theta[0]-=ETA*gx; theta[1]-=ETA*gy;
+    // 定義域内に収める（発散防止）
+    theta[0]=Math.max(XMIN,Math.min(XMAX,theta[0]));
+    theta[1]=Math.max(YMIN,Math.min(YMAX,theta[1]));
+    gen++;
+    traj.push(theta.slice()); if(traj.length>400)traj.shift();
+    draw(); report(N);
+  }
+  function report(N){
+    var dist=Math.hypot(theta[0]-bestXY[0], theta[1]-bestXY[1]);
+    var note;
+    if(N<=8) note='小集団：わずか'+N+'サンプルの平均なので勾配推定が高分散 ── 重心がふらつく（浮動）。Nを上げてみてください。';
+    else if(N>=48) note='大集団：低分散の良い推定器。重心は滑らかに谷底へ前進します。';
+    else note='中集団：ある程度安定。Nを4倍にするとばらつきはおよそ半分（1/√N）。';
+    if(dist<0.35){ rd.className='readout ok';
+      rd.textContent='谷底（大域最小）付近に到達 ── 世代 '+gen+' ／ N='+N+' ／ 平均損失 L='+avgL.toFixed(3)+' ／ 勾配推定のばらつき='+rms.toFixed(3)+'。'+note;
+    } else {
+      rd.className = N<=8 ? 'readout bad' : 'readout local';
+      rd.textContent='世代 '+gen+' ／ N='+N+' ／ 平均損失 L='+avgL.toFixed(3)+' ／ 勾配推定のばらつき='+rms.toFixed(3)+'。'+note;
+    }
+  }
+  function reset(){
+    stop();
+    theta=TH0.slice(); gen=0; traj=[TH0.slice()]; inds=[]; rms=0; avgL=0;
+    var N=parseInt(sN.value,10);
+    draw();
+    rd.className='readout local';
+    rd.textContent='初期化：種 θ を高損失の領域に置きました（N='+N+'）。「1世代進める」か「自動」で、集団が坂を下ります。';
+  }
+  function run(){
+    if(timer){ stop(); return; }
+    bRun.textContent='停止 ⏸';
+    timer=setInterval(stepGen,420);
+  }
+  function stop(){
+    if(timer){ clearInterval(timer); timer=null; }
+    bRun.textContent='自動 ⏵';
+  }
+
+  sN.addEventListener('input',function(){ vN.textContent=sN.value;
+    if(!timer){ var N=parseInt(sN.value,10);
+      rd.className='readout local';
+      rd.textContent='集団サイズ N='+N+' に設定。次の世代からこの本数で並列評価します（Var(ĝ)∝1/N）。';
+    }
+  });
+  bStep.addEventListener('click',function(){ stop(); stepGen(); });
+  bRun.addEventListener('click',run);
+  bReset.addEventListener('click',reset);
+  window.addEventListener('resize',draw);
+
+  vN.textContent=sN.value;
+  function init(){ buildField(); reset(); }
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(init);}
+  setTimeout(init,60);
+  window.addEventListener('load',init);
+})();
+</script>
+</body>
+</html>
