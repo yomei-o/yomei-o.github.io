@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universe OS — 物理シミュレーション集 (C++ / WASM)</title>
+<style>
+  :root{ --fg:#00ffcc; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#05050a; color:#cdd6e4; font-family:'Courier New',monospace; padding:28px 16px 60px; }
+  header{ text-align:center; margin-bottom:26px; }
+  h1{ color:var(--fg); font-size:22px; margin:0 0 6px; }
+  .sub{ color:#5fbfa8; font-size:13px; line-height:1.7; max-width:720px; margin:0 auto; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; max-width:1000px; margin:0 auto; }
+  .card{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none;
+         background:#0b1420; border:1px solid #143; border-radius:12px; padding:18px 12px; color:#cdd6e4;
+         transition:transform .12s, border-color .12s, box-shadow .12s; }
+  .card:hover{ transform:translateY(-3px); border-color:var(--fg); box-shadow:0 6px 22px #000a; }
+  .emoji{ font-size:34px; line-height:1; }
+  .jp{ color:var(--fg); font-size:13px; font-weight:700; text-align:center; }
+  .en{ color:#5fbfa8; font-size:10px; text-align:center; }
+  footer{ text-align:center; color:#5fbfa8; font-size:12px; margin-top:34px; line-height:1.8; }
+  a.src{ color:var(--fg); }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🌌 Universe OS — 物理シミュレーション集</h1>
+    <p class="sub">物理現象の計算も描画もすべて <b>C++ → WebAssembly</b>（描画は単一ヘッダの olive.c）。JavaScript はピクセル転送とUIだけ。元の JS 版 <a class="src" href="https://github.com/yomei-o/yomei-o.github.io/tree/main/universe">universe</a> を移植したものです。</p>
+  </header>
+  <div class="grid">
+  <a class="card" href="./gravity_wave/">
+    <div class="emoji">🌌</div>
+    <div class="jp">重力波</div>
+    <div class="en">Gravity waves</div>
+  </a>
+  <a class="card" href="./annihilation_os/">
+    <div class="emoji">💥</div>
+    <div class="jp">反物質消滅</div>
+    <div class="en">Annihilation</div>
+  </a>
+  <a class="card" href="./doubleslit_os/">
+    <div class="emoji">🌊</div>
+    <div class="jp">二重スリット</div>
+    <div class="en">Double slit</div>
+  </a>
+  <a class="card" href="./entanglement_os/">
+    <div class="emoji">🔗</div>
+    <div class="jp">量子もつれ</div>
+    <div class="en">Entanglement</div>
+  </a>
+  <a class="card" href="./tunneling_os_v4_1/">
+    <div class="emoji">🚧</div>
+    <div class="jp">トンネル効果</div>
+    <div class="en">Tunneling</div>
+  </a>
+  <a class="card" href="./wormhole_os/">
+    <div class="emoji">🕳️</div>
+    <div class="jp">ワームホール</div>
+    <div class="en">Wormhole</div>
+  </a>
+  <a class="card" href="./wave_particle_os/">
+    <div class="emoji">⚛️</div>
+    <div class="jp">波と粒</div>
+    <div class="en">Wave–particle</div>
+  </a>
+  <a class="card" href="./superconductivity_os/">
+    <div class="emoji">🧲</div>
+    <div class="jp">超伝導・マイスナー</div>
+    <div class="en">Superconductivity</div>
+  </a>
+  <a class="card" href="./planck_star_os/">
+    <div class="emoji">⭐</div>
+    <div class="jp">プランク星</div>
+    <div class="en">Planck star</div>
+  </a>
+  <a class="card" href="./inflation_os/">
+    <div class="emoji">🎆</div>
+    <div class="jp">インフレーション</div>
+    <div class="en">Inflation</div>
+  </a>
+  <a class="card" href="./neutron_decay_os/">
+    <div class="emoji">☢️</div>
+    <div class="jp">中性子崩壊</div>
+    <div class="en">Neutron decay</div>
+  </a>
+  <a class="card" href="./universe_os/">
+    <div class="emoji">🕸️</div>
+    <div class="jp">時空メッシュ(3層)</div>
+    <div class="en">Spacetime mesh</div>
+  </a>
+  <a class="card" href="./casimir_vacuum_os/">
+    <div class="emoji">📐</div>
+    <div class="jp">カシミール効果</div>
+    <div class="en">Casimir effect</div>
+  </a>
+  <a class="card" href="./electron_os/">
+    <div class="emoji">🌫️</div>
+    <div class="jp">電子雲</div>
+    <div class="en">Electron cloud</div>
+  </a>
+  <a class="card" href="./weak_os/">
+    <div class="emoji">⚡</div>
+    <div class="jp">弱い相互作用(β崩壊)</div>
+    <div class="en">Weak / beta decay</div>
+  </a>
+  <a class="card" href="./three_body_chaos_working/">
+    <div class="emoji">♾️</div>
+    <div class="jp">三体問題</div>
+    <div class="en">Three-body</div>
+  </a>
+  <a class="card" href="./quark_os/">
+    <div class="emoji">🎗️</div>
+    <div class="jp">クォーク閉じ込め</div>
+    <div class="en">Quark confinement</div>
+  </a>
+  <a class="card" href="./dark_matter_os/">
+    <div class="emoji">🌀</div>
+    <div class="jp">ダークマター</div>
+    <div class="en">Dark matter</div>
+  </a>
+  <a class="card" href="./graviton_spiral_os/">
+    <div class="emoji">🌠</div>
+    <div class="jp">グラビトン放出</div>
+    <div class="en">Graviton spiral</div>
+  </a>
+  <a class="card" href="./water_vibration_os/">
+    <div class="emoji">💧</div>
+    <div class="jp">水分子振動</div>
+    <div class="en">H2O vibration</div>
+  </a>
+  <a class="card" href="./time_dilation_os/">
+    <div class="emoji">⏱️</div>
+    <div class="jp">時間遅延・双子</div>
+    <div class="en">Time dilation</div>
+  </a>
+  </div>
+  <footer>
+    ソース: <a class="src" href="https://github.com/yomei-o/universe_cpp">github.com/yomei-o/universe_cpp</a><br>
+    描画: <a class="src" href="https://github.com/tsoding/olive.c">olive.c</a> (MIT)
+  </footer>
+</body>
+</html>
