@@ -48,6 +48,7 @@ const CONFIG = {
 const $=id=>document.getElementById(id);
 const cv=$("cv"), ctx=cv.getContext("2d"), panel=$("panel"), statusEl=$("status");
 let M=null, api={}, W=0, H=0, img=null, playing=true, raf=0, frames=0, lastT=0;
+let down=false, lastNX=0, lastNY=0;   // pointer drag state (quark grab-hold)
 
 createSim().then(mod=>{
   M=mod;
@@ -92,6 +93,7 @@ function buildPanel(){
 function blit(){ const p=api.render(); img.data.set(M.HEAPU8.subarray(p,p+W*H*4)); ctx.putImageData(img,0,0); }
 function loop(ts){
   if(!playing) return;
+  if(down && M) api.click(lastNX,lastNY);   // keep the grabbed quark pinned to the cursor while held
   api.step(CONFIG.stepsPerFrame); blit(); frames++;
   let fps=0; if(lastT) fps=1000/(ts-lastT); lastT=ts;
   statusEl.textContent=`frame ${frames}   ${fps.toFixed(0)} fps`;
@@ -100,10 +102,10 @@ function loop(ts){
 
 if(CONFIG.clickable){
   const emit=e=>{ const r=cv.getBoundingClientRect();
-    api.click((e.clientX-r.left)/r.width, (e.clientY-r.top)/r.height); };
-  let down=false;
-  cv.addEventListener("pointerdown",e=>{ down=true; if(M)emit(e); });
-  cv.addEventListener("pointermove",e=>{ if(down&&M)emit(e); });
+    lastNX=(e.clientX-r.left)/r.width; lastNY=(e.clientY-r.top)/r.height;
+    if(M) api.click(lastNX,lastNY); };
+  cv.addEventListener("pointerdown",e=>{ down=true; emit(e); });
+  cv.addEventListener("pointermove",e=>{ if(down) emit(e); });
   window.addEventListener("pointerup",()=>{ down=false; });
 }
 </script>
