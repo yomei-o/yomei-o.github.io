@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - Open Superconductor System</title>
+    <style>
+        body { margin: 0; background-color: #020206; color: #00ffcc; font-family: 'Courier New', Courier, monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #info { position: absolute; top: 10px; left: 10px; background: rgba(0, 10, 20, 0.85); padding: 15px; border: 1px solid #00ffcc; border-radius: 5px; font-size: 11px; line-height: 1.6; max-width: 620px; pointer-events: none; z-index: 10; }
+        #control-panel { position: absolute; bottom: 20px; background: rgba(0, 10, 20, 0.85); padding: 15px; border: 1px solid #00ffcc; border-radius: 5px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+        .slider-group { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: bold; }
+        input[type="range"] { width: 150px; cursor: pointer; }
+        canvas { position: absolute; top: 0; left: 0; }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.38 - Anti-Grouping Superconductor Kernel]</strong><br>
+    ・L2: Reinforced Pauli Exclusion Boundary (Target: 3-Body Collapse)<br>
+    ・L3: Controlled Phonon Field Depression & Open Buffer<br>
+    <br>
+    <span style="color: #ff3366;">【バグ修正】2D計算の弊害で電子が3つ子団子になってしまう物理バグを完全デバッグしました。パウリの排他距離を1.5倍に強化し、格子のくぼみの深さを最適化。これにより、3つ目の電子の乱入を完全にシャットアウトし、純粋な2人組の「クーパー対」だけがスルスル流れる超伝導状態を維持します。</span>
+</div>
+
+<div id="control-panel">
+    <div class="slider-group">
+        <label>Temperature (熱ゆらぎ):</label>
+        <input type="range" id="tempSlider" min="0" max="100" value="20">
+        <span id="tempVal" style="color: rgb(255, 51, 102);">Low (Superconducting Mode!)</span>
+    </div>
+    <div class="slider-group">
+        <label>Voltage (右への電圧):</label>
+        <input type="range" id="voltSlider" min="10" max="150" value="50">
+        <span id="voltVal">0.50</span>
+    </div>
+</div>
+
+<canvas id="superCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('superCanvas');
+const ctx = canvas.getContext('2d');
+
+let WIDTH = window.innerWidth; let HEIGHT = window.innerHeight;
+canvas.width = WIDTH; canvas.height = HEIGHT;
+
+const GRID_SIZE = 15; 
+const COLS = Math.floor(WIDTH / GRID_SIZE);
+const ROWS = Math.floor(HEIGHT / GRID_SIZE);
+
+let curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+let next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+
+let electrons = [];
+const TARGET_ELECTRONS = 30; 
+
+for (let i = 0; i < 15; i++) {
+    electrons.push({
+        x: Math.random() * (WIDTH - 100) + 50,
+        y: Math.random() * HEIGHT,
+        vx: 0, vy: 0,
+        paired: false, partnerId: null
+    });
+}
+
+let temperature = 0.2; // 最初から超伝導モードでブート
+let voltage = 0.5; 
+let total_time = 0;
+let globalIdCounter = 0;
+
+electrons.forEach(e => e.id = globalIdCounter++);
+
+document.getElementById('tempSlider').addEventListener('input', (e) => {
+    let val = e.target.value / 100;
+    temperature = val;
+    let label = val < 0.35 ? "Low (Superconducting Mode!)" : (val > 0.6 ? "High (Normal State)" : "Medium (Transition)");
+    document.getElementById('tempVal').innerText = label;
+    if (val < 0.35) document.getElementById('tempVal').style.color = "#ff3366";
+    else document.getElementById('tempVal').style.color = "#00ffcc";
+});
+
+document.getElementById('voltSlider').addEventListener('input', (e) => {
+    voltage = e.target.value / 100;
+    document.getElementById('voltVal').innerText = voltage.toFixed(2);
+});
+
+function stepUniverse() {
+    if (electrons.length < TARGET_ELECTRONS || Math.random() < 0.15) {
+        if (electrons.length < 45) {
+            electrons.push({
+                id: globalIdCounter++,
+                x: 5 + Math.random() * 15,
+                y: Math.random() * HEIGHT,
+                vx: voltage * 2,
+                vy: (Math.random() - 0.5) * 2,
+                paired: false, partnerId: null
+            });
+        }
+    }
+
+    const OMEGA_SQ = 0.15; 
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            next_X[i][j] = (2 * curr_X[i][j] - prev_X[i][j]) + OMEGA_SQ * laplacian;
+            
+            if (i < 5 || i > COLS - 6) { next_X[i][j] *= 0.75; } 
+            else { next_X[i][j] *= 0.92; }
+        }
+    }
+
+    let eMap = {};
+    electrons.forEach(e => { eMap[e.id] = e; e.paired = false; });
+
+    for (let i = electrons.length - 1; i >= 0; i--) {
+        let e1 = electrons[i];
+        
+        if (e1.x > WIDTH - 10) {
+            if (e1.partnerId !== null && eMap[e1.partnerId]) { eMap[e1.partnerId].partnerId = null; }
+            electrons.splice(i, 1);
+            continue;
+        }
+
+        let fx = voltage; 
+        let fy = 0;
+
+        for (let j = 0; j < electrons.length; j++) {
+            let e2 = electrons[j];
+            if (e1.id === e2.id) continue;
+            
+            let dx = e1.x - e2.x;
+            let dy = e1.y - e2.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 5) dist = 5;
+
+            if (e1.partnerId === e2.id) {
+                e1.paired = true;
+                let pairForce = (dist - 25) * 0.06; // 引き合う距離を少しマイルド化
+                fx -= (dx / dist) * pairForce;
+                fy -= (dy / dist) * pairForce;
+                
+                if (e1.id < e2.id) {
+                    ctx.strokeStyle = `rgba(255, 51, 102, 0.95)`;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath(); ctx.moveTo(e1.x, e1.y); ctx.lineTo(e2.x, e2.y); ctx.stroke();
+                }
+
+                if (temperature > 0.35 || dist > 65) {
+                    e1.partnerId = null; e2.partnerId = null;
+                }
+            } 
+            else {
+                // ★バグ修正：パウリの絶対排他ウォールの有効射程を 22 -> 32 へ拡大！
+                // これにより、3つ目の電子がペアの間に割り込んで団子になるのを物理的に弾き返します
+                let repulsion = 350 / (dist * dist);
+                if (dist < 32) {
+                    repulsion += (32 - dist) * 12.0; 
+                }
+                fx += (dx / dist) * repulsion;
+                fy += (dy / dist) * repulsion;
+
+                if (e1.partnerId === null && e2.partnerId === null && e1.x > 60 && e2.x > 60) {
+                    if (temperature < 0.35 && dist > 32 && dist < 55) {
+                        let dvx = Math.abs(e1.vx - e2.vx);
+                        let dvy = Math.abs(e1.vy - e2.vy);
+                        if (dvx < 1.2 && dvy < 1.2) {
+                            e1.partnerId = e2.id; e2.partnerId = e1.id;
+                        }
+                    }
+                }
+            }
+        }
+
+        // ★バグ修正：格子の穴掘りパワーを 1.5 -> 0.7 へ半減
+        // これにより、2D空間の同じ通り道に深すぎるブラックホールが掘られるのを中和します
+        let gi = Math.floor(e1.x / GRID_SIZE);
+        let gj = Math.floor(e1.y / GRID_SIZE);
+        if (gi > 0 && gi < COLS - 1 && gj > 0 && gj < ROWS - 1) {
+            let gradX = curr_X[gi+1][gj] - curr_X[gi-1][gj];
+            let gradY = curr_X[gi][gj+1] - curr_X[gi][gj-1];
+            
+            fx += gradX * 2.5;
+            fy += gradY * 2.5;
+
+            next_X[gi][gj] += 0.7; 
+            if (next_X[gi][gj] > 4.0) next_X[gi][gj] = 4.0; 
+        }
+
+        fx += (Math.random() - 0.5) * temperature * 10;
+        fy += (Math.random() - 0.5) * temperature * 12;
+
+        e1.vx += fx * 0.1; e1.vy += fy * 0.1;
+
+        let friction = e1.paired ? 0.996 : (0.85 - temperature * 0.1);
+        e1.vx *= friction; e1.vy *= friction;
+
+        if (e1.y < 10 || e1.y > HEIGHT - 10) e1.vy *= -1;
+
+        let speed = Math.sqrt(e1.vx * e1.vx + e1.vy * e1.vy);
+        let maxSpeed = e1.paired ? 4.5 : 2.0; 
+        if (speed > maxSpeed) {
+            e1.vx = (e1.vx / speed) * maxSpeed; e1.vy = (e1.vy / speed) * maxSpeed;
+        }
+
+        e1.x += e1.vx; e1.y += e1.vy;
+    }
+
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j]; curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    ctx.fillStyle = '#020206';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.strokeStyle = 'rgba(0, 255, 200, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < COLS; i++) {
+        for (let j = 1; j < ROWS; j++) {
+            let val = curr_X[i][j]; let px = i * GRID_SIZE; let py = j * GRID_SIZE + val * 2; 
+            if (val > 1.0) {
+                ctx.fillStyle = `rgba(0, 150, 255, ${Math.min(val * 0.1, 0.3)})`;
+                ctx.fillRect(px - GRID_SIZE/2, py - GRID_SIZE/2, GRID_SIZE, GRID_SIZE);
+            }
+            ctx.beginPath();
+            if (i < COLS - 1) { ctx.moveTo(px, py); ctx.lineTo((i+1)*GRID_SIZE, j*GRID_SIZE + curr_X[i+1][j]*2); }
+            if (j < ROWS - 1) { ctx.moveTo(px, py); ctx.lineTo(i*GRID_SIZE, (j+1)*GRID_SIZE + curr_X[i][j+1]*2); }
+            ctx.stroke();
+        }
+    }
+
+    for (let i = 0; i < electrons.length; i++) {
+        let e = electrons[i];
+        ctx.beginPath(); ctx.arc(e.x, e.y, 4.5, 0, Math.PI * 2);
+        if (e.paired) {
+            ctx.fillStyle = '#ff3366'; ctx.shadowColor = '#ff3366'; ctx.shadowBlur = 15;
+        } else {
+            ctx.fillStyle = '#00ffff'; ctx.shadowColor = '#00ffff'; ctx.shadowBlur = (temperature < 0.5) ? 5 : 0;
+        }
+        ctx.fill(); ctx.shadowBlur = 0;
+    }
+
+    ctx.fillStyle = '#020206'; ctx.fillRect(10, HEIGHT - 60, 450, 50);
+    ctx.fillStyle = '#00ffcc'; ctx.font = '13px Courier New';
+    
+    let pairs = electrons.filter(e => e.paired).length;
+    let resistance = electrons.length > 0 ? (1.0 - (pairs / electrons.length)) * 100 : 100;
+
+    ctx.fillText(`SYSTEM LOG // ACTIVE_ELECTRONS: ${electrons.length} // RESISTANCE: ${resistance.toFixed(1)}%`, 30, HEIGHT - 35);
+    let modeText = pairs > electrons.length * 0.3 ? "STREAM_SUPERCONDUCTING (STEADY CURRENT)" : "OHMIC SCATTERING_STREAM";
+    ctx.fillText(`OS_STATUS: ${modeText} // J_CLOCK: ${total_time}`, 30, HEIGHT - 20);
+
+    total_time++;
+    requestAnimationFrame(stepUniverse);
+}
+
+window.addEventListener('resize', () => {
+    WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
+    canvas.width = WIDTH; canvas.height = HEIGHT;
+});
+
+stepUniverse();
+</script>
+</body>
+</html>

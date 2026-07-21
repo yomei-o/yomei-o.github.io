@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universe OS - Photosynthesis (C++/WASM)</title>
+<style>
+  :root{ --fg:#00ffcc; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#05050a; color:var(--fg); font-family:'Courier New',monospace;
+        min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:16px; }
+  h1{ font-size:16px; margin:0; font-weight:700; }
+  .sub{ font-size:12px; color:#5fbfa8; max-width:820px; text-align:center; line-height:1.6; }
+  canvas{ width:min(96vw,820px); height:auto; image-rendering:pixelated; background:#05050a;
+          border:1px solid #0a3; border-radius:6px; box-shadow:0 6px 26px #000a; cursor:crosshair; }
+  #panel{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:center; max-width:820px; }
+  .ctl{ display:flex; flex-direction:column; font-size:11px; color:#5fbfa8; min-width:150px; }
+  .ctl b{ color:var(--fg); }
+  input[type=range]{ accent-color:var(--fg); }
+  button{ font-family:inherit; font-size:13px; padding:7px 13px; border:1px solid #0a5; border-radius:6px;
+          background:#062018; color:var(--fg); cursor:pointer; }
+  button:hover{ background:#0a3324; }
+  button.primary{ background:var(--fg); color:#05130f; border:none; font-weight:700; }
+  #status{ font-size:12px; color:#5fbfa8; font-variant-numeric:tabular-nums; min-height:1.2em; }
+  a{ color:var(--fg); }
+</style>
+</head>
+<body>
+  <h1>🌿 Photosynthesis — Quantum Transport <span style="color:#5fbfa8;font-size:12px">(C++ / WASM)</span></h1>
+  <p class="sub">光合成の量子コヒーレント・エネルギー輸送。アンテナ(青)で注入された波が、クロロフィルの導波路(高コヒーレンス領域)を低損失で伝わり反応中心(赤)へ集約されます。<b>計算も描画もC++→WASM</b>。コヒーレンスを上げるほど到達効率が上がります。</p>
+  <canvas id="cv"></canvas>
+  <div id="panel"></div>
+  <div id="status">読み込み中…</div>
+  <p class="sub">ソース: <a href="https://github.com/yomei-o/universe_cpp">github.com/yomei-o/universe_cpp</a></p>
+
+<script src="sim.js"></script>
+<script>
+"use strict";
+// ---- per-sim config (only this block differs between sims) ----
+const CONFIG = {
+  sliders: [ { id:0, label:"コヒーレンス", min:0.90, max:1.00, step:0.01, val:0.99, dec:2 } ],
+  buttons: [ { action:0, label:"🌱 ネットワーク再生成" } ],
+  clickable: false,
+  stepsPerFrame: 1,
+};
+
+// ---- generic harness (identical across all Universe OS sims) ----
+const $=id=>document.getElementById(id);
+const cv=$("cv"), ctx=cv.getContext("2d"), panel=$("panel"), statusEl=$("status");
+let M=null, api={}, W=0, H=0, img=null, playing=true, raf=0, frames=0, lastT=0;
+
+createSim().then(mod=>{
+  M=mod;
+  api.init  =M.cwrap("sim_init","number",["number","number"]);
+  api.w     =M.cwrap("sim_w","number",[]);
+  api.h     =M.cwrap("sim_h","number",[]);
+  api.reset =M.cwrap("sim_reset",null,[]);
+  api.step  =M.cwrap("sim_step",null,["number"]);
+  api.render=M.cwrap("sim_render","number",[]);
+  api.click =M.cwrap("sim_click",null,["number","number"]);
+  api.set   =M.cwrap("sim_set",null,["number","number"]);
+  api.action=M.cwrap("sim_action",null,["number"]);
+  api.init(0,0);
+  W=api.w(); H=api.h(); cv.width=W; cv.height=H; img=ctx.createImageData(W,H);
+  buildPanel();
+  CONFIG.sliders.forEach(s=>api.set(s.id, s.val));   // push initial params
+  loop();
+});
+
+function buildPanel(){
+  CONFIG.sliders.forEach(s=>{
+    const wrap=document.createElement("label"); wrap.className="ctl";
+    const head=document.createElement("span"); head.innerHTML=`${s.label} <b id="v${s.id}">${(+s.val).toFixed(s.dec)}</b>`;
+    const inp=document.createElement("input"); inp.type="range";
+    inp.min=s.min; inp.max=s.max; inp.step=s.step; inp.value=s.val;
+    inp.addEventListener("input",()=>{ $("v"+s.id).textContent=(+inp.value).toFixed(s.dec); if(M)api.set(s.id,+inp.value); });
+    wrap.appendChild(head); wrap.appendChild(inp); panel.appendChild(wrap);
+  });
+  CONFIG.buttons.forEach(b=>{
+    const btn=document.createElement("button"); btn.textContent=b.label;
+    btn.addEventListener("click",()=>{ if(M)api.action(b.action); });
+    panel.appendChild(btn);
+  });
+  const pp=document.createElement("button"); pp.className="primary"; pp.textContent="⏸ 一時停止";
+  pp.addEventListener("click",()=>{ playing=!playing; pp.textContent=playing?"⏸ 一時停止":"▶ 再生"; if(playing){lastT=0;loop();} });
+  panel.appendChild(pp);
+  const rs=document.createElement("button"); rs.textContent="⟲ リセット";
+  rs.addEventListener("click",()=>{ if(M){api.reset(); frames=0; if(!playing){api.step(0);blit();}} });
+  panel.appendChild(rs);
+}
+
+function blit(){ const p=api.render(); img.data.set(M.HEAPU8.subarray(p,p+W*H*4)); ctx.putImageData(img,0,0); }
+function loop(ts){
+  if(!playing) return;
+  api.step(CONFIG.stepsPerFrame); blit(); frames++;
+  let fps=0; if(lastT) fps=1000/(ts-lastT); lastT=ts;
+  statusEl.textContent=`frame ${frames}   ${fps.toFixed(0)} fps`;
+  raf=requestAnimationFrame(loop);
+}
+
+if(CONFIG.clickable){
+  const emit=e=>{ const r=cv.getBoundingClientRect();
+    api.click((e.clientX-r.left)/r.width, (e.clientY-r.top)/r.height); };
+  let down=false;
+  cv.addEventListener("pointerdown",e=>{ down=true; if(M)emit(e); });
+  cv.addEventListener("pointermove",e=>{ if(down&&M)emit(e); });
+  window.addEventListener("pointerup",()=>{ down=false; });
+}
+</script>
+</body>
+</html>

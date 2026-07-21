@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe OS - Quantum Wave Visibility Patch</title>
+    <style>
+        body { margin: 0; background-color: #020206; color: #00ffcc; font-family: 'Courier New', Courier, monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #info { position: absolute; top: 10px; left: 10px; background: rgba(0, 10, 20, 0.85); padding: 15px; border: 1px solid #00ffcc; border-radius: 5px; font-size: 11px; line-height: 1.6; max-width: 620px; pointer-events: none; z-index: 10; }
+        #control-panel { position: absolute; bottom: 20px; background: rgba(0, 10, 20, 0.85); padding: 15px; border: 1px solid #00ffcc; border-radius: 5px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+        .slider-group { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: bold; }
+        input[type="range"] { width: 150px; cursor: pointer; }
+        button { background: #001122; color: #00ffcc; border: 1px solid #00ffcc; padding: 8px; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        button:hover { background: #00ffcc; color: #020206; }
+        canvas { position: absolute; top: 0; left: 0; }
+    </style>
+</head>
+<body>
+
+<div id="info">
+    <strong>[Universe OS v1.47 - Human Eye Visibility Hotfix]</strong><br>
+    ・L2: High-Density Chlorophyll Channels (No Cheating Vectors)<br>
+    ・L3: Physical Wave Equation Kernel (Minimum Brightness Boosted)<br>
+    <br>
+    <span style="color: #ffaa00;">【UIバグ修正】人間の目には暗くて見えなかった「波の薄い部分」を可視化しました。微弱な波動の検出閾値を引き下げ、さらに最低輝度（アルファ値 0.15）をシステム側で底上げ。これにより、量子の暗部が「光の霧」としてハッキリと観測可能になり、反応中心（赤いゴール）へのエネルギー集約プロセスがより鮮明に確認できます。</span>
+</div>
+
+<div id="control-panel">
+    <div class="slider-group">
+        <label>Quantum Coherence (波の伝導効率):</label>
+        <input type="range" id="cohSlider" min="90" max="100" value="99">
+        <span id="cohVal">0.99</span>
+    </div>
+    <button id="regenBtn">【 Regenerate Network (植物の再生成) 】</button>
+</div>
+
+<canvas id="photoCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('photoCanvas');
+const ctx = canvas.getContext('2d');
+let WIDTH = window.innerWidth; let HEIGHT = window.innerHeight;
+canvas.width = WIDTH; canvas.height = HEIGHT;
+
+const GRID_SIZE = 8; 
+let COLS = Math.floor(WIDTH / GRID_SIZE);
+let ROWS = Math.floor(HEIGHT / GRID_SIZE);
+
+let curr_X, prev_X, next_X, dampingMap;
+let nodes = [];
+let total_time = 0;
+let energy_collected = 0; 
+let coherence = 0.99;
+
+document.getElementById('cohSlider').addEventListener('input', (e) => {
+    coherence = e.target.value / 100;
+    document.getElementById('cohVal').innerText = coherence.toFixed(2);
+    buildDampingMap();
+});
+document.getElementById('regenBtn').addEventListener('click', () => { initSystem(); });
+
+function initSystem() {
+    COLS = Math.floor(WIDTH / GRID_SIZE);
+    ROWS = Math.floor(HEIGHT / GRID_SIZE);
+    curr_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+    prev_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+    next_X = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+    nodes = [];
+    energy_collected = 0; 
+
+    // アンテナ(Source) と 反応中心(Sink)
+    nodes.push({ x: 80, y: HEIGHT/2, isSource: true });
+    nodes.push({ x: WIDTH - 80, y: HEIGHT/2, isSink: true });
+
+    // ノードの密度を最適化
+    const NUM_NODES = Math.floor((WIDTH * HEIGHT) / 6500); 
+    for(let i = 0; i < NUM_NODES; i++) {
+        nodes.push({
+            x: 130 + Math.random() * (WIDTH - 260),
+            y: 50 + Math.random() * (HEIGHT - 100)
+        });
+    }
+
+    buildDampingMap();
+}
+
+function buildDampingMap() {
+    dampingMap = Array(COLS).fill(0).map(() => Array(ROWS).fill(0.84)); 
+    
+    nodes.forEach(n => {
+        let gi = Math.floor(n.x / GRID_SIZE);
+        let gj = Math.floor(n.y / GRID_SIZE);
+        
+        let radius = n.isSink ? 8 : 6; 
+        for(let di=-radius; di<=radius; di++){
+            for(let dj=-radius; dj<=radius; dj++){
+                let dist = Math.sqrt(di*di + dj*dj);
+                if(gi+di>0 && gi+di<COLS-1 && gj+dj>0 && gj+dj<ROWS-1 && dist <= radius){
+                    dampingMap[gi+di][gj+dj] = coherence;
+                }
+            }
+        }
+    });
+}
+
+initSystem();
+
+function stepUniverse() {
+    let sourceX = 80, sourceY = HEIGHT/2;
+    let sinkX = WIDTH - 80, sinkY = HEIGHT/2;
+    let s_gi = Math.floor(sourceX / GRID_SIZE);
+    let s_gj = Math.floor(sourceY / GRID_SIZE);
+    let e_gi = Math.floor(sinkX / GRID_SIZE);
+    let e_gj = Math.floor(sinkY / GRID_SIZE);
+
+    // 左端からサイン波を注入
+    curr_X[s_gi][s_gj] = Math.sin(total_time * 0.4) * 15.0;
+
+    // 純粋波動方程式（L3カーネル）
+    const OMEGA_SQ = 0.24; 
+    for (let i = 1; i < COLS - 1; i++) {
+        for (let j = 1; j < ROWS - 1; j++) {
+            let laplacian = curr_X[i+1][j] + curr_X[i-1][j] + curr_X[i][j+1] + curr_X[i][j-1] - 4 * curr_X[i][j];
+            next_X[i][j] = (2 * curr_X[i][j] - prev_X[i][j]) + OMEGA_SQ * laplacian;
+            next_X[i][j] *= dampingMap[i][j];
+        }
+    }
+
+    // Sink（右の赤いゴール）に到達した波の振幅を回収
+    let arrivedWave = Math.abs(curr_X[e_gi][e_gj]);
+    if (arrivedWave > 0.05) {
+        energy_collected += arrivedWave * 0.02; 
+    }
+
+    // バッファシフト
+    for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+            prev_X[i][j] = curr_X[i][j];
+            curr_X[i][j] = next_X[i][j];
+        }
+    }
+
+    // --- レンダリング層 ---
+    ctx.fillStyle = '#020206';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // ★修正: 波動（干渉パターン）のリアルタイム描画（最低輝度の保証パッチ）
+    for (let i = 1; i < COLS; i++) {
+        for (let j = 1; j < ROWS; j++) {
+            let val = curr_X[i][j];
+            let absVal = Math.abs(val);
+            
+            if (absVal > 0.01) { // 閾値を下げて、極小の波も可視化対象にする
+                // 最低値を 0.15 に底上げし、人間の目に見えない暗黒領域を失くす
+                let intensity = 0.15 + (Math.min(1.0, absVal / 4.0) * 0.85);
+                
+                if (val > 0) {
+                    ctx.fillStyle = `rgba(255, 230, 0, ${intensity})`; // 黄色の波
+                } else {
+                    ctx.fillStyle = `rgba(0, 255, 180, ${intensity})`; // 青緑の波
+                }
+                ctx.fillRect(i*GRID_SIZE - GRID_SIZE/2, j*GRID_SIZE - GRID_SIZE/2, GRID_SIZE, GRID_SIZE);
+            }
+        }
+    }
+
+    // 植物の配線トポロジー（背景にうっすら導波路を表示）
+    ctx.fillStyle = 'rgba(0, 255, 100, 0.02)';
+    for (let i = 1; i < COLS; i++) {
+        for (let j = 1; j < ROWS; j++) {
+            if (dampingMap[i][j] > 0.9) {
+                ctx.fillRect(i*GRID_SIZE - GRID_SIZE/2, j*GRID_SIZE - GRID_SIZE/2, GRID_SIZE, GRID_SIZE);
+            }
+        }
+    }
+
+    // ノードの描画
+    nodes.forEach(n => {
+        ctx.beginPath();
+        if (n.isSource) {
+            ctx.fillStyle = '#00aaff'; ctx.shadowColor = '#00aaff'; ctx.shadowBlur = 15;
+            ctx.arc(n.x, n.y, 8, 0, Math.PI*2);
+        } else if (n.isSink) {
+            ctx.fillStyle = '#ff3366'; ctx.shadowColor = '#ff3366'; ctx.shadowBlur = 25;
+            ctx.arc(n.x, n.y, 12, 0, Math.PI*2);
+        } else {
+            ctx.fillStyle = 'rgba(0, 255, 100, 0.4)'; ctx.shadowBlur = 0;
+            ctx.arc(n.x, n.y, 3, 0, Math.PI*2);
+        }
+        ctx.fill(); ctx.shadowBlur = 0;
+    });
+
+    // UIログ
+    ctx.fillStyle = '#020206';
+    ctx.fillRect(10, HEIGHT - 60, 520, 50);
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '13px Courier New';
+    ctx.fillText(`QUANTUM STATUS // WAVE_ENERGY_ABSORBED: ${energy_collected.toFixed(2)}`, 30, HEIGHT - 35);
+    ctx.fillText(`OS_STATUS: 100%_WAVE_VISIBILITY_OK // J_CLOCK: ${total_time}`, 30, HEIGHT - 20);
+
+    total_time++;
+    requestAnimationFrame(stepUniverse);
+}
+
+window.addEventListener('resize', () => {
+    WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
+    canvas.width = WIDTH; canvas.height = HEIGHT;
+    initSystem();
+});
+
+initSystem();
+stepUniverse();
+</script>
+</body>
+</html>
